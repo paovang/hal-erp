@@ -1,0 +1,6 @@
+export enum DateFormat {
+  'DATETIME_FORMAT' = 'YYYY-MM-DD HH:mm:ss',
+  'DATE_FORMAT' = 'YYYY-MM-DD',
+  'DATETIME_READABLE_FORMAT' = 'DD-MM-YYYY HH:mm:ss',
+  'DATE_READABLE_FORMAT' = 'DD-MM-YYYY',
+}

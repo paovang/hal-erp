@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+
+    "esModuleInterop": true,
+    
+    // Enables ES module interop to allow default imports from modules with no default export
+    "resolveJsonModule": true,
+
+     "noUnusedLocals": false,
+    // Optionally warn on unused locals
+    "noUnusedParameters": false,
+    // Optionally warn on unused parameters
+    "strictPropertyInitialization": false,
+
+    "paths": {
+      "@src/*": [
+        "src/*"
+      ],
+      "@common/*": [
+        "src/common/*"
+      ]
+    }
+  },
+  "include": ["./src/**/*"],
+   "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

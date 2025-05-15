@@ -1,0 +1,30 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { TRANSACTION_MANAGER_SERVICE } from 'src/common/constants/inject-key.const';
+import { DepartmentSeeder } from '../department.seeder';
+import { ITransactionManagerService } from 'src/common/application/interfaces/transaction.interface';
+
+@Injectable()
+export class SeederService {
+  constructor(
+    @InjectDataSource() private readonly dataSource: DataSource,
+    @Inject(TRANSACTION_MANAGER_SERVICE)
+    private readonly transactionManagerService: ITransactionManagerService,
+    @Inject() private _userSeeder: DepartmentSeeder,
+  ) {}
+
+  async seed() {
+    try {
+      await this.transactionManagerService.runInTransaction(
+        this.dataSource,
+        async (manager) => {
+          await this._userSeeder.seed(manager);
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+}
