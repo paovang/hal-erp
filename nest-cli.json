@@ -7,7 +7,6 @@
     "assets": [
       {
         "include": "common/infrastructure/localization/i18n/**/*",
-        "outDir": "dist/common/infrastructure/localization/i18n/",
         "watchAssets": true
       }
     ]

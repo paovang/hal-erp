@@ -4,9 +4,23 @@ import { DepartmentResponse } from '@src/modules/manage/application/dto/response
 import moment from 'moment-timezone';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/department/create.dto';
+import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
 
 @Injectable()
 export class DepartmentDataMapper {
+  /** Mapper Dto To Entity */
+  toEntity(dto: CreateDepartmentDto | UpdateDepartmentDto): DepartmentEntity {
+    const builder = DepartmentEntity.builder();
+
+    if (dto.name) {
+      builder.setName(dto.name);
+    }
+
+    return builder.build();
+  }
+
+  /** Mapper Entity To Response */
   toResponse(entity: DepartmentEntity): DepartmentResponse {
     const response = new DepartmentResponse();
     response.id = entity.getId().value;

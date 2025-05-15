@@ -6,12 +6,12 @@ import { GlobalExceptionFilter } from '@common/filters/global-exception.filter';
 @Module({
   providers: [
     {
-      provide: APP_FILTER,
-      useClass: GlobalExceptionFilter,
-    },
-    {
       provide: APP_INTERCEPTOR,
       useClass: TransformResponseInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
     },
   ],
 })

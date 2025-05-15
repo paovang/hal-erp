@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Inject,
+  Param,
   Post,
   Put,
   Query,
@@ -17,6 +18,7 @@ import { ITransformResultService } from '@src/common/application/interfaces/tran
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { DepartmentDataMapper } from '@src/modules/manage/application/mappers/department.mapper';
 import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/department/create.dto';
+import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
 
 @Controller('department')
 export class DepartmentController {
@@ -45,14 +47,28 @@ export class DepartmentController {
   }
 
   @Post('')
-  async create(@Body() dto: CreateDepartmentDto): Promise<any> {
-    return dto;
-    return 'Create';
+  async create(
+    @Body() dto: CreateDepartmentDto,
+  ): Promise<ResponseResult<DepartmentResponse>> {
+    const result = await this._departmentService.create(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
   }
 
   @Put(':id')
-  async update() {
-    return 'Update';
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateDepartmentDto,
+  ): Promise<any> {
+    const result = await this._departmentService.update(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
   }
 
   @Delete(':id')

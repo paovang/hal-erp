@@ -44,4 +44,17 @@ export class DepartmentEntity extends Entity<DepartmentId> {
   static getEntityName() {
     return 'departments';
   }
+
+  async validateExistingIdForUpdate() {
+    if (!this.getId()) {
+      console.log('paovang');
+      // throw new UserDomainException(
+      //   'users.user_is_not_in_correct_state_for_initialization',
+      // );
+    }
+  }
+
+  async initializeUpdateSetId(departmentId: DepartmentId) {
+    this.setId(departmentId);
+  }
 }

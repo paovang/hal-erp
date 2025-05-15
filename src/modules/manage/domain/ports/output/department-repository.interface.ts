@@ -9,3 +9,15 @@ export interface IReadDepartmentRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentEntity>>;
 }
+
+export interface IWriteDepartmentRepository {
+  create(
+    entity: DepartmentEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentEntity>>;
+
+  update(
+    entity: DepartmentEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentEntity>>;
+}

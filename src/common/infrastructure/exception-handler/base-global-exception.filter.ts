@@ -16,6 +16,7 @@ import { LOCALIZATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { ILocalizationService } from '@src/common/application/interfaces/localization.interface';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { log } from 'console';
 
 @Injectable()
 @Catch(HttpException, DomainException, Error)
@@ -121,9 +122,11 @@ export abstract class BaseGlobalExceptionFilter implements ExceptionFilter {
     }
   }
 
-  protected shouldNotify(status: HttpStatus, _exception: unknown): boolean {
-    return status != 404;
-  }
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  // protected shouldNotify(status: HttpStatus, _exception: unknown): boolean {
+  //   return status !== 404;
+  // }
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   protected extractHttpExceptionDetails(exception: unknown): {
     messageKey: unknown;

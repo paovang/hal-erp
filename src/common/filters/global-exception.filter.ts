@@ -13,7 +13,6 @@ export class GlobalExceptionFilter extends BaseGlobalExceptionFilter {
     // @Inject(SLACK_PRODUCER_SERVICE) slackService: ISlackNotificationProducer,
     // @Inject(AUTH_ALS_SERVICE_KEY) authAlsService: AuthAlsService,
   ) {
-    console.log('filter');
     super(configService, localizationService);
     // super(configService, localizationService, slackService, authAlsService);
   }
