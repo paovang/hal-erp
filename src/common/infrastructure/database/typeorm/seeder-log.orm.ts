@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity('seeder_logs')
-export class SeederLog {
+export class SeederLogOrmEntity {
   @PrimaryGeneratedColumn('increment', { type: 'bigint' })
   id: string;
 

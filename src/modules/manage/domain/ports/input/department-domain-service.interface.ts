@@ -11,6 +11,11 @@ export interface IDepartmentServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<DepartmentEntity>>;
 
+  getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentEntity>>;
+
   create(
     dto: CreateDepartmentDto,
     manager?: EntityManager,
@@ -21,4 +26,6 @@ export interface IDepartmentServiceInterface {
     dto: UpdateDepartmentDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<DepartmentEntity>>;
+
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

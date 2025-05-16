@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
-import { Department } from '../typeorm/department.orm';
+import { DepartmentOrmEntity } from '../typeorm/department.orm';
 import { Timezone } from 'src/common/domain/value-objects/timezone.vo';
 import moment from 'moment-timezone';
 import { DateFormat } from 'src/common/domain/value-objects/date-format.vo';
 import { HelperSeeder } from './helper.seeder';
-import { SeederLog } from '../typeorm/seeder-log.orm';
+import { SeederLogOrmEntity } from '../typeorm/seeder-log.orm';
 
 @Injectable()
 export class DepartmentSeeder {
@@ -14,13 +14,13 @@ export class DepartmentSeeder {
   constructor(@Inject() private readonly _helper: HelperSeeder) {}
 
   async seed(manager: EntityManager) {
-    const seederLogRepository = manager.getRepository(SeederLog);
+    const seederLogRepository = manager.getRepository(SeederLogOrmEntity);
     const isExecute = await this._helper.existingLog(
       this.SEEDER_NAME,
       seederLogRepository,
     );
     if (isExecute) return [];
-    const _respository = manager.getRepository(Department);
+    const _respository = manager.getRepository(DepartmentOrmEntity);
     const currentDateTime = moment
       .tz(Timezone.LAOS)
       .format(DateFormat.DATETIME_FORMAT);

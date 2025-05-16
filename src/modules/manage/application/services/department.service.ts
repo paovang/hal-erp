@@ -11,6 +11,8 @@ import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/
 import { CreateCommand } from '@src/modules/manage/application/commands/department/create.command';
 import { UpdateCommand } from '@src/modules/manage/application/commands/department/update.command';
 import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
+import { DeleteCommand } from '@src/modules/manage/application/commands/department/delete.command';
+import { GetOneQuery } from '@src/modules/manage/application/queries/department/get-one.query';
 
 @Injectable()
 export class DepartmentService implements IDepartmentServiceInterface {
@@ -30,6 +32,15 @@ export class DepartmentService implements IDepartmentServiceInterface {
     );
   }
 
+  async getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentEntity>> {
+    return await this._queryBus.execute(
+      new GetOneQuery(id, manager ?? this._readEntityManager),
+    );
+  }
+
   async create(
     dto: CreateDepartmentDto,
     manager?: EntityManager,
@@ -46,6 +57,12 @@ export class DepartmentService implements IDepartmentServiceInterface {
   ): Promise<ResponseResult<DepartmentEntity>> {
     return await this._commandBus.execute(
       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async delete(id: number, manager?: EntityManager): Promise<void> {
+    return await this._commandBus.execute(
+      new DeleteCommand(id, manager ?? this._readEntityManager),
     );
   }
 }

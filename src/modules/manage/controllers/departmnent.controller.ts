@@ -35,6 +35,7 @@ export class DepartmentController {
     @Query() dto: DepartmentQueryDto,
   ): Promise<ResponseResult<DepartmentResponse>> {
     const result = await this._departmentService.getAll(dto);
+
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
@@ -42,8 +43,15 @@ export class DepartmentController {
   }
 
   @Get(':id')
-  async getOne() {
-    return 'One';
+  async getOne(
+    @Param('id') id: number,
+  ): Promise<ResponseResult<DepartmentResponse>> {
+    const result = await this._departmentService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
   }
 
   @Post('')
@@ -62,7 +70,7 @@ export class DepartmentController {
   async update(
     @Param('id') id: number,
     @Body() dto: UpdateDepartmentDto,
-  ): Promise<any> {
+  ): Promise<ResponseResult<DepartmentResponse>> {
     const result = await this._departmentService.update(id, dto);
 
     return this._transformResultService.execute(
@@ -72,7 +80,7 @@ export class DepartmentController {
   }
 
   @Delete(':id')
-  async delete() {
-    return 'Delete';
+  async delete(@Param('id') id: number): Promise<void> {
+    return await this._departmentService.delete(id);
   }
 }

@@ -8,7 +8,7 @@ import { DepartmentDataMapper } from '@src/modules/manage/application/mappers/de
 import { UpdateCommand } from '@src/modules/manage/application/commands/department/update.command';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
-import { Department } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -26,7 +26,7 @@ export class UpdateCommandHandler
     await entity.validateExistingIdForUpdate();
 
     /** Check Exits Department Id */
-    await findOneOrFail(query.manager, Department, {
+    await findOneOrFail(query.manager, DepartmentOrmEntity, {
       id: entity.getId().value,
     });
 

@@ -3,11 +3,14 @@ import moment from 'moment-timezone';
 import { DateFormat } from 'src/common/domain/value-objects/date-format.vo';
 import { Timezone } from 'src/common/domain/value-objects/timezone.vo';
 import { Repository } from 'typeorm';
-import { SeederLog } from '../typeorm/seeder-log.orm';
+import { SeederLogOrmEntity } from '../typeorm/seeder-log.orm';
 
 @Injectable()
 export class HelperSeeder {
-  async existingLog(seederName: string, repository: Repository<SeederLog>) {
+  async existingLog(
+    seederName: string,
+    repository: Repository<SeederLogOrmEntity>,
+  ) {
     const existingLog = await repository.findOne({
       where: { name: seederName },
     });
@@ -18,7 +21,10 @@ export class HelperSeeder {
     return false;
   }
 
-  async executingLog(seederName: string, repository: Repository<SeederLog>) {
+  async executingLog(
+    seederName: string,
+    repository: Repository<SeederLogOrmEntity>,
+  ) {
     try {
       const seederLog = repository.create({
         name: seederName,

@@ -9,8 +9,12 @@ import { ReadDepartmentRepository } from '@src/modules/manage/infrastructure/rep
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { TransformResultService } from '@src/common/utils/services/transform-result.service';
 import { WriteDepartmentRepository } from '@src/modules/manage/infrastructure/repositories/department/write.repository';
+import { DepartmentMapperProviders } from '@src/modules/manage/application/providers/department/mapper.provider';
+import { DepartmentHandlersProviders } from '@src/modules/manage/application/providers/department/command.provider';
 
 export const DepartmentProvider: Provider[] = [
+  ...DepartmentHandlersProviders,
+  ...DepartmentMapperProviders,
   {
     provide: DEPARTMENT_APPLICATION_SERVICE,
     useClass: DepartmentService,

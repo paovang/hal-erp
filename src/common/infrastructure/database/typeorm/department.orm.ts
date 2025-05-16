@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Entity('departments')
-export class Department {
+export class DepartmentOrmEntity {
   @PrimaryGeneratedColumn('increment', { type: 'bigint' })
   id: number;
 
