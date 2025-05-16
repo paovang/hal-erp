@@ -7,6 +7,7 @@ import { SeederService } from './seeders/services/seeder.service';
 import { DepartmentSeeder } from './seeders/department.seeder';
 import { HelperSeeder } from './seeders/helper.seeder';
 import { TransactionModule } from '../transaction/transaction.module';
+import { DocumentTypeOrmEntity } from './typeorm/document-type.orm';
 
 @Module({
   imports: [
@@ -23,13 +24,13 @@ import { TransactionModule } from '../transaction/transaction.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [DepartmentOrmEntity, SeederLogOrmEntity],
+        entities: [DepartmentOrmEntity, SeederLogOrmEntity, DocumentTypeOrmEntity],
         subscribers: [],
         synchronize: Boolean(configService.get<string>('DB_SYNCHRONIZE')), // set false because i need use migrations
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([DepartmentOrmEntity, SeederLogOrmEntity]), // ຖ້າບໍ່ໃຊ້ອັນນີ້ຈະບໍ່ສາມາດເອີ້ນໃຊ້ Repository<User>
+    TypeOrmModule.forFeature([DepartmentOrmEntity, SeederLogOrmEntity, DocumentTypeOrmEntity]), // ຖ້າບໍ່ໃຊ້ອັນນີ້ຈະບໍ່ສາມາດເອີ້ນໃຊ້ Repository<User>
   ],
   exports: [TypeOrmModule],
   providers: [DepartmentSeeder, SeederService, HelperSeeder],
