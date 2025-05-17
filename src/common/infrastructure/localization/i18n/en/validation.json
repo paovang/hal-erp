@@ -1,4 +1,6 @@
 {
     "IS_NOT_EMPTY": "{property} should not be empty",
-    "IS_STRING": "{property} must be a string"
+    "IS_STRING": "{property} must be a string",
+    "LENGTH": "{property} must not exceed 10 characters.",
+    "NO_SPECIAL_CHARS": "Code must not contain special characters like & * $ # ( ) @ ! ~ + etc."
 }

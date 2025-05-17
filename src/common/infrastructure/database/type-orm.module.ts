@@ -8,6 +8,7 @@ import { DepartmentSeeder } from './seeders/department.seeder';
 import { HelperSeeder } from './seeders/helper.seeder';
 import { TransactionModule } from '../transaction/transaction.module';
 import { DocumentTypeOrmEntity } from './typeorm/document-type.orm';
+import { UnitOrmEntity } from './typeorm/unit.orm';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { DocumentTypeOrmEntity } from './typeorm/document-type.orm';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [DepartmentOrmEntity, SeederLogOrmEntity, DocumentTypeOrmEntity],
+        entities: [DepartmentOrmEntity, SeederLogOrmEntity, DocumentTypeOrmEntity, UnitOrmEntity],
         subscribers: [],
         synchronize: Boolean(configService.get<string>('DB_SYNCHRONIZE')), // set false because i need use migrations
       }),

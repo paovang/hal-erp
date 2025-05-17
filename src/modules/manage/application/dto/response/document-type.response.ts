@@ -5,6 +5,9 @@ export class DocumentTypeResponse {
   id: number;
 
   @ApiProperty()
+  code: string;
+
+  @ApiProperty()
   name: string;
 
   @ApiProperty()

@@ -24,34 +24,40 @@ export class CreateCommandHandler
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<DocumentTypeEntity>> {
-        const name = await findOneOrFail(query.manager, DocumentTypeOrmEntity, {
-            name: query.dto.name,
-        });
-        
-        if (name) {
-            throw new Error('Document type name already exists');
-        }
+    let code = query.dto.code;
 
-      const generateCode = await this._codeGeneratorUtil.generateUniqueCode(
+    const existing = await query.manager.findOne(DocumentTypeOrmEntity, {
+      where: { name: query.dto.name },
+    });
+    
+    if (existing) {
+      throw new Error('Document type name already exists');
+    }
+    
+    if (!code) {
+      code = await this._codeGeneratorUtil.generateUniqueCode(
         6,
-        async (code: string) => { 
+        async (generatedCode: string) => {
           try {
-            
             await findOneOrFail(query.manager, DocumentTypeOrmEntity, {
-              code: code,
+              code: generatedCode,
             });
-            
-            return false;
-          } catch (error) {
+            return false; 
+          } catch {
             return true;
           }
         },
         'DT'
       );
-    
-    const mapToEntity = this._dataMapper.toEntity(query.dto, generateCode);
-    console.log(mapToEntity);
+    } else {
+      // Remove 'DT-' prefix if it already exists (case-insensitive optional)
+      const cleanCode = code.toUpperCase().startsWith('DT-') ? code.slice(3) : code;
+      
+      code = `DT-${cleanCode.toUpperCase()}`;
+    }
 
-    return await this._write.create(mapToEntity, query.manager);
+    const entity = this._dataMapper.toEntity(query.dto, code);
+    return await this._write.create(entity, query.manager);
+    
   }
 }

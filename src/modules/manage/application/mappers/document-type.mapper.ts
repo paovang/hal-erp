@@ -9,11 +9,12 @@ import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/
 import { CreateDocumentTypeDto } from '../dto/create/documentType/create.dto';
 import { DocumentTypeEntity } from '../../domain/entities/document-type.entity';
 import { DocumentTypeResponse } from '../dto/response/document-type.response';
+import { UpdateDocumentTypeDto } from '../dto/create/documentType/update.dto';
 
 @Injectable()
 export class DocumentTypeDataMapper {
   /** Mapper Dto To Entity */
-  toEntity(dto: CreateDocumentTypeDto, generateCode: string): DocumentTypeEntity {
+  toEntity(dto: CreateDocumentTypeDto | UpdateDocumentTypeDto, generateCode: string): DocumentTypeEntity {
     const builder = DocumentTypeEntity.builder();
 
     if (dto.name) {
@@ -31,6 +32,7 @@ export class DocumentTypeDataMapper {
   toResponse(entity: DocumentTypeEntity): DocumentTypeResponse {
     const response = new DocumentTypeResponse();
     response.id = entity.getId().value;
+    response.code = entity.code;
     response.name = entity.name;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

@@ -14,10 +14,8 @@ export class DocumentTypeDataAccessMapper {
     const mediaOrmEntity = new DocumentTypeOrmEntity();
     if (id) {
       mediaOrmEntity.id = id.value;
-    } else {
-    //   mediaOrmEntity.code = 'DT-008';
-      mediaOrmEntity.code = documentTypeEntity.code ?? 'DP-008';
     }
+    mediaOrmEntity.code = documentTypeEntity.code;
     mediaOrmEntity.name = documentTypeEntity.name;
     mediaOrmEntity.created_at = documentTypeEntity.createdAt ?? new Date(now);
     mediaOrmEntity.updated_at = new Date(now);

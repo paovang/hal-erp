@@ -1,6 +1,6 @@
-import { EntityManager } from "typeorm";
+import { EntityManager } from 'typeorm';
 
-export class GetOneQuery {
+export class DeleteCommand {
   constructor(
     public readonly id: number,
     public readonly manager: EntityManager,

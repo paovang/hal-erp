@@ -7,6 +7,7 @@ import { DocumentTypeService } from "../../services/document-type.service";
 import { WriteDocumentTypeRepository } from "@src/modules/manage/infrastructure/repositories/documentType/write.repository";
 import { DocumentTypeMapperProviders } from "./mapper.provider";
 import { CodeGeneratorUtil } from "@src/common/utils/code-generator.util";
+import { ReadDocumentTypeRepository } from "@src/modules/manage/infrastructure/repositories/documentType/read.repository";
 
 export const DocumentTypeProvider: Provider[] = [
   ...DocumentTypeHandlersProviders,
@@ -20,10 +21,10 @@ export const DocumentTypeProvider: Provider[] = [
     provide: WRITE_DOCUMENT_TYPE_REPOSITORY,
     useClass: WriteDocumentTypeRepository,
   },
-//   {
-//     provide: READ_DOCUMENT_TYPE_REPOSITORY,
-//     useClass: ReadDepartmentRepository,
-//   },
+  {
+    provide: READ_DOCUMENT_TYPE_REPOSITORY,
+    useClass: ReadDocumentTypeRepository,
+  },
   {
     provide: TRANSFORM_RESULT_SERVICE,
     useClass: TransformResultService,

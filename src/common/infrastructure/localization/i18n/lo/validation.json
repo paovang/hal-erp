@@ -1,4 +1,6 @@
 {
     "IS_NOT_EMPTY": "{property} ບໍ່ສາມາດວ່າງໄດ້",
-    "IS_STRING": "{property} ຕ້ອງເປັນຕົວໜັງສື"
+    "IS_STRING": "{property} ຕ້ອງເປັນຕົວໜັງສື",
+    "LENGTH": "{property} ຈະຕ້ອງບໍ່ເກີນ 10 ຕົວໜັງສື",
+    "NO_SPECIAL_CHARS": "ລະຫັດຕ້ອງບໍ່ມີຕົວເລກພິເສດເຊັ່ນ & * $ # ( ) @ ! ~ + ."
 }
