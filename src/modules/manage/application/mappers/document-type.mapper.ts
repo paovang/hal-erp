@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
-import { DepartmentResponse } from '@src/modules/manage/application/dto/response/department.response';
 import moment from 'moment-timezone';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
-import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/department/create.dto';
-import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
 import { CreateDocumentTypeDto } from '../dto/create/documentType/create.dto';
 import { DocumentTypeEntity } from '../../domain/entities/document-type.entity';
 import { DocumentTypeResponse } from '../dto/response/document-type.response';

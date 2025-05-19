@@ -41,8 +41,8 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
     }
 
     async findOne(
-    id: DocumentTypeId,
-    manager: EntityManager,
+      id: DocumentTypeId,
+      manager: EntityManager,
     ): Promise<ResponseResult<DocumentTypeEntity>> {
         const item = await findOneOrFail(manager, DocumentTypeOrmEntity, {
             id: id.value,
@@ -52,15 +52,15 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
     }
 
     private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(DocumentTypeOrmEntity, 'document_types');
+      return manager.createQueryBuilder(DocumentTypeOrmEntity, 'document_types');
     }
 
     private getFilterOptions(): FilterOptions {
-    return {
-        searchColumns: ['document_types.code', 'document_types.name'],
-        dateColumn: '',
-        filterByColumns: [],
-    };
+      return {
+          searchColumns: ['document_types.code', 'document_types.name'],
+          dateColumn: '',
+          filterByColumns: [],
+      };
     }
   
 }

@@ -27,19 +27,15 @@ export class UpdateCommandHandler
             throw new Error('ID must be a number');
         }
 
-        // Validate existing id
-        const check_id = await query.manager.findOne(DocumentTypeOrmEntity, {
-            where: { id: query.id },
+        await findOneOrFail(query.manager, DocumentTypeOrmEntity, {
+            id: query.id,
         });
-
-        if (!check_id) {
-            throw new NotFoundException('Document type id not found');
-        }
 
         // Validate existing name conflict
         const existingByName = await query.manager.findOne(DocumentTypeOrmEntity, {
             where: { name },
         });
+
         if (existingByName && Number(existingByName.id) !== query.id) {
             throw new Error('Document type name already exists');
         }
@@ -50,10 +46,10 @@ export class UpdateCommandHandler
         
             // Format: always add DT- and uppercase the rest
             const formattedCode = `DT-${cleanCode.toUpperCase()}`;
-        
-            const existingByCode = await findOneOrFail(query.manager, DocumentTypeOrmEntity, {
-                code: formattedCode,
-            }).catch(() => null);
+
+            const existingByCode = await query.manager.findOne(DocumentTypeOrmEntity, {
+                where: { code: formattedCode},
+            });
         
             if (existingByCode && Number(existingByCode.id) !== Number(query.id)) {
                 throw new NotFoundException('Document type code already exists');
@@ -78,11 +74,9 @@ export class UpdateCommandHandler
 
         // Final existence check for ID before update
         await findOneOrFail(query.manager, DocumentTypeOrmEntity, {
-        id: entity.getId().value,
+            id: entity.getId().value,
         });
 
         return this._write.update(entity, query.manager);
-
     }
-
 }

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
 import { DocumentTypeEntity } from "@src/modules/manage/domain/entities/document-type.entity";
 import { IWriteDocumentTypeRepository } from "@src/modules/manage/domain/ports/output/document-type-repository.interface";
-import { EntityManager, UpdateResult } from "typeorm";
+import { EntityManager } from "typeorm";
 import { DocumentTypeDataAccessMapper } from "../../mappers/document-type.mapper";
 import { DocumentTypeOrmEntity } from "@src/common/infrastructure/database/typeorm/document-type.orm";
 import { DocumentTypeId } from "@src/modules/manage/domain/value-objects/document-type-id.vo";

@@ -61,7 +61,7 @@ export class DocumentTypeEntity extends Entity<DocumentTypeId> {
     }
   }
 
-  async initializeUpdateSetId(DocumentTypeId: DocumentTypeId) {
-    this.setId(DocumentTypeId);
+  async initializeUpdateSetId(documentTypeId: DocumentTypeId) {
+    this.setId(documentTypeId);
   }
 }

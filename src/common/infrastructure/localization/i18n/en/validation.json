@@ -2,5 +2,9 @@
     "IS_NOT_EMPTY": "{property} should not be empty",
     "IS_STRING": "{property} must be a string",
     "LENGTH": "{property} must not exceed 10 characters.",
-    "NO_SPECIAL_CHARS": "Code must not contain special characters like & * $ # ( ) @ ! ~ + etc."
+    "NO_SPECIAL_CHARS": "Code must not contain special characters like & * $ # ( ) @ ! ~ + etc.",
+    "IS_EMAIL": "{property} Please enter a valid email address.",
+    "TEL_LENGTH": "{property} must be between 6 and 20 characters.",
+    "IS_NUMBER": "{property} must be a number.",
+    "PASSWORD_LENGTH": "{property} must be between 6 and 255 characters."
 }

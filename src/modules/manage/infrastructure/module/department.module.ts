@@ -7,6 +7,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { PaginationModule } from '@src/common/infrastructure/pagination/pagination.module';
 import { I18nModule } from '@src/common/infrastructure/localization/i18n.module';
 import { DocumentTypeController } from '../../controllers/document-type.controller';
+import { UserController } from '../../controllers/user.controller';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { DocumentTypeController } from '../../controllers/document-type.controll
   ],
   controllers: [
     DepartmentController,
-    DocumentTypeController
+    DocumentTypeController,
+    UserController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
