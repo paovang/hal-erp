@@ -13,11 +13,7 @@ export class RoleOrmEntity {
 
   @Index()
   @Column({ type: 'varchar', length: 255, nullable: true })
-  display_name!: string;
-
-  @Index()
-  @Column({ type: 'text', nullable: true })
-  description?: string;
+  guard_name!: string;
 
   @ManyToMany(() => PermissionOrmEntity, (permission) => permission.roles, {
     onDelete: 'CASCADE',

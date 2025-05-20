@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from "typeorm";
 import { RoleOrmEntity } from "./role.orm";
+import { PermissionGroupOrmEntity } from "./permission-group.orm";
 
 @Entity('permissions')
 export class PermissionOrmEntity {
@@ -12,11 +13,17 @@ export class PermissionOrmEntity {
 
     @Index()
     @Column({ type: 'varchar', length: 255, nullable: true })
-    display_name!: string;
+    guard_name!: string;
 
     @Index()
-    @Column({ type: 'text', nullable: true })
-    description?: string;
+    @Column({ nullable: true })
+    permission_group_id?: number;
+    @ManyToOne(
+    () => PermissionGroupOrmEntity,
+    (permission_groups) => permission_groups.permissions,
+    )
+    @JoinColumn({ name: 'permission_group_id' })
+    permission_groups: Relation<PermissionGroupOrmEntity[]>;
 
     @ManyToMany(() => RoleOrmEntity, (role) => role.permissions, {
         onDelete: 'CASCADE',
