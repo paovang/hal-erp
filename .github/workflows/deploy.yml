@@ -37,7 +37,7 @@ jobs:
 
       - name: Copy dist folder to server
         run: |
-          scp -r dist/ package.json pnpm-lock.yaml root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/apis/
+          rsync -az --delete dist/ package.json pnpm-lock.yaml root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/apis/
 
       - name: Restart server app (optional)
         run: |

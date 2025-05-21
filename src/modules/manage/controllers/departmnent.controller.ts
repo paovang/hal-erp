@@ -43,6 +43,7 @@ export class DepartmentController {
     );
   }
 
+  /** Get One */
   @Get(':id')
   async getOne(
     @Param('id') id: number,
