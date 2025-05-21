@@ -56,6 +56,7 @@ export class DepartmentController {
     );
   }
 
+  /** Create */
   @Post('')
   async create(
     @Body() dto: CreateDepartmentDto,
