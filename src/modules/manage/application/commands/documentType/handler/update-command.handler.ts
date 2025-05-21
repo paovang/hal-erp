@@ -9,6 +9,7 @@ import { DocumentTypeEntity } from "@src/modules/manage/domain/entities/document
 import { DocumentTypeId } from "@src/modules/manage/domain/value-objects/document-type-id.vo";
 import { findOneOrFail } from "@src/common/utils/fine-one-orm.utils";
 import { DocumentTypeOrmEntity } from "@src/common/infrastructure/database/typeorm/document-type.orm";
+import { _checkColumnDuplicate } from "@src/common/utils/check-column-duplicate-orm.util";
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -31,14 +32,17 @@ export class UpdateCommandHandler
             id: query.id,
         });
 
-        // Validate existing name conflict
-        const existingByName = await query.manager.findOne(DocumentTypeOrmEntity, {
-            where: { name },
-        });
+        await _checkColumnDuplicate(DocumentTypeOrmEntity, 'name', query.dto.name, query.manager, 'Name already exists', query.id);
+        
 
-        if (existingByName && Number(existingByName.id) !== query.id) {
-            throw new Error('Document type name already exists');
-        }
+        // Validate existing name conflict
+        // const existingByName = await query.manager.findOne(DocumentTypeOrmEntity, {
+        //     where: { name },
+        // });
+
+        // if (existingByName && Number(existingByName.id) !== query.id) {
+        //     throw new Error('Document type name already exists');
+        // }
 
         if (code) {
             // Remove 'DT-' prefix if it already exists (case-insensitive optional)
