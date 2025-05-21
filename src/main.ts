@@ -7,6 +7,8 @@ import { CustomI18nValidationExceptionFilter } from '@common/infrastructure/exce
 config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // ✅ Enable CORS
+  app.enableCors({ origin: '*' });
   app.setGlobalPrefix('api');
 
   app.use(I18nMiddleware);

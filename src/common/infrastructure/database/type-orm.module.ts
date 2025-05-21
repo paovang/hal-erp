@@ -25,7 +25,7 @@ import { TransactionModule } from '../transaction/transaction.module';
         database: configService.get<string>('DB_NAME'),
         entities: [DepartmentOrmEntity, SeederLogOrmEntity],
         subscribers: [],
-        synchronize: Boolean(configService.get<string>('DB_SYNCHRONIZE')), // set false because i need use migrations
+        synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true', // set false because i need use migrations
       }),
       inject: [ConfigService],
     }),
