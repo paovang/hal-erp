@@ -69,6 +69,7 @@ export class DepartmentController {
     );
   }
 
+  /** Update */
   @Put(':id')
   async update(
     @Param('id') id: number,
