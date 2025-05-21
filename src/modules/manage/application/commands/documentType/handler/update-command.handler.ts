@@ -32,7 +32,7 @@ export class UpdateCommandHandler
             id: query.id,
         });
 
-        await _checkColumnDuplicate(DocumentTypeOrmEntity, 'name', query.dto.name, query.manager, 'Name already exists', query.id);
+        await _checkColumnDuplicate(DocumentTypeOrmEntity, 'name', name, query.manager, 'Name already exists', query.id);
         
 
         // Validate existing name conflict
