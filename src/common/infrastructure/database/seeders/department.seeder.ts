@@ -9,7 +9,7 @@ import { SeederLogOrmEntity } from '../typeorm/seeder-log.orm';
 
 @Injectable()
 export class DepartmentSeeder {
-  private readonly SEEDER_NAME = 'user_seeders';
+  private readonly SEEDER_NAME = 'department_seeders';
 
   constructor(@Inject() private readonly _helper: HelperSeeder) {}
 

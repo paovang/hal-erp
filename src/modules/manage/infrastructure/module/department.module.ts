@@ -6,6 +6,10 @@ import { AllRegisterProviders } from '@src/modules/manage/application/providers'
 import { CqrsModule } from '@nestjs/cqrs';
 import { PaginationModule } from '@src/common/infrastructure/pagination/pagination.module';
 import { I18nModule } from '@src/common/infrastructure/localization/i18n.module';
+import { DocumentTypeController } from '../../controllers/document-type.controller';
+import { UserController } from '../../controllers/user.controller';
+import { RoleController } from '../../controllers/role.controller';
+import { PermissionController } from '../../controllers/permission.controller';
 
 @Module({
   imports: [
@@ -18,7 +22,13 @@ import { I18nModule } from '@src/common/infrastructure/localization/i18n.module'
     I18nModule,
     PaginationModule,
   ],
-  controllers: [DepartmentController],
+  controllers: [
+    DepartmentController,
+    DocumentTypeController,
+    UserController,
+    RoleController,
+    PermissionController,
+  ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
 })

@@ -1,4 +1,10 @@
 {
     "IS_NOT_EMPTY": "{property} ບໍ່ສາມາດວ່າງໄດ້",
-    "IS_STRING": "{property} ຕ້ອງເປັນຕົວໜັງສື"
+    "IS_STRING": "{property} ຕ້ອງເປັນຕົວໜັງສື",
+    "LENGTH": "{property} ຈະຕ້ອງບໍ່ເກີນ 10 ຕົວໜັງສື",
+    "NO_SPECIAL_CHARS": "ລະຫັດຕ້ອງບໍ່ມີຕົວເລກພິເສດເຊັ່ນ & * $ # ( ) @ ! ~ + .",
+    "IS_EMAIL": "{property} ກະລຸນາປ້ອນອີເມວໃຫ້ຖືກຕ້ອງ.",
+    "TEL_LENGTH": "{property} ຕ້ອງຢູ່ລະຫວ່າງ 6 ເຖິງ 20 ຕົວອັກສອນ.",
+    "IS_NUMBER": "{property} ຕ້ອງເປັນຕົວເລກ.",
+    "PASSWORD_LENGTH": "{property} ຕ້ອງຢູ່ລະຫວ່າງ 6 ເຖິງ 255 ຕົວອັກສອນ."
 }

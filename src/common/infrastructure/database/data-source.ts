@@ -1,7 +1,6 @@
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
-import { DepartmentOrmEntity } from './typeorm/department.orm';
-import { SeederLogOrmEntity } from './typeorm/seeder-log.orm';
+import { models } from './index';
 
 config(); // ໂຫຼດຈາກ .env
 export const dataSource = new DataSource({
@@ -11,9 +10,9 @@ export const dataSource = new DataSource({
   username: process.env.DB_USERNAME || '',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'hal_erp',
-  synchronize: process.env.DB_SYNCHRONIZE === 'true',
-  logging: process.env.DB_LOGGING === 'true',
-  entities: [DepartmentOrmEntity, SeederLogOrmEntity],
+  synchronize: Boolean(process.env.DB_SYNCHRONIZE) || false,
+  logging: Boolean(process.env.DB_LOGGING || false),
+  entities: [...models],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   migrationsTableName: 'migrations',
 });
