@@ -29,8 +29,8 @@ export class UpdateCommandHandler
             id: query.id,
         });
 
-        await _checkColumnDuplicate('email', query.dto.email, query.manager, 'Email already exists', query.id);
-        await _checkColumnDuplicate('tel', query.dto.tel, query.manager, 'Tel already exists', query.id);
+        await _checkColumnDuplicate(UserOrmEntity, 'email', query.dto.email, query.manager, 'Email already exists', query.id);
+        await _checkColumnDuplicate(UserOrmEntity, 'tel', query.dto.tel, query.manager, 'Tel already exists', query.id);
 
         // Map to entity
         const entity = this._dataMapper.toEntityForUpdate(query.dto);

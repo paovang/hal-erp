@@ -9,6 +9,7 @@ import { DocumentTypeDataMapper } from "../../../mappers/document-type.mapper";
 import { CodeGeneratorUtil } from "@src/common/utils/code-generator.util";
 import { findOneOrFail } from "@src/common/utils/fine-one-orm.utils";
 import { DocumentTypeOrmEntity } from "@src/common/infrastructure/database/typeorm/document-type.orm";
+import { _checkColumnDuplicate } from "@src/common/utils/check-column-duplicate-orm.util";
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -26,13 +27,15 @@ export class CreateCommandHandler
   ): Promise<ResponseResult<DocumentTypeEntity>> {
     let code = query.dto.code;
 
-    const existing = await query.manager.findOne(DocumentTypeOrmEntity, {
-      where: { name: query.dto.name },
-    });
+    await _checkColumnDuplicate(DocumentTypeOrmEntity, 'name', query.dto.name, query.manager, 'Name already exists');
+
+    // const existing = await query.manager.findOne(DocumentTypeOrmEntity, {
+    //   where: { name: query.dto.name },
+    // });
     
-    if (existing) {
-      throw new Error('Document type name already exists');
-    }
+    // if (existing) {
+    //   throw new Error('Document type name already exists');
+    // }
     
     if (!code) {
       code = await this._codeGeneratorUtil.generateUniqueCode(
@@ -54,6 +57,8 @@ export class CreateCommandHandler
       const cleanCode = code.toUpperCase().startsWith('DT-') ? code.slice(3) : code;
       
       code = `DT-${cleanCode.toUpperCase()}`;
+      
+      await _checkColumnDuplicate(DocumentTypeOrmEntity, 'code', code, query.manager, 'Code already exists');
     }
 
     const entity = this._dataMapper.toEntity(query.dto, code);

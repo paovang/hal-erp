@@ -7,10 +7,14 @@ import { UserMapperProviders } from "./mapper.provider";
 import { WriteUserRepository } from "@src/modules/manage/infrastructure/repositories/user/write.repository";
 import { ReadUserRepository } from "@src/modules/manage/infrastructure/repositories/user/read.repository";
 import { TransformResultService } from "@src/common/utils/services/transform-result.service";
+import { RoleProvider } from "./role";
+import { PermissionProvider } from "./permission";
 
 export const UserProvider: Provider[] = [
     ...UserHandlersProviders,
     ...UserMapperProviders,
+    ...RoleProvider,
+    ...PermissionProvider,
   {
     provide: USER_APPLICATION_SERVICE,
     useClass: UserService,

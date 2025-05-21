@@ -1,13 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
-import { Not } from 'typeorm'; // ✅ import this
-import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import { Not } from 'typeorm';
 
-export async function _checkColumnDuplicate(
-  field: keyof UserOrmEntity,
+export async function _checkColumnDuplicate<T>(
+  entity: new () => T,
+  field: keyof T,
   value: any,
   manager: any,
   errorMessage = '',
-  excludeId?: number, // optional
+  excludeId?: number,
 ): Promise<void> {
   const where: any = { [field]: value };
 
@@ -15,9 +15,7 @@ export async function _checkColumnDuplicate(
     where.id = Not(excludeId);
   }
 
-  const existing = await manager.findOne(UserOrmEntity, {
-    where,
-  });
+  const existing = await manager.findOne(entity, { where });
 
   if (existing) {
     throw new BadRequestException(errorMessage);

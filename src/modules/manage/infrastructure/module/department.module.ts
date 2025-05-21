@@ -8,6 +8,8 @@ import { PaginationModule } from '@src/common/infrastructure/pagination/paginati
 import { I18nModule } from '@src/common/infrastructure/localization/i18n.module';
 import { DocumentTypeController } from '../../controllers/document-type.controller';
 import { UserController } from '../../controllers/user.controller';
+import { RoleController } from '../../controllers/role.controller';
+import { PermissionController } from '../../controllers/permission.controller';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { UserController } from '../../controllers/user.controller';
     DepartmentController,
     DocumentTypeController,
     UserController,
+    RoleController,
+    PermissionController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
