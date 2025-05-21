@@ -1,12 +1,11 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class UpdateSchema1747797554593 implements MigrationInterface {
-    name = 'UpdateSchema1747797554593'
+export class UpdateSchema1747805411283 implements MigrationInterface {
+    name = 'UpdateSchema1747805411283'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "positions" ("id" SERIAL NOT NULL, "name" character varying(255), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_17e4e62ccd5749b289ae3fae6f3" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_5c70dc5aa01e351730e4ffc929" ON "positions" ("name") `);
-        await queryRunner.query(`CREATE TYPE "public"."permission_groups_type_enum" AS ENUM('all', 'admin', 'user')`);
         await queryRunner.query(`CREATE TABLE "permission_groups" ("id" SERIAL NOT NULL, "name" character varying(255) NOT NULL, "display_name" character varying(255) NOT NULL, "type" "public"."permission_groups_type_enum" NOT NULL DEFAULT 'all', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "UQ_4d923def23302dc5da192374bfc" UNIQUE ("name"), CONSTRAINT "UQ_9670345ecc48edf28ab3feb9ec5" UNIQUE ("display_name"), CONSTRAINT "PK_e6d3b6dc86109f8149c4d6c5400" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_4d923def23302dc5da192374bf" ON "permission_groups" ("name") `);
         await queryRunner.query(`CREATE INDEX "IDX_9670345ecc48edf28ab3feb9ec" ON "permission_groups" ("display_name") `);
@@ -98,7 +97,6 @@ export class UpdateSchema1747797554593 implements MigrationInterface {
         await queryRunner.query(`DROP INDEX "public"."IDX_9670345ecc48edf28ab3feb9ec"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_4d923def23302dc5da192374bf"`);
         await queryRunner.query(`DROP TABLE "permission_groups"`);
-        await queryRunner.query(`DROP TYPE "public"."permission_groups_type_enum"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_5c70dc5aa01e351730e4ffc929"`);
         await queryRunner.query(`DROP TABLE "positions"`);
     }
