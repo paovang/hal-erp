@@ -2,28 +2,30 @@ import { ResponseResult } from "@src/common/application/interfaces/pagination.in
 import { CreateUnitDto } from "@src/modules/manage/application/dto/create/unit/create.dto";
 import { EntityManager } from "typeorm";
 import { UnitEntity } from "../../entities/unit.entity";
+import { UnitQueryDto } from "@src/modules/manage/application/dto/query/unit-query.dto";
+import { UpdateUnitDto } from "@src/modules/manage/application/dto/create/unit/update.dto";
 
 export interface IUnitServiceInterface {
-//   getAll(
-//     dto: UserQueryDto,
-//     manager?: EntityManager,
-//   ): Promise<ResponseResult<UserEntity>>;
+  getAll(
+    dto: UnitQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<UnitEntity>>;
 
-//   getOne(
-//     id: number,
-//     manager?: EntityManager,
-//   ): Promise<ResponseResult<UserEntity>>;
+  getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<UnitEntity>>;
 
   create(
     dto: CreateUnitDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<UnitEntity>>;
 
-//   update(
-//     id: number,
-//     dto: UpdateUserDto,
-//     manager?: EntityManager,
-//   ): Promise<ResponseResult<UserEntity>>;
+  update(
+    id: number,
+    dto: UpdateUnitDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<UnitEntity>>;
 
-//   delete(id: number, manager?: EntityManager): Promise<void>;
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

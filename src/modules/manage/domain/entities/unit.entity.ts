@@ -1,6 +1,7 @@
 import { Entity } from "@src/common/domain/entities/entity";
 import { UnitBuilder } from "../builders/unit.builder";
 import { UnitId } from "../value-objects/unit-id.vo";
+import { BadRequestException } from "@nestjs/common";
 
 export class UnitEntity extends Entity<UnitId> {
   private readonly _name: string;
@@ -48,9 +49,9 @@ export class UnitEntity extends Entity<UnitId> {
   async validateExistingIdForUpdate() {
     if (!this.getId()) {
       console.log('phoudvang');
-      // throw new UserDomainException(
-      //   'users.user_is_not_in_correct_state_for_initialization',
-      // );
+      throw new BadRequestException(
+        'users.user_is_not_in_correct_state_for_initialization',
+      );
     }
   }
 
