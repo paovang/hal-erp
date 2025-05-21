@@ -32,6 +32,9 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
 
+      - name: Add server to known_hosts to avoid host verification error
+        run: ssh-keyscan -H 134.209.101.30 >> ~/.ssh/known_hosts
+
       - name: Copy dist folder to server
         run: |
           scp -r dist/ package.json pnpm-lock.yaml root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/apis/
