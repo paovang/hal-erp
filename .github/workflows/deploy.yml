@@ -39,6 +39,10 @@ jobs:
         run: |
           rsync -az --delete dist package.json pnpm-lock.yaml root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/apis/
 
+      - name: Install dependencies on server
+        run: |
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "cd /var/www/apis && pnpm install --prod"
+          
       - name: Restart server app (optional)
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "

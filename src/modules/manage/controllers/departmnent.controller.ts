@@ -83,6 +83,7 @@ export class DepartmentController {
     );
   }
 
+  /** Delete */
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._departmentService.delete(id);
