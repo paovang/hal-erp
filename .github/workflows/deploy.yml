@@ -41,4 +41,11 @@ jobs:
 
       - name: Restart server app (optional)
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "cd /var/www/apis && pm2 restart apis || pm2 start dist/main.js --name apis"
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
+            cd /var/www/apis &&
+            if pm2 list | grep -q 'apis'; then
+              pm2 restart apis;
+            else
+              pm2 start dist/main.js --name apis;
+            fi
+          "
