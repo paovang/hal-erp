@@ -9,7 +9,7 @@ export const dataSource = new DataSource({
   port: Number(process.env.DB_PORT) || 5432,
   username: process.env.DB_USERNAME || '',
   password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'hal-erp',
+  database: process.env.DB_NAME || 'hal_erp',
   synchronize: Boolean(process.env.DB_SYNCHRONIZE) || false,
   logging: Boolean(process.env.DB_LOGGING || false),
   entities: [...models],

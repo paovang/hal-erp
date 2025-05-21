@@ -1,0 +1,44 @@
+name: Build and Deploy NestJS with pnpm
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Setup SSH agent and add key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Add server to known_hosts to avoid host verification error
+        run: ssh-keyscan -H 134.209.101.30 >> ~/.ssh/known_hosts
+
+      - name: Copy dist folder to server
+        run: |
+          scp -r dist/ package.json pnpm-lock.yaml root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/apis/
+
+      - name: Restart server app (optional)
+        run: |
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "cd /var/www/apis && pm2 restart apis || pm2 start dist/main.js --name apis"
