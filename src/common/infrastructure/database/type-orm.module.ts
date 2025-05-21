@@ -42,8 +42,8 @@ import { RoleSeeder } from './seeders/role.seeder';
     DepartmentSeeder, 
     SeederService, 
     HelperSeeder, 
-    PermissionSeeder, 
     PermissionGroupSeeder,
+    PermissionSeeder, 
     RoleSeeder,
   ],
 })
