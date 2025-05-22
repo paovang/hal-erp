@@ -11,6 +11,7 @@ import { UserController } from '../../controllers/user.controller';
 import { RoleController } from '../../controllers/role.controller';
 import { PermissionController } from '../../controllers/permission.controller';
 import { UnitController } from '../../controllers/unit.controller';
+import { DepartmentUserController } from '../../controllers/department-user.controller';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UnitController } from '../../controllers/unit.controller';
     RoleController,
     PermissionController,
     UnitController,
+    DepartmentUserController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
