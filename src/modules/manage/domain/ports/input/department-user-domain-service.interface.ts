@@ -2,6 +2,7 @@ import { ResponseResult } from "@src/common/application/interfaces/pagination.in
 import { CreateDepartmentUserDto } from "@src/modules/manage/application/dto/create/departmentUser/create.dto";
 import { EntityManager } from "typeorm";
 import { DepartmentUserEntity } from "../../entities/department-user.entity";
+import { DepartmentUserQueryDto } from "@src/modules/manage/application/dto/query/department-user-query.dto";
 
 export interface IDepartmentUserServiceInterface {
     create(
@@ -9,10 +10,10 @@ export interface IDepartmentUserServiceInterface {
       manager?: EntityManager,
     ): Promise<ResponseResult<DepartmentUserEntity>>;
     
-//   getAll(
-//     dto: DocumentTypeQueryDto,
-//     manager?: EntityManager,
-//   ): Promise<ResponseResult<DepartmentUserEntity>>;
+  getAll(
+    dto: DepartmentUserQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>>;
 
 //   getOne(
 //     id: number,

@@ -1,4 +1,5 @@
 import { DepartmentUserEntity } from "../entities/department-user.entity";
+import { DepartmentEntity } from "../entities/department.entity";
 import { DepartmentUserId } from "../value-objects/department-user-id.vo";
 import { UserId } from "../value-objects/user-id.vo";
 
@@ -14,6 +15,7 @@ export class DepartmentUserBuilder {
     createdAt!: Date;
     updatedAt!: Date | null;
     deletedAt!: Date | null;
+    department: DepartmentEntity;
 
   setDepartmentUserId(value: DepartmentUserId): this {
     this.departmentUserId = value;
@@ -67,6 +69,11 @@ export class DepartmentUserBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setDepartment(department: DepartmentEntity): this {
+    this.department = department;
     return this;
   }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Post, Query } from "@nestjs/common";
 import { ITransformResultService } from "@src/common/application/interfaces/transform-result-service.interface";
 import { TRANSFORM_RESULT_SERVICE } from "@src/common/constants/inject-key.const";
 import { DEPARTMENT_USER_APPLICATION_SERVICE } from "../application/constants/inject-key.const";
@@ -7,26 +7,39 @@ import { ResponseResult } from "@src/common/application/interfaces/pagination.in
 import { IDepartmentUserServiceInterface } from "../domain/ports/input/department-user-domain-service.interface";
 import { DepartmentUserDataMapper } from "../application/mappers/department-user.mapper";
 import { DepartmentUserResponse } from "../application/dto/response/department-user.response";
+import { DepartmentUserQueryDto } from "../application/dto/query/department-user-query.dto";
 
 @Controller('department-users')
 export class DepartmentUserController {
   constructor(
     @Inject(DEPARTMENT_USER_APPLICATION_SERVICE)
-    private readonly _unitService: IDepartmentUserServiceInterface,
+    private readonly _departmentUserService: IDepartmentUserServiceInterface,
     @Inject(TRANSFORM_RESULT_SERVICE)
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: DepartmentUserDataMapper,
   ) {}
 
-    @Post('')
-    async create(
-        @Body() dto: CreateDepartmentUserDto,
-    ): Promise<ResponseResult<DepartmentUserResponse>> {
-        const result = await this._unitService.create(dto);
-    
-        return this._transformResultService.execute(
-        this._dataMapper.toResponse.bind(this._dataMapper),
-        result,
-        );
-    }
+  @Post('')
+  async create(
+      @Body() dto: CreateDepartmentUserDto,
+  ): Promise<ResponseResult<DepartmentUserResponse>> {
+      const result = await this._departmentUserService.create(dto);
+  
+      return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+      );
+  }
+
+  @Get('')
+  async getAll(
+    @Query() dto: DepartmentUserQueryDto,
+  ): Promise<ResponseResult<DepartmentUserResponse>> {
+    const result = await this._departmentUserService.getAll(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
 }

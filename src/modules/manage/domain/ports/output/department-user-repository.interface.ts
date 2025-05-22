@@ -2,20 +2,21 @@ import { EntityManager } from "typeorm";
 import { DepartmentUserEntity } from "../../entities/department-user.entity";
 import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
 import { UserEntity } from "../../entities/user.entity";
+import { DepartmentUserQueryDto } from "@src/modules/manage/application/dto/query/department-user-query.dto";
 
 
-// export interface IReadDepartmentRepository {
-//   findAll(
-//     query: DepartmentQueryDto,
-//     manager: EntityManager,
-//   ): Promise<ResponseResult<DepartmentEntity>>;
+export interface IReadDepartmentUserRepository {
+  findAll(
+    query: DepartmentUserQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>>;
 
 
-//   findOne(
-//     id: DepartmentId,
-//     manager: EntityManager,
-//   ): Promise<ResponseResult<DepartmentEntity>>;
-// }
+  // findOne(
+  //   id: DepartmentId,
+  //   manager: EntityManager,
+  // ): Promise<ResponseResult<DepartmentEntity>>;
+}
 
 export interface IWriteDepartmentUserRepository {
   create(

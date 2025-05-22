@@ -14,7 +14,7 @@ export class DepartmentApproverOrmEntity {
         (departments) => departments.department_approvers,
     )
     @JoinColumn({ name: 'department_id' })
-    departments: Relation<DepartmentOrmEntity[]>;
+    departments: Relation<DepartmentOrmEntity>;
 
     @Column({ nullable: true })
     user_id?: number;

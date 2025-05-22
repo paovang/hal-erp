@@ -8,7 +8,7 @@ import { DepartmentUserDataMapper } from "../../../mappers/department-user.mappe
 import { IWriteDepartmentUserRepository } from "@src/modules/manage/domain/ports/output/department-user-repository.interface";
 import { UserDataMapper } from "../../../mappers/user.mapper";
 import { IWriteUserRepository } from "@src/modules/manage/domain/ports/output/user-repository.interface";
-import { UserEntity } from "@src/modules/manage/domain/entities/user.entity";
+import { TransactionManagerService } from "@src/common/infrastructure/transaction/transaction.service";
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -31,6 +31,7 @@ export class CreateCommandHandler
     const data = await this._writeUser.create(userEntity, query.manager);
 
     const id = (data as any)._id._value;
+
     // Step 4: Map and save the department-user entity
     const departmentUserEntity = this._dataMapper.toEntity(query.dto, id);
     return await this._write.create(departmentUserEntity, query.manager);

@@ -5,6 +5,7 @@ import { Timezone } from "@src/common/domain/value-objects/timezone.vo";
 import { DateFormat } from "@src/common/domain/value-objects/date-format.vo";
 import moment from 'moment-timezone';
 import { DepartmentUserResponse } from "../dto/response/department-user.response";
+import { DepartmentResponse } from "../dto/response/department.response";
 
 @Injectable()
 export class DepartmentUserDataMapper {
@@ -46,15 +47,14 @@ export class DepartmentUserDataMapper {
   /** Mapper Entity To Response */
   toResponse(entity: DepartmentUserEntity): DepartmentUserResponse {
     const response = new DepartmentUserResponse();
-    response.id = entity.getId().value;
-    response.department_id = entity.departmentId;
-    response.created_at = moment
-      .tz(entity.createdAt, Timezone.LAOS)
-      .format(DateFormat.DATETIME_READABLE_FORMAT);
-    response.updated_at = moment
-      .tz(entity.updatedAt, Timezone.LAOS)
-      .format(DateFormat.DATETIME_READABLE_FORMAT);
-
+  
+    response.id = entity.department?.getId().value;
+    response.name = entity.department?.name;
+    response.created_at = entity.createdAt?.toISOString() ?? '';
+    response.updated_at = entity.updatedAt?.toISOString() ?? '';
+  
     return response;
   }
+  
+  
 }

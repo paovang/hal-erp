@@ -7,6 +7,8 @@ import { Injectable } from "@nestjs/common";
 import { IDepartmentUserServiceInterface } from "../../domain/ports/input/department-user-domain-service.interface";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { CreateCommand } from "../commands/departmentUser/create.command";
+import { DepartmentUserQueryDto } from "../dto/query/department-user-query.dto";
+import { GetAllQuery } from "../queries/departmentUser/get-all.query";
 
 @Injectable()
 export class DepartmentUserService implements IDepartmentUserServiceInterface {
@@ -26,14 +28,14 @@ export class DepartmentUserService implements IDepartmentUserServiceInterface {
     );
   }
 
-//   async getAll(
-//     dto: DepartmentQueryDto,
-//     manager?: EntityManager,
-//   ): Promise<ResponseResult<DepartmentEntity>> {
-//     return await this._queryBus.execute(
-//       new GetAllQuery(dto, manager ?? this._readEntityManager),
-//     );
-//   }
+  async getAll(
+    dto: DepartmentUserQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>> {
+    return await this._queryBus.execute(
+      new GetAllQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
 
 //   async getOne(
 //     id: number,

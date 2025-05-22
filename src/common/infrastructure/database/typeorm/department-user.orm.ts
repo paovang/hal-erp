@@ -16,7 +16,7 @@ export class DepartmentUserOrmEntity {
       (departments) => departments.department_users,
     )
     @JoinColumn({ name: 'department_id' })
-    departments: Relation<DepartmentOrmEntity[]>;
+    departments: Relation<DepartmentOrmEntity>;
 
     @Index()
     @Column({ nullable: true })
@@ -26,7 +26,7 @@ export class DepartmentUserOrmEntity {
       (positions) => positions.department_users,
     )
     @JoinColumn({ name: 'position_id' })
-    positions: Relation<PositionOrmEntity[]>;
+    positions: Relation<PositionOrmEntity>;
 
     @Index()
     @Column({ nullable: true })

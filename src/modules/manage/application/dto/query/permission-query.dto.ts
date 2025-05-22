@@ -5,7 +5,7 @@ import { IsOptional, IsString } from "class-validator";
 export class PermissionQueryDto extends PaginationDto {
   @ApiProperty({
     required: false,
-    description: 'can be code, name',
+    description: 'can be name',
   })
   @IsOptional()
   @IsString()
