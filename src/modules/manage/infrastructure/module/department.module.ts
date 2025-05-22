@@ -10,6 +10,8 @@ import { DocumentTypeController } from '../../controllers/document-type.controll
 import { UserController } from '../../controllers/user.controller';
 import { RoleController } from '../../controllers/role.controller';
 import { PermissionController } from '../../controllers/permission.controller';
+import { UnitController } from '../../controllers/unit.controller';
+import { DepartmentUserController } from '../../controllers/department-user.controller';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { PermissionController } from '../../controllers/permission.controller';
     UserController,
     RoleController,
     PermissionController,
+    UnitController,
+    DepartmentUserController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
