@@ -13,7 +13,7 @@ export class CodeGeneratorUtil {
   async generateUniqueCode(
     length: number,
     checkUniqueness: (code: string) => Promise<boolean>,
-    prefix?: string
+    prefix?: string,
   ): Promise<string> {
     let isUnique = false;
     let code = '';
@@ -22,10 +22,10 @@ export class CodeGeneratorUtil {
     while (!isUnique) {
       // Generate random alphanumeric code with the specified length
       code = this.generateRandomCode(length);
-      
+
       // Add prefix if provided
       fullCode = prefix ? `${prefix}-${code}` : code;
-      
+
       // Check uniqueness
       isUnique = await checkUniqueness(fullCode);
     }
@@ -42,7 +42,7 @@ export class CodeGeneratorUtil {
     // Calculate how many bytes we need for the specified length
     // Each byte gives us 2 hex characters
     const bytesNeeded = Math.ceil(length / 2);
-    
+
     return randomBytes(bytesNeeded)
       .toString('hex')
       .toUpperCase()
