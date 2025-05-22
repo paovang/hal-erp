@@ -30,7 +30,7 @@ export class DepartmentController {
     private readonly _dataMapper: DepartmentDataMapper,
   ) {}
 
-  /** Get All */
+  /** Get All. */
   @Get('')
   async getAll(
     @Query() dto: DepartmentQueryDto,
