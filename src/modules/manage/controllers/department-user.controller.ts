@@ -19,27 +19,40 @@ export class DepartmentUserController {
     private readonly _dataMapper: DepartmentUserDataMapper,
   ) {}
 
-  @Post('')
-  async create(
-      @Body() dto: CreateDepartmentUserDto,
-  ): Promise<ResponseResult<DepartmentUserResponse>> {
-      const result = await this._departmentUserService.create(dto);
+    @Post('')
+    async create(
+        @Body() dto: CreateDepartmentUserDto,
+    ): Promise<ResponseResult<DepartmentUserResponse>> {
+        const result = await this._departmentUserService.create(dto);
+    
+        return this._transformResultService.execute(
+        this._dataMapper.toResponse.bind(this._dataMapper),
+        result,
+        );
+    }
+
+    
+    @Get('')
+    async getAll(
+      @Query() dto: DepartmentUserQueryDto,
+    ): Promise<ResponseResult<DepartmentUserResponse>> {
+      const result = await this._departmentUserService.getAll(dto);
   
       return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
+        this._dataMapper.toResponse.bind(this._dataMapper),
+        result,
       );
-  }
+    }
 
-  @Get('')
-  async getAll(
-    @Query() dto: DepartmentUserQueryDto,
-  ): Promise<ResponseResult<DepartmentUserResponse>> {
-    const result = await this._departmentUserService.getAll(dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
+      // @Get('')
+      // async getAll(
+      //   @Query() dto: DepartmentQueryDto,
+      // ): Promise<ResponseResult<DepartmentResponse>> {
+      //   const result = await this._departmentService.getAll(dto);
+    
+      //   return this._transformResultService.execute(
+      //     this._dataMapper.toResponse.bind(this._dataMapper),
+      //     result,
+      //   );
+      // }
 }
