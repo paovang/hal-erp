@@ -18,18 +18,40 @@ import { RoleSeeder } from './seeders/role.seeder';
     }),
     TransactionModule,
     TypeOrmModule.forRootAsync({
+      name: process.env.WRITE_CONNECTION_NAME,
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
+        host: configService.getOrThrow<string>('WRITE_DB_HOST'),
+        port: configService.getOrThrow<number>('WRITE_DB_PORT'),
+        username: configService.getOrThrow<string>('WRITE_DB_USERNAME'),
+        password: configService.getOrThrow<string>('WRITE_DB_PASSWORD'),
+        database: configService.getOrThrow<string>('WRITE_DB_NAME'),
         entities: [...models],
         subscribers: [],
-        synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true', // set false because i need use migrations
+        synchronize:
+          configService.getOrThrow<never>('WRITE_DB_SYNCHRONIZE') == 'true', // set false because i need use migrations
+        logging: configService.getOrThrow<boolean>('WRITE_DB_LOGGING'),
+        migrationsTableName: 'migrations',
       }),
+    }),
+    TypeOrmModule.forRootAsync({
+      name: process.env.READ_CONNECTION_NAME,
       inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.getOrThrow<string>('READ_DB_HOST'),
+        port: configService.getOrThrow<number>('READ_DB_PORT'),
+        username: configService.getOrThrow<string>('READ_DB_USERNAME'),
+        password: configService.getOrThrow<string>('READ_DB_PASSWORD'),
+        database: configService.getOrThrow<string>('READ_DB_NAME'),
+        entities: [...models],
+        subscribers: [],
+        synchronize:
+          configService.getOrThrow<never>('READ_DB_SYNCHRONIZE') == 'true', // set false because i need use migrations
+        logging: configService.getOrThrow<boolean>('READ_DB_LOGGING'),
+        migrationsTableName: 'migrations',
+      }),
     }),
     TypeOrmModule.forFeature([...models]), // ຖ້າບໍ່ໃຊ້ອັນນີ້ຈະບໍ່ສາມາດເອີ້ນໃຊ້ Repository<User>
   ],

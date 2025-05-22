@@ -1,8 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { IReadDepartmentRepository } from '@src/modules/manage/domain/ports/output/department-repository.interface';
-import { Repository } from 'typeorm';
 import { DepartmentDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/department.mapper';
 import { DepartmentQueryDto } from '@src/modules/manage/application/dto/query/department-query.dto';
 import {
@@ -19,8 +17,6 @@ import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 @Injectable()
 export class ReadDepartmentRepository implements IReadDepartmentRepository {
   constructor(
-    @InjectRepository(DepartmentOrmEntity)
-    private readonly _departmentOrm: Repository<DepartmentOrmEntity>,
     private readonly _dataAccessMapper: DepartmentDataAccessMapper,
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
