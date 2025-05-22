@@ -6,8 +6,6 @@ import moment from 'moment-timezone';
 import { DepartmentUserId } from "../../domain/value-objects/department-user-id.vo";
 import { UserEntity } from "../../domain/entities/user.entity";
 import { UserId } from "../../domain/value-objects/user-id.vo";
-import { DepartmentId } from "../../domain/value-objects/department-id.vo";
-import { DepartmentEntity } from "../../domain/entities/department.entity";
 
 export class DepartmentUserDataAccessMapper {
   toOrmEntity(departmentUserEntity: DepartmentUserEntity): DepartmentUserOrmEntity {
@@ -41,12 +39,7 @@ export class DepartmentUserDataAccessMapper {
       //       .build(),
       //   );
 
-      const department = DepartmentEntity.builder()
-      .setDepartmentId(new DepartmentId(ormData.departments.id))
-      .setName(ormData.departments.name)
-      .setCreatedAt(ormData.departments.created_at)
-      .setUpdatedAt(ormData.departments.updated_at)
-      .build();
+      // const department = ormData.deparment
 
       return DepartmentUserEntity.builder()
       .setDepartmentUserId(new DepartmentUserId(ormData.id))
@@ -55,7 +48,6 @@ export class DepartmentUserDataAccessMapper {
       .setUserId(ormData.user_id ?? 0)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
-      .setDepartment(department)
       // .setUserId(users)
       .build();
     }

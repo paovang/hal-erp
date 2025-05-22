@@ -12,6 +12,7 @@ import { RoleController } from '../../controllers/role.controller';
 import { PermissionController } from '../../controllers/permission.controller';
 import { UnitController } from '../../controllers/unit.controller';
 import { DepartmentUserController } from '../../controllers/department-user.controller';
+import { PositionController } from '../../controllers/position.controller';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { DepartmentUserController } from '../../controllers/department-user.cont
     PermissionController,
     UnitController,
     DepartmentUserController,
+    PositionController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

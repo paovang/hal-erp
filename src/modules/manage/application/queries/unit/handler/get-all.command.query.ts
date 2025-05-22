@@ -19,7 +19,7 @@ export class GetAllQueryHandler
     const data = await this._readRepo.findAll(query.dto, query.manager);
 
     if(!data) {
-      throw new NotFoundException('No users found.');
+      throw new NotFoundException('No units found.');
     }
 
     return data;

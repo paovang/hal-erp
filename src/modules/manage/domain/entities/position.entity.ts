@@ -1,17 +1,17 @@
 import { Entity } from "@src/common/domain/entities/entity";
-import { UnitBuilder } from "../builders/unit.builder";
-import { UnitId } from "../value-objects/unit-id.vo";
+import { PositionId } from "../value-objects/position-id.vo";
+import { PositionBuilder } from "../builders/position.builder";
 import { BadRequestException } from "@nestjs/common";
 
-export class UnitEntity extends Entity<UnitId> {
+export class PositionEntity extends Entity<PositionId> {
   private readonly _name: string;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
 
-  private constructor(builder: UnitBuilder) {
+  private constructor(builder: PositionBuilder) {
     super();
-    this.setId(builder.unitId);
+    this.setId(builder.positionId);
     this._name = builder.name;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
@@ -34,16 +34,16 @@ export class UnitEntity extends Entity<UnitId> {
     return this._deletedAt;
   }
 
-  public static builder(): UnitBuilder {
-    return new UnitBuilder();
+  public static builder(): PositionBuilder {
+    return new PositionBuilder();
   }
 
-  static create(builder: UnitBuilder): UnitEntity {
-    return new UnitEntity(builder);
+  static create(builder: PositionBuilder): PositionEntity {
+    return new PositionEntity(builder);
   }
 
   static getEntityName() {
-    return 'unit';
+    return 'position';
   }
 
   async validateExistingIdForUpdate() {
@@ -55,7 +55,7 @@ export class UnitEntity extends Entity<UnitId> {
     }
   }
 
-  async initializeUpdateSetId(unitID: UnitId) {
-    this.setId(unitID);
+  async initializeUpdateSetId(positionID: PositionId) {
+    this.setId(positionID);
   }
 }
