@@ -28,12 +28,11 @@ export class CreateCommandHandler
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     // Step 1: Save the user entity
     const userEntity = this._dataUserMapper.toEntity(query.dto);
-    await this._writeUser.create(userEntity, query.manager);
-  
+    const data = await this._writeUser.create(userEntity, query.manager);
+
+    const id = (data as any)._id._value;
     // Step 4: Map and save the department-user entity
-    const departmentUserEntity = this._dataMapper.toEntity(query.dto);
+    const departmentUserEntity = this._dataMapper.toEntity(query.dto, id);
     return await this._write.create(departmentUserEntity, query.manager);
   }
-  
-  
 }
