@@ -30,6 +30,7 @@ export class DepartmentController {
     private readonly _dataMapper: DepartmentDataMapper,
   ) {}
 
+  /** Get All */
   @Get('')
   async getAll(
     @Query() dto: DepartmentQueryDto,
@@ -42,6 +43,7 @@ export class DepartmentController {
     );
   }
 
+  /** Get One */
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -54,6 +56,7 @@ export class DepartmentController {
     );
   }
 
+  /** Create */
   @Post('')
   async create(
     @Body() dto: CreateDepartmentDto,
@@ -66,6 +69,7 @@ export class DepartmentController {
     );
   }
 
+  /** Update */
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -79,6 +83,7 @@ export class DepartmentController {
     );
   }
 
+  /** Delete */
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._departmentService.delete(id);

@@ -9,6 +9,4 @@ export const AllRegisterProviders: Provider[] = [
     ...DepartmentProvider, 
     ...DocumentTypeProvider,
     ...UserProvider,
-    ...UnitProvider,
-    ...DepartmentUserProvider,
 ];

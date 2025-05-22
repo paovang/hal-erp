@@ -37,8 +37,23 @@ jobs:
 
       - name: Copy dist folder to server
         run: |
-          scp -r dist/ package.json pnpm-lock.yaml root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/apis/
+          rsync -az --delete dist package.json pnpm-lock.yaml root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/apis/
 
+      - name: Create .env file on server
+        run: |
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "echo '${{ secrets.ENV_CONTENT }}' > /var/www/apis/.env"
+
+      - name: Install dependencies on server
+        run: |
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "cd /var/www/apis && pnpm install --prod"
+          
       - name: Restart server app (optional)
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "cd /var/www/apis && pm2 restart apis || pm2 start dist/main.js --name apis"
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
+            cd /var/www/apis &&
+            if pm2 list | grep -q 'apis'; then
+              pm2 restart apis;
+            else
+              pm2 start dist/main.js --name apis;
+            fi
+          "
