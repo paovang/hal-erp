@@ -1,8 +1,8 @@
-import { EntityManager } from "typeorm";
-import { PositionEntity } from "../../entities/position.entity";
-import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
-import { PositionQueryDto } from "@src/modules/manage/application/dto/query/position-query.dto";
-import { PositionId } from "../../value-objects/position-id.vo";
+import { EntityManager } from 'typeorm';
+import { PositionEntity } from '../../entities/position.entity';
+import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { PositionQueryDto } from '@src/modules/manage/application/dto/query/position-query.dto';
+import { PositionId } from '../../value-objects/position-id.vo';
 
 export interface IWritePositionRepository {
   create(
@@ -19,13 +19,13 @@ export interface IWritePositionRepository {
 }
 
 export interface IReadPositionRepository {
-    findAll(
-        query: PositionQueryDto,
-        manager: EntityManager,
-    ): Promise<ResponseResult<PositionEntity>>;
+  findAll(
+    query: PositionQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<PositionEntity>>;
 
-    findOne(
-        id: PositionId,
-        manager: EntityManager,
-    ): Promise<ResponseResult<PositionEntity>>;
+  findOne(
+    id: PositionId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<PositionEntity>>;
 }

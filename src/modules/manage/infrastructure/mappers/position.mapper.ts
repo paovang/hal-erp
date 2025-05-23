@@ -1,9 +1,9 @@
-import { PositionOrmEntity } from "@src/common/infrastructure/database/typeorm/position.orm";
-import { PositionEntity } from "../../domain/entities/position.entity";
-import { Timezone } from "@src/common/domain/value-objects/timezone.vo";
-import { DateFormat } from "@src/common/domain/value-objects/date-format.vo";
+import { PositionOrmEntity } from '@src/common/infrastructure/database/typeorm/position.orm';
+import { PositionEntity } from '../../domain/entities/position.entity';
+import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
-import { PositionId } from "../../domain/value-objects/position-id.vo";
+import { PositionId } from '../../domain/value-objects/position-id.vo';
 
 export class PositionDataAccessMapper {
   toOrmEntity(positionEntity: PositionEntity): PositionOrmEntity {

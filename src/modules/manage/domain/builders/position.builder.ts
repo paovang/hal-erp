@@ -1,5 +1,5 @@
-import { PositionEntity } from "../entities/position.entity";
-import { PositionId } from "../value-objects/position-id.vo";
+import { PositionEntity } from '../entities/position.entity';
+import { PositionId } from '../value-objects/position-id.vo';
 
 export class PositionBuilder {
   positionId: PositionId;

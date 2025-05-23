@@ -1,5 +1,5 @@
-import { RoleEntity } from "../entities/role.entity";
-import { RoleId } from "../value-objects/role-id.vo";
+import { RoleEntity } from '../entities/role.entity';
+import { RoleId } from '../value-objects/role-id.vo';
 
 export class RoleBuilder {
   roleId: RoleId;

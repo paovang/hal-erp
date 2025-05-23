@@ -5,12 +5,14 @@ import { UserProvider } from './user';
 import { UnitProvider } from './unit';
 import { DepartmentUserProvider } from './departmentUser';
 import { PositionProvider } from './position';
+import { CategoryProvider } from './category';
 
 export const AllRegisterProviders: Provider[] = [
-    ...DepartmentProvider, 
-    ...DocumentTypeProvider,
-    ...UserProvider,
-    ...UnitProvider,
-    ...DepartmentUserProvider,
-    ...PositionProvider
-];  
+  ...DepartmentProvider,
+  ...DocumentTypeProvider,
+  ...UserProvider,
+  ...UnitProvider,
+  ...DepartmentUserProvider,
+  ...PositionProvider,
+  ...CategoryProvider,
+];

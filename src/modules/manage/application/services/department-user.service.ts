@@ -1,14 +1,14 @@
-import { EntityManager } from "typeorm";
-import { CreateDepartmentUserDto } from "../dto/create/departmentUser/create.dto";
-import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
-import { DepartmentUserEntity } from "../../domain/entities/department-user.entity";
-import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { Injectable } from "@nestjs/common";
-import { IDepartmentUserServiceInterface } from "../../domain/ports/input/department-user-domain-service.interface";
-import { InjectEntityManager } from "@nestjs/typeorm";
-import { CreateCommand } from "../commands/departmentUser/create.command";
-import { DepartmentUserQueryDto } from "../dto/query/department-user-query.dto";
-import { GetAllQuery } from "../queries/departmentUser/get-all.query";
+import { EntityManager } from 'typeorm';
+import { CreateDepartmentUserDto } from '../dto/create/departmentUser/create.dto';
+import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { DepartmentUserEntity } from '../../domain/entities/department-user.entity';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { Injectable } from '@nestjs/common';
+import { IDepartmentUserServiceInterface } from '../../domain/ports/input/department-user-domain-service.interface';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { CreateCommand } from '../commands/departmentUser/create.command';
+import { DepartmentUserQueryDto } from '../dto/query/department-user-query.dto';
+import { GetAllQuery } from '../queries/departmentUser/get-all.query';
 
 @Injectable()
 export class DepartmentUserService implements IDepartmentUserServiceInterface {
@@ -37,30 +37,28 @@ export class DepartmentUserService implements IDepartmentUserServiceInterface {
     );
   }
 
-//   async getOne(
-//     id: number,
-//     manager?: EntityManager,
-//   ): Promise<ResponseResult<DepartmentEntity>> {
-//     return await this._queryBus.execute(
-//       new GetOneQuery(id, manager ?? this._readEntityManager),
-//     );
-//   }
+  //   async getOne(
+  //     id: number,
+  //     manager?: EntityManager,
+  //   ): Promise<ResponseResult<DepartmentEntity>> {
+  //     return await this._queryBus.execute(
+  //       new GetOneQuery(id, manager ?? this._readEntityManager),
+  //     );
+  //   }
 
+  //   async update(
+  //     id: number,
+  //     dto: UpdateDepartmentDto,
+  //     manager?: EntityManager,
+  //   ): Promise<ResponseResult<DepartmentEntity>> {
+  //     return await this._commandBus.execute(
+  //       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+  //     );
+  //   }
 
-
-//   async update(
-//     id: number,
-//     dto: UpdateDepartmentDto,
-//     manager?: EntityManager,
-//   ): Promise<ResponseResult<DepartmentEntity>> {
-//     return await this._commandBus.execute(
-//       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
-//     );
-//   }
-
-//   async delete(id: number, manager?: EntityManager): Promise<void> {
-//     return await this._commandBus.execute(
-//       new DeleteCommand(id, manager ?? this._readEntityManager),
-//     );
-//   }
+  //   async delete(id: number, manager?: EntityManager): Promise<void> {
+  //     return await this._commandBus.execute(
+  //       new DeleteCommand(id, manager ?? this._readEntityManager),
+  //     );
+  //   }
 }

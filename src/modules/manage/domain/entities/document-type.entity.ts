@@ -1,5 +1,4 @@
 import { Entity } from '@src/common/domain/entities/entity';
-import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 import { DocumentTypeId } from '../value-objects/document-type-id.vo';
 import { DocumentTypeBuilder } from '../builders/document-type.builder';
 

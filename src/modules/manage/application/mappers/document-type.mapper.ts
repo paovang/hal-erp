@@ -10,7 +10,10 @@ import { UpdateDocumentTypeDto } from '../dto/create/documentType/update.dto';
 @Injectable()
 export class DocumentTypeDataMapper {
   /** Mapper Dto To Entity */
-  toEntity(dto: CreateDocumentTypeDto | UpdateDocumentTypeDto, generateCode: string): DocumentTypeEntity {
+  toEntity(
+    dto: CreateDocumentTypeDto | UpdateDocumentTypeDto,
+    generateCode: string,
+  ): DocumentTypeEntity {
     const builder = DocumentTypeEntity.builder();
 
     if (dto.name) {

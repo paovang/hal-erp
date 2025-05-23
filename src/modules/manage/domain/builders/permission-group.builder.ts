@@ -1,6 +1,6 @@
-import { PermissionGroupEntity } from "../entities/permission-group.entity";
-import { PermissionEntity } from "../entities/permission.entity";
-import { PermissionGroupId } from "../value-objects/permission-group-id.vo";
+import { PermissionGroupEntity } from '../entities/permission-group.entity';
+import { PermissionEntity } from '../entities/permission.entity';
+import { PermissionGroupId } from '../value-objects/permission-group-id.vo';
 
 export class PermissionGroupBuilder {
   permissionGroupId: PermissionGroupId;

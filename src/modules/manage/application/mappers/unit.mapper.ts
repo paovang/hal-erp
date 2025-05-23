@@ -1,16 +1,16 @@
-import { Injectable } from "@nestjs/common";
-import { CreateUnitDto } from "../dto/create/unit/create.dto";
-import { UnitEntity } from "../../domain/entities/unit.entity";
-import { Timezone } from "@src/common/domain/value-objects/timezone.vo";
-import { DateFormat } from "@src/common/domain/value-objects/date-format.vo";
+import { Injectable } from '@nestjs/common';
+import { CreateUnitDto } from '../dto/create/unit/create.dto';
+import { UnitEntity } from '../../domain/entities/unit.entity';
+import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
-import { UnitResponse } from "../dto/response/unit.response";
-import { UpdateUnitDto } from "../dto/create/unit/update.dto";
+import { UnitResponse } from '../dto/response/unit.response';
+import { UpdateUnitDto } from '../dto/create/unit/update.dto';
 
 @Injectable()
 export class UnitDataMapper {
   /** Mapper Dto To Entity */
-  toEntity(dto: CreateUnitDto | UpdateUnitDto ): UnitEntity {
+  toEntity(dto: CreateUnitDto | UpdateUnitDto): UnitEntity {
     const builder = UnitEntity.builder();
 
     if (dto.name) {

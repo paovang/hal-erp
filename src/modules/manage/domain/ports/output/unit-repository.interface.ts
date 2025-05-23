@@ -1,8 +1,8 @@
-import { EntityManager } from "typeorm";
-import { UnitEntity } from "../../entities/unit.entity";
-import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
-import { UnitQueryDto } from "@src/modules/manage/application/dto/query/unit-query.dto";
-import { UnitId } from "../../value-objects/unit-id.vo";
+import { EntityManager } from 'typeorm';
+import { UnitEntity } from '../../entities/unit.entity';
+import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { UnitQueryDto } from '@src/modules/manage/application/dto/query/unit-query.dto';
+import { UnitId } from '../../value-objects/unit-id.vo';
 
 export interface IWriteUnitRepository {
   create(

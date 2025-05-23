@@ -1,7 +1,7 @@
-import { Entity } from "@src/common/domain/entities/entity";
-import { UnitBuilder } from "../builders/unit.builder";
-import { UnitId } from "../value-objects/unit-id.vo";
-import { BadRequestException } from "@nestjs/common";
+import { Entity } from '@src/common/domain/entities/entity';
+import { UnitBuilder } from '../builders/unit.builder';
+import { UnitId } from '../value-objects/unit-id.vo';
+import { BadRequestException } from '@nestjs/common';
 
 export class UnitEntity extends Entity<UnitId> {
   private readonly _name: string;

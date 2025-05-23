@@ -14,6 +14,8 @@ export class CreateDocumentTypeDto {
   @Optional()
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
   @Length(0, 10, { message: i18nValidationMessage('validation.LENGTH') })
-  @NoSpecialChars({ message: i18nValidationMessage('validation.NO_SPECIAL_CHARS') })
+  @NoSpecialChars({
+    message: i18nValidationMessage('validation.NO_SPECIAL_CHARS'),
+  })
   readonly code: string;
 }

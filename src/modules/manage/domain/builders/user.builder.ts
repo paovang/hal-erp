@@ -1,5 +1,5 @@
-import { UserEntity } from "../entities/user.entity";
-import { UserId } from "../value-objects/user-id.vo";
+import { UserEntity } from '../entities/user.entity';
+import { UserId } from '../value-objects/user-id.vo';
 
 export class UserBuilder {
   userId: UserId;

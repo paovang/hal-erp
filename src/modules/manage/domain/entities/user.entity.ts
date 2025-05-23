@@ -1,6 +1,5 @@
-
-import { UserId } from "../value-objects/user-id.vo";
-import { UserBuilder } from "../builders/user.builder";
+import { UserId } from '../value-objects/user-id.vo';
+import { UserBuilder } from '../builders/user.builder';
 import { Entity } from '@src/common/domain/entities/entity';
 
 export class UserEntity extends Entity<UserId> {

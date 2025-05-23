@@ -1,18 +1,18 @@
-import { Injectable } from "@nestjs/common";
-import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { InjectEntityManager } from "@nestjs/typeorm";
-import { EntityManager } from "typeorm";
-import { CreatePositionDto } from "../dto/create/position/create.dto";
-import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
-import { PositionEntity } from "../../domain/entities/position.entity";
-import { CreateCommand } from "../commands/position/create.command";
-import { IPositionServiceInterface } from "../../domain/ports/input/position-domain-service.interface";
-import { PositionQueryDto } from "../dto/query/position-query.dto";
-import { GetAllQuery } from "../queries/position/get-all.query";
-import { GetOneQuery } from "../queries/position/get-one.query";
-import { UpdatePositionDto } from "../dto/create/position/update.dto";
-import { UpdateCommand } from "../commands/position/update.command";
-import { DeleteCommand } from "../commands/position/delete.command";
+import { Injectable } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
+import { CreatePositionDto } from '../dto/create/position/create.dto';
+import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { PositionEntity } from '../../domain/entities/position.entity';
+import { CreateCommand } from '../commands/position/create.command';
+import { IPositionServiceInterface } from '../../domain/ports/input/position-domain-service.interface';
+import { PositionQueryDto } from '../dto/query/position-query.dto';
+import { GetAllQuery } from '../queries/position/get-all.query';
+import { GetOneQuery } from '../queries/position/get-one.query';
+import { UpdatePositionDto } from '../dto/create/position/update.dto';
+import { UpdateCommand } from '../commands/position/update.command';
+import { DeleteCommand } from '../commands/position/delete.command';
 
 @Injectable()
 export class PositionService implements IPositionServiceInterface {

@@ -1,8 +1,7 @@
-import { Entity } from "@src/common/domain/entities/entity";
-import { DepartmentUserBuilder } from "../builders/department-user.builder";
-import { DepartmentUserId } from "../value-objects/department-user-id.vo";
-import { PermissionEntity } from "./permission.entity";
-import { DepartmentEntity } from "./department.entity";
+import { Entity } from '@src/common/domain/entities/entity';
+import { DepartmentUserBuilder } from '../builders/department-user.builder';
+import { DepartmentUserId } from '../value-objects/department-user-id.vo';
+import { DepartmentEntity } from './department.entity';
 
 export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _departmentId: number;

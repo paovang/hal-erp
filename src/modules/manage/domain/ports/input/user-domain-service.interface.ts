@@ -1,9 +1,10 @@
-import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
-import { EntityManager } from "typeorm";
-import { UserEntity } from "../../entities/user.entity";
-import { CreateUserDto } from "@src/modules/manage/application/dto/create/user/create.dto";
-import { UserQueryDto } from "@src/modules/manage/application/dto/query/user-query.dto";
-import { UpdateUserDto } from "@src/modules/manage/application/dto/create/user/update.dto";
+/* eslint-disable prettier/prettier */
+import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { EntityManager } from 'typeorm';
+import { UserEntity } from '../../entities/user.entity';
+import { CreateUserDto } from '@src/modules/manage/application/dto/create/user/create.dto';
+import { UserQueryDto } from '@src/modules/manage/application/dto/query/user-query.dto';
+import { UpdateUserDto } from '@src/modules/manage/application/dto/create/user/update.dto';
 
 export interface IUserServiceInterface {
   getAll(

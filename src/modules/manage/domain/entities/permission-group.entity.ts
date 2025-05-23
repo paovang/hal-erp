@@ -1,5 +1,4 @@
 import { Entity } from '@src/common/domain/entities/entity';
-import { PermissionId } from '../value-objects/permission-id.vo';
 import { PermissionGroupId } from '../value-objects/permission-group-id.vo';
 import { PermissionGroupBuilder } from '../builders/permission-group.builder';
 import { PermissionEntity } from './permission.entity';

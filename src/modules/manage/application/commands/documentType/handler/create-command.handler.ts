@@ -1,15 +1,15 @@
-import { CommandHandler, IQueryHandler } from "@nestjs/cqrs";
+import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '@src/modules/manage/application/commands/documentType/create.command';
 import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
-import { DocumentTypeEntity } from "@src/modules/manage/domain/entities/document-type.entity";
-import { WRITE_DOCUMENT_TYPE_REPOSITORY } from "../../../constants/inject-key.const";
-import { Inject } from "@nestjs/common";
-import { IWriteDocumentTypeRepository } from "@src/modules/manage/domain/ports/output/document-type-repository.interface";
-import { DocumentTypeDataMapper } from "../../../mappers/document-type.mapper";
-import { CodeGeneratorUtil } from "@src/common/utils/code-generator.util";
-import { findOneOrFail } from "@src/common/utils/fine-one-orm.utils";
-import { DocumentTypeOrmEntity } from "@src/common/infrastructure/database/typeorm/document-type.orm";
-import { _checkColumnDuplicate } from "@src/common/utils/check-column-duplicate-orm.util";
+import { DocumentTypeEntity } from '@src/modules/manage/domain/entities/document-type.entity';
+import { WRITE_DOCUMENT_TYPE_REPOSITORY } from '../../../constants/inject-key.const';
+import { Inject } from '@nestjs/common';
+import { IWriteDocumentTypeRepository } from '@src/modules/manage/domain/ports/output/document-type-repository.interface';
+import { DocumentTypeDataMapper } from '../../../mappers/document-type.mapper';
+import { CodeGeneratorUtil } from '@src/common/utils/code-generator.util';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
+import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -27,16 +27,22 @@ export class CreateCommandHandler
   ): Promise<ResponseResult<DocumentTypeEntity>> {
     let code = query.dto.code;
 
-    await _checkColumnDuplicate(DocumentTypeOrmEntity, 'name', query.dto.name, query.manager, 'Name already exists');
+    await _checkColumnDuplicate(
+      DocumentTypeOrmEntity,
+      'name',
+      query.dto.name,
+      query.manager,
+      'Name already exists',
+    );
 
     // const existing = await query.manager.findOne(DocumentTypeOrmEntity, {
     //   where: { name: query.dto.name },
     // });
-    
+
     // if (existing) {
     //   throw new Error('Document type name already exists');
     // }
-    
+
     if (!code) {
       code = await this._codeGeneratorUtil.generateUniqueCode(
         6,
@@ -45,24 +51,31 @@ export class CreateCommandHandler
             await findOneOrFail(query.manager, DocumentTypeOrmEntity, {
               code: generatedCode,
             });
-            return false; 
+            return false;
           } catch {
             return true;
           }
         },
-        'DT'
+        'DT',
       );
     } else {
       // Remove 'DT-' prefix if it already exists (case-insensitive optional)
-      const cleanCode = code.toUpperCase().startsWith('DT-') ? code.slice(3) : code;
-      
+      const cleanCode = code.toUpperCase().startsWith('DT-')
+        ? code.slice(3)
+        : code;
+
       code = `DT-${cleanCode.toUpperCase()}`;
-      
-      await _checkColumnDuplicate(DocumentTypeOrmEntity, 'code', code, query.manager, 'Code already exists');
+
+      await _checkColumnDuplicate(
+        DocumentTypeOrmEntity,
+        'code',
+        code,
+        query.manager,
+        'Code already exists',
+      );
     }
 
     const entity = this._dataMapper.toEntity(query.dto, code);
     return await this._write.create(entity, query.manager);
-    
   }
 }

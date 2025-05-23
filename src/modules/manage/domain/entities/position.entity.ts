@@ -1,7 +1,7 @@
-import { Entity } from "@src/common/domain/entities/entity";
-import { PositionId } from "../value-objects/position-id.vo";
-import { PositionBuilder } from "../builders/position.builder";
-import { BadRequestException } from "@nestjs/common";
+import { Entity } from '@src/common/domain/entities/entity';
+import { PositionId } from '../value-objects/position-id.vo';
+import { PositionBuilder } from '../builders/position.builder';
+import { BadRequestException } from '@nestjs/common';
 
 export class PositionEntity extends Entity<PositionId> {
   private readonly _name: string;

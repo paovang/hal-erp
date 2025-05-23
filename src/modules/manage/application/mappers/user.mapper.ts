@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import { CreateUserDto } from "../dto/create/user/create.dto";
-import { UserEntity } from "../../domain/entities/user.entity";
-import { Timezone } from "@src/common/domain/value-objects/timezone.vo";
-import { DateFormat } from "@src/common/domain/value-objects/date-format.vo";
+import { Injectable } from '@nestjs/common';
+import { CreateUserDto } from '../dto/create/user/create.dto';
+import { UserEntity } from '../../domain/entities/user.entity';
+import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
-import { UserResponse } from "../dto/response/user.response";
-import { UpdateUserDto } from "../dto/create/user/update.dto";
+import { UserResponse } from '../dto/response/user.response';
+import { UpdateUserDto } from '../dto/create/user/update.dto';
 
 @Injectable()
 export class UserDataMapper {
@@ -34,11 +34,11 @@ export class UserDataMapper {
 
   toEntityForUpdate(dto: UpdateUserDto): UserEntity {
     const builder = UserEntity.builder();
-  
+
     if (dto.username) builder.setUsername(dto.username);
     if (dto.email) builder.setEmail(dto.email);
     if (dto.tel) builder.setTel(dto.tel);
-  
+
     return builder.build(); // no password set here
   }
 

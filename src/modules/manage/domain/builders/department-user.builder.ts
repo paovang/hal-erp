@@ -1,21 +1,20 @@
-import { DepartmentUserEntity } from "../entities/department-user.entity";
-import { DepartmentEntity } from "../entities/department.entity";
-import { DepartmentUserId } from "../value-objects/department-user-id.vo";
-import { UserId } from "../value-objects/user-id.vo";
+import { DepartmentUserEntity } from '../entities/department-user.entity';
+import { DepartmentEntity } from '../entities/department.entity';
+import { DepartmentUserId } from '../value-objects/department-user-id.vo';
 
 export class DepartmentUserBuilder {
-    departmentUserId: DepartmentUserId;
-    departmentId: number;
-    positionId: number;
-    userId: number;
-    username: string;
-    email: string;
-    password: string;
-    tel: string;
-    createdAt!: Date;
-    updatedAt!: Date | null;
-    deletedAt!: Date | null;
-    department: DepartmentEntity;
+  departmentUserId: DepartmentUserId;
+  departmentId: number;
+  positionId: number;
+  userId: number;
+  username: string;
+  email: string;
+  password: string;
+  tel: string;
+  createdAt!: Date;
+  updatedAt!: Date | null;
+  deletedAt!: Date | null;
+  department: DepartmentEntity;
 
   setDepartmentUserId(value: DepartmentUserId): this {
     this.departmentUserId = value;

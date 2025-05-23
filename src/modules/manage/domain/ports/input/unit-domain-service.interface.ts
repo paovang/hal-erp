@@ -1,9 +1,9 @@
-import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
-import { CreateUnitDto } from "@src/modules/manage/application/dto/create/unit/create.dto";
-import { EntityManager } from "typeorm";
-import { UnitEntity } from "../../entities/unit.entity";
-import { UnitQueryDto } from "@src/modules/manage/application/dto/query/unit-query.dto";
-import { UpdateUnitDto } from "@src/modules/manage/application/dto/create/unit/update.dto";
+import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { CreateUnitDto } from '@src/modules/manage/application/dto/create/unit/create.dto';
+import { EntityManager } from 'typeorm';
+import { UnitEntity } from '../../entities/unit.entity';
+import { UnitQueryDto } from '@src/modules/manage/application/dto/query/unit-query.dto';
+import { UpdateUnitDto } from '@src/modules/manage/application/dto/create/unit/update.dto';
 
 export interface IUnitServiceInterface {
   getAll(
@@ -28,4 +28,5 @@ export interface IUnitServiceInterface {
   ): Promise<ResponseResult<UnitEntity>>;
 
   delete(id: number, manager?: EntityManager): Promise<void>;
+  // eslint-disable-next-line prettier/prettier
 }
