@@ -15,6 +15,11 @@ export interface IWriteUserRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>>;
 
+  updateColumns(
+    entity: UserEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<UserEntity>>;
+
   delete(id: UserId, manager: EntityManager): Promise<void>;
 }
 

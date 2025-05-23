@@ -1,13 +1,17 @@
-import { Inject } from "@nestjs/common";
-import { WRITE_USER_REPOSITORY } from "../../../constants/inject-key.const";
-import { CreateCommand } from "../create.command";
-import { CommandHandler, IQueryHandler } from "@nestjs/cqrs";
-import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
-import { UserEntity } from "@src/modules/manage/domain/entities/user.entity";
-import { UserDataMapper } from "../../../mappers/user.mapper";
-import { IWriteUserRepository } from "@src/modules/manage/domain/ports/output/user-repository.interface";
-import { UserOrmEntity } from "@src/common/infrastructure/database/typeorm/user.orm";
-import { _checkColumnDuplicate } from "@src/common/utils/check-column-duplicate-orm.util";
+import { Inject } from '@nestjs/common';
+import { WRITE_USER_REPOSITORY } from '../../../constants/inject-key.const';
+import { CreateCommand } from '../create.command';
+import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
+import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
+import { UserDataMapper } from '../../../mappers/user.mapper';
+import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
+import { ITransactionManagerService } from '@src/common/application/interfaces/transaction.interface';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -17,17 +21,35 @@ export class CreateCommandHandler
     @Inject(WRITE_USER_REPOSITORY)
     private readonly _write: IWriteUserRepository,
     private readonly _dataMapper: UserDataMapper,
+    @Inject(TRANSACTION_MANAGER_SERVICE)
+    private readonly _transactionManagerService: ITransactionManagerService,
+    @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
+    private readonly _dataSource: DataSource,
   ) {}
 
-  async execute(
-    query: CreateCommand,
-  ): Promise<ResponseResult<UserEntity>> {
+  async execute(query: CreateCommand): Promise<ResponseResult<UserEntity>> {
+    return await this._transactionManagerService.runInTransaction(
+      this._dataSource,
+      async (manager) => {
+        await _checkColumnDuplicate(
+          UserOrmEntity,
+          'email',
+          query.dto.email,
+          query.manager,
+          'Email already exists',
+        );
+        await _checkColumnDuplicate(
+          UserOrmEntity,
+          'tel',
+          query.dto.tel,
+          query.manager,
+          'Tel already exists',
+        );
 
-    await _checkColumnDuplicate(UserOrmEntity, 'email', query.dto.email, query.manager, 'Email already exists');
-    await _checkColumnDuplicate(UserOrmEntity, 'tel', query.dto.tel, query.manager, 'Tel already exists');
+        const entity = this._dataMapper.toEntity(query.dto);
 
-    const entity = this._dataMapper.toEntity(query.dto);
-
-    return await this._write.create(entity, query.manager);
+        return await this._write.create(entity, manager);
+      },
+    );
   }
 }

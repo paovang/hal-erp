@@ -42,6 +42,20 @@ export class UserDataMapper {
     return builder.build(); // no password set here
   }
 
+  toEntityForUpdateColumns({
+    email,
+    tel,
+  }: {
+    email: string;
+    tel: string;
+  }): UserEntity {
+    const builder = UserEntity.builder();
+    if (email) builder.setEmail(email);
+    if (tel) builder.setTel(tel);
+
+    return builder.build();
+  }
+
   /** Mapper Entity To Response */
   toResponse(entity: UserEntity): UserResponse {
     const response = new UserResponse();

@@ -14,6 +14,11 @@ import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/us
 import { InjectDataSource } from '@nestjs/typeorm';
 import { ITransactionManagerService } from '@src/common/application/interfaces/transaction.interface';
 import { DataSource } from 'typeorm';
+import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { PositionOrmEntity } from '@src/common/infrastructure/database/typeorm/position.orm';
+import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -26,6 +31,7 @@ export class CreateCommandHandler
     private readonly _dataUserMapper: UserDataMapper,
     @Inject(WRITE_USER_REPOSITORY)
     private readonly _writeUser: IWriteUserRepository,
+    @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
@@ -34,6 +40,30 @@ export class CreateCommandHandler
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
+    await findOneOrFail(query.manager, PositionOrmEntity, {
+      id: query.dto.positionId,
+    });
+
+    await findOneOrFail(query.manager, PositionOrmEntity, {
+      id: query.dto.departmentId,
+    });
+
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'email',
+      query.dto.email,
+      query.manager,
+      'Email already exists',
+    );
+
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'tel',
+      query.dto.tel,
+      query.manager,
+      'Tel already exists',
+    );
+
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {

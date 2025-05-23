@@ -35,6 +35,21 @@ export class WriteUserRepository implements IWriteUserRepository {
     }
   }
 
+  async updateColumns(
+    entity: UserEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<UserEntity>> {
+    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+
+    try {
+      await manager.update(UserOrmEntity, entity.getId().value, userOrmEntity);
+
+      return this._dataAccessMapper.toEntity(userOrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async delete(id: UserId, manager: EntityManager): Promise<void> {
     try {
       await manager.softDelete(UserOrmEntity, id.value);
