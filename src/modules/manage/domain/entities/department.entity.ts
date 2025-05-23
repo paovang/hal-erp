@@ -4,6 +4,7 @@ import { DepartmentId } from '@src/modules/manage/domain/value-objects/departmen
 
 export class DepartmentEntity extends Entity<DepartmentId> {
   private readonly _name: string;
+  private readonly _code: string;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -12,6 +13,7 @@ export class DepartmentEntity extends Entity<DepartmentId> {
     super();
     this.setId(builder.departmentId);
     this._name = builder.name;
+    this._code = builder.code;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -19,6 +21,10 @@ export class DepartmentEntity extends Entity<DepartmentId> {
 
   get name(): string {
     return this._name;
+  }
+
+  get code(): string {
+    return this._code;
   }
 
   get createdAt(): Date {
