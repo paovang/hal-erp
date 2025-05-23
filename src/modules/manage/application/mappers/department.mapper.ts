@@ -10,8 +10,12 @@ import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/
 @Injectable()
 export class DepartmentDataMapper {
   /** Mapper Dto To Entity */
-  toEntity(dto: CreateDepartmentDto | UpdateDepartmentDto): DepartmentEntity {
+  toEntity(
+    dto: CreateDepartmentDto | UpdateDepartmentDto,
+    code?: string,
+  ): DepartmentEntity {
     const builder = DepartmentEntity.builder();
+    builder.code = dto.code ?? code ?? '';
 
     if (dto.name) {
       builder.setName(dto.name);
@@ -24,6 +28,7 @@ export class DepartmentDataMapper {
   toResponse(entity: DepartmentEntity): DepartmentResponse {
     const response = new DepartmentResponse();
     response.id = entity.getId().value;
+    response.code = entity.code;
     response.name = entity.name;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
