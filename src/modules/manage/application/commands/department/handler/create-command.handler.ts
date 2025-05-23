@@ -10,6 +10,9 @@ import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.co
 import { ITransactionManagerService } from '@src/common/application/interfaces/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
+import { CodeGeneratorUtil } from '@src/common/utils/code-generator.util';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -23,6 +26,7 @@ export class CreateCommandHandler
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
+    private readonly _codeGeneratorUtil: CodeGeneratorUtil,
   ) {}
 
   async execute(
@@ -31,7 +35,22 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        const mapToEntity = this._dataMapper.toEntity(query.dto);
+        const code = await this._codeGeneratorUtil.generateUniqueCode(
+          6,
+          async (generatedCode: string) => {
+            try {
+              await findOneOrFail(query.manager, DocumentTypeOrmEntity, {
+                code: generatedCode,
+              });
+              return false;
+            } catch {
+              return true;
+            }
+          },
+          'DP',
+        );
+
+        const mapToEntity = this._dataMapper.toEntity(query.dto, code);
 
         return await this._write.create(mapToEntity, manager);
       },
