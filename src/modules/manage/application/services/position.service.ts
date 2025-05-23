@@ -10,6 +10,9 @@ import { IPositionServiceInterface } from "../../domain/ports/input/position-dom
 import { PositionQueryDto } from "../dto/query/position-query.dto";
 import { GetAllQuery } from "../queries/position/get-all.query";
 import { GetOneQuery } from "../queries/position/get-one.query";
+import { UpdatePositionDto } from "../dto/create/position/update.dto";
+import { UpdateCommand } from "../commands/position/update.command";
+import { DeleteCommand } from "../commands/position/delete.command";
 
 @Injectable()
 export class PositionService implements IPositionServiceInterface {
@@ -47,19 +50,19 @@ export class PositionService implements IPositionServiceInterface {
     );
   }
 
-//   async update(
-//     id: number,
-//     dto: UpdateUnitDto,
-//     manager?: EntityManager,
-//   ): Promise<ResponseResult<PositionEntity>> {
-//     return await this._commandBus.execute(
-//       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
-//     );
-//   }
+  async update(
+    id: number,
+    dto: UpdatePositionDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PositionEntity>> {
+    return await this._commandBus.execute(
+      new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
 
-//   async delete(id: number, manager?: EntityManager): Promise<void> {
-//     return await this._commandBus.execute(
-//       new DeleteCommand(id, manager ?? this._readEntityManager),
-//     );
-//   }
+  async delete(id: number, manager?: EntityManager): Promise<void> {
+    return await this._commandBus.execute(
+      new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query } from "@nestjs/common";
 import { POSITION_APPLICATION_SERVICE } from "../application/constants/inject-key.const";
 import { TRANSFORM_RESULT_SERVICE } from "@src/common/constants/inject-key.const";
 import { ITransformResultService } from "@src/common/application/interfaces/transform-result-service.interface";
@@ -8,6 +8,7 @@ import { IPositionServiceInterface } from "../domain/ports/input/position-domain
 import { PositionDataMapper } from "../application/mappers/position.mapper";
 import { PositionResponse } from "../application/dto/response/position.response";
 import { PositionQueryDto } from "../application/dto/query/position-query.dto";
+import { UpdatePositionDto } from "../application/dto/create/position/update.dto";
 
 @Controller('positions')
 export class PositionController {
@@ -53,5 +54,23 @@ export class PositionController {
         this._dataMapper.toResponse.bind(this._dataMapper),
         result,
         );
+    }
+
+    @Put(':id')
+    async update(
+        @Param('id') id: number,
+        @Body() dto: UpdatePositionDto,
+    ): Promise<ResponseResult<PositionResponse>> {
+        const result = await this._positionService.update(id, dto);
+    
+        return this._transformResultService.execute(
+        this._dataMapper.toResponse.bind(this._dataMapper),
+        result,
+        );
+    }
+
+    @Delete(':id')
+    async delete(@Param('id') id: number): Promise<void> {
+        return await this._positionService.delete(id);
     }
 }

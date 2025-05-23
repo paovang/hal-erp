@@ -3,6 +3,7 @@ import { CreatePositionDto } from "@src/modules/manage/application/dto/create/po
 import { EntityManager } from "typeorm";
 import { PositionEntity } from "../../entities/position.entity";
 import { PositionQueryDto } from "@src/modules/manage/application/dto/query/position-query.dto";
+import { UpdatePositionDto } from "@src/modules/manage/application/dto/create/position/update.dto";
 
 export interface IPositionServiceInterface {
     getAll(
@@ -20,11 +21,11 @@ export interface IPositionServiceInterface {
         manager?: EntityManager,
     ): Promise<ResponseResult<PositionEntity>>;
 
-//   update(
-//     id: number,
-//     dto: UpdateUnitDto,
-//     manager?: EntityManager,
-//   ): Promise<ResponseResult<PositionEntity>>;
+  update(
+    id: number,
+    dto: UpdatePositionDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PositionEntity>>;
 
-//   delete(id: number, manager?: EntityManager): Promise<void>;
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

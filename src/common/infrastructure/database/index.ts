@@ -1,3 +1,5 @@
+import { CategoryOrmEntity } from './typeorm/category.orm';
+import { CurrencyOrmEntity } from './typeorm/currency.orm';
 import { DepartmentApproverOrmEntity } from './typeorm/department-approver.orm';
 import { DepartmentUserOrmEntity } from './typeorm/department-user.orm';
 import { DepartmentOrmEntity } from './typeorm/department.orm';
@@ -22,4 +24,6 @@ export const models = [
   RoleOrmEntity,
   PermissionOrmEntity,
   PermissionGroupOrmEntity,
+  CurrencyOrmEntity,
+  CategoryOrmEntity
 ];

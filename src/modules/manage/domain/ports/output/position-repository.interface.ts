@@ -10,12 +10,12 @@ export interface IWritePositionRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<PositionEntity>>;
 
-//   update(
-//     entity: PositionEntity,
-//     manager: EntityManager,
-//   ): Promise<ResponseResult<PositionEntity>>;
+  update(
+    entity: PositionEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<PositionEntity>>;
 
-//   delete(id: UnitId, manager: EntityManager): Promise<void>;
+  delete(id: PositionId, manager: EntityManager): Promise<void>;
 }
 
 export interface IReadPositionRepository {

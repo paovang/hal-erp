@@ -5,11 +5,12 @@ import { PositionEntity } from "../../domain/entities/position.entity";
 import { Timezone } from "@src/common/domain/value-objects/timezone.vo";
 import { DateFormat } from "@src/common/domain/value-objects/date-format.vo";
 import moment from 'moment-timezone';
+import { UpdatePositionDto } from "../dto/create/position/update.dto";
 
 @Injectable()
 export class PositionDataMapper {
   /** Mapper Dto To Entity */
-  toEntity(dto: CreatePositionDto ): PositionEntity {
+  toEntity(dto: CreatePositionDto | UpdatePositionDto): PositionEntity {
     const builder = PositionEntity.builder();
 
     if (dto.name) {
