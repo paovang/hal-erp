@@ -1,6 +1,6 @@
-import { Entity } from "@src/common/domain/entities/entity";
-import { CategoryId } from "../value-objects/category-id.vo";
-import { CategoryBuilder } from "../builders/category.builder";
+import { Entity } from '@src/common/domain/entities/entity';
+import { CategoryId } from '../value-objects/category-id.vo';
+import { CategoryBuilder } from '../builders/category.builder';
 
 export class CategoryEntity extends Entity<CategoryId> {
   private readonly _code: string;
