@@ -4,6 +4,7 @@ import { DepartmentId } from '@src/modules/manage/domain/value-objects/departmen
 export class DepartmentBuilder {
   departmentId: DepartmentId;
   name: string;
+  code: string;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -15,6 +16,11 @@ export class DepartmentBuilder {
 
   setName(name: string): this {
     this.name = name;
+    return this;
+  }
+
+  setCode(value: string): this {
+    this.code = value;
     return this;
   }
 

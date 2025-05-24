@@ -14,7 +14,7 @@ export class DepartmentDataAccessMapper {
     if (id) {
       mediaOrmEntity.id = id.value;
     } else {
-      mediaOrmEntity.code = 'DP-093';
+      mediaOrmEntity.code = departmentEntity.code;
     }
     mediaOrmEntity.name = departmentEntity.name;
     mediaOrmEntity.created_at = departmentEntity.createdAt ?? new Date(now);
@@ -27,6 +27,7 @@ export class DepartmentDataAccessMapper {
     return DepartmentEntity.builder()
       .setDepartmentId(new DepartmentId(ormData.id))
       .setName(ormData.name)
+      .setCode(ormData.code)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .build();

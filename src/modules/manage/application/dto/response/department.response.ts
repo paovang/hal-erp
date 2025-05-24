@@ -9,6 +9,9 @@ export class DepartmentResponse {
   id: number;
 
   @ApiProperty()
+  code: string;
+
+  @ApiProperty()
   name: string;
 
   @ApiProperty()
