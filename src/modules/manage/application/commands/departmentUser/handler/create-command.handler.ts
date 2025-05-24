@@ -19,6 +19,7 @@ import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { PositionOrmEntity } from '@src/common/infrastructure/database/typeorm/position.orm';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import * as bcrypt from 'bcrypt';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -67,14 +68,24 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        const hashedPassword = await bcrypt.hash(query.dto.password, 10);
+
+        const dtoWithHashedPassword = {
+          ...query.dto,
+          password: hashedPassword,
+        };
         // Step 1: Save the user entity
-        const userEntity = this._dataUserMapper.toEntity(query.dto);
+        const userEntity = this._dataUserMapper.toEntity(dtoWithHashedPassword);
         const data = await this._writeUser.create(userEntity, query.manager);
 
         const id = (data as any)._id._value;
 
         // Step 4: Map and save the department-user entity
-        const departmentUserEntity = this._dataMapper.toEntity(query.dto, id);
+        const departmentUserEntity = this._dataMapper.toEntity(
+          query.dto,
+          true,
+          id,
+        );
         return await this._write.create(departmentUserEntity, manager);
       },
     );

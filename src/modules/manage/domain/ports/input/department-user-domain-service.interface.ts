@@ -3,6 +3,7 @@ import { CreateDepartmentUserDto } from '@src/modules/manage/application/dto/cre
 import { EntityManager } from 'typeorm';
 import { DepartmentUserEntity } from '../../entities/department-user.entity';
 import { DepartmentUserQueryDto } from '@src/modules/manage/application/dto/query/department-user-query.dto';
+import { UpdateDepartmentUserDto } from '@src/modules/manage/application/dto/create/departmentUser/update.dto';
 
 export interface IDepartmentUserServiceInterface {
   create(
@@ -20,11 +21,11 @@ export interface IDepartmentUserServiceInterface {
   //     manager?: EntityManager,
   //   ): Promise<ResponseResult<DepartmentUserEntity>>;
 
-  //   update(
-  //     id: number,
-  //     dto: UpdateDocumentTypeDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<DepartmentUserEntity>>;
+  update(
+    id: number,
+    dto: UpdateDepartmentUserDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>>;
 
-  //   delete(id: number, manager?: EntityManager): Promise<void>;
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

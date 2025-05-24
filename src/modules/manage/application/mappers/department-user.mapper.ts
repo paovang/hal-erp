@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateDepartmentUserDto } from '../dto/create/departmentUser/create.dto';
 import { DepartmentUserEntity } from '../../domain/entities/department-user.entity';
 import { DepartmentUserResponse } from '../dto/response/department-user.response';
+import { UpdateDepartmentUserDto } from '../dto/create/departmentUser/update.dto';
 
 @Injectable()
 export class DepartmentUserDataMapper {
   /** Mapper Dto To Entity */
   toEntity(
-    dto: CreateDepartmentUserDto,
+    dto: Partial<CreateDepartmentUserDto | UpdateDepartmentUserDto>,
+    isCreate: boolean,
     userId?: number,
   ): DepartmentUserEntity {
     const builder = DepartmentUserEntity.builder();
@@ -32,7 +34,8 @@ export class DepartmentUserDataMapper {
       builder.setTel(dto.tel);
     }
 
-    if (dto.password) {
+    // Set password only if it's a create operation and password exists in dto
+    if (isCreate && 'password' in dto && dto.password) {
       builder.setPassword(dto.password);
     }
 

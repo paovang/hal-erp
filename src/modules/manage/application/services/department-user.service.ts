@@ -9,6 +9,9 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { CreateCommand } from '../commands/departmentUser/create.command';
 import { DepartmentUserQueryDto } from '../dto/query/department-user-query.dto';
 import { GetAllQuery } from '../queries/departmentUser/get-all.query';
+import { UpdateDepartmentUserDto } from '../dto/create/departmentUser/update.dto';
+import { UpdateCommand } from '../commands/departmentUser/update.command';
+import { DeleteCommand } from '../commands/departmentUser/delete.command';
 
 @Injectable()
 export class DepartmentUserService implements IDepartmentUserServiceInterface {
@@ -46,19 +49,19 @@ export class DepartmentUserService implements IDepartmentUserServiceInterface {
   //     );
   //   }
 
-  //   async update(
-  //     id: number,
-  //     dto: UpdateDepartmentDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<DepartmentEntity>> {
-  //     return await this._commandBus.execute(
-  //       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async update(
+    id: number,
+    dto: UpdateDepartmentUserDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>> {
+    return await this._commandBus.execute(
+      new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
 
-  //   async delete(id: number, manager?: EntityManager): Promise<void> {
-  //     return await this._commandBus.execute(
-  //       new DeleteCommand(id, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async delete(id: number, manager?: EntityManager): Promise<void> {
+    return await this._commandBus.execute(
+      new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
 }

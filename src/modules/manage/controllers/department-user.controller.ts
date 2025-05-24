@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { DEPARTMENT_USER_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
@@ -8,6 +18,7 @@ import { IDepartmentUserServiceInterface } from '../domain/ports/input/departmen
 import { DepartmentUserDataMapper } from '../application/mappers/department-user.mapper';
 import { DepartmentUserResponse } from '../application/dto/response/department-user.response';
 import { DepartmentUserQueryDto } from '../application/dto/query/department-user-query.dto';
+import { UpdateDepartmentUserDto } from '../application/dto/create/departmentUser/update.dto';
 
 @Controller('department-users')
 export class DepartmentUserController {
@@ -43,16 +54,22 @@ export class DepartmentUserController {
     );
   }
 
-  // @Get('')
-  // async getAll(
-  //   @Query() dto: DepartmentQueryDto,
-  // ): Promise<ResponseResult<DepartmentResponse>> {
-  //   const result = await this._departmentService.getAll(dto);
+  /** Update */
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateDepartmentUserDto,
+  ): Promise<ResponseResult<DepartmentUserResponse>> {
+    const result = await this._departmentUserService.update(id, dto);
 
-  //   return this._transformResultService.execute(
-  //     this._dataMapper.toResponse.bind(this._dataMapper),
-  //     result,
-  //   );
-  // }
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number): Promise<void> {
+    return await this._departmentUserService.delete(id);
+  }
 }
-/** paovang */
