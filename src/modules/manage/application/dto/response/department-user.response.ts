@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class userResponse {
   @ApiProperty()
@@ -28,7 +28,10 @@ export class DepartmentUserResponse {
   id: number;
 
   @ApiProperty()
-  name: string;
+  department_id: number;
+
+  @ApiProperty()
+  position_id: number;
 
   @ApiProperty()
   created_at: string;

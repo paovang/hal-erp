@@ -27,30 +27,13 @@ export class DepartmentUserDataAccessMapper {
   }
 
   toEntity(ormData: DepartmentUserOrmEntity): DepartmentUserEntity {
-    // const users = (ormData.users || []).map(u =>
-    //   UserEntity.builder()
-    //       .setUserId(new UserId(u.id))
-    //       .setUsername(u.username ?? '')
-    //       .setEmail(u.email ?? '')
-    //       .setTel(u.tel ?? '')
-    //       .setCreatedAt(u.created_at)
-    //       .setUpdatedAt(u.updated_at)
-    //       .setDeletedAt(u.deleted_at)
-    //       .build(),
-    //   );
-
-    // const department = ormData.deparment
-
-    return (
-      DepartmentUserEntity.builder()
-        .setDepartmentUserId(new DepartmentUserId(ormData.id))
-        .setDepartmentId(ormData.department_id ?? 0)
-        .setPositionId(ormData.position_id ?? 0)
-        .setUserId(ormData.user_id ?? 0)
-        .setCreatedAt(ormData.created_at)
-        .setUpdatedAt(ormData.updated_at)
-        // .setUserId(users)
-        .build()
-    );
+    return DepartmentUserEntity.builder()
+      .setDepartmentUserId(new DepartmentUserId(ormData.id))
+      .setDepartmentId(ormData.department_id ?? 0)
+      .setPositionId(ormData.position_id ?? 0)
+      .setUserId(ormData.user_id ?? 0)
+      .setCreatedAt(ormData.created_at)
+      .setUpdatedAt(ormData.updated_at)
+      .build();
   }
 }

@@ -12,6 +12,7 @@ import { ITransactionManagerService } from '@src/common/application/interfaces/t
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
+import * as bcrypt from 'bcrypt';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -46,7 +47,14 @@ export class CreateCommandHandler
           'Tel already exists',
         );
 
-        const entity = this._dataMapper.toEntity(query.dto);
+        const hashedPassword = await bcrypt.hash(query.dto.password, 10);
+
+        const dtoWithHashedPassword = {
+          ...query.dto,
+          password: hashedPassword,
+        };
+
+        const entity = this._dataMapper.toEntity(dtoWithHashedPassword);
 
         return await this._write.create(entity, manager);
       },
