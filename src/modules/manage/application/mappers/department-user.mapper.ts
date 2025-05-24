@@ -49,9 +49,9 @@ export class DepartmentUserDataMapper {
   /** Mapper Entity To Response */
   toResponse(entity: DepartmentUserEntity): DepartmentUserResponse {
     const response = new DepartmentUserResponse();
-
     response.id = entity.department?.getId().value;
-    response.name = entity.department?.name;
+    response.department_id = entity.department?.getId().value;
+    response.position_id = entity.position?.getId().value;
     response.created_at = entity.createdAt?.toISOString() ?? '';
     response.updated_at = entity.updatedAt?.toISOString() ?? '';
 

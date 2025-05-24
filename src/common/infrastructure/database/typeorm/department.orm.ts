@@ -37,15 +37,14 @@ export class DepartmentOrmEntity {
   deleted_at: Date | null;
 
   @OneToMany(
-  () => DepartmentUserOrmEntity,
-      (department_users) => department_users.departments,
+    () => DepartmentUserOrmEntity,
+    (department_users) => department_users.departments,
   )
   department_users: Relation<DepartmentUserOrmEntity[]>;
 
   @OneToMany(
-  () => DepartmentApproverOrmEntity,
-      (department_approvers) => department_approvers.departments,
+    () => DepartmentApproverOrmEntity,
+    (department_approvers) => department_approvers.departments,
   )
   department_approvers: Relation<DepartmentApproverOrmEntity[]>;
-
 }

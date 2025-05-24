@@ -1,5 +1,6 @@
 import { DepartmentUserEntity } from '../entities/department-user.entity';
 import { DepartmentEntity } from '../entities/department.entity';
+import { PositionEntity } from '../entities/position.entity';
 import { DepartmentUserId } from '../value-objects/department-user-id.vo';
 
 export class DepartmentUserBuilder {
@@ -15,6 +16,7 @@ export class DepartmentUserBuilder {
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   department: DepartmentEntity;
+  position: PositionEntity;
 
   setDepartmentUserId(value: DepartmentUserId): this {
     this.departmentUserId = value;
@@ -73,6 +75,11 @@ export class DepartmentUserBuilder {
 
   setDepartment(department: DepartmentEntity): this {
     this.department = department;
+    return this;
+  }
+
+  setPosition(position: PositionEntity): this {
+    this.position = position;
     return this;
   }
 
