@@ -2,6 +2,7 @@ import { EntityManager } from 'typeorm';
 import { DepartmentUserEntity } from '../../entities/department-user.entity';
 import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
 import { DepartmentUserQueryDto } from '@src/modules/manage/application/dto/query/department-user-query.dto';
+import { DepartmentUserId } from '../../value-objects/department-user-id.vo';
 
 export interface IReadDepartmentUserRepository {
   findAll(
@@ -21,10 +22,10 @@ export interface IWriteDepartmentUserRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentUserEntity>>;
 
-  //   update(
-  //     entity: DepartmentEntity,
-  //     manager: EntityManager,
-  //   ): Promise<ResponseResult<DepartmentEntity>>;
+  update(
+    entity: DepartmentUserEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>>;
 
-  //   delete(id: DepartmentId, manager: EntityManager): Promise<void>;
+  delete(id: DepartmentUserId, manager: EntityManager): Promise<void>;
 }
