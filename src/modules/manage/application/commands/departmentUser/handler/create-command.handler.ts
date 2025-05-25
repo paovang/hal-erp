@@ -2,7 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '../create.command';
 import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import {
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
@@ -20,6 +20,8 @@ import { PositionOrmEntity } from '@src/common/infrastructure/database/typeorm/p
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import * as bcrypt from 'bcrypt';
+import path from 'path';
+import * as fs from 'fs';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -37,6 +39,28 @@ export class CreateCommandHandler
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
   ) {}
+  private moveFileIfExists(filename: string, from: string, to: string): void {
+    if (!filename) return;
+
+    const fromPath = path.join(__dirname, from, filename);
+    const toPath = path.join(__dirname, to, filename);
+
+    // Ensure the destination folder exists
+    const destinationDir = path.dirname(toPath);
+    if (!fs.existsSync(destinationDir)) {
+      fs.mkdirSync(destinationDir, { recursive: true });
+    }
+
+    if (fs.existsSync(fromPath)) {
+      fs.rename(fromPath, toPath, (err) => {
+        if (!err) {
+          console.log('File moved:', filename);
+        }
+      });
+    } else {
+      throw new BadRequestException('File not found');
+    }
+  }
 
   async execute(
     query: CreateCommand,
@@ -86,7 +110,16 @@ export class CreateCommandHandler
           true,
           id,
         );
-        return await this._write.create(departmentUserEntity, manager);
+        const result = await this._write.create(departmentUserEntity, manager);
+
+        // Move file from uploads to files
+        this.moveFileIfExists(
+          query.dto.signature_file,
+          '../../../../../../../assets/uploads/',
+          '../../../../../../../assets/files/',
+        );
+
+        return result;
       },
     );
   }

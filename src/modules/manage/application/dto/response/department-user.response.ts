@@ -14,6 +14,12 @@ export class DepartmentUserResponse {
   position_id: number;
 
   @ApiProperty()
+  signature_file: string | null;
+
+  @ApiProperty()
+  signature_file_url: string | null;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()

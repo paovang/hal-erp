@@ -13,6 +13,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _email: string;
   private readonly _password: string;
   private readonly _tel: string;
+  private readonly _signature_file: string | null;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -30,6 +31,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
     this._email = builder.email;
     this._password = builder.password;
     this._tel = builder.tel;
+    this._signature_file = builder.signature_file ?? null;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -64,6 +66,10 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
 
   get tel(): string {
     return this._tel;
+  }
+
+  get signature_file(): string | null {
+    return this._signature_file;
   }
 
   get createdAt(): Date {

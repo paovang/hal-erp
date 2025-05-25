@@ -2,7 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { UpdateCommand } from '../update.command';
 import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import {
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
@@ -22,6 +22,8 @@ import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.
 import { UserDataMapper } from '../../../mappers/user.mapper';
 import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
+import path from 'path';
+import * as fs from 'fs';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -40,44 +42,80 @@ export class UpdateCommandHandler
     private readonly _writeUser: IWriteUserRepository,
   ) {}
 
-  async execute(query: UpdateCommand): Promise<any> {
-    if (isNaN(query.id)) {
-      throw new Error('ID must be a number');
+  private deleteFileIfExists(filename: string, file_path: string): void {
+    if (!filename) return;
+
+    const filePath = path.join(__dirname, file_path, filename);
+
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath, (err) => {
+        if (!err) {
+          console.log('File deleted:', filePath);
+        }
+      });
+    }
+  }
+
+  private moveFileIfExists(filename: string, from: string, to: string): void {
+    if (!filename) return;
+
+    const fromPath = path.join(__dirname, from, filename);
+    const toPath = path.join(__dirname, to, filename);
+
+    // Ensure the destination folder exists
+    const destinationDir = path.dirname(toPath);
+    if (!fs.existsSync(destinationDir)) {
+      fs.mkdirSync(destinationDir, { recursive: true });
     }
 
-    await findOneOrFail(query.manager, UserOrmEntity, {
-      id: query.id,
-    });
+    if (fs.existsSync(fromPath)) {
+      fs.rename(fromPath, toPath, (err) => {
+        if (!err) {
+          console.log('File moved:', filename);
+        }
+      });
+    } else {
+      throw new BadRequestException('File not found');
+    }
+  }
 
-    await findOneOrFail(query.manager, PositionOrmEntity, {
-      id: query.dto.positionId,
-    });
-
-    await findOneOrFail(query.manager, PositionOrmEntity, {
-      id: query.dto.departmentId,
-    });
-
-    await _checkColumnDuplicate(
-      UserOrmEntity,
-      'email',
-      query.dto.email,
-      query.manager,
-      'Email already exists',
-      query.id,
-    );
-
-    await _checkColumnDuplicate(
-      UserOrmEntity,
-      'tel',
-      query.dto.tel,
-      query.manager,
-      'Tel already exists',
-      query.id,
-    );
-
+  async execute(query: UpdateCommand): Promise<any> {
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        if (isNaN(query.id)) {
+          throw new Error('ID must be a number');
+        }
+
+        await findOneOrFail(query.manager, UserOrmEntity, {
+          id: query.id,
+        });
+
+        await findOneOrFail(query.manager, PositionOrmEntity, {
+          id: query.dto.positionId,
+        });
+
+        await findOneOrFail(query.manager, PositionOrmEntity, {
+          id: query.dto.departmentId,
+        });
+
+        await _checkColumnDuplicate(
+          UserOrmEntity,
+          'email',
+          query.dto.email,
+          query.manager,
+          'Email already exists',
+          query.id,
+        );
+
+        await _checkColumnDuplicate(
+          UserOrmEntity,
+          'tel',
+          query.dto.tel,
+          query.manager,
+          'Tel already exists',
+          query.id,
+        );
         const userEntity = this._dataUserMapper.toEntityForUpdate(query.dto);
 
         await userEntity.initializeUpdateSetId(new UserId(query.id));
@@ -93,6 +131,11 @@ export class UpdateCommandHandler
           DepartmentUserOrmEntity,
           { user_id: updatedUserId },
         );
+
+        const file = (existingDeptUser as any).signature_file;
+
+        // Delete old signature file
+        this.deleteFileIfExists(file, '../../../../../../../assets/files/');
 
         // Map to DepartmentUserEntity and set ID
         const departmentUserEntity = this._dataMapper.toEntity(
@@ -111,7 +154,20 @@ export class UpdateCommandHandler
         });
 
         // Perform update
-        return await this._write.update(departmentUserEntity, manager);
+        const result = await this._write.update(departmentUserEntity, manager);
+
+        this.moveFileIfExists(
+          query.dto.signature_file,
+          '../../../../../../../assets/uploads/',
+          '../../../../../../../assets/files/',
+        );
+
+        this.deleteFileIfExists(
+          query.dto.signature_file,
+          '../../../../../../../assets/uploads/',
+        );
+
+        return result;
       },
     );
   }

@@ -31,6 +31,8 @@ export class DepartmentUserDataAccessMapper {
     mediaOrmEntity.department_id = departmentUserEntity.departmentId;
     mediaOrmEntity.position_id = departmentUserEntity.positionId;
     mediaOrmEntity.user_id = departmentUserEntity.userId;
+    mediaOrmEntity.signature_file =
+      departmentUserEntity.signature_file ?? undefined;
     mediaOrmEntity.created_at = departmentUserEntity.createdAt ?? new Date(now);
     mediaOrmEntity.updated_at = new Date(now);
 
@@ -43,6 +45,7 @@ export class DepartmentUserDataAccessMapper {
       .setDepartmentId(ormData.department_id ?? 0)
       .setUserId(ormData.user_id ?? 0)
       .setPositionId(ormData.position_id ?? 0)
+      .setSignatureFile(ormData.signature_file ?? null)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 

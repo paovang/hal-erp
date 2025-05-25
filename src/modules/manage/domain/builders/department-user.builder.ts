@@ -13,6 +13,7 @@ export class DepartmentUserBuilder {
   email: string;
   password: string;
   tel: string;
+  signature_file: string | null;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -57,6 +58,11 @@ export class DepartmentUserBuilder {
 
   setTel(tel: string): this {
     this.tel = tel;
+    return this;
+  }
+
+  setSignatureFile(signature_file: string | null): this {
+    this.signature_file = signature_file;
     return this;
   }
 

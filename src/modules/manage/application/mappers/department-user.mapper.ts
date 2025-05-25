@@ -52,15 +52,22 @@ export class DepartmentUserDataMapper {
       builder.setUserId(userId);
     }
 
+    if (dto.signature_file) {
+      builder.setSignatureFile(dto.signature_file);
+    }
+
     return builder.build();
   }
 
   /** Mapper Entity To Response */
   toResponse(entity: DepartmentUserEntity): DepartmentUserResponse {
+    const file = `${process.env.DEV_PATH_URL}/assets/files/${entity.signature_file}`;
     const response = new DepartmentUserResponse();
     response.id = entity.getId().value;
     response.department_id = entity.department?.getId().value;
     response.position_id = entity.position?.getId().value;
+    response.signature_file = entity.signature_file ?? null;
+    response.signature_file_url = entity.signature_file ? file : null;
     response.created_at = entity.createdAt?.toISOString() ?? '';
     response.updated_at = entity.updatedAt?.toISOString() ?? '';
 

@@ -8,6 +8,8 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
@@ -19,6 +21,11 @@ import { DepartmentUserDataMapper } from '../application/mappers/department-user
 import { DepartmentUserResponse } from '../application/dto/response/department-user.response';
 import { UpdateDepartmentUserDto } from '../application/dto/create/departmentUser/update.dto';
 import { DepartmentUserQueryDto } from '../application/dto/query/department-user-query.dto';
+import { UploadFileDto } from '../application/dto/create/departmentUser/upload.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import * as multer from 'multer';
+import * as path from 'path';
+// import { Request } from 'express';
 
 @Controller('department-users')
 export class DepartmentUserController {
@@ -29,6 +36,47 @@ export class DepartmentUserController {
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: DepartmentUserDataMapper,
   ) {}
+
+  @Post('upload')
+  @UseInterceptors(
+    FilesInterceptor('file', 10, {
+      storage: multer.diskStorage({
+        destination: './assets/uploads',
+        filename: (
+          req: Express.Request,
+          file: Express.Multer.File,
+          callback: (error: Error | null, filename: string) => void,
+        ) => {
+          const now = new Date();
+          const fileName =
+            now.getFullYear().toString() +
+            '-' +
+            (now.getMonth() + 1).toString().padStart(2, '0') +
+            '-' +
+            now.getDate().toString().padStart(2, '0') +
+            '-' +
+            Date.now() + // for uniqueness
+            path.extname(file.originalname);
+          callback(null, fileName);
+        },
+      }),
+    }),
+  )
+  async uploadFile(
+    @Body() body: UploadFileDto,
+    @UploadedFiles() files: Express.Multer.File[],
+    // @Req() req: Request,
+  ) {
+    // const host = `${req.protocol}://${req.get('host')}`; // e.g. http://localhost:3000
+    const uploadedFiles = files.map((file) => {
+      const fileUrl = `${file.filename}`;
+      return fileUrl;
+    });
+
+    return {
+      files: uploadedFiles,
+    };
+  }
 
   @Post('')
   async create(
