@@ -1,18 +1,20 @@
-import { Injectable } from "@nestjs/common";
-import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { InjectEntityManager } from "@nestjs/typeorm";
-import { ResponseResult } from "@src/common/application/interfaces/pagination.interface";
-import { EntityManager } from "typeorm";
-import { UserEntity } from "../../domain/entities/user.entity";
-import { IUserServiceInterface } from "../../domain/ports/input/user-domain-service.interface";
-import { CreateUserDto } from "../dto/create/user/create.dto";
-import { CreateCommand } from "../commands/user/create.command";
-import { UserQueryDto } from "../dto/query/user-query.dto";
-import { GetAllQuery } from "../queries/user/get-all.query";
-import { GetOneQuery } from "../queries/user/get-one.query";
-import { UpdateUserDto } from "../dto/create/user/update.dto";
-import { UpdateCommand } from "../commands/user/update-command";
-import { DeleteCommand } from "../commands/user/delete.command";
+import { Injectable } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { EntityManager } from 'typeorm';
+import { UserEntity } from '../../domain/entities/user.entity';
+import { IUserServiceInterface } from '../../domain/ports/input/user-domain-service.interface';
+import { CreateUserDto } from '../dto/create/user/create.dto';
+import { CreateCommand } from '../commands/user/create.command';
+import { UserQueryDto } from '../dto/query/user-query.dto';
+import { GetAllQuery } from '../queries/user/get-all.query';
+import { GetOneQuery } from '../queries/user/get-one.query';
+import { UpdateUserDto } from '../dto/create/user/update.dto';
+import { UpdateCommand } from '../commands/user/update-command';
+import { DeleteCommand } from '../commands/user/delete.command';
+import { ChangePasswordDto } from '../dto/create/user/change-password.dto';
+import { ChangePasswordCommand } from '../commands/user/change-password.command';
 
 @Injectable()
 export class UserService implements IUserServiceInterface {
@@ -57,6 +59,16 @@ export class UserService implements IUserServiceInterface {
   ): Promise<ResponseResult<UserEntity>> {
     return await this._commandBus.execute(
       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async changePassword(
+    id: number,
+    dto: ChangePasswordDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<UserEntity>> {
+    return await this._commandBus.execute(
+      new ChangePasswordCommand(id, dto, manager ?? this._readEntityManager),
     );
   }
 

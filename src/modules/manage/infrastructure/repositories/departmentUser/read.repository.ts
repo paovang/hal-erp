@@ -12,6 +12,7 @@ import {
 } from '@src/common/application/interfaces/pagination.interface';
 import { DepartmentUserQueryDto } from '@src/modules/manage/application/dto/query/department-user-query.dto';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
+import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';
 
 @Injectable()
 export class ReadDepartmentUserRepository
@@ -29,7 +30,12 @@ export class ReadDepartmentUserRepository
     query: DepartmentUserQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const queryBuilder = await this.createBaseQuery(manager).where(
+      'department_users.department_id = :departmentId',
+      {
+        departmentId: 1,
+      },
+    );
     query.sort_by = 'department_users.id';
 
     const data = await this._paginationService.paginate(
@@ -46,11 +52,7 @@ export class ReadDepartmentUserRepository
       .createQueryBuilder(DepartmentUserOrmEntity, 'department_users')
       .leftJoinAndSelect('department_users.departments', 'departments')
       .leftJoinAndSelect('department_users.users', 'users') // assuming relation name is `user`
-      .leftJoinAndSelect('department_users.positions', 'positions') // assuming relation name is `position`
-      .groupBy('department_users.id')
-      .addGroupBy('departments.id')
-      .addGroupBy('users.id')
-      .addGroupBy('positions.id');
+      .leftJoinAndSelect('department_users.positions', 'positions');
   }
 
   private getFilterOptions(): FilterOptions {
@@ -59,5 +61,16 @@ export class ReadDepartmentUserRepository
       dateColumn: '',
       filterByColumns: [],
     };
+  }
+
+  async findOne(
+    id: DepartmentUserId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>> {
+    const item = await this.createBaseQuery(manager)
+      .where('department_users.id = :id', { id: id.value })
+      .getOneOrFail();
+
+    return this._dataAccessMapper.toEntity(item);
   }
 }

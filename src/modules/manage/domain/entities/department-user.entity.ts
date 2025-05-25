@@ -3,6 +3,7 @@ import { DepartmentUserBuilder } from '../builders/department-user.builder';
 import { DepartmentUserId } from '../value-objects/department-user-id.vo';
 import { DepartmentEntity } from './department.entity';
 import { PositionEntity } from './position.entity';
+import { UserEntity } from './user.entity';
 
 export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _departmentId: number;
@@ -15,6 +16,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _user: UserEntity;
   private readonly _department: DepartmentEntity;
   private readonly _position: PositionEntity;
 
@@ -31,6 +33,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._user = builder.user;
     this._department = builder.department ?? null;
     this._position = builder.position ?? null;
   }
@@ -81,6 +84,10 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
 
   get position(): PositionEntity {
     return this._position;
+  }
+
+  get user(): UserEntity {
+    return this._user;
   }
 
   public static builder(): DepartmentUserBuilder {

@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Inject,
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
@@ -16,6 +18,7 @@ import { IDepartmentUserServiceInterface } from '../domain/ports/input/departmen
 import { DepartmentUserDataMapper } from '../application/mappers/department-user.mapper';
 import { DepartmentUserResponse } from '../application/dto/response/department-user.response';
 import { UpdateDepartmentUserDto } from '../application/dto/create/departmentUser/update.dto';
+import { DepartmentUserQueryDto } from '../application/dto/query/department-user-query.dto';
 
 @Controller('department-users')
 export class DepartmentUserController {
@@ -39,17 +42,30 @@ export class DepartmentUserController {
     );
   }
 
-  // @Get('')
-  // async getAll(
-  //   @Query() dto: DepartmentUserQueryDto,
-  // ): Promise<ResponseResult<DepartmentUserResponse>> {
-  //   const result = await this._departmentUserService.getAll(dto);
+  @Get('')
+  async getAll(
+    @Query() dto: DepartmentUserQueryDto,
+  ): Promise<ResponseResult<DepartmentUserResponse>> {
+    const result = await this._departmentUserService.getAll(dto);
 
-  //   return this._transformResultService.execute(
-  //     this._dataMapper.toResponse.bind(this._dataMapper),
-  //     result,
-  //   );
-  // }
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  /** Get One */
+  @Get(':id')
+  async getOne(
+    @Param('id') id: number,
+  ): Promise<ResponseResult<DepartmentUserResponse>> {
+    const result = await this._departmentUserService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
 
   /** Update */
   @Put(':id')

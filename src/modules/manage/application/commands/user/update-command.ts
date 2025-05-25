@@ -1,5 +1,5 @@
-import { EntityManager } from "typeorm";
-import { UpdateUserDto } from "../../dto/create/user/update.dto";
+import { EntityManager } from 'typeorm';
+import { UpdateUserDto } from '../../dto/create/user/update.dto';
 
 export class UpdateCommand {
   constructor(

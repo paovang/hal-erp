@@ -16,10 +16,10 @@ export interface IDepartmentUserServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<DepartmentUserEntity>>;
 
-  //   getOne(
-  //     id: number,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<DepartmentUserEntity>>;
+  getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>>;
 
   update(
     id: number,

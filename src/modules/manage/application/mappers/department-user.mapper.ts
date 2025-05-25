@@ -3,9 +3,18 @@ import { CreateDepartmentUserDto } from '../dto/create/departmentUser/create.dto
 import { DepartmentUserEntity } from '../../domain/entities/department-user.entity';
 import { DepartmentUserResponse } from '../dto/response/department-user.response';
 import { UpdateDepartmentUserDto } from '../dto/create/departmentUser/update.dto';
+import { DepartmentDataMapper } from './department.mapper';
+import { PositionDataMapper } from './position.mapper';
+import { UserDataMapper } from './user.mapper';
 
 @Injectable()
 export class DepartmentUserDataMapper {
+  constructor(
+    private readonly departmentDataMapper: DepartmentDataMapper,
+    private readonly positionDataMapper: PositionDataMapper,
+    private readonly userDataMapper: UserDataMapper,
+  ) {}
+
   /** Mapper Dto To Entity */
   toEntity(
     dto: Partial<CreateDepartmentUserDto | UpdateDepartmentUserDto>,
@@ -49,11 +58,23 @@ export class DepartmentUserDataMapper {
   /** Mapper Entity To Response */
   toResponse(entity: DepartmentUserEntity): DepartmentUserResponse {
     const response = new DepartmentUserResponse();
-    response.id = entity.department?.getId().value;
+    response.id = entity.getId().value;
     response.department_id = entity.department?.getId().value;
     response.position_id = entity.position?.getId().value;
     response.created_at = entity.createdAt?.toISOString() ?? '';
     response.updated_at = entity.updatedAt?.toISOString() ?? '';
+
+    response.department = entity.department
+      ? this.departmentDataMapper.toResponse(entity.department)
+      : null;
+
+    response.position = entity.position
+      ? this.positionDataMapper.toResponse(entity.position)
+      : null;
+
+    response.user = entity.user
+      ? this.userDataMapper.toResponse(entity.user)
+      : null;
 
     return response;
   }
