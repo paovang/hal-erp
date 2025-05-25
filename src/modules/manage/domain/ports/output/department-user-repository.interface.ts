@@ -10,10 +10,10 @@ export interface IReadDepartmentUserRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentUserEntity>>;
 
-  // findOne(
-  //   id: DepartmentId,
-  //   manager: EntityManager,
-  // ): Promise<ResponseResult<DepartmentEntity>>;
+  findOne(
+    id: DepartmentUserId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>>;
 }
 
 export interface IWriteDepartmentUserRepository {

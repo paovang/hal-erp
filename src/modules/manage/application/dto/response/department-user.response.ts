@@ -1,27 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-export class userResponse {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
-  username: string;
-
-  @ApiProperty()
-  email: string;
-
-  @ApiProperty()
-  tel: string;
-
-  @ApiProperty()
-  department_id: number;
-
-  @ApiProperty()
-  created_at: string;
-
-  @ApiProperty()
-  updated_at: string;
-}
+import { UserResponse } from './user.response';
+import { DepartmentResponse } from './department.response';
+import { PositionResponse } from './position.response';
 
 export class DepartmentUserResponse {
   @ApiProperty()
@@ -39,6 +19,12 @@ export class DepartmentUserResponse {
   @ApiProperty()
   updated_at: string;
 
-  // @ApiProperty()
-  // user: userResponse[];
+  @ApiProperty()
+  department: DepartmentResponse | null;
+
+  @ApiProperty()
+  position: PositionResponse | null;
+
+  @ApiProperty()
+  user: UserResponse | null;
 }

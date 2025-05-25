@@ -6,6 +6,7 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { UserResponse } from '../dto/response/user.response';
 import { UpdateUserDto } from '../dto/create/user/update.dto';
+import { ChangePasswordDto } from '../dto/create/user/change-password.dto';
 
 @Injectable()
 export class UserDataMapper {
@@ -40,6 +41,20 @@ export class UserDataMapper {
     if (dto.tel) builder.setTel(dto.tel);
 
     return builder.build(); // no password set here
+  }
+
+  toEntityForChangePassword(dto: ChangePasswordDto): UserEntity {
+    const builder = UserEntity.builder();
+
+    if (dto.old_password) {
+      builder.setPassword(dto.old_password);
+    }
+
+    if (dto.new_password) {
+      builder.setPassword(dto.new_password);
+    }
+
+    return builder.build();
   }
 
   toEntityForUpdateColumns({

@@ -5,6 +5,7 @@ import { UserEntity } from '../../entities/user.entity';
 import { CreateUserDto } from '@src/modules/manage/application/dto/create/user/create.dto';
 import { UserQueryDto } from '@src/modules/manage/application/dto/query/user-query.dto';
 import { UpdateUserDto } from '@src/modules/manage/application/dto/create/user/update.dto';
+import { ChangePasswordDto } from '@src/modules/manage/application/dto/create/user/change-password.dto';
 
 export interface IUserServiceInterface {
   getAll(
@@ -25,6 +26,12 @@ export interface IUserServiceInterface {
   update(
     id: number,
     dto: UpdateUserDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<UserEntity>>;
+
+  changePassword(
+    id: number,
+    dto: ChangePasswordDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<UserEntity>>;
 

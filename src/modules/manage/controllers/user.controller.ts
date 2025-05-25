@@ -19,6 +19,7 @@ import { CreateUserDto } from '../application/dto/create/user/create.dto';
 import { UserResponse } from '../application/dto/response/user.response';
 import { UserQueryDto } from '../application/dto/query/user-query.dto';
 import { UpdateUserDto } from '../application/dto/create/user/update.dto';
+import { ChangePasswordDto } from '../application/dto/create/user/change-password.dto';
 
 @Controller('users')
 export class UserController {
@@ -70,6 +71,20 @@ export class UserController {
     @Body() dto: UpdateUserDto,
   ): Promise<ResponseResult<UserResponse>> {
     const result = await this._userService.update(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Put('/change-password/:id')
+  async changePassword(
+    @Param('id') id: number,
+    @Body() dto: ChangePasswordDto,
+  ): Promise<ResponseResult<UserResponse>> {
+    const result = await this._userService.changePassword(id, dto);
+    console.log('result', result);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
