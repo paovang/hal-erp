@@ -23,7 +23,8 @@
     "migration:run": "pnpm run typeorm migration:run -d ./src/common/infrastructure/database/data-source.ts",
     "migration:revert": "pnpm run typeorm migration:revert -d ./src/common/infrastructure/database/data-source.ts",
     "db:seed": "ts-node -r tsconfig-paths/register ./src/common/infrastructure/database/data-seed.ts",
-    "deploy": "scp -r dist/ package.json pnpm-lock.yaml root@134.209.101.30:/var/www/apis/"
+    "deploy": "scp -r dist/ package.json pnpm-lock.yaml root@134.209.101.30:/var/www/apis/",
+    "migration-dev:run": "node ./node_modules/typeorm/cli.js migration:run -d ./dist/common/infrastructure/database/data-source.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
