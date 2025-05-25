@@ -25,5 +25,5 @@ export const models = [
   PermissionOrmEntity,
   PermissionGroupOrmEntity,
   CurrencyOrmEntity,
-  CategoryOrmEntity
+  CategoryOrmEntity,
 ];
