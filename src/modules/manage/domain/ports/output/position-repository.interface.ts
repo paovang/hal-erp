@@ -1,6 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { PositionEntity } from '../../entities/position.entity';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { PositionQueryDto } from '@src/modules/manage/application/dto/query/position-query.dto';
 import { PositionId } from '../../value-objects/position-id.vo';
 

@@ -1,6 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { CreateDepartmentUserDto } from '../dto/create/departmentUser/create.dto';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserEntity } from '../../domain/entities/department-user.entity';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';

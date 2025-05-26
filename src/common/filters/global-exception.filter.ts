@@ -2,8 +2,8 @@ import { Catch, HttpException, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { BaseGlobalExceptionFilter } from '@common/infrastructure/exception-handler/base-global-exception.filter';
 import { DomainException } from '@common/domain/exceptions/domain.exception';
-import { ILocalizationService } from '../application/interfaces/localization.interface';
 import { LOCALIZATION_SERVICE } from '@common/constants/inject-key.const';
+import { ILocalizationService } from '@common/infrastructure/localization/interface/localization.interface';
 
 @Catch(HttpException, DomainException, Error)
 export class GlobalExceptionFilter extends BaseGlobalExceptionFilter {

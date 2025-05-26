@@ -11,11 +11,11 @@ import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import moment from 'moment-timezone';
 import { OptimisticLockVersionMismatchError } from 'typeorm';
-import { DomainException } from '@src/common/domain/exceptions/domain.exception';
-import { LOCALIZATION_SERVICE } from '@src/common/constants/inject-key.const';
-import { ILocalizationService } from '@src/common/application/interfaces/localization.interface';
-import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
-import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { DomainException } from '@common/domain/exceptions/domain.exception';
+import { LOCALIZATION_SERVICE } from '@common/constants/inject-key.const';
+import { Timezone } from '@common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@common/domain/value-objects/date-format.vo';
+import { ILocalizationService } from '@common/infrastructure/localization/interface/localization.interface';
 
 @Injectable()
 @Catch(HttpException, DomainException, Error)

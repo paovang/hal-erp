@@ -9,7 +9,7 @@ import {
   PaginationInput,
   StandardPaginationInput,
   StandardPaginationResult,
-} from '@common/application/interfaces/pagination.interface';
+} from '@common/infrastructure/pagination/pagination.interface';
 
 @Injectable()
 export class PaginationService implements IPaginationService {

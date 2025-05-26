@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { EntityManager } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { IDocumentTypeServiceInterface } from '../../domain/ports/input/document-type-domain-service.interface';
 import { CreateDocumentTypeDto } from '../dto/create/documentType/create.dto';
 import { DocumentTypeEntity } from '../../domain/entities/document-type.entity';

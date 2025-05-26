@@ -65,3 +65,5 @@ export const CATEGORY_APPLICATION_SERVICE = Symbol(
 );
 export const WRITE_CATEGORY_REPOSITORY = Symbol('WRITE_CATEGORY_REPOSITORY');
 export const READ_CATEGORY_REPOSITORY = Symbol('READ_CATEGORY_REPOSITORY');
+
+export const USER_PROFILE_IMAGE_FOLDER = 'department_signature';

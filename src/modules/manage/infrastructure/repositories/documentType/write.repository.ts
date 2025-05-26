@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DocumentTypeEntity } from '@src/modules/manage/domain/entities/document-type.entity';
 import { IWriteDocumentTypeRepository } from '@src/modules/manage/domain/ports/output/document-type-repository.interface';
 import { EntityManager } from 'typeorm';

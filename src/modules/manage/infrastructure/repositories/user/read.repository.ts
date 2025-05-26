@@ -9,7 +9,7 @@ import {
   FilterOptions,
   IPaginationService,
   ResponseResult,
-} from '@src/common/application/interfaces/pagination.interface';
+} from '@common/infrastructure/pagination/pagination.interface';
 import { UserQueryDto } from '@src/modules/manage/application/dto/query/user-query.dto';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';

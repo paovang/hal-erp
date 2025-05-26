@@ -8,17 +8,30 @@ import {
   Post,
   Put,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { DEPARTMENT_APPLICATION_SERVICE } from '@src/modules/manage/application/constants/inject-key.const';
 import { DepartmentQueryDto } from '@src/modules/manage/application/dto/query/department-query.dto';
 import { IDepartmentServiceInterface } from '@src/modules/manage/domain/ports/input/department-domain-service.interface';
 import { DepartmentResponse } from '@src/modules/manage/application/dto/response/department.response';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
-import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
+import {
+  PROFILE_IMAGE_ALLOW_MIME_TYPE,
+  TRANSFORM_RESULT_SERVICE,
+  USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
+} from '@src/common/constants/inject-key.const';
 import { DepartmentDataMapper } from '@src/modules/manage/application/mappers/department.mapper';
 import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/department/create.dto';
 import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidationInterceptor } from '@src/common/interceptors/file/file.interceptor';
+import { FileMimeTypeValidator } from '@src/common/validations/file-mime-type.validator';
+import { FileSizeValidator } from '@src/common/validations/file-size.validator';
+import { ImageOptimizeService } from '@src/common/utils/services/images/service/image-optimize.service';
+import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
+import { S3Service } from '@src/common/infrastructure/aws3/service/aws3-image.service';
+import { USER_PROFILE_IMAGE_FOLDER } from '../application/constants/inject-key.const';
 
 @Controller('department')
 export class DepartmentController {
@@ -28,6 +41,10 @@ export class DepartmentController {
     @Inject(TRANSFORM_RESULT_SERVICE)
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: DepartmentDataMapper,
+    @Inject(USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY)
+    private readonly _optimizeService: ImageOptimizeService,
+    @Inject(AMAZON_S3_SERVICE_KEY)
+    private readonly _amazonS3ServiceKey: S3Service,
   ) {}
 
   /** Get All */
@@ -87,5 +104,27 @@ export class DepartmentController {
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._departmentService.delete(id);
+  }
+
+  @Post('/profile-image')
+  @UseInterceptors(
+    FileInterceptor('profile_image'),
+    new FileValidationInterceptor(
+      new FileMimeTypeValidator([...PROFILE_IMAGE_ALLOW_MIME_TYPE]),
+      new FileSizeValidator(5 * 1024 * 1024),
+      'profile_image',
+    ),
+  )
+  async changeProfileImage(@Body() changeProfileImageDto: any) {
+    const optimizedImageProfile = await this._optimizeService.optimizeImage(
+      changeProfileImageDto.profile_image,
+    );
+
+    const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+      optimizedImageProfile,
+      USER_PROFILE_IMAGE_FOLDER,
+    );
+
+    console.log('changeProfileImageDto:', s3ImageResponse);
   }
 }

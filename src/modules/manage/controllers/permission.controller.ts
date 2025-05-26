@@ -2,7 +2,7 @@ import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
 import { PERMISSION_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { PermissionQueryDto } from '../application/dto/query/permission-query.dto';
 import { IPermissionServiceInterface } from '../domain/ports/input/permission-domain-service.interface';
 import { PermissionGroupResponse } from '../application/dto/response/permission.response';

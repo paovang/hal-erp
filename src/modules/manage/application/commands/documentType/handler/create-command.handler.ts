@@ -1,6 +1,6 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '@src/modules/manage/application/commands/documentType/create.command';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DocumentTypeEntity } from '@src/modules/manage/domain/entities/document-type.entity';
 import { WRITE_DOCUMENT_TYPE_REPOSITORY } from '../../../constants/inject-key.const';
 import { Inject } from '@nestjs/common';

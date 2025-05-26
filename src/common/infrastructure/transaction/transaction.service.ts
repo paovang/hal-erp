@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ITransactionManagerService } from 'src/common/application/interfaces/transaction.interface';
+import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { DataSource, EntityManager } from 'typeorm';
 
 @Injectable()

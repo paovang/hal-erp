@@ -1,4 +1,4 @@
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DocumentTypeEntity } from '@src/modules/manage/domain/entities/document-type.entity';
 import { EntityManager } from 'typeorm';
 import { DocumentTypeId } from '../../value-objects/document-type-id.vo';

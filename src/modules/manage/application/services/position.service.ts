@@ -3,7 +3,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { CreatePositionDto } from '../dto/create/position/create.dto';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { PositionEntity } from '../../domain/entities/position.entity';
 import { CreateCommand } from '../commands/position/create.command';
 import { IPositionServiceInterface } from '../../domain/ports/input/position-domain-service.interface';

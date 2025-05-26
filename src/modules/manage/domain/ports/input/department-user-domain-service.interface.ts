@@ -1,4 +1,4 @@
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CreateDepartmentUserDto } from '@src/modules/manage/application/dto/create/departmentUser/create.dto';
 import { EntityManager } from 'typeorm';
 import { DepartmentUserEntity } from '../../entities/department-user.entity';

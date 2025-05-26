@@ -14,7 +14,7 @@ import { IDocumentTypeServiceInterface } from '../domain/ports/input/document-ty
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { DocumentTypeDataMapper } from '../application/mappers/document-type.mapper';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CreateDocumentTypeDto } from '../application/dto/create/documentType/create.dto';
 import { DocumentTypeResponse } from '../application/dto/response/document-type.response';
 import { DocumentTypeQueryDto } from '../application/dto/query/document-type-query.dto';

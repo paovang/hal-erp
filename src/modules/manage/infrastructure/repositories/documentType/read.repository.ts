@@ -8,7 +8,7 @@ import {
   FilterOptions,
   IPaginationService,
   ResponseResult,
-} from '@src/common/application/interfaces/pagination.interface';
+} from '@common/infrastructure/pagination/pagination.interface';
 import { IReadDocumentTypeRepository } from '@src/modules/manage/domain/ports/output/document-type-repository.interface';
 import { DocumentTypeEntity } from '@src/modules/manage/domain/entities/document-type.entity';
 import { DocumentTypeQueryDto } from '@src/modules/manage/application/dto/query/document-type-query.dto';

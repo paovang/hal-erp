@@ -13,7 +13,7 @@ import { ITransformResultService } from '@src/common/application/interfaces/tran
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { DEPARTMENT_USER_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { CreateDepartmentUserDto } from '../application/dto/create/departmentUser/create.dto';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { IDepartmentUserServiceInterface } from '../domain/ports/input/department-user-domain-service.interface';
 import { DepartmentUserDataMapper } from '../application/mappers/department-user.mapper';
 import { DepartmentUserResponse } from '../application/dto/response/department-user.response';
