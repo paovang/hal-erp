@@ -25,7 +25,7 @@ export class UpdateCommandHandler
     await entity.initializeUpdateSetId(new DepartmentId(query.id));
     await entity.validateExistingIdForUpdate();
 
-    /** Check Exits Department Id */
+    /** Check Exits Department ById */
     await findOneOrFail(query.manager, DepartmentOrmEntity, {
       id: entity.getId().value,
     });
