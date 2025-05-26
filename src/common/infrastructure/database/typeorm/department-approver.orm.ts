@@ -24,13 +24,13 @@ export class DepartmentApproverOrmEntity {
     (departments) => departments.department_approvers,
   )
   @JoinColumn({ name: 'department_id' })
-  departments: Relation<DepartmentOrmEntity[]>;
+  departments: Relation<DepartmentOrmEntity>;
 
   @Column({ nullable: true })
   user_id?: number;
   @ManyToOne(() => UserOrmEntity, (users) => users.department_approvers)
   @JoinColumn({ name: 'user_id' })
-  users: Relation<UserOrmEntity[]>;
+  users: Relation<UserOrmEntity>;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

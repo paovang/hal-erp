@@ -6,5 +6,6 @@
     "IS_EMAIL": "{property} Please enter a valid email address.",
     "TEL_LENGTH": "{property} must be between 6 and 20 characters.",
     "IS_NUMBER": "{property} must be a number.",
-    "PASSWORD_LENGTH": "{property} must be between 6 and 255 characters."
+    "PASSWORD_LENGTH": "{property} must be between 6 and 255 characters.",
+    "IS_ARRAY": "{property} must be an array."
 }

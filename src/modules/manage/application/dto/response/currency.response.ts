@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class RoleResponse {
+export class CurrencyResponse {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  name: string;
+  code: string;
 
   @ApiProperty()
-  guard_name: string;
+  name: string;
 
   @ApiProperty()
   created_at: string;

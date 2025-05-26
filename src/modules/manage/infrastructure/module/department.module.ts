@@ -15,6 +15,8 @@ import { DepartmentUserController } from '../../controllers/department-user.cont
 import { PositionController } from '../../controllers/position.controller';
 import { CategoryController } from '../../controllers/category.controller';
 import { AmazonS3Module } from '@src/common/infrastructure/aws3/config/aws3.module';
+import { DepartmentApproverController } from '../../controllers/department-approver.controller';
+import { CurrencyController } from '../../controllers/currency.controller';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { AmazonS3Module } from '@src/common/infrastructure/aws3/config/aws3.modu
     DepartmentUserController,
     PositionController,
     CategoryController,
+    DepartmentApproverController,
+    CurrencyController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

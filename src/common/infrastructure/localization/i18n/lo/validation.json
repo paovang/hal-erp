@@ -6,5 +6,6 @@
     "IS_EMAIL": "{property} ກະລຸນາປ້ອນອີເມວໃຫ້ຖືກຕ້ອງ.",
     "TEL_LENGTH": "{property} ຕ້ອງຢູ່ລະຫວ່າງ 6 ເຖິງ 20 ຕົວອັກສອນ.",
     "IS_NUMBER": "{property} ຕ້ອງເປັນຕົວເລກ.",
-    "PASSWORD_LENGTH": "{property} ຕ້ອງຢູ່ລະຫວ່າງ 6 ເຖິງ 255 ຕົວອັກສອນ."
+    "PASSWORD_LENGTH": "{property} ຕ້ອງຢູ່ລະຫວ່າງ 6 ເຖິງ 255 ຕົວອັກສອນ.",
+    "IS_ARRAY": "{property} ຕ້ອງເປັນອາເຣ."
 }
