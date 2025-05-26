@@ -1,3 +1,6 @@
+/** Limit Code */
+export const LENGTH_DEPARTMENT_CODE = 6;
+
 export const DEPARTMENT_APPLICATION_SERVICE = Symbol(
   'DEPARTMENT_APPLICATION_SERVICE',
 );
