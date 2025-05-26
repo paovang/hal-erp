@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 

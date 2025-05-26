@@ -5,7 +5,7 @@ import { GetAllQuery } from '@src/modules/manage/application/queries/department/
 import { DepartmentQueryDto } from '@src/modules/manage/application/dto/query/department-query.dto';
 import { EntityManager } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/department/create.dto';
 import { CreateCommand } from '@src/modules/manage/application/commands/department/create.command';

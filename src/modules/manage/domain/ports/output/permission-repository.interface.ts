@@ -1,4 +1,4 @@
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { PermissionQueryDto } from '@src/modules/manage/application/dto/query/permission-query.dto';
 import { EntityManager } from 'typeorm';
 import { PermissionGroupEntity } from '../../entities/permission-group.entity';

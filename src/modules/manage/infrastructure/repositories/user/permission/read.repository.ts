@@ -4,7 +4,7 @@ import {
   FilterOptions,
   IPaginationService,
   ResponseResult,
-} from '@src/common/application/interfaces/pagination.interface';
+} from '@common/infrastructure/pagination/pagination.interface';
 import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { PermissionQueryDto } from '@src/modules/manage/application/dto/query/permission-query.dto';
 import { IReadPermissionRoleRepository } from '@src/modules/manage/domain/ports/output/permission-repository.interface';

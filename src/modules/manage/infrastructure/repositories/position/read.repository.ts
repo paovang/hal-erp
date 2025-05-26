@@ -4,7 +4,7 @@ import {
   FilterOptions,
   IPaginationService,
   ResponseResult,
-} from '@src/common/application/interfaces/pagination.interface';
+} from '@common/infrastructure/pagination/pagination.interface';
 import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { PositionOrmEntity } from '@src/common/infrastructure/database/typeorm/position.orm';
 import { PositionQueryDto } from '@src/modules/manage/application/dto/query/position-query.dto';

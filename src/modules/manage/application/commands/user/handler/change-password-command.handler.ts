@@ -1,6 +1,6 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { ChangePasswordCommand } from '../change-password.command';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';
 import { WRITE_USER_REPOSITORY } from '../../../constants/inject-key.const';

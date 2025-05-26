@@ -10,7 +10,7 @@ import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
-import { ITransactionManagerService } from '@src/common/application/interfaces/transaction.interface';
+import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UserDataMapper } from '../../../mappers/user.mapper';

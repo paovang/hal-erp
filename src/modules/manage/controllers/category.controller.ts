@@ -15,7 +15,7 @@ import { ITransformResultService } from '@src/common/application/interfaces/tran
 import { ICategoryServiceInterface } from '../domain/ports/input/category-domain-service.interface';
 import { CategoryDataMapper } from '../application/mappers/category.mapper';
 import { CreateCategoryDto } from '../application/dto/create/category/create.dto';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CategoryResponse } from '../application/dto/response/category.response';
 import { CategoryQueryDto } from '../application/dto/query/category-query.dto';
 import { UpdateCategoryDto } from '../application/dto/create/category/update.dto';

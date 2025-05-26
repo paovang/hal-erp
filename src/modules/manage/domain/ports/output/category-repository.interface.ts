@@ -1,6 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { CategoryEntity } from '../../entities/category.entity';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CategoryQueryDto } from '@src/modules/manage/application/dto/query/category-query.dto';
 import { CategoryId } from '../../value-objects/category-id.vo';
 

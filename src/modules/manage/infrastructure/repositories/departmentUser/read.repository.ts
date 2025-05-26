@@ -9,7 +9,7 @@ import {
   FilterOptions,
   IPaginationService,
   ResponseResult,
-} from '@src/common/application/interfaces/pagination.interface';
+} from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserQueryDto } from '@src/modules/manage/application/dto/query/department-user-query.dto';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';

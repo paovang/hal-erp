@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { TRANSACTION_MANAGER_SERVICE } from 'src/common/constants/inject-key.const';
 import { DepartmentSeeder } from '../department.seeder';
-import { ITransactionManagerService } from 'src/common/application/interfaces/transaction.interface';
+import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { PermissionSeeder } from '../permission.seeder';
 import { PermissionGroupSeeder } from '../permission-group.seeder';
 import { RoleSeeder } from '../role.seeder';

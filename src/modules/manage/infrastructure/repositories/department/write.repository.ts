@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IWriteDepartmentRepository } from '@src/modules/manage/domain/ports/output/department-repository.interface';
 import { DepartmentDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/department.mapper';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { EntityManager, UpdateResult } from 'typeorm';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';

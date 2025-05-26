@@ -1,7 +1,7 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { WRITE_USER_REPOSITORY } from '../../../constants/inject-key.const';
 import { BadRequestException, Inject } from '@nestjs/common';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { UpdateCommand } from '../update-command';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';

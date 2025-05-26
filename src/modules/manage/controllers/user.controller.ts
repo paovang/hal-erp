@@ -14,7 +14,7 @@ import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const
 import { USER_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { IUserServiceInterface } from '../domain/ports/input/user-domain-service.interface';
 import { UserDataMapper } from '../application/mappers/user.mapper';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CreateUserDto } from '../application/dto/create/user/create.dto';
 import { UserResponse } from '../application/dto/response/user.response';
 import { UserQueryDto } from '../application/dto/query/user-query.dto';

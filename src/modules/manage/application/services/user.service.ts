@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { EntityManager } from 'typeorm';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { IUserServiceInterface } from '../../domain/ports/input/user-domain-service.interface';

@@ -4,10 +4,10 @@ import { WRITE_DEPARTMENT_REPOSITORY } from '@src/modules/manage/application/con
 import { Inject } from '@nestjs/common';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { IWriteDepartmentRepository } from '@src/modules/manage/domain/ports/output/department-repository.interface';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentDataMapper } from '@src/modules/manage/application/mappers/department.mapper';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
-import { ITransactionManagerService } from '@src/common/application/interfaces/transaction.interface';
+import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';

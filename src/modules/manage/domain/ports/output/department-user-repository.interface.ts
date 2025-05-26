@@ -1,6 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { DepartmentUserEntity } from '../../entities/department-user.entity';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserQueryDto } from '@src/modules/manage/application/dto/query/department-user-query.dto';
 import { DepartmentUserId } from '../../value-objects/department-user-id.vo';
 

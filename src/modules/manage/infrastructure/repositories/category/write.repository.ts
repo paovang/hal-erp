@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CategoryEntity } from '@src/modules/manage/domain/entities/category.entity';
 import { IWriteCategoryRepository } from '@src/modules/manage/domain/ports/output/category-repository.interface';
 import { EntityManager, UpdateResult } from 'typeorm';

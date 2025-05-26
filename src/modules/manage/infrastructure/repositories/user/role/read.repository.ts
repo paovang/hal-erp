@@ -4,7 +4,7 @@ import {
   FilterOptions,
   IPaginationService,
   ResponseResult,
-} from '@src/common/application/interfaces/pagination.interface';
+} from '@common/infrastructure/pagination/pagination.interface';
 import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.orm';
 import { IReadRoleRepository } from '@src/modules/manage/domain/ports/output/role-repository.interface';

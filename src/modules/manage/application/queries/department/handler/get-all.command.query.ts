@@ -4,7 +4,7 @@ import { READ_DEPARTMENT_REPOSITORY } from '@src/modules/manage/application/cons
 import { Inject } from '@nestjs/common';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { IReadDepartmentRepository } from '@src/modules/manage/domain/ports/output/department-repository.interface';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler

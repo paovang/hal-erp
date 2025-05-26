@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ILocalizationService } from '@src/common/application/interfaces/localization.interface';
 import { I18nContext, I18nService } from 'nestjs-i18n';
+import { ILocalizationService } from './interface/localization.interface';
 // import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 @Injectable()

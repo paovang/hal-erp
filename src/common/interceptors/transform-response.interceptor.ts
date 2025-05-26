@@ -19,8 +19,8 @@ import {
   ResponseDataType,
   StandardResponseData,
 } from '@common/application/interfaces/response.inteface';
-import { LOCALIZATION_SERVICE } from '@src/common/constants/inject-key.const';
-import { ILocalizationService } from '@src/common/application/interfaces/localization.interface';
+import { LOCALIZATION_SERVICE } from '@common/constants/inject-key.const';
+import { ILocalizationService } from '@common/infrastructure/localization/interface/localization.interface';
 
 @Injectable()
 export class TransformResponseInterceptor<T>
