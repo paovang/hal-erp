@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetAllQuery } from '../get-all.query';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import { READ_DEPARTMENT_USER_REPOSITORY } from '../../../constants/inject-key.const';
 import { Inject, NotFoundException } from '@nestjs/common';

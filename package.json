@@ -23,9 +23,14 @@
     "migration:run": "pnpm run typeorm migration:run -d ./src/common/infrastructure/database/data-source.ts",
     "migration:revert": "pnpm run typeorm migration:revert -d ./src/common/infrastructure/database/data-source.ts",
     "db:seed": "ts-node -r tsconfig-paths/register ./src/common/infrastructure/database/data-seed.ts",
-    "deploy": "scp -r dist/ package.json pnpm-lock.yaml root@134.209.101.30:/var/www/apis/"
+    "deploy": "scp -r dist/ package.json pnpm-lock.yaml root@134.209.101.30:/var/www/apis/",
+    "migration-dev:run": "node ./node_modules/typeorm/cli.js migration:run -d ./dist/common/infrastructure/database/data-source.js",
+    "db-dev:seed": "node dist/common/infrastructure/database/data-seed.js"
   },
   "dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.817.0",
+    "@aws-sdk/client-s3": "^3.817.0",
+    "@aws-sdk/s3-request-presigner": "^3.817.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^10.0.0",
@@ -43,7 +48,9 @@
     "pg": "^8.16.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.23"
+    "sharp": "^0.34.2",
+    "typeorm": "^0.3.23",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -55,6 +62,7 @@
     "@types/multer": "^1.4.12",
     "@types/node": "^20.17.46",
     "@types/supertest": "^6.0.0",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.42.0",

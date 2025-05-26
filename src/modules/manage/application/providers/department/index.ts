@@ -10,6 +10,7 @@ import {
   LOCALIZATION_SERVICE,
   TRANSACTION_MANAGER_SERVICE,
   TRANSFORM_RESULT_SERVICE,
+  USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
 } from '@src/common/constants/inject-key.const';
 import { TransformResultService } from '@src/common/utils/services/transform-result.service';
 import { WriteDepartmentRepository } from '@src/modules/manage/infrastructure/repositories/department/write.repository';
@@ -17,6 +18,7 @@ import { DepartmentMapperProviders } from '@src/modules/manage/application/provi
 import { DepartmentHandlersProviders } from '@src/modules/manage/application/providers/department/command.provider';
 import { TransactionManagerService } from '@src/common/infrastructure/transaction/transaction.service';
 import { LocalizationService } from '@src/common/infrastructure/localization/localization.service';
+import { ImageOptimizeService } from '@src/common/utils/services/images/service/image-optimize.service';
 
 export const DepartmentProvider: Provider[] = [
   ...DepartmentHandlersProviders,
@@ -44,5 +46,9 @@ export const DepartmentProvider: Provider[] = [
   {
     provide: TRANSFORM_RESULT_SERVICE,
     useClass: TransformResultService,
+  },
+  {
+    provide: USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
+    useClass: ImageOptimizeService,
   },
 ];

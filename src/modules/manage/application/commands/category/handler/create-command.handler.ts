@@ -1,11 +1,11 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '../create.command';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CategoryEntity } from '@src/modules/manage/domain/entities/category.entity';
 import { WRITE_CATEGORY_REPOSITORY } from '../../../constants/inject-key.const';
 import { Inject } from '@nestjs/common';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
-import { ITransactionManagerService } from '@src/common/application/interfaces/transaction.interface';
+import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CategoryDataMapper } from '../../../mappers/category.mapper';

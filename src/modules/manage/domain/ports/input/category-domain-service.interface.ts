@@ -1,4 +1,4 @@
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { EntityManager } from 'typeorm';
 import { CategoryEntity } from '../../entities/category.entity';
 import { CreateCategoryDto } from '@src/modules/manage/application/dto/create/category/create.dto';

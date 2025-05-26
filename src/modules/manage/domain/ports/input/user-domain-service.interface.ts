@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { EntityManager } from 'typeorm';
 import { UserEntity } from '../../entities/user.entity';
 import { CreateUserDto } from '@src/modules/manage/application/dto/create/user/create.dto';

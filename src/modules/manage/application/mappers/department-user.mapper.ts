@@ -61,7 +61,7 @@ export class DepartmentUserDataMapper {
 
   /** Mapper Entity To Response */
   toResponse(entity: DepartmentUserEntity): DepartmentUserResponse {
-    const file = `${process.env.DEV_PATH_URL}/assets/files/${entity.signature_file}`;
+    const file = `${process.env.PATH_URL}/assets/files/${entity.signature_file}`;
     const response = new DepartmentUserResponse();
     response.id = entity.getId().value;
     response.department_id = entity.department?.getId().value;

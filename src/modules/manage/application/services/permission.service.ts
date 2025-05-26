@@ -4,7 +4,7 @@ import { QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { PermissionQueryDto } from '../dto/query/permission-query.dto';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { GetAllQuery } from '../queries/user/permission/get-all.query';
 import { PermissionGroupEntity } from '../../domain/entities/permission-group.entity';
 import { GetOneQuery } from '../queries/user/permission/get-one.query';

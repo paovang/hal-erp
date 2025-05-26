@@ -4,7 +4,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { CreateCategoryDto } from '../dto/create/category/create.dto';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CategoryEntity } from '../../domain/entities/category.entity';
 import { CreateCommand } from '../commands/category/create.command';
 import { CategoryQueryDto } from '../dto/query/category-query.dto';

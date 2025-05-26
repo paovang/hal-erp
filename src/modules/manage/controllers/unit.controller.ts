@@ -14,7 +14,7 @@ import { UNIT_APPLICATION_SERVICE } from '../application/constants/inject-key.co
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { IUnitServiceInterface } from '../domain/ports/input/unit-domain-service.interface';
 import { UnitDataMapper } from '../application/mappers/unit.mapper';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { UnitResponse } from '../application/dto/response/unit.response';
 import { CreateUnitDto } from '../application/dto/create/unit/create.dto';
 import { UnitQueryDto } from '../application/dto/query/unit-query.dto';

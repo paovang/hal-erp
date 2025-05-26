@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DocumentTypeEntity } from '@src/modules/manage/domain/entities/document-type.entity';
 import { Inject } from '@nestjs/common';
 import { READ_DOCUMENT_TYPE_REPOSITORY } from '../../../constants/inject-key.const';

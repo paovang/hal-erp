@@ -5,7 +5,7 @@ import { ITransformResultService } from '@src/common/application/interfaces/tran
 import { IRoleServiceInterface } from '../domain/ports/input/role-domain-service.interface';
 import { RoleDataMapper } from '../application/mappers/role.mapper';
 import { RoleQueryDto } from '../application/dto/query/role-query.dto';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { RoleResponse } from '../application/dto/response/role.response';
 
 @Controller('roles')

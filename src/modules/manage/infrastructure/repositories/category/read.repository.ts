@@ -3,7 +3,7 @@ import {
   FilterOptions,
   IPaginationService,
   ResponseResult,
-} from '@src/common/application/interfaces/pagination.interface';
+} from '@common/infrastructure/pagination/pagination.interface';
 import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { CategoryOrmEntity } from '@src/common/infrastructure/database/typeorm/category.orm';
 import { CategoryQueryDto } from '@src/modules/manage/application/dto/query/category-query.dto';

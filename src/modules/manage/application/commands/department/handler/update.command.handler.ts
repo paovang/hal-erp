@@ -3,7 +3,7 @@ import { WRITE_DEPARTMENT_REPOSITORY } from '@src/modules/manage/application/con
 import { Inject } from '@nestjs/common';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { IWriteDepartmentRepository } from '@src/modules/manage/domain/ports/output/department-repository.interface';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentDataMapper } from '@src/modules/manage/application/mappers/department.mapper';
 import { UpdateCommand } from '@src/modules/manage/application/commands/department/update.command';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';

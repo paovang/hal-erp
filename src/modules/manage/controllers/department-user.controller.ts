@@ -8,21 +8,21 @@ import {
   Post,
   Put,
   Query,
-  UploadedFiles,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { DEPARTMENT_USER_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { CreateDepartmentUserDto } from '../application/dto/create/departmentUser/create.dto';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { IDepartmentUserServiceInterface } from '../domain/ports/input/department-user-domain-service.interface';
 import { DepartmentUserDataMapper } from '../application/mappers/department-user.mapper';
 import { DepartmentUserResponse } from '../application/dto/response/department-user.response';
 import { UpdateDepartmentUserDto } from '../application/dto/create/departmentUser/update.dto';
 import { DepartmentUserQueryDto } from '../application/dto/query/department-user-query.dto';
 import { UploadFileDto } from '../application/dto/create/departmentUser/upload.dto';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import * as path from 'path';
 // import { Request } from 'express';
@@ -39,7 +39,7 @@ export class DepartmentUserController {
 
   @Post('upload')
   @UseInterceptors(
-    FilesInterceptor('file', 10, {
+    FileInterceptor('file', {
       storage: multer.diskStorage({
         destination: './assets/uploads',
         filename: (
@@ -55,7 +55,7 @@ export class DepartmentUserController {
             '-' +
             now.getDate().toString().padStart(2, '0') +
             '-' +
-            Date.now() + // for uniqueness
+            Date.now() +
             path.extname(file.originalname);
           callback(null, fileName);
         },
@@ -64,17 +64,14 @@ export class DepartmentUserController {
   )
   async uploadFile(
     @Body() body: UploadFileDto,
-    @UploadedFiles() files: Express.Multer.File[],
-    // @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    // const host = `${req.protocol}://${req.get('host')}`; // e.g. http://localhost:3000
-    const uploadedFiles = files.map((file) => {
-      const fileUrl = `${file.filename}`;
-      return fileUrl;
-    });
+    if (!file) {
+      throw new Error('No file uploaded');
+    }
 
     return {
-      files: uploadedFiles,
+      file: file.filename,
     };
   }
 

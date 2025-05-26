@@ -4,7 +4,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { CreateUnitDto } from '../dto/create/unit/create.dto';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { UnitEntity } from '../../domain/entities/unit.entity';
 import { CreateCommand } from '../commands/unit/create.command';
 import { UnitQueryDto } from '../dto/query/unit-query.dto';

@@ -1,12 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class UploadFileDto {
-  @ApiProperty({
-    type: 'array',
-    items: { type: 'string', format: 'binary' },
-    required: false,
-  })
-  @IsOptional()
-  file: string[];
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  file: string;
 }

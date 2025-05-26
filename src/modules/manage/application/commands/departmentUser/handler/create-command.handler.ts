@@ -1,6 +1,6 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '../create.command';
-import { ResponseResult } from '@src/common/application/interfaces/pagination.interface';
+import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import { BadRequestException, Inject } from '@nestjs/common';
 import {
@@ -12,7 +12,7 @@ import { IWriteDepartmentUserRepository } from '@src/modules/manage/domain/ports
 import { UserDataMapper } from '../../../mappers/user.mapper';
 import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { ITransactionManagerService } from '@src/common/application/interfaces/transaction.interface';
+import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { DataSource } from 'typeorm';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';

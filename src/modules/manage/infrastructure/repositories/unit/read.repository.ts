@@ -9,7 +9,7 @@ import {
   FilterOptions,
   IPaginationService,
   ResponseResult,
-} from '@src/common/application/interfaces/pagination.interface';
+} from '@common/infrastructure/pagination/pagination.interface';
 import { UnitQueryDto } from '@src/modules/manage/application/dto/query/unit-query.dto';
 import { UnitEntity } from '@src/modules/manage/domain/entities/unit.entity';
 import { UnitId } from '@src/modules/manage/domain/value-objects/unit-id.vo';

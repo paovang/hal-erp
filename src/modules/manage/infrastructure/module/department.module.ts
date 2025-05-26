@@ -14,6 +14,7 @@ import { UnitController } from '../../controllers/unit.controller';
 import { DepartmentUserController } from '../../controllers/department-user.controller';
 import { PositionController } from '../../controllers/position.controller';
 import { CategoryController } from '../../controllers/category.controller';
+import { AmazonS3Module } from '@src/common/infrastructure/aws3/config/aws3.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CategoryController } from '../../controllers/category.controller';
     TypeOrmRepositoryModule,
     I18nModule,
     PaginationModule,
+    AmazonS3Module.forRootAsync(),
   ],
   controllers: [
     DepartmentController,
