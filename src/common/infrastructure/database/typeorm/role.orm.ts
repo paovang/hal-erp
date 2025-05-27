@@ -1,6 +1,17 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinTable, ManyToMany, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from "typeorm";
-import { UserOrmEntity } from "./user.orm";
-import { PermissionOrmEntity } from "./permission.orm";
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+  UpdateDateColumn,
+} from 'typeorm';
+import { UserOrmEntity } from './user.orm';
+import { PermissionOrmEntity } from './permission.orm';
 
 @Entity('roles')
 export class RoleOrmEntity {
@@ -42,7 +53,7 @@ export class RoleOrmEntity {
   created_at: Date;
 
   @UpdateDateColumn({
-      type: 'timestamp',
+    type: 'timestamp',
   })
   updated_at: Date;
 

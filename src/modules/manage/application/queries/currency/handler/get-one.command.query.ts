@@ -3,11 +3,12 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { CurrencyEntity } from '@src/modules/manage/domain/entities/currency.entity';
 import { READ_CURRENCY_REPOSITORY } from '../../../constants/inject-key.const';
 import { IReadCurrencyRepository } from '@src/modules/manage/domain/ports/output/currency-repository.interface';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { GetOneQuery } from '../get-one.query';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { CurrencyId } from '@src/modules/manage/domain/value-objects/currency-id.vo';
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @QueryHandler(GetOneQuery)
 export class GetOneQueryHandler
@@ -19,7 +20,10 @@ export class GetOneQueryHandler
   ) {}
   async execute(query: GetOneQuery): Promise<ResponseResult<CurrencyEntity>> {
     if (isNaN(query.id)) {
-      throw new BadRequestException('id must be a number');
+      throw new ManageDomainException(
+        'error.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await findOneOrFail(query.manager, CurrencyOrmEntity, {

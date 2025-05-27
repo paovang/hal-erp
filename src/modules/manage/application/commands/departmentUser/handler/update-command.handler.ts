@@ -2,7 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { UpdateCommand } from '../update.command';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Inject } from '@nestjs/common';
 import {
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
@@ -24,6 +24,7 @@ import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/us
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
 import path from 'path';
 import * as fs from 'fs';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -84,7 +85,10 @@ export class UpdateCommandHandler
       this._dataSource,
       async (manager) => {
         if (isNaN(query.id)) {
-          throw new Error('ID must be a number');
+          throw new ManageDomainException(
+            'errors.must_be_number',
+            HttpStatus.BAD_REQUEST,
+          );
         }
 
         await findOneOrFail(query.manager, UserOrmEntity, {
@@ -104,7 +108,7 @@ export class UpdateCommandHandler
           'email',
           query.dto.email,
           query.manager,
-          'Email already exists',
+          'errors.email_already_exists',
           query.id,
         );
 
@@ -113,7 +117,7 @@ export class UpdateCommandHandler
           'tel',
           query.dto.tel,
           query.manager,
-          'Tel already exists',
+          'errors.tel_already_exists',
           query.id,
         );
         const userEntity = this._dataUserMapper.toEntityForUpdate(query.dto);

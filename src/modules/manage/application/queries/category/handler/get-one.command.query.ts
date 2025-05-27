@@ -2,12 +2,13 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetOneQuery } from '../get-one.query';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CategoryEntity } from '@src/modules/manage/domain/entities/category.entity';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { READ_CATEGORY_REPOSITORY } from '../../../constants/inject-key.const';
 import { IReadCategoryRepository } from '@src/modules/manage/domain/ports/output/category-repository.interface';
 import { CategoryId } from '@src/modules/manage/domain/value-objects/category-id.vo';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { CategoryOrmEntity } from '@src/common/infrastructure/database/typeorm/category.orm';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @QueryHandler(GetOneQuery)
 export class GetOneQueryHandler
@@ -20,7 +21,10 @@ export class GetOneQueryHandler
 
   async execute(query: GetOneQuery): Promise<ResponseResult<CategoryEntity>> {
     if (isNaN(query.id)) {
-      throw new BadRequestException('id must be a number');
+      throw new ManageDomainException(
+        'error.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await findOneOrFail(query.manager, CategoryOrmEntity, {

@@ -6,8 +6,9 @@ import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { IReadUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';
 import { READ_USER_REPOSITORY } from '../../../constants/inject-key.const';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @QueryHandler(GetOneQuery)
 export class GetOneQueryHandler
@@ -20,7 +21,10 @@ export class GetOneQueryHandler
 
   async execute(query: GetOneQuery): Promise<ResponseResult<UserEntity>> {
     if (isNaN(query.id)) {
-      throw new BadRequestException('id must be a number');
+      throw new ManageDomainException(
+        'error.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await findOneOrFail(query.manager, UserOrmEntity, {

@@ -1,6 +1,6 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { DeleteCommand } from '../delete.command';
-import { Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import {
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
@@ -17,6 +17,7 @@ import { UserDataMapper } from '../../../mappers/user.mapper';
 import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -41,7 +42,10 @@ export class DeleteCommandHandler
   async execute(query: DeleteCommand): Promise<void> {
     const userId = Number(query.id);
     if (isNaN(userId)) {
-      throw new Error('ID must be a number');
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     // Ensure user exists

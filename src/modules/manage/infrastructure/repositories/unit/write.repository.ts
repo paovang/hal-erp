@@ -24,12 +24,12 @@ export class WriteUnitRepository implements IWriteUnitRepository {
     entity: UnitEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<UnitEntity>> {
-    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
 
     try {
-      await manager.update(UnitOrmEntity, entity.getId().value, userOrmEntity);
+      await manager.update(UnitOrmEntity, entity.getId().value, OrmEntity);
 
-      return this._dataAccessMapper.toEntity(userOrmEntity);
+      return this._dataAccessMapper.toEntity(OrmEntity);
     } catch (error) {
       throw error;
     }

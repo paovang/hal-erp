@@ -1,6 +1,6 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { WRITE_USER_REPOSITORY } from '../../../constants/inject-key.const';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { UpdateCommand } from '../update-command';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
@@ -10,6 +10,7 @@ import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -22,7 +23,10 @@ export class UpdateCommandHandler
   ) {}
   async execute(query: UpdateCommand): Promise<any> {
     if (isNaN(query.id)) {
-      throw new BadRequestException('ID must be a number');
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await findOneOrFail(query.manager, UserOrmEntity, {
@@ -34,7 +38,7 @@ export class UpdateCommandHandler
       'email',
       query.dto.email,
       query.manager,
-      'Email already exists',
+      'errors.email_already_exists',
       query.id,
     );
     await _checkColumnDuplicate(
@@ -42,7 +46,7 @@ export class UpdateCommandHandler
       'tel',
       query.dto.tel,
       query.manager,
-      'Tel already exists',
+      'errors.tel_already_exists',
       query.id,
     );
 

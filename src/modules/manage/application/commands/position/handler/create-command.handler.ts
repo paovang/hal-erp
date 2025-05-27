@@ -25,7 +25,7 @@ export class CreateCommandHandler
       'name',
       query.dto.name,
       query.manager,
-      'Name already exists',
+      'errors.name_already_exists',
     );
 
     const entity = this._dataMapper.toEntity(query.dto);

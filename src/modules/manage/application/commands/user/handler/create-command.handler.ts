@@ -37,14 +37,14 @@ export class CreateCommandHandler
           'email',
           query.dto.email,
           query.manager,
-          'Email already exists',
+          'errors.email_already_exists',
         );
         await _checkColumnDuplicate(
           UserOrmEntity,
           'tel',
           query.dto.tel,
           query.manager,
-          'Tel already exists',
+          'errors.tel_already_exists',
         );
 
         const hashedPassword = await bcrypt.hash(query.dto.password, 10);

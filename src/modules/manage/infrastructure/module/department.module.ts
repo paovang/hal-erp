@@ -17,6 +17,7 @@ import { CategoryController } from '../../controllers/category.controller';
 import { AmazonS3Module } from '@src/common/infrastructure/aws3/config/aws3.module';
 import { DepartmentApproverController } from '../../controllers/department-approver.controller';
 import { CurrencyController } from '../../controllers/currency.controller';
+import { VendorController } from '../../controllers/vendor.controller';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CurrencyController } from '../../controllers/currency.controller';
     CategoryController,
     DepartmentApproverController,
     CurrencyController,
+    VendorController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

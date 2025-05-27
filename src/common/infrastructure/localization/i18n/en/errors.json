@@ -24,5 +24,11 @@
   "the_resource_was_updated_by_another_transaction": "The resource was updated by another transaction, please reload and try again.",
   "cannot_get_/metrics": "Cannot get metrics",
   "pin_is_missing_from_header": "Please input PIN to header",
-  "pin_is_invalid": "Pin is invalid"
+  "pin_is_invalid": "Pin is invalid",
+  "must_be_number": "Must be number",
+  "name_already_exists": "Name already exists",
+  "email_already_exists": "Email already exists",
+  "code_already_exists": "Code already exists",
+  "tel_already_exists": "Tel already exists",
+  "incorrect_password": "Incorrect password"
 }

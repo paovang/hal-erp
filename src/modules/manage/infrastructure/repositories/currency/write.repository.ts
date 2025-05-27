@@ -24,16 +24,12 @@ export class WriteCurrencyRepository implements IWriteCurrencyRepository {
     entity: CurrencyEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<CurrencyEntity>> {
-    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
 
     try {
-      await manager.update(
-        CurrencyOrmEntity,
-        entity.getId().value,
-        userOrmEntity,
-      );
+      await manager.update(CurrencyOrmEntity, entity.getId().value, OrmEntity);
 
-      return this._dataAccessMapper.toEntity(userOrmEntity);
+      return this._dataAccessMapper.toEntity(OrmEntity);
     } catch (error) {
       throw error;
     }

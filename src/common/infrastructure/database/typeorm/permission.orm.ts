@@ -1,44 +1,56 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from "typeorm";
-import { RoleOrmEntity } from "./role.orm";
-import { PermissionGroupOrmEntity } from "./permission-group.orm";
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+  UpdateDateColumn,
+} from 'typeorm';
+import { RoleOrmEntity } from './role.orm';
+import { PermissionGroupOrmEntity } from './permission-group.orm';
 
 @Entity('permissions')
 export class PermissionOrmEntity {
-    @PrimaryGeneratedColumn({ unsigned: true })
-    id!: number;
+  @PrimaryGeneratedColumn({ unsigned: true })
+  id!: number;
 
-    @Index()
-    @Column({ type: 'varchar', length: 255, unique: true })
-    name: string;
+  @Index()
+  @Column({ type: 'varchar', length: 255, unique: true })
+  name: string;
 
-    @Index()
-    @Column({ type: 'varchar', length: 255, nullable: true })
-    guard_name!: string;
+  @Index()
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  guard_name!: string;
 
-    @Index()
-    @Column({ nullable: true })
-    permission_group_id?: number;
-    @ManyToOne(
+  @Index()
+  @Column({ nullable: true })
+  permission_group_id?: number;
+  @ManyToOne(
     () => PermissionGroupOrmEntity,
     (permission_groups) => permission_groups.permissions,
-    )
-    @JoinColumn({ name: 'permission_group_id' })
-    permission_groups: Relation<PermissionGroupOrmEntity[]>;
+  )
+  @JoinColumn({ name: 'permission_group_id' })
+  permission_groups: Relation<PermissionGroupOrmEntity[]>;
 
-    @ManyToMany(() => RoleOrmEntity, (role) => role.permissions, {
-        onDelete: 'CASCADE',
-        onUpdate: 'NO ACTION',
-    })
-    roles: Relation<RoleOrmEntity[]>;
+  @ManyToMany(() => RoleOrmEntity, (role) => role.permissions, {
+    onDelete: 'CASCADE',
+    onUpdate: 'NO ACTION',
+  })
+  roles: Relation<RoleOrmEntity[]>;
 
-    @CreateDateColumn({ type: 'timestamp' })
-    created_at: Date;
-  
-    @UpdateDateColumn({
-        type: 'timestamp',
-    })
-    updated_at: Date;
-  
-    @DeleteDateColumn({ type: 'timestamp', nullable: true })
-    deleted_at: Date | null;
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+  })
+  updated_at: Date;
+
+  @DeleteDateColumn({ type: 'timestamp', nullable: true })
+  deleted_at: Date | null;
 }

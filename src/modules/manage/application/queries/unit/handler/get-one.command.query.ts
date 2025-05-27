@@ -4,10 +4,11 @@ import { ResponseResult } from '@common/infrastructure/pagination/pagination.int
 import { UnitEntity } from '@src/modules/manage/domain/entities/unit.entity';
 import { READ_UNIT_REPOSITORY } from '../../../constants/inject-key.const';
 import { IReadUnitRepository } from '@src/modules/manage/domain/ports/output/unit-repository.interface';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { UnitId } from '@src/modules/manage/domain/value-objects/unit-id.vo';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @QueryHandler(GetOneQuery)
 export class GetOneQueryHandler
@@ -20,7 +21,10 @@ export class GetOneQueryHandler
 
   async execute(query: GetOneQuery): Promise<ResponseResult<UnitEntity>> {
     if (isNaN(query.id)) {
-      throw new BadRequestException('id must be a number');
+      throw new ManageDomainException(
+        'error.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await findOneOrFail(query.manager, UnitOrmEntity, {

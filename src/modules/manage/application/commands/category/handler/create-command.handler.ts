@@ -33,7 +33,7 @@ export class CreateCommandHandler
       'name',
       query.dto.name,
       query.manager,
-      'Name already exists',
+      'errors.name_already_exists',
     );
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,

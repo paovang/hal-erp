@@ -1,7 +1,7 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { UpdateCommand } from '../update.command';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
-import { Inject, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Inject, NotFoundException } from '@nestjs/common';
 import { WRITE_DOCUMENT_TYPE_REPOSITORY } from '../../../constants/inject-key.const';
 import { IWriteDocumentTypeRepository } from '@src/modules/manage/domain/ports/output/document-type-repository.interface';
 import { DocumentTypeDataMapper } from '../../../mappers/document-type.mapper';
@@ -10,6 +10,7 @@ import { DocumentTypeId } from '@src/modules/manage/domain/value-objects/documen
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -25,7 +26,10 @@ export class UpdateCommandHandler
     let { code } = query.dto;
 
     if (isNaN(query.id)) {
-      throw new Error('ID must be a number');
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await findOneOrFail(query.manager, DocumentTypeOrmEntity, {
@@ -37,7 +41,7 @@ export class UpdateCommandHandler
       'name',
       query.dto.name,
       query.manager,
-      'Name already exists',
+      'errors.name_already_exists',
       query.id,
     );
 

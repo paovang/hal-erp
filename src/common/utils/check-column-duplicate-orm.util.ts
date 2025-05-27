@@ -1,4 +1,5 @@
-import { BadRequestException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { Not } from 'typeorm';
 
 export async function _checkColumnDuplicate<T>(
@@ -18,6 +19,6 @@ export async function _checkColumnDuplicate<T>(
   const existing = await manager.findOne(entity, { where });
 
   if (existing) {
-    throw new BadRequestException(errorMessage);
+    throw new ManageDomainException(errorMessage, HttpStatus.BAD_REQUEST);
   }
 }

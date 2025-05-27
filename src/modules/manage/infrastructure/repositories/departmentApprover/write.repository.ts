@@ -28,16 +28,16 @@ export class WriteDepartmentApproverRepository
     entity: DepartmentApproverEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentApproverEntity>> {
-    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
 
     try {
       await manager.update(
         DepartmentApproverOrmEntity,
         entity.getId().value,
-        userOrmEntity,
+        OrmEntity,
       );
 
-      return this._dataAccessMapper.toEntity(userOrmEntity);
+      return this._dataAccessMapper.toEntity(OrmEntity);
     } catch (error) {
       throw error;
     }

@@ -24,5 +24,11 @@
   "the_resource_was_updated_by_another_transaction": "ການດຳເນີນການໄດ້ຮັບການອັບເດດໂດຍການຮ້ອງຂໍອື່ນ, ກະລຸນາລອງໃໝ່ອີກຄັ້ງ",
   "cannot_get_/metrics": "ບໍ່ສາມາດດຶງຂໍ້ມູນ metrics",
   "pin_is_missing_from_header": "ກະລຸນາປ້ອນ PIN",
-  "pin_is_invalid": "Pin ບໍ່ຖືກຕ້ອງ"
+  "pin_is_invalid": "Pin ບໍ່ຖືກຕ້ອງ",
+  "must_be_number": "ຕ້ອງເປັນເລກ",
+  "name_already_exists": "ຊື່ມີໃນລະບົບແລ້ວ",
+  "email_already_exists": "ອີເມວມີໃນລະບົບແລ້ວ",
+  "code_already_exists": "ລະຫັດມີໃນລະບົບແລ້ວ",
+  "tel_already_exists": "ເບີໂທມີໃນລະບົບແລ້ວ",
+  "incorrect_password": "ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ"
 }

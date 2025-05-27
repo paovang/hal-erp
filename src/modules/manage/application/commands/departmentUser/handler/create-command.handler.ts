@@ -78,7 +78,7 @@ export class CreateCommandHandler
       'email',
       query.dto.email,
       query.manager,
-      'Email already exists',
+      'errors.email_already_exists',
     );
 
     await _checkColumnDuplicate(
@@ -86,7 +86,7 @@ export class CreateCommandHandler
       'tel',
       query.dto.tel,
       query.manager,
-      'Tel already exists',
+      'errors.tel_already_exists',
     );
 
     return await this._transactionManagerService.runInTransaction(

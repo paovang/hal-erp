@@ -4,10 +4,11 @@ import { ResponseResult } from '@common/infrastructure/pagination/pagination.int
 import { RoleEntity } from '@src/modules/manage/domain/entities/role.entity';
 import { READ_ROLE_REPOSITORY } from '@src/modules/manage/application/constants/inject-key.const';
 import { IReadRoleRepository } from '@src/modules/manage/domain/ports/output/role-repository.interface';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.orm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { RoleId } from '@src/modules/manage/domain/value-objects/role-id.vo';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @QueryHandler(GetOneQuery)
 export class GetOneQueryHandler
@@ -20,7 +21,10 @@ export class GetOneQueryHandler
 
   async execute(query: GetOneQuery): Promise<ResponseResult<RoleEntity>> {
     if (isNaN(query.id)) {
-      throw new BadRequestException('id must be a number');
+      throw new ManageDomainException(
+        'error.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await findOneOrFail(query.manager, RoleOrmEntity, {

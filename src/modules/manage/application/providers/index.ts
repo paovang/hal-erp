@@ -8,6 +8,7 @@ import { PositionProvider } from './position';
 import { CategoryProvider } from './category';
 import { DepartmentApproverProvider } from './departmentApprover';
 import { CurrencyProvider } from './currency';
+import { VendorProvider } from './vendor';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
@@ -19,4 +20,5 @@ export const AllRegisterProviders: Provider[] = [
   ...CategoryProvider,
   ...DepartmentApproverProvider,
   ...CurrencyProvider,
+  ...VendorProvider,
 ];

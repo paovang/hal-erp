@@ -2,12 +2,13 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetOneQuery } from '../get-one.query';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { READ_DEPARTMENT_USER_REPOSITORY } from '../../../constants/inject-key.const';
 import { IReadDepartmentUserRepository } from '@src/modules/manage/domain/ports/output/department-user-repository.interface';
 import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @QueryHandler(GetOneQuery)
 export class GetOneQueryHandler
@@ -22,7 +23,10 @@ export class GetOneQueryHandler
     query: GetOneQuery,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     if (isNaN(query.id)) {
-      throw new BadRequestException('id must be a number');
+      throw new ManageDomainException(
+        'error.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await findOneOrFail(query.manager, DepartmentUserOrmEntity, {

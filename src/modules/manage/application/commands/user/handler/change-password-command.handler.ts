@@ -4,12 +4,13 @@ import { ResponseResult } from '@common/infrastructure/pagination/pagination.int
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';
 import { WRITE_USER_REPOSITORY } from '../../../constants/inject-key.const';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { UserDataMapper } from '../../../mappers/user.mapper';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
 import * as bcrypt from 'bcrypt';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @CommandHandler(ChangePasswordCommand)
 export class ChangePasswordCommandHandler
@@ -22,7 +23,10 @@ export class ChangePasswordCommandHandler
   ) {}
   async execute(query: ChangePasswordCommand): Promise<any> {
     if (isNaN(query.id)) {
-      throw new BadRequestException('ID must be a number');
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const user = await findOneOrFail(query.manager, UserOrmEntity, {
@@ -34,7 +38,10 @@ export class ChangePasswordCommandHandler
     // Compare input old password with stored hashed password
     const isMatch = await bcrypt.compare(query.dto.old_password, password);
     if (!isMatch) {
-      throw new BadRequestException('Old password is not correct');
+      throw new ManageDomainException(
+        'errors.incorrect_password',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     // Hash new password

@@ -39,7 +39,7 @@ export class CreateCommandHandler
             'code',
             item.code,
             query.manager,
-            `Code ${item.code} already exists`,
+            'errors.code_already_exists',
           );
 
           await _checkColumnDuplicate(
@@ -47,7 +47,7 @@ export class CreateCommandHandler
             'name',
             item.name,
             query.manager,
-            `Name ${item.name} already exists`,
+            'errors.name_already_exists',
           );
           const mapToEntity = this._dataMapper.toEntity(item);
           const result = await this._write.create(mapToEntity, manager);

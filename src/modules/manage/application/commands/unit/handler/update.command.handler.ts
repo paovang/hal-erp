@@ -34,7 +34,7 @@ export class UpdateCommandHandler
       'name',
       query.dto.name,
       query.manager,
-      'Name already exists',
+      'errors.name_already_exists',
       query.id,
     );
 

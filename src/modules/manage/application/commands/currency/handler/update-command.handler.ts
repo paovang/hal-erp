@@ -3,13 +3,14 @@ import { UpdateCommand } from '../update.command';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { CurrencyEntity } from '@src/modules/manage/domain/entities/currency.entity';
 import { WRITE_CURRENCY_REPOSITORY } from '../../../constants/inject-key.const';
-import { Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { IWriteCurrencyRepository } from '@src/modules/manage/domain/ports/output/currency-repository.interface';
 import { CurrencyDataMapper } from '../../../mappers/currency.mapper';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { CurrencyId } from '@src/modules/manage/domain/value-objects/currency-id.vo';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -23,7 +24,10 @@ export class UpdateCommandHandler
 
   async execute(query: UpdateCommand): Promise<ResponseResult<CurrencyEntity>> {
     if (isNaN(query.id)) {
-      throw new Error('ID must be a number');
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await _checkColumnDuplicate(
@@ -31,7 +35,7 @@ export class UpdateCommandHandler
       'code',
       query.dto.code,
       query.manager,
-      `Code ${query.dto.code} already exists`,
+      'errors.code_already_exists',
       query.id,
     );
 
@@ -40,7 +44,7 @@ export class UpdateCommandHandler
       'name',
       query.dto.name,
       query.manager,
-      `Name ${query.dto.name} already exists`,
+      'errors.name_already_exists',
       query.id,
     );
 

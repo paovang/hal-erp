@@ -32,16 +32,8 @@ export class CreateCommandHandler
       'name',
       query.dto.name,
       query.manager,
-      'Name already exists',
+      'errors.name_already_exists',
     );
-
-    // const existing = await query.manager.findOne(DocumentTypeOrmEntity, {
-    //   where: { name: query.dto.name },
-    // });
-
-    // if (existing) {
-    //   throw new Error('Document type name already exists');
-    // }
 
     if (!code) {
       code = await this._codeGeneratorUtil.generateUniqueCode(

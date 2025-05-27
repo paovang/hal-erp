@@ -11,6 +11,8 @@ import { RoleOrmEntity } from './typeorm/role.orm';
 import { SeederLogOrmEntity } from './typeorm/seeder-log.orm';
 import { UnitOrmEntity } from './typeorm/unit.orm';
 import { UserOrmEntity } from './typeorm/user.orm';
+import { VendorOrmEntity } from './typeorm/vendor.orm';
+import { VendorBankAccountOrmEntity } from './typeorm/vendor_bank_account.orm';
 
 export const models = [
   DepartmentOrmEntity,
@@ -26,4 +28,6 @@ export const models = [
   PermissionGroupOrmEntity,
   CurrencyOrmEntity,
   CategoryOrmEntity,
+  VendorOrmEntity,
+  VendorBankAccountOrmEntity,
 ];

@@ -24,16 +24,12 @@ export class WriteCategoryRepository implements IWriteCategoryRepository {
     entity: CategoryEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<CategoryEntity>> {
-    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
 
     try {
-      await manager.update(
-        CategoryOrmEntity,
-        entity.getId().value,
-        userOrmEntity,
-      );
+      await manager.update(CategoryOrmEntity, entity.getId().value, OrmEntity);
 
-      return this._dataAccessMapper.toEntity(userOrmEntity);
+      return this._dataAccessMapper.toEntity(OrmEntity);
     } catch (error) {
       throw error;
     }
