@@ -13,6 +13,7 @@ import {
 import { DepartmentUserOrmEntity } from './department-user.orm';
 import { DepartmentApproverOrmEntity } from './department-approver.orm';
 import { RoleOrmEntity } from './role.orm';
+import { BudgetApprovalRuleOrmEntity } from './budget-approval-rule.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -48,11 +49,11 @@ export class UserOrmEntity {
   // )
   // user_approval_steps: Relation<UserApprovalStepEntity[]>;
 
-  // @OneToMany(
-  // () => BudgetApprovalRuleEntity,
-  //     (budget_approval_rules) => budget_approval_rules.users,
-  // )
-  // budget_approval_rules: Relation<BudgetApprovalRuleEntity[]>;
+  @OneToMany(
+    () => BudgetApprovalRuleOrmEntity,
+    (budget_approval_rules) => budget_approval_rules.users,
+  )
+  budget_approval_rules: Relation<BudgetApprovalRuleOrmEntity[]>;
 
   @OneToMany(
     () => DepartmentApproverOrmEntity,

@@ -4,15 +4,14 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
+  //   JoinColumn,
+  //   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { DepartmentOrmEntity } from './department.orm';
-import { DocumentTypeOrmEntity } from './document-type.orm';
+// import { DocumentTypeOrmEntity } from './document-type.orm';
 import { SubBudgetAccountOrmEntity } from './sub-buget-account.orm';
 
 @Entity('budget_accounts')
@@ -40,25 +39,25 @@ export class BudgetAccountOrmEntity {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @Index()
-  @Column({ nullable: true })
-  department_id?: number;
-  @ManyToOne(
-    () => DepartmentOrmEntity,
-    (departments) => departments.budget_accounts,
-  )
-  @JoinColumn({ name: 'department_id' })
-  departments: Relation<DepartmentOrmEntity>;
+  //   @Index()
+  //   @Column({ nullable: true })
+  //   department_id?: number;
+  //   @ManyToOne(
+  //     () => DepartmentOrmEntity,
+  //     (departments) => departments.budget_accounts,
+  //   )
+  //   @JoinColumn({ name: 'department_id' })
+  //   departments: Relation<DepartmentOrmEntity>;
 
-  @Index()
-  @Column({ nullable: true })
-  document_type_id?: number;
-  @ManyToOne(
-    () => DocumentTypeOrmEntity,
-    (document_types) => document_types.budget_accounts,
-  )
-  @JoinColumn({ name: 'document_type_id' })
-  document_types: Relation<DocumentTypeOrmEntity>;
+  //   @Index()
+  //   @Column({ nullable: true })
+  //   document_type_id?: number;
+  //   @ManyToOne(
+  //     () => DocumentTypeOrmEntity,
+  //     (document_types) => document_types.budget_accounts,
+  //   )
+  //   @JoinColumn({ name: 'document_type_id' })
+  //   document_types: Relation<DocumentTypeOrmEntity>;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

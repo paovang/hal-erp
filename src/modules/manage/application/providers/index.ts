@@ -9,6 +9,7 @@ import { CategoryProvider } from './category';
 import { DepartmentApproverProvider } from './departmentApprover';
 import { CurrencyProvider } from './currency';
 import { VendorProvider } from './vendor';
+import { VendorBankAccountProvider } from './vendorBankAccount';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
@@ -21,4 +22,5 @@ export const AllRegisterProviders: Provider[] = [
   ...DepartmentApproverProvider,
   ...CurrencyProvider,
   ...VendorProvider,
+  ...VendorBankAccountProvider,
 ];

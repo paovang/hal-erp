@@ -1,4 +1,4 @@
-import { BudgetAccountOrmEntity } from './typeorm/budget-account.orm';
+import { BudgetApprovalRuleOrmEntity } from './typeorm/budget-approval-rule.orm';
 import { CategoryOrmEntity } from './typeorm/category.orm';
 import { CurrencyOrmEntity } from './typeorm/currency.orm';
 import { DepartmentApproverOrmEntity } from './typeorm/department-approver.orm';
@@ -10,7 +10,6 @@ import { PermissionOrmEntity } from './typeorm/permission.orm';
 import { PositionOrmEntity } from './typeorm/position.orm';
 import { RoleOrmEntity } from './typeorm/role.orm';
 import { SeederLogOrmEntity } from './typeorm/seeder-log.orm';
-import { SubBudgetAccountOrmEntity } from './typeorm/sub-buget-account.orm';
 import { UnitOrmEntity } from './typeorm/unit.orm';
 import { UserOrmEntity } from './typeorm/user.orm';
 import { VendorOrmEntity } from './typeorm/vendor.orm';
@@ -32,6 +31,7 @@ export const models = [
   CategoryOrmEntity,
   VendorOrmEntity,
   VendorBankAccountOrmEntity,
-  BudgetAccountOrmEntity,
-  SubBudgetAccountOrmEntity,
+  BudgetApprovalRuleOrmEntity,
+  // BudgetAccountOrmEntity,
+  // SubBudgetAccountOrmEntity,
 ];

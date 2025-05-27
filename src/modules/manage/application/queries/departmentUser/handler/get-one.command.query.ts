@@ -24,7 +24,7 @@ export class GetOneQueryHandler
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     if (isNaN(query.id)) {
       throw new ManageDomainException(
-        'error.must_be_number',
+        'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
       );
     }

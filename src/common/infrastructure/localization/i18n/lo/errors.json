@@ -25,7 +25,7 @@
   "cannot_get_/metrics": "ບໍ່ສາມາດດຶງຂໍ້ມູນ metrics",
   "pin_is_missing_from_header": "ກະລຸນາປ້ອນ PIN",
   "pin_is_invalid": "Pin ບໍ່ຖືກຕ້ອງ",
-  "must_be_number": "ຕ້ອງເປັນເລກ",
+  "must_be_number": "ຕ້ອງເປັນຕົວເລກ",
   "name_already_exists": "ຊື່ມີໃນລະບົບແລ້ວ",
   "email_already_exists": "ອີເມວມີໃນລະບົບແລ້ວ",
   "code_already_exists": "ລະຫັດມີໃນລະບົບແລ້ວ",

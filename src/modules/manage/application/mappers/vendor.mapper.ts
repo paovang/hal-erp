@@ -27,7 +27,7 @@ export class VendorDataMapper {
   /** Mapper Entity To Response */
   toResponse(entity: VendorEntity): VendorResponse {
     const response = new VendorResponse();
-    response.id = entity.getId().value;
+    response.id = Number(entity.getId().value);
     response.name = entity.name;
     response.contact_info = entity.contactInfo;
     response.created_at = moment
