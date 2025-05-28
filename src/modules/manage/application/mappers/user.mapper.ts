@@ -7,6 +7,7 @@ import moment from 'moment-timezone';
 import { UserResponse } from '../dto/response/user.response';
 import { UpdateUserDto } from '../dto/create/user/update.dto';
 import { ChangePasswordDto } from '../dto/create/user/change-password.dto';
+import { SendMailDto } from '../dto/create/user/send-email.dto';
 
 @Injectable()
 export class UserDataMapper {
@@ -28,6 +29,16 @@ export class UserDataMapper {
 
     if (dto.password) {
       builder.setPassword(dto.password);
+    }
+
+    return builder.build();
+  }
+
+  toEntitySendEmail(dto: SendMailDto): UserEntity {
+    const builder = UserEntity.builder();
+
+    if (dto.email) {
+      builder.setEmail(dto.email);
     }
 
     return builder.build();

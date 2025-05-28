@@ -2,7 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { UpdateCommand } from '../update.command';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CategoryEntity } from '@src/modules/manage/domain/entities/category.entity';
-import { Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { WRITE_CATEGORY_REPOSITORY } from '../../../constants/inject-key.const';
 import { IWriteCategoryRepository } from '@src/modules/manage/domain/ports/output/category-repository.interface';
 import { CategoryDataMapper } from '../../../mappers/category.mapper';
@@ -10,6 +10,7 @@ import { CategoryId } from '@src/modules/manage/domain/value-objects/category-id
 import { CategoryOrmEntity } from '@src/common/infrastructure/database/typeorm/category.orm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -23,7 +24,10 @@ export class UpdateCommandHandler
 
   async execute(query: UpdateCommand): Promise<any> {
     if (isNaN(query.id)) {
-      throw new Error('ID must be a number');
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await _checkColumnDuplicate(
@@ -31,7 +35,7 @@ export class UpdateCommandHandler
       'name',
       query.dto.name,
       query.manager,
-      'Name already exists',
+      'errors.name_already_exists',
       query.id,
     );
 

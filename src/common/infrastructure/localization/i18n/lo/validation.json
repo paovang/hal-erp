@@ -7,5 +7,7 @@
     "TEL_LENGTH": "{property} ຕ້ອງຢູ່ລະຫວ່າງ 6 ເຖິງ 20 ຕົວອັກສອນ.",
     "IS_NUMBER": "{property} ຕ້ອງເປັນຕົວເລກ.",
     "PASSWORD_LENGTH": "{property} ຕ້ອງຢູ່ລະຫວ່າງ 6 ເຖິງ 255 ຕົວອັກສອນ.",
-    "IS_ARRAY": "{property} ຕ້ອງເປັນອາເຣ."
+    "IS_ARRAY": "{property} ຕ້ອງເປັນອາເຣ.",
+    "IS_DEFINED": "ຕ້ອງຕື່ມຂໍ້ມູນນີ້.",
+    "IS_BOOLEAN": "ຂໍ້ມູນນີ້ຕ້ອງເປັນ true ຫຼື false."
 }

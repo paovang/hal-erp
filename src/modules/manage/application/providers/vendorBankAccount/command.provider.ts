@@ -4,6 +4,7 @@ import { GetAllQueryHandler } from '../../queries/vendorBankAccount/handler/get-
 import { GetOneQueryHandler } from '../../queries/vendorBankAccount/handler/get-one.command.query';
 import { UpdateCommandHandler } from '../../commands/vendorBankAccount/handler/update-command.handler';
 import { DeleteCommandHandler } from '../../commands/vendorBankAccount/handler/delete-command.handler';
+import { UseBankAccountCommandHandler } from '../../commands/vendorBankAccount/handler/use-bank-account-command.handler';
 
 export const VendorBankAccountHandlersProviders: Provider[] = [
   CreateCommandHandler,
@@ -11,4 +12,5 @@ export const VendorBankAccountHandlersProviders: Provider[] = [
   GetOneQueryHandler,
   UpdateCommandHandler,
   DeleteCommandHandler,
+  UseBankAccountCommandHandler,
 ];

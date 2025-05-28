@@ -8,6 +8,7 @@ import { VendorBankAccountResponse } from '../dto/response/vendor-bank-account.r
 import { VendorDataMapper } from './vendor.mapper';
 import { CurrencyDataMapper } from './currency.mapper';
 import { UpdateVendorBankAccountDto } from '../dto/create/vendorBankAccount/update.dto';
+import { UseBankAccountDto } from '../dto/create/vendorBankAccount/use-bank-account.dto';
 
 @Injectable()
 export class VendorBankAccountDataMapper {
@@ -40,6 +41,15 @@ export class VendorBankAccountDataMapper {
     if (dto.account_number) {
       builder.setAccountNumber(dto.account_number);
     }
+
+    return builder.build();
+  }
+
+  toEntityForUseBankAccount(dto: UseBankAccountDto): VendorBankAccountEntity {
+    const builder = VendorBankAccountEntity.builder();
+
+    // Always set the boolean value, even if it's false
+    builder.setIsSelected(dto.is_selected);
 
     return builder.build();
   }

@@ -43,6 +43,25 @@ export class WriteVendorBankAccountRepository
     }
   }
 
+  async useBankAccount(
+    entity: VendorBankAccountEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<VendorBankAccountEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+
+    try {
+      await manager.update(
+        VendorBankAccountOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async delete(id: VendorBankAccountId, manager: EntityManager): Promise<void> {
     try {
       await manager.softDelete(VendorBankAccountOrmEntity, id.value);

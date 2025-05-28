@@ -6,6 +6,7 @@ import { CreateUserDto } from '@src/modules/manage/application/dto/create/user/c
 import { UserQueryDto } from '@src/modules/manage/application/dto/query/user-query.dto';
 import { UpdateUserDto } from '@src/modules/manage/application/dto/create/user/update.dto';
 import { ChangePasswordDto } from '@src/modules/manage/application/dto/create/user/change-password.dto';
+import { SendMailDto } from '@src/modules/manage/application/dto/create/user/send-email.dto';
 
 export interface IUserServiceInterface {
   getAll(
@@ -32,6 +33,11 @@ export interface IUserServiceInterface {
   changePassword(
     id: number,
     dto: ChangePasswordDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<UserEntity>>;
+
+  sendMail(
+    dto: SendMailDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<UserEntity>>;
 

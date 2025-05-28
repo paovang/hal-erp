@@ -65,33 +65,33 @@ export class CreateCommandHandler
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
-    await findOneOrFail(query.manager, PositionOrmEntity, {
-      id: query.dto.positionId,
-    });
-
-    await findOneOrFail(query.manager, PositionOrmEntity, {
-      id: query.dto.departmentId,
-    });
-
-    await _checkColumnDuplicate(
-      UserOrmEntity,
-      'email',
-      query.dto.email,
-      query.manager,
-      'errors.email_already_exists',
-    );
-
-    await _checkColumnDuplicate(
-      UserOrmEntity,
-      'tel',
-      query.dto.tel,
-      query.manager,
-      'errors.tel_already_exists',
-    );
-
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        await findOneOrFail(query.manager, PositionOrmEntity, {
+          id: query.dto.positionId,
+        });
+
+        await findOneOrFail(query.manager, PositionOrmEntity, {
+          id: query.dto.departmentId,
+        });
+
+        await _checkColumnDuplicate(
+          UserOrmEntity,
+          'email',
+          query.dto.email,
+          query.manager,
+          'errors.email_already_exists',
+        );
+
+        await _checkColumnDuplicate(
+          UserOrmEntity,
+          'tel',
+          query.dto.tel,
+          query.manager,
+          'errors.tel_already_exists',
+        );
+
         const hashedPassword = await bcrypt.hash(query.dto.password, 10);
 
         const dtoWithHashedPassword = {

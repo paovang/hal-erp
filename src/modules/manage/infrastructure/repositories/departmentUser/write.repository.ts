@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import { IWriteDepartmentUserRepository } from '@src/modules/manage/domain/ports/output/department-user-repository.interface';
@@ -6,6 +6,7 @@ import { EntityManager, UpdateResult } from 'typeorm';
 import { DepartmentUserDataAccessMapper } from '../../mappers/department-user.mapper';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @Injectable()
 export class WriteDepartmentUserRepository
@@ -41,7 +42,10 @@ export class WriteDepartmentUserRepository
 
       return this._dataAccessMapper.toEntity(updated);
     } catch (error) {
-      throw new Error(`Update DepartmentUser failed: ${error.message}`);
+      throw new ManageDomainException(
+        'errors.internal_service_error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

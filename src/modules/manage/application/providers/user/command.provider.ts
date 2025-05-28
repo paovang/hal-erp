@@ -5,6 +5,7 @@ import { GetOneQueryHandler } from '../../queries/user/handler/get-one.command.q
 import { UpdateCommandHandler } from '../../commands/user/handler/update-command.handler';
 import { DeleteCommandHandler } from '../../commands/user/handler/delete-command.handler';
 import { ChangePasswordCommandHandler } from '../../commands/user/handler/change-password-command.handler';
+import { SendMailCommandHandler } from '../../commands/user/handler/send-mail-command.handler';
 
 export const UserHandlersProviders: Provider[] = [
   CreateCommandHandler,
@@ -13,4 +14,5 @@ export const UserHandlersProviders: Provider[] = [
   UpdateCommandHandler,
   DeleteCommandHandler,
   ChangePasswordCommandHandler,
+  SendMailCommandHandler,
 ];

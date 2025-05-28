@@ -15,6 +15,11 @@ export interface IWriteVendorBankAccountRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<VendorBankAccountEntity>>;
 
+  useBankAccount(
+    entity: VendorBankAccountEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<VendorBankAccountEntity>>;
+
   delete(id: VendorBankAccountId, manager: EntityManager): Promise<void>;
 }
 

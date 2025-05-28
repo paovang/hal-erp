@@ -39,7 +39,6 @@ export class ReadVendorBankAccountRepository
       this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
       this.getFilterOptions(),
     );
-    console.log('object', data);
     return data;
   }
 

@@ -30,5 +30,6 @@
   "email_already_exists": "ອີເມວມີໃນລະບົບແລ້ວ",
   "code_already_exists": "ລະຫັດມີໃນລະບົບແລ້ວ",
   "tel_already_exists": "ເບີໂທມີໃນລະບົບແລ້ວ",
-  "incorrect_password": "ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ"
+  "incorrect_password": "ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ",
+  "min_amount_greater_than_max_amount": "ຈຳນວນຂັ້ນຕ່ຳຕ້ອງນ້ອຍກວ່າຈຳນວນສູງສຸດ"
 }

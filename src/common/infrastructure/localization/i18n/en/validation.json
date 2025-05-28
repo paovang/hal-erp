@@ -7,5 +7,7 @@
     "TEL_LENGTH": "{property} must be between 6 and 20 characters.",
     "IS_NUMBER": "{property} must be a number.",
     "PASSWORD_LENGTH": "{property} must be between 6 and 255 characters.",
-    "IS_ARRAY": "{property} must be an array."
+    "IS_ARRAY": "{property} must be an array.",
+    "IS_DEFINED": "This field is required.",
+    "IS_BOOLEAN": "This field must be true or false."
 }

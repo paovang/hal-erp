@@ -27,7 +27,7 @@ export class DepartmentDataMapper {
   /** Mapper Entity To Response */
   toResponse(entity: DepartmentEntity): DepartmentResponse {
     const response = new DepartmentResponse();
-    response.id = entity.getId().value;
+    response.id = Number(entity.getId().value);
     response.code = entity.code;
     response.name = entity.name;
     response.created_at = moment

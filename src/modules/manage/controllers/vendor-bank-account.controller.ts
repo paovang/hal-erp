@@ -19,6 +19,7 @@ import { CreateVendorBankAccountDto } from '../application/dto/create/vendorBank
 import { VendorBankAccountResponse } from '../application/dto/response/vendor-bank-account.response';
 import { VendorBankAccountQueryDto } from '../application/dto/query/vendor-bank-account-query.dto';
 import { UpdateVendorBankAccountDto } from '../application/dto/create/vendorBankAccount/update.dto';
+import { UseBankAccountDto } from '../application/dto/create/vendorBankAccount/use-bank-account.dto';
 
 @Controller('vendor_bank_accounts')
 export class VendorBankAccountController {
@@ -71,6 +72,19 @@ export class VendorBankAccountController {
     @Body() dto: UpdateVendorBankAccountDto,
   ): Promise<ResponseResult<VendorBankAccountResponse>> {
     const result = await this._vendorBankAccountService.update(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Put('use/:id')
+  async UseBankAccount(
+    @Param('id') id: number,
+    @Body() dto: UseBankAccountDto,
+  ): Promise<ResponseResult<VendorBankAccountResponse>> {
+    const result = await this._vendorBankAccountService.useBankAccount(id, dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

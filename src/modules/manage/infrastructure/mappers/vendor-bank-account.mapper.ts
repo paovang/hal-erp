@@ -30,6 +30,7 @@ export class VendorBankAccountDataAccessMapper {
     mediaOrmEntity.account_name = vendorBankAccountEntity.accountName;
     mediaOrmEntity.account_number = vendorBankAccountEntity.accountNumber;
     mediaOrmEntity.bank_name = vendorBankAccountEntity.bankName;
+    mediaOrmEntity.is_selected = vendorBankAccountEntity.isSelected;
     mediaOrmEntity.created_at =
       vendorBankAccountEntity.createdAt ?? new Date(now);
     mediaOrmEntity.updated_at = new Date(now);

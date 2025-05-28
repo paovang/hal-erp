@@ -13,6 +13,8 @@ import { GetOneQuery } from '../queries/vendorBankAccount/get-one.query';
 import { UpdateVendorBankAccountDto } from '../dto/create/vendorBankAccount/update.dto';
 import { UpdateCommand } from '../commands/vendorBankAccount/update.command';
 import { DeleteCommand } from '../commands/vendorBankAccount/delete.command';
+import { UseBankAccountDto } from '../dto/create/vendorBankAccount/use-bank-account.dto';
+import { UseBankAccountCommand } from '../commands/vendorBankAccount/use-bank-account.command';
 
 @Injectable()
 export class VendorBankAccountService
@@ -59,6 +61,16 @@ export class VendorBankAccountService
   ): Promise<ResponseResult<VendorBankAccountEntity>> {
     return await this._commandBus.execute(
       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async useBankAccount(
+    id: number,
+    dto: UseBankAccountDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<VendorBankAccountEntity>> {
+    return await this._commandBus.execute(
+      new UseBankAccountCommand(id, dto, manager ?? this._readEntityManager),
     );
   }
 

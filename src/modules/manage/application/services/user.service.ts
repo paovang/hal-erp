@@ -15,6 +15,8 @@ import { UpdateCommand } from '../commands/user/update-command';
 import { DeleteCommand } from '../commands/user/delete.command';
 import { ChangePasswordDto } from '../dto/create/user/change-password.dto';
 import { ChangePasswordCommand } from '../commands/user/change-password.command';
+import { SendMailDto } from '../dto/create/user/send-email.dto';
+import { SendMailCommand } from '../commands/user/send-mail.command';
 
 @Injectable()
 export class UserService implements IUserServiceInterface {
@@ -69,6 +71,15 @@ export class UserService implements IUserServiceInterface {
   ): Promise<ResponseResult<UserEntity>> {
     return await this._commandBus.execute(
       new ChangePasswordCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async sendMail(
+    dto: SendMailDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<UserEntity>> {
+    return await this._commandBus.execute(
+      new SendMailCommand(dto, manager ?? this._readEntityManager),
     );
   }
 

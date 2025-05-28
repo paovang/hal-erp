@@ -23,7 +23,9 @@ export class UpdateCommandHandler
     private readonly _write: IWriteVendorBankAccountRepository,
     private readonly _dataMapper: VendorBankAccountDataMapper,
   ) {}
-  async execute(query: UpdateCommand): Promise<any> {
+  async execute(
+    query: UpdateCommand,
+  ): Promise<ResponseResult<VendorBankAccountEntity>> {
     if (isNaN(query.id)) {
       throw new ManageDomainException(
         'errors.must_be_number',

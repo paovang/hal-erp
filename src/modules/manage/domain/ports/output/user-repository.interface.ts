@@ -25,6 +25,11 @@ export interface IWriteUserRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>>;
 
+  sendMail(
+    entity: UserEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<UserEntity>>;
+
   delete(id: UserId, manager: EntityManager): Promise<void>;
 }
 

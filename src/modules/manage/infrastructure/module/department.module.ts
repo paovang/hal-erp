@@ -19,6 +19,7 @@ import { DepartmentApproverController } from '../../controllers/department-appro
 import { CurrencyController } from '../../controllers/currency.controller';
 import { VendorController } from '../../controllers/vendor.controller';
 import { VendorBankAccountController } from '../../controllers/vendor-bank-account.controller';
+import { BudgetApprovalRuleController } from '../../controllers/budget-approval-rule.controller';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { VendorBankAccountController } from '../../controllers/vendor-bank-accou
     CurrencyController,
     VendorController,
     VendorBankAccountController,
+    BudgetApprovalRuleController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
