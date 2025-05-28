@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class UpdateSchema1748363497074 implements MigrationInterface {
-  name = 'UpdateSchema1748363497074';
+export class UpdateSchema1748191550333 implements MigrationInterface {
+  name = 'UpdateSchema1748191550333';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -9,9 +9,6 @@ export class UpdateSchema1748363497074 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_5c70dc5aa01e351730e4ffc929" ON "positions" ("name") `,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "department_approvers" ("id" SERIAL NOT NULL, "department_id" bigint, "user_id" integer, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_b5aff9d5ab1da388aeb6062b11e" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TYPE "public"."permission_groups_type_enum" AS ENUM('all', 'admin', 'user')`,
@@ -77,64 +74,7 @@ export class UpdateSchema1748363497074 implements MigrationInterface {
       `CREATE INDEX "IDX_8681da666ad9699d568b3e9106" ON "departments" ("name") `,
     );
     await queryRunner.query(
-      `CREATE TABLE "budget_approval_rules" ("id" SERIAL NOT NULL, "department_id" bigint, "approver_id" integer, "min_amount" double precision, "max_amount" double precision, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_4892be6b3cf5860ab1da2bde6f1" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_352ff3cc7da4c58dd0d4e7f51d" ON "budget_approval_rules" ("department_id") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_fc0d663d0646938057ba235e7c" ON "budget_approval_rules" ("approver_id") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_d01591ee27a474ea3de84fd734" ON "budget_approval_rules" ("min_amount") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_4f867671781e4c4c997721bd24" ON "budget_approval_rules" ("max_amount") `,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "categories" ("id" SERIAL NOT NULL, "name" character varying(255), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_24dbc6126a28ff948da33e97d3b" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_8b0be371d28245da6e4f4b6187" ON "categories" ("name") `,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "vendors" ("id" BIGSERIAL NOT NULL, "name" character varying(255), "contact_info" text, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_9c956c9797edfae5c6ddacc4e6e" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_83065ec2a2c5052786c122e95b" ON "vendors" ("name") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_a6d0d6d1231d28af3ce366a35c" ON "vendors" ("contact_info") `,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "vendor_bank_accounts" ("id" BIGSERIAL NOT NULL, "vendor_id" bigint, "currency_id" integer, "bank_name" character varying(255), "account_name" character varying(255), "account_number" character varying(255), "is_selected" boolean NOT NULL DEFAULT false, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_737114e245e303e951b7cc3f0c9" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_94e674d49212d992777ba20b8f" ON "vendor_bank_accounts" ("vendor_id") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_4c4586a1097b110383d2d66f9b" ON "vendor_bank_accounts" ("currency_id") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_29f8d70c24dbe1116c9b2be8de" ON "vendor_bank_accounts" ("bank_name") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_1e82bcf21b052d5e2e9f6f9c50" ON "vendor_bank_accounts" ("account_name") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_b99cc1ebfc148d34854c867d7b" ON "vendor_bank_accounts" ("account_number") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_ffcce5c6aaf5d7f08c75db575c" ON "vendor_bank_accounts" ("is_selected") `,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "currencies" ("id" SERIAL NOT NULL, "code" character varying(255) NOT NULL, "name" character varying(255), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "UQ_9f8d0972aeeb5a2277e40332d29" UNIQUE ("code"), CONSTRAINT "PK_d528c54860c4182db13548e08c4" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_9f8d0972aeeb5a2277e40332d2" ON "currencies" ("code") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "IDX_976da6960ec4f0c96c26e3dffa" ON "currencies" ("name") `,
+      `CREATE TABLE "department_approvers" ("id" SERIAL NOT NULL, "department_id" bigint, "user_id" integer, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_b5aff9d5ab1da388aeb6062b11e" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "document_types" ("id" BIGSERIAL NOT NULL, "code" character varying(255) NOT NULL, "name" character varying(255) NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "UQ_5c46cecbae576329e689110cbb5" UNIQUE ("code"), CONSTRAINT "PK_d467d7eeb7c8ce216e90e8494aa" PRIMARY KEY ("id"))`,
@@ -176,12 +116,6 @@ export class UpdateSchema1748363497074 implements MigrationInterface {
       `CREATE INDEX "IDX_386dc0042695c976845d36be94" ON "user_has_roles" ("role_id") `,
     );
     await queryRunner.query(
-      `ALTER TABLE "department_approvers" ADD CONSTRAINT "FK_885258095314ab9b1a3c67cfd65" FOREIGN KEY ("department_id") REFERENCES "departments"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "department_approvers" ADD CONSTRAINT "FK_477cbec2c3d3fe8d597d33a90cb" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
       `ALTER TABLE "permissions" ADD CONSTRAINT "FK_8f6f729862e4d1ab66c2f39cd08" FOREIGN KEY ("permission_group_id") REFERENCES "permission_groups"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
@@ -194,16 +128,10 @@ export class UpdateSchema1748363497074 implements MigrationInterface {
       `ALTER TABLE "department_users" ADD CONSTRAINT "FK_5bbad0a14d3a2a1d1d473ead71b" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE "budget_approval_rules" ADD CONSTRAINT "FK_352ff3cc7da4c58dd0d4e7f51dc" FOREIGN KEY ("department_id") REFERENCES "departments"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE "department_approvers" ADD CONSTRAINT "FK_885258095314ab9b1a3c67cfd65" FOREIGN KEY ("department_id") REFERENCES "departments"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE "budget_approval_rules" ADD CONSTRAINT "FK_fc0d663d0646938057ba235e7cc" FOREIGN KEY ("approver_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "vendor_bank_accounts" ADD CONSTRAINT "FK_94e674d49212d992777ba20b8fb" FOREIGN KEY ("vendor_id") REFERENCES "vendors"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "vendor_bank_accounts" ADD CONSTRAINT "FK_4c4586a1097b110383d2d66f9bc" FOREIGN KEY ("currency_id") REFERENCES "currencies"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE "department_approvers" ADD CONSTRAINT "FK_477cbec2c3d3fe8d597d33a90cb" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "role_has_permissions" ADD CONSTRAINT "FK_9135e97d2d840f7dfd6e6649116" FOREIGN KEY ("role_id") REFERENCES "roles"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
@@ -233,16 +161,10 @@ export class UpdateSchema1748363497074 implements MigrationInterface {
       `ALTER TABLE "role_has_permissions" DROP CONSTRAINT "FK_9135e97d2d840f7dfd6e6649116"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "vendor_bank_accounts" DROP CONSTRAINT "FK_4c4586a1097b110383d2d66f9bc"`,
+      `ALTER TABLE "department_approvers" DROP CONSTRAINT "FK_477cbec2c3d3fe8d597d33a90cb"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "vendor_bank_accounts" DROP CONSTRAINT "FK_94e674d49212d992777ba20b8fb"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "budget_approval_rules" DROP CONSTRAINT "FK_fc0d663d0646938057ba235e7cc"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "budget_approval_rules" DROP CONSTRAINT "FK_352ff3cc7da4c58dd0d4e7f51dc"`,
+      `ALTER TABLE "department_approvers" DROP CONSTRAINT "FK_885258095314ab9b1a3c67cfd65"`,
     );
     await queryRunner.query(
       `ALTER TABLE "department_users" DROP CONSTRAINT "FK_5bbad0a14d3a2a1d1d473ead71b"`,
@@ -255,12 +177,6 @@ export class UpdateSchema1748363497074 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "permissions" DROP CONSTRAINT "FK_8f6f729862e4d1ab66c2f39cd08"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "department_approvers" DROP CONSTRAINT "FK_477cbec2c3d3fe8d597d33a90cb"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "department_approvers" DROP CONSTRAINT "FK_885258095314ab9b1a3c67cfd65"`,
     );
     await queryRunner.query(
       `DROP INDEX "public"."IDX_386dc0042695c976845d36be94"`,
@@ -291,56 +207,7 @@ export class UpdateSchema1748363497074 implements MigrationInterface {
       `DROP INDEX "public"."IDX_5c46cecbae576329e689110cbb"`,
     );
     await queryRunner.query(`DROP TABLE "document_types"`);
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_976da6960ec4f0c96c26e3dffa"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_9f8d0972aeeb5a2277e40332d2"`,
-    );
-    await queryRunner.query(`DROP TABLE "currencies"`);
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_ffcce5c6aaf5d7f08c75db575c"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_b99cc1ebfc148d34854c867d7b"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_1e82bcf21b052d5e2e9f6f9c50"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_29f8d70c24dbe1116c9b2be8de"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_4c4586a1097b110383d2d66f9b"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_94e674d49212d992777ba20b8f"`,
-    );
-    await queryRunner.query(`DROP TABLE "vendor_bank_accounts"`);
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_a6d0d6d1231d28af3ce366a35c"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_83065ec2a2c5052786c122e95b"`,
-    );
-    await queryRunner.query(`DROP TABLE "vendors"`);
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_8b0be371d28245da6e4f4b6187"`,
-    );
-    await queryRunner.query(`DROP TABLE "categories"`);
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_4f867671781e4c4c997721bd24"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_d01591ee27a474ea3de84fd734"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_fc0d663d0646938057ba235e7c"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_352ff3cc7da4c58dd0d4e7f51d"`,
-    );
-    await queryRunner.query(`DROP TABLE "budget_approval_rules"`);
+    await queryRunner.query(`DROP TABLE "department_approvers"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_8681da666ad9699d568b3e9106"`,
     );
@@ -390,7 +257,6 @@ export class UpdateSchema1748363497074 implements MigrationInterface {
     );
     await queryRunner.query(`DROP TABLE "permission_groups"`);
     await queryRunner.query(`DROP TYPE "public"."permission_groups_type_enum"`);
-    await queryRunner.query(`DROP TABLE "department_approvers"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_5c70dc5aa01e351730e4ffc929"`,
     );
