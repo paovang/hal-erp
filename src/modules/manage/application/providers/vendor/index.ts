@@ -1,5 +1,9 @@
 import { Provider } from '@nestjs/common';
-import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
+import {
+  LOCALIZATION_SERVICE,
+  TRANSACTION_MANAGER_SERVICE,
+  TRANSFORM_RESULT_SERVICE,
+} from '@src/common/constants/inject-key.const';
 import { TransformResultService } from '@src/common/utils/services/transform-result.service';
 import { VendorHandlersProviders } from './command.provider';
 import { VendorMapperProviders } from './mapper.provider';
@@ -11,10 +15,20 @@ import {
 import { VendorService } from '../../services/vendor.service';
 import { WriteVendorRepository } from '@src/modules/manage/infrastructure/repositories/vendor/write.repository';
 import { ReadVendorRepository } from '@src/modules/manage/infrastructure/repositories/vendor/read.repository';
+import { LocalizationService } from '@src/common/infrastructure/localization/localization.service';
+import { TransactionManagerService } from '@src/common/infrastructure/transaction/transaction.service';
 
 export const VendorProvider: Provider[] = [
   ...VendorHandlersProviders,
   ...VendorMapperProviders,
+  {
+    provide: LOCALIZATION_SERVICE,
+    useClass: LocalizationService,
+  },
+  {
+    provide: TRANSACTION_MANAGER_SERVICE,
+    useClass: TransactionManagerService,
+  },
   {
     provide: VENDOR_APPLICATION_SERVICE,
     useClass: VendorService,
