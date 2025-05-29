@@ -6,6 +6,7 @@ import { EntityManager } from 'typeorm';
 import { PositionDataAccessMapper } from '../../mappers/position.mapper';
 import { PositionOrmEntity } from '@src/common/infrastructure/database/typeorm/position.orm';
 import { PositionId } from '@src/modules/manage/domain/value-objects/position-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WritePositionRepository implements IWritePositionRepository {
@@ -16,7 +17,9 @@ export class WritePositionRepository implements IWritePositionRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<PositionEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -24,7 +27,10 @@ export class WritePositionRepository implements IWritePositionRepository {
     entity: PositionEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<PositionEntity>> {
-    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(PositionOrmEntity, entity.getId().value, OrmEntity);

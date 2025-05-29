@@ -6,6 +6,7 @@ import { EntityManager, UpdateResult } from 'typeorm';
 import { DepartmentApproverDataAccessMapper } from '../../mappers/department-approver.mapper';
 import { DepartmentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/department-approver.orm';
 import { DepartmentApproverId } from '@src/modules/manage/domain/value-objects/department-approver-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteDepartmentApproverRepository
@@ -20,7 +21,9 @@ export class WriteDepartmentApproverRepository
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentApproverEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -28,7 +31,10 @@ export class WriteDepartmentApproverRepository
     entity: DepartmentApproverEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentApproverEntity>> {
-    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(

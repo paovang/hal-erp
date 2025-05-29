@@ -4,9 +4,10 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { UserId } from '../../domain/value-objects/user-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 export class UserDataAccessMapper {
-  toOrmEntity(userEntity: UserEntity): UserOrmEntity {
+  toOrmEntity(userEntity: UserEntity, method: OrmEntityMethod): UserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = userEntity.getId();
 
@@ -18,7 +19,11 @@ export class UserDataAccessMapper {
     mediaOrmEntity.email = userEntity.email;
     mediaOrmEntity.password = userEntity.password;
     mediaOrmEntity.tel = userEntity.tel;
-    mediaOrmEntity.created_at = userEntity.createdAt ?? new Date(now);
+
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at = userEntity.createdAt ?? new Date(now);
+    }
+
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

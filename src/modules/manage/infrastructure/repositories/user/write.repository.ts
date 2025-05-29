@@ -6,6 +6,7 @@ import { EntityManager } from 'typeorm';
 import { UserDataAccessMapper } from '../../mappers/user.mapper';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteUserRepository implements IWriteUserRepository {
@@ -16,7 +17,9 @@ export class WriteUserRepository implements IWriteUserRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -24,7 +27,10 @@ export class WriteUserRepository implements IWriteUserRepository {
     entity: UserEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>> {
-    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const userOrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(UserOrmEntity, entity.getId().value, userOrmEntity);
@@ -39,7 +45,10 @@ export class WriteUserRepository implements IWriteUserRepository {
     entity: UserEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>> {
-    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const userOrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(UserOrmEntity, entity.getId().value, userOrmEntity);
@@ -54,7 +63,10 @@ export class WriteUserRepository implements IWriteUserRepository {
     entity: UserEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>> {
-    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const userOrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(UserOrmEntity, entity.getId().value, userOrmEntity);
@@ -77,7 +89,10 @@ export class WriteUserRepository implements IWriteUserRepository {
     entity: UserEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>> {
-    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const userOrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(UserOrmEntity, entity.getId().value, userOrmEntity);

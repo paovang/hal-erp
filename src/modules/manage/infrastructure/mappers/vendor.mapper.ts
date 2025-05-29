@@ -4,9 +4,13 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import moment from 'moment-timezone';
 import { VendorId } from '../../domain/value-objects/vendor-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 export class VendorDataAccessMapper {
-  toOrmEntity(vendorEntity: VendorEntity): VendorOrmEntity {
+  toOrmEntity(
+    vendorEntity: VendorEntity,
+    method: OrmEntityMethod,
+  ): VendorOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = vendorEntity.getId();
 
@@ -17,7 +21,11 @@ export class VendorDataAccessMapper {
 
     mediaOrmEntity.contact_info = vendorEntity.contactInfo;
     mediaOrmEntity.name = vendorEntity.name;
-    mediaOrmEntity.created_at = vendorEntity.createdAt ?? new Date(now);
+
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at = vendorEntity.createdAt ?? new Date(now);
+    }
+
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

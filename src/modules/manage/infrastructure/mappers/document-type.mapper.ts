@@ -4,9 +4,13 @@ import { DocumentTypeId } from '../../domain/value-objects/document-type-id.vo';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 export class DocumentTypeDataAccessMapper {
-  toOrmEntity(documentTypeEntity: DocumentTypeEntity): DocumentTypeOrmEntity {
+  toOrmEntity(
+    documentTypeEntity: DocumentTypeEntity,
+    method: OrmEntityMethod,
+  ): DocumentTypeOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = documentTypeEntity.getId();
 
@@ -16,7 +20,11 @@ export class DocumentTypeDataAccessMapper {
     }
     mediaOrmEntity.code = documentTypeEntity.code;
     mediaOrmEntity.name = documentTypeEntity.name;
-    mediaOrmEntity.created_at = documentTypeEntity.createdAt ?? new Date(now);
+
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at = documentTypeEntity.createdAt ?? new Date(now);
+    }
+
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

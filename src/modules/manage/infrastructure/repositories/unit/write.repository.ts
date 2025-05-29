@@ -6,6 +6,7 @@ import { EntityManager } from 'typeorm';
 import { UnitDataAccessMapper } from '../../mappers/unit.mapper';
 import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 import { UnitId } from '@src/modules/manage/domain/value-objects/unit-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteUnitRepository implements IWriteUnitRepository {
@@ -16,7 +17,9 @@ export class WriteUnitRepository implements IWriteUnitRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<UnitEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -24,7 +27,10 @@ export class WriteUnitRepository implements IWriteUnitRepository {
     entity: UnitEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<UnitEntity>> {
-    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(UnitOrmEntity, entity.getId().value, OrmEntity);

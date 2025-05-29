@@ -6,6 +6,7 @@ import { EntityManager, UpdateResult } from 'typeorm';
 import { CurrencyDataAccessMapper } from '../../mappers/currency.mapper';
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
 import { CurrencyId } from '@src/modules/manage/domain/value-objects/currency-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteCurrencyRepository implements IWriteCurrencyRepository {
@@ -16,7 +17,9 @@ export class WriteCurrencyRepository implements IWriteCurrencyRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<CurrencyEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -24,7 +27,10 @@ export class WriteCurrencyRepository implements IWriteCurrencyRepository {
     entity: CurrencyEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<CurrencyEntity>> {
-    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(CurrencyOrmEntity, entity.getId().value, OrmEntity);

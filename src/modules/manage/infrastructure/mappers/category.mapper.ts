@@ -4,9 +4,13 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { CategoryId } from '../../domain/value-objects/category-id.vo';
 import moment from 'moment-timezone';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 export class CategoryDataAccessMapper {
-  toOrmEntity(categoryEntity: CategoryEntity): CategoryOrmEntity {
+  toOrmEntity(
+    categoryEntity: CategoryEntity,
+    method: OrmEntityMethod,
+  ): CategoryOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = categoryEntity.getId();
 
@@ -15,7 +19,10 @@ export class CategoryDataAccessMapper {
       mediaOrmEntity.id = id.value;
     }
     mediaOrmEntity.name = categoryEntity.name;
-    mediaOrmEntity.created_at = categoryEntity.createdAt ?? new Date(now);
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at = categoryEntity.createdAt ?? new Date(now);
+    }
+    // mediaOrmEntity.created_at = categoryEntity.createdAt ?? new Date(now);
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

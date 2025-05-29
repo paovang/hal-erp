@@ -7,6 +7,7 @@ import { EntityManager, UpdateResult } from 'typeorm';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { BudgetApprovalRuleId } from '@src/modules/manage/domain/value-objects/budget-approval-rule-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteBudgetApprovalRuleRepository
@@ -20,7 +21,9 @@ export class WriteBudgetApprovalRuleRepository
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -29,7 +32,10 @@ export class WriteBudgetApprovalRuleRepository
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
     const id = entity.getId().value;
-    const ormEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const ormEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(BudgetApprovalRuleOrmEntity, id, ormEntity);

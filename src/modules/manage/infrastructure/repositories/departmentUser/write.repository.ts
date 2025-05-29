@@ -7,6 +7,7 @@ import { DepartmentUserDataAccessMapper } from '../../mappers/department-user.ma
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteDepartmentUserRepository
@@ -21,7 +22,9 @@ export class WriteDepartmentUserRepository
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -30,7 +33,10 @@ export class WriteDepartmentUserRepository
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     const id = entity.getId().value;
-    const ormEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const ormEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(DepartmentUserOrmEntity, id, ormEntity);

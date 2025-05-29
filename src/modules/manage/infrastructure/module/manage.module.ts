@@ -52,4 +52,4 @@ import { BudgetApprovalRuleController } from '../../controllers/budget-approval-
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
 })
-export class DepartmentModule {}
+export class ManageModule {}

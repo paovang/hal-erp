@@ -4,9 +4,13 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { PositionId } from '../../domain/value-objects/position-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 export class PositionDataAccessMapper {
-  toOrmEntity(positionEntity: PositionEntity): PositionOrmEntity {
+  toOrmEntity(
+    positionEntity: PositionEntity,
+    method: OrmEntityMethod,
+  ): PositionOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = positionEntity.getId();
 
@@ -16,7 +20,9 @@ export class PositionDataAccessMapper {
     }
 
     mediaOrmEntity.name = positionEntity.name;
-    mediaOrmEntity.created_at = positionEntity.createdAt ?? new Date(now);
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at = positionEntity.createdAt ?? new Date(now);
+    }
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

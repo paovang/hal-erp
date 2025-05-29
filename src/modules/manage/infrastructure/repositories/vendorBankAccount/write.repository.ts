@@ -6,6 +6,7 @@ import { EntityManager } from 'typeorm';
 import { VendorBankAccountDataAccessMapper } from '../../mappers/vendor-bank-account.mapper';
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
 import { VendorBankAccountId } from '@src/modules/manage/domain/value-objects/vendor-bank-account-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteVendorBankAccountRepository
@@ -20,7 +21,9 @@ export class WriteVendorBankAccountRepository
     manager: EntityManager,
   ): Promise<ResponseResult<VendorBankAccountEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -28,7 +31,10 @@ export class WriteVendorBankAccountRepository
     entity: VendorBankAccountEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<VendorBankAccountEntity>> {
-    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(
@@ -47,7 +53,10 @@ export class WriteVendorBankAccountRepository
     entity: VendorBankAccountEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<VendorBankAccountEntity>> {
-    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(

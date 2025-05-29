@@ -7,6 +7,7 @@ import { DepartmentApproverId } from '../../domain/value-objects/department-appr
 import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { Injectable } from '@nestjs/common';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class DepartmentApproverDataAccessMapper {
@@ -16,6 +17,7 @@ export class DepartmentApproverDataAccessMapper {
   ) {}
   toOrmEntity(
     departmentApproverEntity: DepartmentApproverEntity,
+    method: OrmEntityMethod,
   ): DepartmentApproverOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = departmentApproverEntity.getId();
@@ -32,8 +34,10 @@ export class DepartmentApproverDataAccessMapper {
       ? Number(departmentApproverEntity.userId)
       : undefined;
 
-    mediaOrmEntity.created_at =
-      departmentApproverEntity.createdAt ?? new Date(now);
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at =
+        departmentApproverEntity.createdAt ?? new Date(now);
+    }
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

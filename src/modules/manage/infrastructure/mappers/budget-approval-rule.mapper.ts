@@ -7,6 +7,7 @@ import { BudgetApprovalRuleId } from '../../domain/value-objects/budget-approval
 import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { Injectable } from '@nestjs/common';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class BudgetApprovalRuleDataAccessMapper {
@@ -16,6 +17,7 @@ export class BudgetApprovalRuleDataAccessMapper {
   ) {}
   toOrmEntity(
     budgetApprovalRuleEntity: BudgetApprovalRuleEntity,
+    method: OrmEntityMethod,
   ): BudgetApprovalRuleOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = budgetApprovalRuleEntity.getId();
@@ -28,8 +30,12 @@ export class BudgetApprovalRuleDataAccessMapper {
     mediaOrmEntity.approver_id = budgetApprovalRuleEntity.approverID;
     mediaOrmEntity.min_amount = budgetApprovalRuleEntity.minAmount;
     mediaOrmEntity.max_amount = budgetApprovalRuleEntity.maxAmount;
-    mediaOrmEntity.created_at =
-      budgetApprovalRuleEntity.createdAt ?? new Date(now);
+
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at =
+        budgetApprovalRuleEntity.createdAt ?? new Date(now);
+    }
+
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

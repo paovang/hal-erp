@@ -6,6 +6,7 @@ import { EntityManager } from 'typeorm';
 import { VendorDataAccessMapper } from '../../mappers/vendor.mapper';
 import { VendorOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor.orm';
 import { VendorId } from '@src/modules/manage/domain/value-objects/vendor-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteVendorRepository implements IWriteVendorRepository {
@@ -16,7 +17,9 @@ export class WriteVendorRepository implements IWriteVendorRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<VendorEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -24,7 +27,10 @@ export class WriteVendorRepository implements IWriteVendorRepository {
     entity: VendorEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<VendorEntity>> {
-    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(VendorOrmEntity, entity.getId().value, OrmEntity);

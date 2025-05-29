@@ -7,6 +7,7 @@ import { VendorBankAccountId } from '../../domain/value-objects/vendor-bank-acco
 import { Injectable } from '@nestjs/common';
 import { VendorDataAccessMapper } from './vendor.mapper';
 import { CurrencyDataAccessMapper } from './currency.mapper';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class VendorBankAccountDataAccessMapper {
@@ -16,6 +17,7 @@ export class VendorBankAccountDataAccessMapper {
   ) {}
   toOrmEntity(
     vendorBankAccountEntity: VendorBankAccountEntity,
+    method: OrmEntityMethod,
   ): VendorBankAccountOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = vendorBankAccountEntity.getId();
@@ -31,8 +33,12 @@ export class VendorBankAccountDataAccessMapper {
     mediaOrmEntity.account_number = vendorBankAccountEntity.accountNumber;
     mediaOrmEntity.bank_name = vendorBankAccountEntity.bankName;
     mediaOrmEntity.is_selected = vendorBankAccountEntity.isSelected;
-    mediaOrmEntity.created_at =
-      vendorBankAccountEntity.createdAt ?? new Date(now);
+
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at =
+        vendorBankAccountEntity.createdAt ?? new Date(now);
+    }
+
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

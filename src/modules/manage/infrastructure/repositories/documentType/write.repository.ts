@@ -6,6 +6,7 @@ import { EntityManager } from 'typeorm';
 import { DocumentTypeDataAccessMapper } from '../../mappers/document-type.mapper';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 import { DocumentTypeId } from '@src/modules/manage/domain/value-objects/document-type-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteDocumentTypeRepository
@@ -20,7 +21,9 @@ export class WriteDocumentTypeRepository
     manager: EntityManager,
   ): Promise<ResponseResult<DocumentTypeEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -28,7 +31,10 @@ export class WriteDocumentTypeRepository
     entity: DocumentTypeEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<DocumentTypeEntity>> {
-    const OrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(

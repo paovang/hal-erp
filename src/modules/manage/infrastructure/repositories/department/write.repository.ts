@@ -6,6 +6,7 @@ import { EntityManager, UpdateResult } from 'typeorm';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteDepartmentRepository implements IWriteDepartmentRepository {
@@ -16,7 +17,9 @@ export class WriteDepartmentRepository implements IWriteDepartmentRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentEntity>> {
     return this._dataAccessMapper.toEntity(
-      await manager.save(this._dataAccessMapper.toOrmEntity(entity)),
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
     );
   }
 
@@ -24,7 +27,10 @@ export class WriteDepartmentRepository implements IWriteDepartmentRepository {
     entity: DepartmentEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentEntity>> {
-    const userOrmEntity = this._dataAccessMapper.toOrmEntity(entity);
+    const userOrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
 
     try {
       await manager.update(

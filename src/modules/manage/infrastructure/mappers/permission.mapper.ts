@@ -7,9 +7,13 @@ import { PermissionId } from '../../domain/value-objects/permission-id.vo';
 import { PermissionGroupOrmEntity } from '@src/common/infrastructure/database/typeorm/permission-group.orm';
 import { PermissionGroupEntity } from '../../domain/entities/permission-group.entity';
 import { PermissionGroupId } from '../../domain/value-objects/permission-group-id.vo';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 export class PermissionDataAccessMapper {
-  toOrmEntity(roleEntity: PermissionEntity): PermissionOrmEntity {
+  toOrmEntity(
+    roleEntity: PermissionEntity,
+    method: OrmEntityMethod,
+  ): PermissionOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = roleEntity.getId();
 
@@ -18,21 +22,13 @@ export class PermissionDataAccessMapper {
       mediaOrmEntity.id = id.value;
     }
     mediaOrmEntity.name = roleEntity.name;
-    mediaOrmEntity.created_at = roleEntity.createdAt ?? new Date(now);
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at = roleEntity.createdAt ?? new Date(now);
+    }
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;
   }
-
-  //   toEntity(ormData: PermissionGroupOrmEntity): PermissionGroupEntity {
-  //     return PermissionGroupEntity.builder()
-  //       .setId(new PermissionId(ormData.id))
-  //       .setName(ormData.name)
-  //       .setDisplayName(ormData.display_name)
-  //       .setCreatedAt(ormData.created_at)
-  //       .setUpdatedAt(ormData.updated_at)
-  //       .build();
-  //   }
 
   toEntity(ormData: PermissionGroupOrmEntity): PermissionGroupEntity {
     const permissions = (ormData.permissions || []).map((p) =>

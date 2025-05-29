@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { PositionDataAccessMapper } from './position.mapper';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class DepartmentUserDataAccessMapper {
@@ -19,6 +20,7 @@ export class DepartmentUserDataAccessMapper {
 
   toOrmEntity(
     departmentUserEntity: DepartmentUserEntity,
+    method: OrmEntityMethod,
   ): DepartmentUserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = departmentUserEntity.getId();
@@ -33,7 +35,10 @@ export class DepartmentUserDataAccessMapper {
     mediaOrmEntity.user_id = departmentUserEntity.userId;
     mediaOrmEntity.signature_file =
       departmentUserEntity.signature_file ?? undefined;
-    mediaOrmEntity.created_at = departmentUserEntity.createdAt ?? new Date(now);
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at =
+        departmentUserEntity.createdAt ?? new Date(now);
+    }
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;
