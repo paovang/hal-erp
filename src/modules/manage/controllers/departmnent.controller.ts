@@ -25,14 +25,14 @@ import { DepartmentDataMapper } from '@src/modules/manage/application/mappers/de
 import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/department/create.dto';
 import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileValidationInterceptor } from '@src/common/interceptors/file/file.interceptor';
-import { FileMimeTypeValidator } from '@src/common/validations/file-mime-type.validator';
-import { FileSizeValidator } from '@src/common/validations/file-size.validator';
-import { ImageOptimizeService } from '@src/common/utils/services/images/service/image-optimize.service';
-import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
-import { S3Service } from '@src/common/infrastructure/aws3/service/aws3-image.service';
+import { FileValidationInterceptor } from '@common/interceptors/file/file.interceptor';
+import { FileMimeTypeValidator } from '@common/validations/file-mime-type.validator';
+import { FileSizeValidator } from '@common/validations/file-size.validator';
+import { AMAZON_S3_SERVICE_KEY } from '@common/infrastructure/aws3/config/inject-key';
 import { USER_PROFILE_IMAGE_FOLDER } from '../application/constants/inject-key.const';
 import { Public } from '@core-system/auth';
+import { IImageOptimizeService } from '@common/utils/services/images/interface/image-optimize-service.interface';
+import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
 // import { AuthUser } from '@core-system/auth';
 
 @Controller('department')
@@ -44,9 +44,9 @@ export class DepartmentController {
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: DepartmentDataMapper,
     @Inject(USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY)
-    private readonly _optimizeService: ImageOptimizeService,
+    private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)
-    private readonly _amazonS3ServiceKey: S3Service,
+    private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
   ) {}
 
   /** Get All */
@@ -112,6 +112,7 @@ export class DepartmentController {
     return await this._departmentService.delete(id);
   }
 
+  @Public()
   @Post('/profile-image')
   @UseInterceptors(
     FileInterceptor('profile_image'),
