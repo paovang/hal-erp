@@ -31,5 +31,6 @@
   "code_already_exists": "Code already exists",
   "tel_already_exists": "Tel already exists",
   "incorrect_password": "Incorrect password",
-  "min_amount_greater_than_max_amount": "Min amount greater than max amount"
+  "min_amount_greater_than_max_amount": "Min amount greater than max amount",
+  "invalid_credentials": "Invalid Credentials"
 }

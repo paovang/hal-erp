@@ -21,7 +21,7 @@ import { UserQueryDto } from '../application/dto/query/user-query.dto';
 import { UpdateUserDto } from '../application/dto/create/user/update.dto';
 import { ChangePasswordDto } from '../application/dto/create/user/change-password.dto';
 import { SendMailDto } from '../application/dto/create/user/send-email.dto';
-import { AuthService } from '@core-system/auth';
+import { AuthService, Public } from '@core-system/auth';
 
 @Controller('users')
 export class UserController {
@@ -34,6 +34,7 @@ export class UserController {
     private readonly _authService: AuthService,
   ) {}
 
+  @Public()
   @Post('login')
   async login(@Body() dto: any): Promise<any> {
     return this._authService.validateUser(dto);

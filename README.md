@@ -83,7 +83,7 @@ Nest is [MIT licensed](LICENSE).
 - pnpm install @nestjs/swagger
 - pnpm install class-validator class-transformer
 - pnpm install nestjs-i18n
-- 
+- pnpm i @core-system/auth
 
 
 

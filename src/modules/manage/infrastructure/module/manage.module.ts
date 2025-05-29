@@ -20,6 +20,9 @@ import { CurrencyController } from '../../controllers/currency.controller';
 import { VendorController } from '../../controllers/vendor.controller';
 import { VendorBankAccountController } from '../../controllers/vendor-bank-account.controller';
 import { BudgetApprovalRuleController } from '../../controllers/budget-approval-rule.controller';
+import { CoreAuthModule } from '@core-system/auth';
+import { UserService } from '@src/common/infrastructure/auth/user.service';
+import { UserModule } from '@src/common/infrastructure/auth/user.module';
 
 @Module({
   imports: [
@@ -32,6 +35,12 @@ import { BudgetApprovalRuleController } from '../../controllers/budget-approval-
     I18nModule,
     PaginationModule,
     AmazonS3Module.forRootAsync(),
+    UserModule,
+    CoreAuthModule.registerAsync({
+      provide: 'USER_SERVICE',
+      useExisting: UserService,
+      imports: [UserModule],
+    }),
   ],
   controllers: [
     DepartmentController,
