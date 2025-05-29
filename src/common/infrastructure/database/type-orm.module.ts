@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SeederService } from './seeders/services/seeder.service';
@@ -10,6 +10,7 @@ import { PermissionSeeder } from './seeders/permission.seeder';
 import { PermissionGroupSeeder } from './seeders/permission-group.seeder';
 import { RoleSeeder } from './seeders/role.seeder';
 
+@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({

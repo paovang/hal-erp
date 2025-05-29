@@ -41,8 +41,8 @@ export const VendorProvider: Provider[] = [
     provide: READ_VENDOR_REPOSITORY,
     useClass: ReadVendorRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3Client } from '@aws-sdk/client-s3';
 import {
@@ -11,6 +11,8 @@ import {
 } from './inject-key';
 import { CloudFront } from '@aws-sdk/client-cloudfront';
 import { S3Service } from '../service/aws3-image.service';
+
+@Global()
 @Module({})
 export class AmazonS3Module {
   static forRootAsync(): DynamicModule {

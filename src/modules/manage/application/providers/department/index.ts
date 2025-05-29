@@ -43,10 +43,10 @@ export const DepartmentProvider: Provider[] = [
     provide: READ_DEPARTMENT_REPOSITORY,
     useClass: ReadDepartmentRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
   {
     provide: USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
     useClass: ImageOptimizeService,

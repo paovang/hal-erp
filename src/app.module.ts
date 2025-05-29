@@ -3,7 +3,7 @@ import { ManageModule } from '@src/modules/manage/infrastructure/module/manage.m
 import { CommonModule } from './common/common.module';
 
 @Module({
-  imports: [ManageModule, CommonModule],
+  imports: [CommonModule, ManageModule],
   controllers: [],
   providers: [],
   exports: [],

@@ -27,8 +27,8 @@ export const PositionProvider: Provider[] = [
     provide: READ_POSITION_REPOSITORY,
     useClass: ReadPositionRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

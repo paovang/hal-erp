@@ -29,8 +29,8 @@ export const DocumentTypeProvider: Provider[] = [
     provide: READ_DOCUMENT_TYPE_REPOSITORY,
     useClass: ReadDocumentTypeRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

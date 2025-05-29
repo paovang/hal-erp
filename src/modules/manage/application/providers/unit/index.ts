@@ -27,8 +27,8 @@ export const UnitProvider: Provider[] = [
     provide: READ_UNIT_REPOSITORY,
     useClass: ReadUnitRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

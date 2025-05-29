@@ -41,8 +41,8 @@ export const CategoryProvider: Provider[] = [
     provide: READ_CATEGORY_REPOSITORY,
     useClass: ReadCategoryRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

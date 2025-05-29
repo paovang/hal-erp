@@ -8,7 +8,6 @@ import {
   Post,
   Put,
   Query,
-  Req,
   UseInterceptors,
 } from '@nestjs/common';
 import { DEPARTMENT_APPLICATION_SERVICE } from '@src/modules/manage/application/constants/inject-key.const';
@@ -33,8 +32,8 @@ import { ImageOptimizeService } from '@src/common/utils/services/images/service/
 import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
 import { S3Service } from '@src/common/infrastructure/aws3/service/aws3-image.service';
 import { USER_PROFILE_IMAGE_FOLDER } from '../application/constants/inject-key.const';
-import { AuthUser } from '@core-system/auth';
-import { Request } from 'express';
+import { Public } from '@core-system/auth';
+// import { AuthUser } from '@core-system/auth';
 
 @Controller('department')
 export class DepartmentController {
@@ -55,9 +54,9 @@ export class DepartmentController {
   @Get('')
   async getAll(
     @Query() dto: DepartmentQueryDto,
-    @AuthUser() auth: any,
+    // @AuthUser() auth: any,
   ): Promise<ResponseResult<DepartmentResponse>> {
-    console.log('user:', auth.departmentUser);
+    // console.log('user:', auth.departmentUser.departments);
     const result = await this._departmentService.getAll(dto);
 
     return this._transformResultService.execute(
@@ -80,6 +79,7 @@ export class DepartmentController {
   }
 
   /** Create */
+  @Public()
   @Post('')
   async create(
     @Body() dto: CreateDepartmentDto,

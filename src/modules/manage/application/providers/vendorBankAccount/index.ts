@@ -27,8 +27,8 @@ export const VendorBankAccountProvider: Provider[] = [
     provide: READ_VENDOR_BANK_ACCOUNT_REPOSITORY,
     useClass: ReadVendorBankAccountRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

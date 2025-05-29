@@ -41,8 +41,8 @@ export const CurrencyProvider: Provider[] = [
     provide: READ_CURRENCY_REPOSITORY,
     useClass: ReadCurrencyRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

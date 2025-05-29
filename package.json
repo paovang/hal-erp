@@ -46,6 +46,7 @@
     "express": "^5.1.0",
     "moment-timezone": "^0.5.48",
     "multer": "^2.0.0",
+    "nestjs-cls": "^6.0.0",
     "nestjs-i18n": "^10.5.1",
     "pg": "^8.16.0",
     "reflect-metadata": "^0.2.0",

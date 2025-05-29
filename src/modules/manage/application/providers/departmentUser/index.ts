@@ -41,8 +41,8 @@ export const DepartmentUserProvider: Provider[] = [
     provide: READ_DEPARTMENT_USER_REPOSITORY,
     useClass: ReadDepartmentUserRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

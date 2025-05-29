@@ -27,8 +27,8 @@ export const DepartmentApproverProvider: Provider[] = [
     provide: READ_DEPARTMENT_APPROVER_REPOSITORY,
     useClass: ReadDepartmentApproverRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

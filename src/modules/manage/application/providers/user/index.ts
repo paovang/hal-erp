@@ -45,8 +45,8 @@ export const UserProvider: Provider[] = [
     provide: READ_USER_REPOSITORY,
     useClass: ReadUserRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];

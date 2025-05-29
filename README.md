@@ -84,6 +84,8 @@ Nest is [MIT licensed](LICENSE).
 - pnpm install class-validator class-transformer
 - pnpm install nestjs-i18n
 - pnpm i @core-system/auth
+- pnpm install nestjs-cls
+
 
 
 

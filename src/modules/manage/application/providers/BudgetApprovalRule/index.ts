@@ -41,8 +41,8 @@ export const BudgetApprovalRuleProvider: Provider[] = [
     provide: READ_BUDGET_APPROVAL_RULE_REPOSITORY,
     useClass: ReadBudgetApprovalRuleRepository,
   },
-  {
-    provide: TRANSFORM_RESULT_SERVICE,
-    useClass: TransformResultService,
-  },
+  // {
+  //   provide: TRANSFORM_RESULT_SERVICE,
+  //   useClass: TransformResultService,
+  // },
 ];
