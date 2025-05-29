@@ -47,7 +47,7 @@ export class BudgetApprovalRuleController {
     @Query() dto: BudgetApprovalRuleQueryDto,
   ): Promise<ResponseResult<BudgetApprovalRuleResponse>> {
     const result = await this._budgetApprovalRuleService.getAll(dto);
-    console.log('object', result);
+
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
