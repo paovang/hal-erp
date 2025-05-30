@@ -25,6 +25,7 @@ import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
 import path from 'path';
 import * as fs from 'fs';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { UserContextService } from '@src/common/utils/services/cls/cls.service';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -41,6 +42,7 @@ export class UpdateCommandHandler
     private readonly _dataUserMapper: UserDataMapper,
     @Inject(WRITE_USER_REPOSITORY)
     private readonly _writeUser: IWriteUserRepository,
+    private readonly _userContextService: UserContextService,
   ) {}
 
   private deleteFileIfExists(filename: string, file_path: string): void {
@@ -81,6 +83,15 @@ export class UpdateCommandHandler
   }
 
   async execute(query: UpdateCommand): Promise<any> {
+    const departmentUser =
+      this._userContextService.getAuthUser()?.departmentUser;
+    if (!departmentUser) {
+      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+    }
+
+    // const departmentId = (departmentUser as any).department_id;
+    const departmentId = (departmentUser as any).departments.id;
+
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
@@ -91,16 +102,27 @@ export class UpdateCommandHandler
           );
         }
 
+        const department_user = await findOneOrFail(
+          query.manager,
+          DepartmentUserOrmEntity,
+          {
+            department_id: departmentId,
+          },
+        );
+
+        if (department_user.user_id !== query.id) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
         await findOneOrFail(query.manager, UserOrmEntity, {
           id: query.id,
         });
 
         await findOneOrFail(query.manager, PositionOrmEntity, {
           id: query.dto.positionId,
-        });
-
-        await findOneOrFail(query.manager, PositionOrmEntity, {
-          id: query.dto.departmentId,
         });
 
         await _checkColumnDuplicate(
@@ -138,8 +160,10 @@ export class UpdateCommandHandler
 
         const file = (existingDeptUser as any).signature_file;
 
-        // Delete old signature file
-        this.deleteFileIfExists(file, '../../../../../../../assets/files/');
+        if (query.dto.signature_file && query.dto.signature_file !== '') {
+          // Delete old signature file
+          this.deleteFileIfExists(file, '../../../../../../../assets/files/');
+        }
 
         // Map to DepartmentUserEntity and set ID
         const departmentUserEntity = this._dataMapper.toEntity(
@@ -160,16 +184,18 @@ export class UpdateCommandHandler
         // Perform update
         const result = await this._write.update(departmentUserEntity, manager);
 
-        this.moveFileIfExists(
-          query.dto.signature_file,
-          '../../../../../../../assets/uploads/',
-          '../../../../../../../assets/files/',
-        );
+        if (query.dto.signature_file && query.dto.signature_file !== '') {
+          this.moveFileIfExists(
+            query.dto.signature_file,
+            '../../../../../../../assets/uploads/',
+            '../../../../../../../assets/files/',
+          );
 
-        this.deleteFileIfExists(
-          query.dto.signature_file,
-          '../../../../../../../assets/uploads/',
-        );
+          this.deleteFileIfExists(
+            query.dto.signature_file,
+            '../../../../../../../assets/uploads/',
+          );
+        }
 
         return result;
       },

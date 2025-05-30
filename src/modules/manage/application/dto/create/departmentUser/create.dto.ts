@@ -36,10 +36,10 @@ export class CreateDepartmentUserDto {
   })
   readonly password: string;
 
-  @ApiProperty()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
-  readonly departmentId: number;
+  // @ApiProperty()
+  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  // @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  // readonly departmentId: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
@@ -47,7 +47,7 @@ export class CreateDepartmentUserDto {
   readonly positionId: number;
 
   @ApiProperty()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
   @Optional()
   readonly signature_file: string;

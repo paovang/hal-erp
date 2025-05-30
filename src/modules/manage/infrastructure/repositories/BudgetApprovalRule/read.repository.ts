@@ -26,8 +26,9 @@ export class ReadBudgetApprovalRuleRepository
   async findAll(
     query: BudgetApprovalRuleQueryDto,
     manager: EntityManager,
+    departmentId?: number,
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const queryBuilder = await this.createBaseQuery(manager, departmentId);
     query.sort_by = 'budget_approval_rules.id';
 
     const data = await this._paginationService.paginate(
@@ -39,11 +40,19 @@ export class ReadBudgetApprovalRuleRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager) {
-    return manager
+  private createBaseQuery(manager: EntityManager, departmentId?: number) {
+    const qb = manager
       .createQueryBuilder(BudgetApprovalRuleOrmEntity, 'budget_approval_rules')
       .leftJoinAndSelect('budget_approval_rules.departments', 'departments')
       .leftJoinAndSelect('budget_approval_rules.users', 'users');
+
+    if (departmentId) {
+      qb.where('budget_approval_rules.department_id = :departmentId', {
+        departmentId,
+      });
+    }
+
+    return qb;
   }
 
   private getFilterOptions(): FilterOptions {

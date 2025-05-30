@@ -53,6 +53,7 @@ export class UserController {
     );
   }
 
+  @Public()
   @Get('')
   async getAll(
     @Query() dto: UserQueryDto,
@@ -65,6 +66,7 @@ export class UserController {
     );
   }
 
+  @Public()
   @Get(':id')
   async getOne(@Param('id') id: number): Promise<ResponseResult<UserResponse>> {
     const result = await this._userService.getOne(id);
@@ -75,6 +77,7 @@ export class UserController {
     );
   }
 
+  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -88,6 +91,7 @@ export class UserController {
     );
   }
 
+  @Public()
   @Put('/change-password/:id')
   async changePassword(
     @Param('id') id: number,
@@ -102,6 +106,7 @@ export class UserController {
     );
   }
 
+  @Public()
   @Post('send-mail')
   async sendMail(
     @Body() dto: SendMailDto,
@@ -114,6 +119,7 @@ export class UserController {
     );
   }
 
+  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._userService.delete(id);

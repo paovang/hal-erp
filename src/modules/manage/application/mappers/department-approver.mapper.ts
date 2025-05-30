@@ -18,11 +18,12 @@ export class DepartmentApproverDataMapper {
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateDepartmentApproverDto | UpdateDepartmentApproverDto,
+    departmentId?: number,
   ): DepartmentApproverEntity {
     const builder = DepartmentApproverEntity.builder();
 
-    if (dto.department_id) {
-      builder.setDepartmentId(dto.department_id);
+    if (departmentId) {
+      builder.setDepartmentId(departmentId);
     }
 
     if (dto.user_id) {

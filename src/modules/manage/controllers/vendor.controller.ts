@@ -19,6 +19,7 @@ import { VendorResponse } from '../application/dto/response/vendor.response';
 import { VENDOR_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { VendorQueryDto } from '../application/dto/query/vendor-query.dto';
 import { UpdateVendorDto } from '../application/dto/create/vendor/update.dto';
+import { Public } from '@core-system/auth';
 
 @Controller('vendors')
 export class VendorController {
@@ -30,6 +31,7 @@ export class VendorController {
     private readonly _dataMapper: VendorDataMapper,
   ) {}
 
+  @Public()
   @Post('')
   async create(
     @Body() dto: CreateVendorDto,
@@ -42,6 +44,7 @@ export class VendorController {
     );
   }
 
+  @Public()
   @Get('')
   async getAll(
     @Query() dto: VendorQueryDto,
@@ -54,6 +57,7 @@ export class VendorController {
     );
   }
 
+  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -66,6 +70,7 @@ export class VendorController {
     );
   }
 
+  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -79,6 +84,7 @@ export class VendorController {
     );
   }
 
+  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._vendorService.delete(id);

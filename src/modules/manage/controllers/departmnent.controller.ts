@@ -50,7 +50,7 @@ export class DepartmentController {
   ) {}
 
   /** Get All */
-  // @Public()
+  @Public()
   @Get('')
   async getAll(
     @Query() dto: DepartmentQueryDto,
@@ -66,6 +66,7 @@ export class DepartmentController {
   }
 
   /** Get One */
+  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -93,6 +94,7 @@ export class DepartmentController {
   }
 
   /** Update */
+  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -107,6 +109,7 @@ export class DepartmentController {
   }
 
   /** Delete */
+  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._departmentService.delete(id);

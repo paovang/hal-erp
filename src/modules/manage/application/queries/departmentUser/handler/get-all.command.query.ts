@@ -21,7 +21,19 @@ export class GetAllQueryHandler
   async execute(
     query: GetAllQuery,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
-    const data = await this._readRepo.findAll(query.dto, query.manager);
+    const departmentUser =
+      this._userContextService.getAuthUser()?.departmentUser;
+
+    // const departmentId = (departmentUser as any).department_id;
+    const departmentId = (departmentUser as any).departments.id;
+
+    console.log('Auth User:', departmentId);
+    console.log('Auth Department User:', departmentUser);
+    const data = await this._readRepo.findAll(
+      query.dto,
+      query.manager,
+      departmentId,
+    );
     if (!data) {
       throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
     }

@@ -18,11 +18,12 @@ export class BudgetApprovalRuleDataMapper {
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateBudgetApprovalRuleDto | UpdateBudgetApprovalRuleDto,
+    departmentId?: number,
   ): BudgetApprovalRuleEntity {
     const builder = BudgetApprovalRuleEntity.builder();
 
-    if (dto.department_id) {
-      builder.setDepartmentId(dto.department_id);
+    if (departmentId) {
+      builder.setDepartmentId(departmentId);
     }
 
     if (dto.approver_id) {

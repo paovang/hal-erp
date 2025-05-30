@@ -19,6 +19,7 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { CurrencyResponse } from '../application/dto/response/currency.response';
 import { CurrencyQueryDto } from '../application/dto/query/currency-query.dto';
 import { UpdateCurrencyDto } from '../application/dto/create/currency/update.dto';
+import { Public } from '@core-system/auth';
 
 @Controller('currencies')
 export class CurrencyController {
@@ -30,6 +31,7 @@ export class CurrencyController {
     private readonly _dataMapper: CurrencyDataMapper,
   ) {}
 
+  @Public()
   @Post('')
   async create(
     @Body() dto: CreateCurrencyDto,
@@ -42,6 +44,7 @@ export class CurrencyController {
     );
   }
 
+  @Public()
   @Get('')
   async getAll(
     @Query() dto: CurrencyQueryDto,
@@ -54,6 +57,7 @@ export class CurrencyController {
     );
   }
 
+  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -66,6 +70,7 @@ export class CurrencyController {
     );
   }
 
+  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -79,6 +84,7 @@ export class CurrencyController {
     );
   }
 
+  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._currencyService.delete(id);

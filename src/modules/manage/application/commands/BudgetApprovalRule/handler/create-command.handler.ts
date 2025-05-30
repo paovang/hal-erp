@@ -11,9 +11,11 @@ import { ITransactionManagerService } from '@src/common/infrastructure/transacti
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
-import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
+import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -28,12 +30,31 @@ export class CreateCommandHandler
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
+    private readonly _userContextService: UserContextService,
   ) {}
 
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
     const { min_amount, max_amount } = query.dto;
+
+    const departmentUser =
+      this._userContextService.getAuthUser()?.departmentUser;
+    if (!departmentUser) {
+      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+    }
+
+    // const departmentId = (departmentUser as any).department_id;
+    const departmentId = (departmentUser as any).departments.id;
+
+    await _checkColumnDuplicate(
+      BudgetApprovalRuleOrmEntity,
+      'approver_id',
+      query.dto.approver_id,
+      query.manager,
+      'errors.already_exists',
+    );
+
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
@@ -43,13 +64,11 @@ export class CreateCommandHandler
             HttpStatus.BAD_REQUEST,
           );
         }
-        await findOneOrFail(manager, DepartmentOrmEntity, {
-          id: query.dto.department_id,
-        });
+
         await findOneOrFail(manager, DepartmentUserOrmEntity, {
           user_id: query.dto.approver_id,
         });
-        const mapToEntity = this._dataMapper.toEntity(query.dto);
+        const mapToEntity = this._dataMapper.toEntity(query.dto, departmentId);
 
         return await this._write.create(mapToEntity, manager);
       },

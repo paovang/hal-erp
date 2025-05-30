@@ -20,6 +20,7 @@ import { VendorBankAccountResponse } from '../application/dto/response/vendor-ba
 import { VendorBankAccountQueryDto } from '../application/dto/query/vendor-bank-account-query.dto';
 import { UpdateVendorBankAccountDto } from '../application/dto/create/vendorBankAccount/update.dto';
 import { UseBankAccountDto } from '../application/dto/create/vendorBankAccount/use-bank-account.dto';
+import { Public } from '@core-system/auth';
 
 @Controller('vendor_bank_accounts')
 export class VendorBankAccountController {
@@ -31,6 +32,7 @@ export class VendorBankAccountController {
     private readonly _dataMapper: VendorBankAccountDataMapper,
   ) {}
 
+  @Public()
   @Post('')
   async create(
     @Body() dto: CreateVendorBankAccountDto,
@@ -43,6 +45,7 @@ export class VendorBankAccountController {
     );
   }
 
+  @Public()
   @Get('')
   async getAll(
     @Query() dto: VendorBankAccountQueryDto,
@@ -54,6 +57,7 @@ export class VendorBankAccountController {
     );
   }
 
+  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -66,6 +70,7 @@ export class VendorBankAccountController {
     );
   }
 
+  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -79,6 +84,7 @@ export class VendorBankAccountController {
     );
   }
 
+  @Public()
   @Put('use/:id')
   async UseBankAccount(
     @Param('id') id: number,
@@ -92,6 +98,7 @@ export class VendorBankAccountController {
     );
   }
 
+  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._vendorBankAccountService.delete(id);

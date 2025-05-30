@@ -19,6 +19,7 @@ import { PositionDataMapper } from '../application/mappers/position.mapper';
 import { PositionResponse } from '../application/dto/response/position.response';
 import { PositionQueryDto } from '../application/dto/query/position-query.dto';
 import { UpdatePositionDto } from '../application/dto/create/position/update.dto';
+import { Public } from '@core-system/auth';
 
 @Controller('positions')
 export class PositionController {
@@ -30,6 +31,7 @@ export class PositionController {
     private readonly _dataMapper: PositionDataMapper,
   ) {}
 
+  @Public()
   @Post('')
   async create(
     @Body() dto: CreatePositionDto,
@@ -42,6 +44,7 @@ export class PositionController {
     );
   }
 
+  @Public()
   @Get('')
   async getAll(
     @Query() dto: PositionQueryDto,
@@ -54,6 +57,7 @@ export class PositionController {
     );
   }
 
+  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -66,6 +70,7 @@ export class PositionController {
     );
   }
 
+  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -79,6 +84,7 @@ export class PositionController {
     );
   }
 
+  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._positionService.delete(id);

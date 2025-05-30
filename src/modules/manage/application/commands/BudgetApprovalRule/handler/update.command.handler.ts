@@ -10,8 +10,9 @@ import { BudgetApprovalRuleDataMapper } from '../../../mappers/budget-approval-r
 import { BudgetApprovalRuleId } from '@src/modules/manage/domain/value-objects/budget-approval-rule-id.vo';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
+import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -22,12 +23,31 @@ export class UpdateCommandHandler
     @Inject(WRITE_BUDGET_APPROVAL_RULE_REPOSITORY)
     private readonly _write: IWriteBudgetApprovalRuleRepository,
     private readonly _dataMapper: BudgetApprovalRuleDataMapper,
+    private readonly _userContextService: UserContextService,
   ) {}
 
   async execute(
     query: UpdateCommand,
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
     const { min_amount, max_amount } = query.dto;
+
+    const departmentUser =
+      this._userContextService.getAuthUser()?.departmentUser;
+    if (!departmentUser) {
+      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+    }
+
+    await _checkColumnDuplicate(
+      BudgetApprovalRuleOrmEntity,
+      'approver_id',
+      query.dto.approver_id,
+      query.manager,
+      'errors.already_exists',
+      query.id,
+    );
+
+    // const departmentId = (departmentUser as any).department_id;
+    const departmentId = (departmentUser as any).departments.id;
 
     if (isNaN(query.id)) {
       throw new ManageDomainException(
@@ -47,14 +67,11 @@ export class UpdateCommandHandler
       );
     }
 
-    await findOneOrFail(query.manager, DepartmentOrmEntity, {
-      id: query.dto.department_id,
-    });
     await findOneOrFail(query.manager, DepartmentUserOrmEntity, {
       user_id: query.dto.approver_id,
     });
 
-    const entity = this._dataMapper.toEntity(query.dto);
+    const entity = this._dataMapper.toEntity(query.dto, departmentId);
     await entity.initializeUpdateSetId(new BudgetApprovalRuleId(query.id));
     await entity.validateExistingIdForUpdate();
 
