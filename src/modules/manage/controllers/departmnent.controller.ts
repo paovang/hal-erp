@@ -138,8 +138,8 @@ export class DepartmentController {
     console.log('changeProfileImageDto:', s3ImageResponse);
   }
 
-  @Get('test-server')
-  async testServer(): Promise<any> {
-    return 'paovang';
+  @Post('/test-server')
+  async getUsers(): Promise<any> {
+    return 'alex';
   }
 }

@@ -24,6 +24,7 @@ export class AuthUserInterceptor implements NestInterceptor {
   ): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
     const authUser = request.user;
+    console.log('request: ', authUser);
 
     if (authUser) {
       const departmentUser = await this.departmentUserRepository.findOne({
