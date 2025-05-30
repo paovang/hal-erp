@@ -137,4 +137,9 @@ export class DepartmentController {
 
     console.log('changeProfileImageDto:', s3ImageResponse);
   }
+
+  @Get('test-server')
+  async testServer(): Promise<any> {
+    return 'paovang';
+  }
 }
