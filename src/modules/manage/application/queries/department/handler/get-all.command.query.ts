@@ -5,7 +5,7 @@ import { Inject } from '@nestjs/common';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { IReadDepartmentRepository } from '@src/modules/manage/domain/ports/output/department-repository.interface';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { UserContextService } from '@common/infrastructure/cls/cls.service';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler

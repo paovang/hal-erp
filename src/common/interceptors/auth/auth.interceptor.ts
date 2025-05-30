@@ -5,8 +5,8 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { DepartmentUserOrmEntity } from '@common/infrastructure/database/typeorm/department-user.orm';
+import { UserContextService } from '@common/infrastructure/cls/cls.service';
 import { Observable } from 'rxjs';
 import { Repository } from 'typeorm';
 
