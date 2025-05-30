@@ -25,6 +25,7 @@ import { UploadFileDto } from '../application/dto/create/departmentUser/upload.d
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import * as path from 'path';
+import { Public } from '@core-system/auth';
 // import { Request } from 'express';
 
 @Controller('department-users')
@@ -37,6 +38,7 @@ export class DepartmentUserController {
     private readonly _dataMapper: DepartmentUserDataMapper,
   ) {}
 
+  @Public()
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -75,6 +77,7 @@ export class DepartmentUserController {
     };
   }
 
+  @Public()
   @Post('')
   async create(
     @Body() dto: CreateDepartmentUserDto,
@@ -87,6 +90,7 @@ export class DepartmentUserController {
     );
   }
 
+  @Public()
   @Get('')
   async getAll(
     @Query() dto: DepartmentUserQueryDto,
@@ -100,6 +104,7 @@ export class DepartmentUserController {
   }
 
   /** Get One */
+  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -113,6 +118,7 @@ export class DepartmentUserController {
   }
 
   /** Update */
+  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -126,6 +132,7 @@ export class DepartmentUserController {
     );
   }
 
+  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._departmentUserService.delete(id);

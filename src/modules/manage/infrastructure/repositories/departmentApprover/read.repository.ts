@@ -26,8 +26,9 @@ export class ReadDepartmentApproverRepository
   async findAll(
     query: DepartmentApproverQueryDto,
     manager: EntityManager,
+    departmentId?: number,
   ): Promise<ResponseResult<DepartmentApproverEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const queryBuilder = await this.createBaseQuery(manager, departmentId);
     query.sort_by = 'department_approvers.id';
 
     const data = await this._paginationService.paginate(
@@ -39,11 +40,19 @@ export class ReadDepartmentApproverRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager) {
-    return manager
+  private createBaseQuery(manager: EntityManager, departmentId?: number) {
+    const qb = manager
       .createQueryBuilder(DepartmentApproverOrmEntity, 'department_approvers')
       .leftJoinAndSelect('department_approvers.departments', 'departments')
       .leftJoinAndSelect('department_approvers.users', 'users');
+
+    if (departmentId) {
+      qb.where('department_approvers.department_id = :departmentId', {
+        departmentId,
+      });
+    }
+
+    return qb;
   }
 
   private getFilterOptions(): FilterOptions {

@@ -19,6 +19,7 @@ import { ResponseResult } from '@common/infrastructure/pagination/pagination.int
 import { CategoryResponse } from '../application/dto/response/category.response';
 import { CategoryQueryDto } from '../application/dto/query/category-query.dto';
 import { UpdateCategoryDto } from '../application/dto/create/category/update.dto';
+import { Public } from '@core-system/auth';
 
 @Controller('categories')
 export class CategoryController {
@@ -31,6 +32,7 @@ export class CategoryController {
   ) {}
 
   /** Create */
+  @Public()
   @Post('')
   async create(
     @Body() dto: CreateCategoryDto,
@@ -43,6 +45,7 @@ export class CategoryController {
     );
   }
 
+  @Public()
   @Get('')
   async getAll(
     @Query() dto: CategoryQueryDto,
@@ -55,6 +58,7 @@ export class CategoryController {
     );
   }
 
+  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -67,6 +71,7 @@ export class CategoryController {
     );
   }
 
+  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -80,6 +85,7 @@ export class CategoryController {
     );
   }
 
+  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._categoryService.delete(id);

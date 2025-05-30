@@ -29,13 +29,10 @@ export class ReadDepartmentUserRepository
   async findAll(
     query: DepartmentUserQueryDto,
     manager: EntityManager,
+    departmentId?: number,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager).where(
-      'department_users.department_id = :departmentId',
-      {
-        departmentId: 1,
-      },
-    );
+    const queryBuilder = await this.createBaseQuery(manager, departmentId);
+
     query.sort_by = 'department_users.id';
 
     const data = await this._paginationService.paginate(
@@ -47,12 +44,20 @@ export class ReadDepartmentUserRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager) {
-    return manager
+  private createBaseQuery(manager: EntityManager, departmentId?: number) {
+    const qb = manager
       .createQueryBuilder(DepartmentUserOrmEntity, 'department_users')
       .leftJoinAndSelect('department_users.departments', 'departments')
-      .leftJoinAndSelect('department_users.users', 'users') // assuming relation name is `user`
+      .leftJoinAndSelect('department_users.users', 'users')
       .leftJoinAndSelect('department_users.positions', 'positions');
+
+    if (departmentId) {
+      qb.where('department_users.department_id = :departmentId', {
+        departmentId,
+      });
+    }
+
+    return qb;
   }
 
   private getFilterOptions(): FilterOptions {

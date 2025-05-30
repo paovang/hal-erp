@@ -20,11 +20,12 @@ export class DepartmentUserDataMapper {
     dto: Partial<CreateDepartmentUserDto | UpdateDepartmentUserDto>,
     isCreate: boolean,
     userId?: number,
+    departmentId?: number,
   ): DepartmentUserEntity {
     const builder = DepartmentUserEntity.builder();
 
-    if (dto.departmentId) {
-      builder.setDepartmentId(dto.departmentId);
+    if (departmentId) {
+      builder.setDepartmentId(departmentId);
     }
 
     if (dto.positionId) {

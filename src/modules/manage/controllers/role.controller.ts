@@ -7,6 +7,7 @@ import { RoleDataMapper } from '../application/mappers/role.mapper';
 import { RoleQueryDto } from '../application/dto/query/role-query.dto';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { RoleResponse } from '../application/dto/response/role.response';
+import { Public } from '@core-system/auth';
 
 @Controller('roles')
 export class RoleController {
@@ -18,6 +19,7 @@ export class RoleController {
     private readonly _dataMapper: RoleDataMapper,
   ) {}
 
+  @Public()
   @Get('')
   async getAll(
     @Query() dto: RoleQueryDto,
@@ -30,6 +32,7 @@ export class RoleController {
     );
   }
 
+  @Public()
   @Get(':id')
   async getOne(@Param('id') id: number): Promise<ResponseResult<RoleResponse>> {
     const result = await this._roleService.getOne(id);

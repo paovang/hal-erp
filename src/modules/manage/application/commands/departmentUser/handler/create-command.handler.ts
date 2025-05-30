@@ -2,7 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '../create.command';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Inject } from '@nestjs/common';
 import {
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
@@ -22,6 +22,9 @@ import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.
 import * as bcrypt from 'bcrypt';
 import path from 'path';
 import * as fs from 'fs';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -38,6 +41,7 @@ export class CreateCommandHandler
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
+    private readonly _userContextService: UserContextService,
   ) {}
   private moveFileIfExists(filename: string, from: string, to: string): void {
     if (!filename) return;
@@ -65,6 +69,15 @@ export class CreateCommandHandler
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
+    const departmentUser =
+      this._userContextService.getAuthUser()?.departmentUser;
+    if (!departmentUser) {
+      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+    }
+
+    // const departmentId = (departmentUser as any).department_id;
+    const departmentId = (departmentUser as any).departments.id;
+
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
@@ -72,8 +85,8 @@ export class CreateCommandHandler
           id: query.dto.positionId,
         });
 
-        await findOneOrFail(query.manager, PositionOrmEntity, {
-          id: query.dto.departmentId,
+        await findOneOrFail(query.manager, DepartmentOrmEntity, {
+          id: departmentId,
         });
 
         await _checkColumnDuplicate(
@@ -109,6 +122,7 @@ export class CreateCommandHandler
           query.dto,
           true,
           id,
+          departmentId,
         );
         const result = await this._write.create(departmentUserEntity, manager);
 

@@ -22,6 +22,7 @@ export interface IReadDepartmentApproverRepository {
   findAll(
     query: DepartmentApproverQueryDto,
     manager: EntityManager,
+    departmentId?: number,
   ): Promise<ResponseResult<DepartmentApproverEntity>>;
 
   findOne(
