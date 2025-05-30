@@ -23,8 +23,8 @@ import * as bcrypt from 'bcrypt';
 import path from 'path';
 import * as fs from 'fs';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler

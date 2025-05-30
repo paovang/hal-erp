@@ -13,9 +13,9 @@ import { DataSource } from 'typeorm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler

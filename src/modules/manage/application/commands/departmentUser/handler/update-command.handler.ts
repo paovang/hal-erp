@@ -25,7 +25,7 @@ import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
 import path from 'path';
 import * as fs from 'fs';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { UserContextService } from '@common/infrastructure/cls/cls.service';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler

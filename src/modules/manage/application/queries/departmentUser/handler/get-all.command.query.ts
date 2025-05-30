@@ -6,7 +6,7 @@ import { READ_DEPARTMENT_USER_REPOSITORY } from '../../../constants/inject-key.c
 import { HttpStatus, Inject } from '@nestjs/common';
 import { IReadDepartmentUserRepository } from '@src/modules/manage/domain/ports/output/department-user-repository.interface';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler

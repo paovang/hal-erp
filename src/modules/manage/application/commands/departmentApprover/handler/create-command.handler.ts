@@ -9,10 +9,10 @@ import { IWriteDepartmentApproverRepository } from '@src/modules/manage/domain/p
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { DepartmentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/department-approver.orm';
+import { UserContextService } from '@common/infrastructure/cls/cls.service';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler

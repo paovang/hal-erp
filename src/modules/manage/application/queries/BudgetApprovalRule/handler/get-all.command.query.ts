@@ -6,7 +6,7 @@ import { HttpStatus, Inject } from '@nestjs/common';
 import { READ_BUDGET_APPROVAL_RULE_REPOSITORY } from '../../../constants/inject-key.const';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { IReadBudgetApprovalRuleRepository } from '@src/modules/manage/domain/ports/output/budget-approval-rule.interface';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { UserContextService } from '@common/infrastructure/cls/cls.service';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler

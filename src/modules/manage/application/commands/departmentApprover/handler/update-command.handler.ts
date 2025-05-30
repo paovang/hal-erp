@@ -10,10 +10,10 @@ import { DepartmentApproverId } from '../../../../domain/value-objects/departmen
 import { DepartmentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/department-approver.orm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
-import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { DepartmentUserOrmEntity } from '@common/infrastructure/database/typeorm/department-user.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
+import { _checkColumnDuplicate } from '@common/utils/check-column-duplicate-orm.util';
+import { UserContextService } from '@common/infrastructure/cls/cls.service';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler

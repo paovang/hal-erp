@@ -6,7 +6,7 @@ import { READ_DEPARTMENT_APPROVER_REPOSITORY } from '../../../constants/inject-k
 import { DepartmentApproverEntity } from '@src/modules/manage/domain/entities/department-approver.entity';
 import { IReadDepartmentApproverRepository } from '@src/modules/manage/domain/ports/output/department-approver-repositiory.interface';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler

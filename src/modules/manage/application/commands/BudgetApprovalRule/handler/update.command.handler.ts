@@ -10,9 +10,9 @@ import { BudgetApprovalRuleDataMapper } from '../../../mappers/budget-approval-r
 import { BudgetApprovalRuleId } from '@src/modules/manage/domain/value-objects/budget-approval-rule-id.vo';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
-import { UserContextService } from '@src/common/utils/services/cls/cls.service';
-import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
+import { DepartmentUserOrmEntity } from '@common/infrastructure/database/typeorm/department-user.orm';
+import { _checkColumnDuplicate } from '@common/utils/check-column-duplicate-orm.util';
+import { UserContextService } from '@common/infrastructure/cls/cls.service';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
