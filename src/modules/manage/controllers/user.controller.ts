@@ -40,6 +40,7 @@ export class UserController {
     return this._authService.validateUser(dto);
   }
 
+  @Public()
   @Post('')
   async create(
     @Body() dto: CreateUserDto,
