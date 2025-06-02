@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PermissionResponse {
   @ApiProperty()
@@ -11,6 +11,9 @@ export class PermissionResponse {
   display_name: string;
 
   @ApiProperty()
+  type: string;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()
@@ -18,18 +21,18 @@ export class PermissionResponse {
 }
 
 export class PermissionGroupResponse {
-    @ApiProperty()
-    id: number;
+  @ApiProperty()
+  id: number;
 
-    @ApiProperty()
-    name: string;
+  @ApiProperty()
+  name: string;
 
-    @ApiProperty()
-    display_name: string;
+  @ApiProperty()
+  display_name: string;
 
-    @ApiProperty()
-    type: string;
+  @ApiProperty()
+  type: string;
 
-    @ApiProperty()
-    permissions: PermissionResponse[];
+  @ApiProperty()
+  permissions: PermissionResponse[];
 }

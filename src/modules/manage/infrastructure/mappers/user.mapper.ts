@@ -5,8 +5,12 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { UserId } from '../../domain/value-objects/user-id.vo';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { Injectable } from '@nestjs/common';
+import { RoleDataAccessMapper } from './role.mapper';
 
+@Injectable()
 export class UserDataAccessMapper {
+  constructor(private readonly roleMapper: RoleDataAccessMapper) {}
   toOrmEntity(userEntity: UserEntity, method: OrmEntityMethod): UserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = userEntity.getId();
@@ -30,7 +34,7 @@ export class UserDataAccessMapper {
   }
 
   toEntity(ormData: UserOrmEntity): UserEntity {
-    return UserEntity.builder()
+    const builder = UserEntity.builder()
       .setUserId(new UserId(ormData.id))
       .setUsername(ormData.username ?? '')
       .setEmail(ormData.email ?? '') // corrected
@@ -38,7 +42,13 @@ export class UserDataAccessMapper {
       .setPassword(ormData.password ?? '')
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
-      .setDeletedAt(ormData.deleted_at) // this was missing too
-      .build();
+      .setDeletedAt(ormData.deleted_at);
+
+    // ✅ Set roles before calling build()
+    if (ormData.roles) {
+      builder.setRoles(this.roleMapper.toEntities(ormData.roles));
+    }
+
+    return builder.build();
   }
 }

@@ -1,6 +1,9 @@
 import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -36,19 +39,54 @@ export class CreateDepartmentUserDto {
   })
   readonly password: string;
 
-  // @ApiProperty()
-  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   // @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
-  // readonly departmentId: number;
+  readonly departmentId: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  // @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly positionId: number;
 
-  @ApiProperty()
-  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  // @ApiProperty()
   @Optional()
-  readonly signature_file: string;
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  signatureFile: any;
+
+  @Transform(({ value }) => {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed.map(Number) : [];
+    } catch {
+      return [];
+    }
+  })
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  @IsNumber(
+    {},
+    { each: true, message: i18nValidationMessage('validation.IS_NUMBER') },
+  )
+  roleIds: number[];
+
+  @Transform(({ value }) => {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed.map(Number) : [];
+    } catch {
+      return [];
+    }
+  })
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  @IsNumber(
+    {},
+    { each: true, message: i18nValidationMessage('validation.IS_NUMBER') },
+  )
+  permissionIds: number[];
 }

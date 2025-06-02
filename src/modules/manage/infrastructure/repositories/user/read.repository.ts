@@ -52,7 +52,10 @@ export class ReadUserRepository implements IReadUserRepository {
   }
 
   private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(UserOrmEntity, 'users');
+    return manager
+      .createQueryBuilder(UserOrmEntity, 'users')
+      .leftJoinAndSelect('users.roles', 'roles')
+      .leftJoinAndSelect('roles.permissions', 'permissions');
   }
 
   private getFilterOptions(): FilterOptions {

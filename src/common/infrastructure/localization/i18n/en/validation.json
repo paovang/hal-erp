@@ -9,5 +9,6 @@
     "PASSWORD_LENGTH": "{property} must be between 6 and 255 characters.",
     "IS_ARRAY": "{property} must be an array.",
     "IS_DEFINED": "This field is required.",
-    "IS_BOOLEAN": "This field must be true or false."
+    "IS_BOOLEAN": "This field must be true or false.",
+    "ARRAY_NOT_EMPTY": "{property} must not be an empty array."
 }

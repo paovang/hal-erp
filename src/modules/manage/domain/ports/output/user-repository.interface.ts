@@ -8,11 +8,15 @@ export interface IWriteUserRepository {
   create(
     entity: UserEntity,
     manager: EntityManager,
+    roleIds?: number[],
+    permissionIds?: number[],
   ): Promise<ResponseResult<UserEntity>>;
 
   update(
     entity: UserEntity,
     manager: EntityManager,
+    roleIds?: number[],
+    permissionIds?: number[],
   ): Promise<ResponseResult<UserEntity>>;
 
   changePassword(

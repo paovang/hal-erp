@@ -12,7 +12,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
-import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
+import {
+  PROFILE_IMAGE_ALLOW_MIME_TYPE,
+  TRANSFORM_RESULT_SERVICE,
+  USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
+} from '@src/common/constants/inject-key.const';
 import { DEPARTMENT_USER_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { CreateDepartmentUserDto } from '../application/dto/create/departmentUser/create.dto';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
@@ -26,6 +30,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import * as path from 'path';
 import { Public } from '@core-system/auth';
+import { FileValidationInterceptor } from '@src/common/interceptors/file/file.interceptor';
+import { FileMimeTypeValidator } from '@src/common/validations/file-mime-type.validator';
+import { FileSizeValidator } from '@src/common/validations/file-size.validator';
+import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
+import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
+import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
 // import { Request } from 'express';
 
 @Controller('department-users')
@@ -36,6 +46,10 @@ export class DepartmentUserController {
     @Inject(TRANSFORM_RESULT_SERVICE)
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: DepartmentUserDataMapper,
+    @Inject(USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY)
+    private readonly _optimizeService: IImageOptimizeService,
+    @Inject(AMAZON_S3_SERVICE_KEY)
+    private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
   ) {}
 
   @Public()
@@ -79,9 +93,20 @@ export class DepartmentUserController {
 
   @Public()
   @Post('')
+  @UseInterceptors(
+    FileInterceptor('signatureFile'),
+    new FileValidationInterceptor(
+      new FileMimeTypeValidator([...PROFILE_IMAGE_ALLOW_MIME_TYPE]),
+      new FileSizeValidator(5 * 1024 * 1024),
+      'signatureFile',
+    ),
+  )
   async create(
-    @Body() dto: CreateDepartmentUserDto,
+    @Body()
+    dto: CreateDepartmentUserDto,
+    @UploadedFile() signatureFile: Express.Multer.File,
   ): Promise<ResponseResult<DepartmentUserResponse>> {
+    dto.signatureFile = signatureFile;
     const result = await this._departmentUserService.create(dto);
 
     return this._transformResultService.execute(
@@ -90,7 +115,7 @@ export class DepartmentUserController {
     );
   }
 
-  @Public()
+  // @Public()
   @Get('')
   async getAll(
     @Query() dto: DepartmentUserQueryDto,
@@ -104,7 +129,7 @@ export class DepartmentUserController {
   }
 
   /** Get One */
-  @Public()
+  // @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -120,10 +145,20 @@ export class DepartmentUserController {
   /** Update */
   @Public()
   @Put(':id')
+  @UseInterceptors(
+    FileInterceptor('signatureFile'),
+    new FileValidationInterceptor(
+      new FileMimeTypeValidator([...PROFILE_IMAGE_ALLOW_MIME_TYPE]),
+      new FileSizeValidator(5 * 1024 * 1024),
+      'signatureFile',
+    ),
+  )
   async update(
     @Param('id') id: number,
     @Body() dto: UpdateDepartmentUserDto,
+    @UploadedFile() signatureFile: Express.Multer.File,
   ): Promise<ResponseResult<DepartmentUserResponse>> {
+    dto.signatureFile = signatureFile;
     const result = await this._departmentUserService.update(id, dto);
 
     return this._transformResultService.execute(

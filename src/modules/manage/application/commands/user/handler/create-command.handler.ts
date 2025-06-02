@@ -13,6 +13,9 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
 import * as bcrypt from 'bcrypt';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.orm';
+import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/permission.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -29,6 +32,17 @@ export class CreateCommandHandler
   ) {}
 
   async execute(query: CreateCommand): Promise<ResponseResult<UserEntity>> {
+    for (const roleId of query.dto.roleIds) {
+      await findOneOrFail(query.manager, RoleOrmEntity, {
+        id: roleId,
+      });
+    }
+
+    for (const permissionId of query.dto.permissionIds) {
+      await findOneOrFail(query.manager, PermissionOrmEntity, {
+        id: permissionId,
+      });
+    }
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
@@ -56,7 +70,12 @@ export class CreateCommandHandler
 
         const entity = this._dataMapper.toEntity(dtoWithHashedPassword);
 
-        return await this._write.create(entity, manager);
+        return await this._write.create(
+          entity,
+          manager,
+          query.dto.roleIds,
+          query.dto.permissionIds,
+        );
       },
     );
   }

@@ -11,6 +11,8 @@ import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.orm';
+import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/permission.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -29,6 +31,41 @@ export class UpdateCommandHandler
       );
     }
 
+    for (const roleId of query.dto.roleIds) {
+      await findOneOrFail(query.manager, RoleOrmEntity, {
+        id: roleId,
+      });
+    }
+
+    for (const permissionId of query.dto.permissionIds) {
+      await findOneOrFail(query.manager, PermissionOrmEntity, {
+        id: permissionId,
+      });
+    }
+
+    await this.checkData(query);
+
+    // Map to entity
+    const entity = this._dataMapper.toEntityForUpdate(query.dto);
+
+    // Set and validate ID
+    await entity.initializeUpdateSetId(new UserId(query.id));
+    await entity.validateExistingIdForUpdate();
+
+    // Final existence check for ID before update
+    await findOneOrFail(query.manager, UserOrmEntity, {
+      id: entity.getId().value,
+    });
+
+    return this._write.update(
+      entity,
+      query.manager,
+      query.dto.roleIds,
+      query.dto.permissionIds,
+    );
+  }
+
+  private async checkData(query: UpdateCommand): Promise<void> {
     await findOneOrFail(query.manager, UserOrmEntity, {
       id: query.id,
     });
@@ -49,19 +86,5 @@ export class UpdateCommandHandler
       'errors.tel_already_exists',
       query.id,
     );
-
-    // Map to entity
-    const entity = this._dataMapper.toEntityForUpdate(query.dto);
-
-    // Set and validate ID
-    await entity.initializeUpdateSetId(new UserId(query.id));
-    await entity.validateExistingIdForUpdate();
-
-    // Final existence check for ID before update
-    await findOneOrFail(query.manager, UserOrmEntity, {
-      id: entity.getId().value,
-    });
-
-    return this._write.update(entity, query.manager);
   }
 }

@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsString,
   Length,
   Matches,
@@ -33,4 +36,24 @@ export class CreateUserDto {
     message: i18nValidationMessage('validation.PASSWORD_LENGTH'),
   })
   readonly password: string;
+
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  @IsNumber(
+    {},
+    { each: true, message: i18nValidationMessage('validation.IS_NUMBER') },
+  )
+  roleIds: number[];
+
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  @IsNumber(
+    {},
+    { each: true, message: i18nValidationMessage('validation.IS_NUMBER') },
+  )
+  permissionIds: number[];
 }

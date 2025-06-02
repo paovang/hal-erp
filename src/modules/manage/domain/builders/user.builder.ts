@@ -1,3 +1,4 @@
+import { RoleEntity } from '../entities/role.entity';
 import { UserEntity } from '../entities/user.entity';
 import { UserId } from '../value-objects/user-id.vo';
 
@@ -10,6 +11,9 @@ export class UserBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  roleIds: number[] | null = null;
+  permissionIds: number[] | null = null;
+  roles: RoleEntity[];
 
   setUserId(value: UserId): this {
     this.userId = value;
@@ -48,6 +52,21 @@ export class UserBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setRoleIds(roleIds: number[] | null): this {
+    this.roleIds = roleIds;
+    return this;
+  }
+
+  setPermissions(permissions: number[] | null): this {
+    this.permissionIds = permissions;
+    return this;
+  }
+
+  setRoles(roles: RoleEntity[]): this {
+    this.roles = roles;
     return this;
   }
 

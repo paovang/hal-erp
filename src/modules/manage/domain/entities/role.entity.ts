@@ -1,6 +1,7 @@
 import { RoleId } from '../value-objects/role-id.vo';
 import { RoleBuilder } from '../builders/role.builder';
 import { Entity } from '@src/common/domain/entities/entity';
+import { PermissionEntity } from './permission.entity';
 
 export class RoleEntity extends Entity<RoleId> {
   private readonly _name: string;
@@ -8,6 +9,7 @@ export class RoleEntity extends Entity<RoleId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _permissions: PermissionEntity[];
 
   private constructor(builder: RoleBuilder) {
     super();
@@ -17,6 +19,7 @@ export class RoleEntity extends Entity<RoleId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._permissions = builder.permissions;
   }
 
   get name(): string {
@@ -37,6 +40,10 @@ export class RoleEntity extends Entity<RoleId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get permissions(): PermissionEntity[] {
+    return this._permissions;
   }
 
   public static builder(): RoleBuilder {

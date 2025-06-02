@@ -1,10 +1,11 @@
-import { PermissionEntity } from "../entities/permission.entity";
-import { PermissionId } from "../value-objects/permission-id.vo";
+import { PermissionEntity } from '../entities/permission.entity';
+import { PermissionId } from '../value-objects/permission-id.vo';
 
 export class PermissionBuilder {
   permissionId: PermissionId;
   name: string;
   display_name: string;
+  type: string;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -36,6 +37,11 @@ export class PermissionBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setType(type: string): this {
+    this.type = type;
     return this;
   }
 

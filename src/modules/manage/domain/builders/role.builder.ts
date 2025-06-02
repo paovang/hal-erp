@@ -1,3 +1,4 @@
+import { PermissionEntity } from '../entities/permission.entity';
 import { RoleEntity } from '../entities/role.entity';
 import { RoleId } from '../value-objects/role-id.vo';
 
@@ -8,6 +9,7 @@ export class RoleBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  permissions!: PermissionEntity[];
 
   setId(value: RoleId): this {
     this.roleId = value;
@@ -36,6 +38,11 @@ export class RoleBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setPermissions(permissions: PermissionEntity[]): this {
+    this.permissions = permissions;
     return this;
   }
 

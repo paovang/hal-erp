@@ -23,6 +23,7 @@ export class GetAllQueryHandler
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     const departmentUser =
       this._userContextService.getAuthUser()?.departmentUser;
+    console.log('object', departmentUser);
 
     // const departmentId = (departmentUser as any).department_id;
     const departmentId = (departmentUser as any).departments.id;

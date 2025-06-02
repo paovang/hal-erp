@@ -8,9 +8,12 @@ import { UserResponse } from '../dto/response/user.response';
 import { UpdateUserDto } from '../dto/create/user/update.dto';
 import { ChangePasswordDto } from '../dto/create/user/change-password.dto';
 import { SendMailDto } from '../dto/create/user/send-email.dto';
+import { RoleDataMapper } from './role.mapper';
 
 @Injectable()
 export class UserDataMapper {
+  constructor(private readonly roleDataMapper: RoleDataMapper) {}
+
   /** Mapper Dto To Entity */
   toEntity(dto: CreateUserDto): UserEntity {
     const builder = UserEntity.builder();
@@ -29,6 +32,14 @@ export class UserDataMapper {
 
     if (dto.password) {
       builder.setPassword(dto.password);
+    }
+
+    if (dto.roleIds) {
+      builder.setRoleIds(dto.roleIds);
+    }
+
+    if (dto.permissionIds) {
+      builder.setPermissions(dto.permissionIds);
     }
 
     return builder.build();
@@ -95,6 +106,10 @@ export class UserDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+
+    response.roles = entity.roles
+      ? entity.roles.map((role) => this.roleDataMapper.toResponse(role))
+      : [];
 
     return response;
   }

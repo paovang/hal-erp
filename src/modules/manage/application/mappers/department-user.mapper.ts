@@ -20,12 +20,12 @@ export class DepartmentUserDataMapper {
     dto: Partial<CreateDepartmentUserDto | UpdateDepartmentUserDto>,
     isCreate: boolean,
     userId?: number,
-    departmentId?: number,
+    s3ImageResponse: { fileKey: string } | null = null,
   ): DepartmentUserEntity {
     const builder = DepartmentUserEntity.builder();
 
-    if (departmentId) {
-      builder.setDepartmentId(departmentId);
+    if (dto.departmentId) {
+      builder.setDepartmentId(dto.departmentId);
     }
 
     if (dto.positionId) {
@@ -53,8 +53,8 @@ export class DepartmentUserDataMapper {
       builder.setUserId(userId);
     }
 
-    if (dto.signature_file) {
-      builder.setSignatureFile(dto.signature_file);
+    if (s3ImageResponse) {
+      builder.setSignatureFile(s3ImageResponse.fileKey);
     }
 
     return builder.build();
@@ -62,7 +62,7 @@ export class DepartmentUserDataMapper {
 
   /** Mapper Entity To Response */
   toResponse(entity: DepartmentUserEntity): DepartmentUserResponse {
-    const file = `${process.env.PATH_URL}/assets/files/${entity.signature_file}`;
+    const file = `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${entity.signature_file}`;
     const response = new DepartmentUserResponse();
     response.id = entity.getId().value;
     response.department_id = entity.department?.getId().value;
