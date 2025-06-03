@@ -4,9 +4,12 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
+import { ApprovalWorkflowOrmEntity } from './approval-workflow.orm';
 
 @Entity('document_types')
 export class DocumentTypeOrmEntity {
@@ -32,9 +35,9 @@ export class DocumentTypeOrmEntity {
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
 
-  // @OneToMany(
-  //   () => BudgetAccountOrmEntity,
-  //   (budget_accounts) => budget_accounts.document_types,
-  // )
-  // budget_accounts: Relation<BudgetAccountOrmEntity[]>;
+  @OneToMany(
+    () => ApprovalWorkflowOrmEntity,
+    (approval_workflows) => approval_workflows.document_types,
+  )
+  approval_workflows: Relation<ApprovalWorkflowOrmEntity[]>;
 }

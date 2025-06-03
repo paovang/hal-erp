@@ -4,14 +4,11 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  //   JoinColumn,
-  //   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-// import { DocumentTypeOrmEntity } from './document-type.orm';
 import { SubBudgetAccountOrmEntity } from './sub-buget-account.orm';
 
 @Entity('budget_accounts')

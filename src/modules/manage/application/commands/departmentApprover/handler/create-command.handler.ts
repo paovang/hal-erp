@@ -43,7 +43,6 @@ export class CreateCommandHandler
       throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
     }
 
-    // const departmentId = (departmentUser as any).department_id;
     const departmentId = (departmentUser as any).departments.id;
 
     await findOneOrFail(query.manager, UserOrmEntity, {

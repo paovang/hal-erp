@@ -1,3 +1,4 @@
+import { ApprovalWorkflowOrmEntity } from './typeorm/approval-workflow.orm';
 import { BudgetApprovalRuleOrmEntity } from './typeorm/budget-approval-rule.orm';
 import { CategoryOrmEntity } from './typeorm/category.orm';
 import { CurrencyOrmEntity } from './typeorm/currency.orm';
@@ -32,6 +33,7 @@ export const models = [
   VendorOrmEntity,
   VendorBankAccountOrmEntity,
   BudgetApprovalRuleOrmEntity,
+  ApprovalWorkflowOrmEntity,
   // BudgetAccountOrmEntity,
   // SubBudgetAccountOrmEntity,
 ];
