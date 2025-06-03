@@ -23,13 +23,12 @@ export class GetAllQueryHandler
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     const departmentUser =
       this._userContextService.getAuthUser()?.departmentUser;
-    console.log('object', departmentUser);
+    if (!departmentUser) {
+      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+    }
 
-    // const departmentId = (departmentUser as any).department_id;
     const departmentId = (departmentUser as any).departments.id;
 
-    console.log('Auth User:', departmentId);
-    console.log('Auth Department User:', departmentUser);
     const data = await this._readRepo.findAll(
       query.dto,
       query.manager,
