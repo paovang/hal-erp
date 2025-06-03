@@ -25,11 +25,7 @@ import { DepartmentUserDataMapper } from '../application/mappers/department-user
 import { DepartmentUserResponse } from '../application/dto/response/department-user.response';
 import { UpdateDepartmentUserDto } from '../application/dto/create/departmentUser/update.dto';
 import { DepartmentUserQueryDto } from '../application/dto/query/department-user-query.dto';
-import { UploadFileDto } from '../application/dto/create/departmentUser/upload.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import * as multer from 'multer';
-import * as path from 'path';
-import { Public } from '@core-system/auth';
 import { FileValidationInterceptor } from '@src/common/interceptors/file/file.interceptor';
 import { FileMimeTypeValidator } from '@src/common/validations/file-mime-type.validator';
 import { FileSizeValidator } from '@src/common/validations/file-size.validator';
@@ -52,46 +48,6 @@ export class DepartmentUserController {
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
   ) {}
 
-  @Public()
-  @Post('upload')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: multer.diskStorage({
-        destination: './assets/uploads',
-        filename: (
-          req: Express.Request,
-          file: Express.Multer.File,
-          callback: (error: Error | null, filename: string) => void,
-        ) => {
-          const now = new Date();
-          const fileName =
-            now.getFullYear().toString() +
-            '-' +
-            (now.getMonth() + 1).toString().padStart(2, '0') +
-            '-' +
-            now.getDate().toString().padStart(2, '0') +
-            '-' +
-            Date.now() +
-            path.extname(file.originalname);
-          callback(null, fileName);
-        },
-      }),
-    }),
-  )
-  async uploadFile(
-    @Body() body: UploadFileDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (!file) {
-      throw new Error('No file uploaded');
-    }
-
-    return {
-      file: file.filename,
-    };
-  }
-
-  @Public()
   @Post('')
   @UseInterceptors(
     FileInterceptor('signatureFile'),
@@ -143,7 +99,6 @@ export class DepartmentUserController {
   }
 
   /** Update */
-  @Public()
   @Put(':id')
   @UseInterceptors(
     FileInterceptor('signatureFile'),
@@ -167,7 +122,6 @@ export class DepartmentUserController {
     );
   }
 
-  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._departmentUserService.delete(id);

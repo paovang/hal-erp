@@ -19,7 +19,6 @@ import { CreateDocumentTypeDto } from '../application/dto/create/documentType/cr
 import { DocumentTypeResponse } from '../application/dto/response/document-type.response';
 import { DocumentTypeQueryDto } from '../application/dto/query/document-type-query.dto';
 import { UpdateDocumentTypeDto } from '../application/dto/create/documentType/update.dto';
-import { Public } from '@core-system/auth';
 
 @Controller('document-types')
 export class DocumentTypeController {
@@ -31,7 +30,6 @@ export class DocumentTypeController {
     private readonly _dataMapper: DocumentTypeDataMapper,
   ) {}
 
-  @Public()
   @Post('')
   async create(
     @Body() dto: CreateDocumentTypeDto,
@@ -44,7 +42,6 @@ export class DocumentTypeController {
     );
   }
 
-  @Public()
   @Get('')
   async getAll(
     @Query() dto: DocumentTypeQueryDto,
@@ -57,7 +54,6 @@ export class DocumentTypeController {
     );
   }
 
-  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -70,7 +66,6 @@ export class DocumentTypeController {
     );
   }
 
-  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -84,7 +79,6 @@ export class DocumentTypeController {
     );
   }
 
-  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._documentTypeService.delete(id);

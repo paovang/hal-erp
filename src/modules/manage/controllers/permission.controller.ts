@@ -7,7 +7,6 @@ import { PermissionQueryDto } from '../application/dto/query/permission-query.dt
 import { IPermissionServiceInterface } from '../domain/ports/input/permission-domain-service.interface';
 import { PermissionGroupResponse } from '../application/dto/response/permission.response';
 import { PermissionDataMapper } from '../application/mappers/permission.mapper';
-import { Public } from '@core-system/auth';
 
 @Controller('permissions')
 export class PermissionController {
@@ -19,7 +18,6 @@ export class PermissionController {
     private readonly _dataMapper: PermissionDataMapper,
   ) {}
 
-  @Public()
   @Get('')
   async getAll(
     @Query() dto: PermissionQueryDto,
@@ -32,7 +30,6 @@ export class PermissionController {
     );
   }
 
-  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,

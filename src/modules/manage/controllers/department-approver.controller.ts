@@ -19,7 +19,6 @@ import { DepartmentApproverDataMapper } from '../application/mappers/department-
 import { DepartmentApproverResponse } from '../application/dto/response/department-approver.response';
 import { DepartmentApproverQueryDto } from '../application/dto/query/department-approver.dto';
 import { UpdateDepartmentApproverDto } from '../application/dto/create/departmentApprover/update.dto';
-import { Public } from '@core-system/auth';
 
 @Controller('department-approvers')
 export class DepartmentApproverController {
@@ -32,7 +31,6 @@ export class DepartmentApproverController {
   ) {}
 
   /** Create */
-  @Public()
   @Post('')
   async create(
     @Body() dto: CreateDepartmentApproverDto,
@@ -45,7 +43,6 @@ export class DepartmentApproverController {
     );
   }
 
-  @Public()
   @Get('')
   async getAll(
     @Query() dto: DepartmentApproverQueryDto,
@@ -58,7 +55,6 @@ export class DepartmentApproverController {
     );
   }
 
-  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -71,7 +67,6 @@ export class DepartmentApproverController {
     );
   }
 
-  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -85,7 +80,6 @@ export class DepartmentApproverController {
     );
   }
 
-  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._departmentApproverService.delete(id);
