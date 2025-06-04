@@ -10,5 +10,6 @@
     "IS_ARRAY": "{property} must be an array.",
     "IS_DEFINED": "This field is required.",
     "IS_BOOLEAN": "This field must be true or false.",
-    "ARRAY_NOT_EMPTY": "{property} must not be an empty array."
+    "ARRAY_NOT_EMPTY": "{property} must not be an empty array.",
+    "NO_SPACES_ALLOWED": "{property} must not contain spaces."
 }

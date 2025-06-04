@@ -3,6 +3,7 @@ import { CreateApprovalWorkflowDto } from '@src/modules/manage/application/dto/c
 import { ApprovalWorkflowEntity } from '../../entities/approval-workflow.entity';
 import { EntityManager } from 'typeorm';
 import { ApprovalWorkflowQueryDto } from '@src/modules/manage/application/dto/query/approval-workflow.dto';
+import { UpdateApprovalWorkflowDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/update.dto';
 
 export interface IApprovalWorkflowServiceInterface {
   getAll(
@@ -10,21 +11,21 @@ export interface IApprovalWorkflowServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 
-  //   getOne(
-  //     id: number,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<CategoryEntity>>;
+  getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 
   create(
     dto: CreateApprovalWorkflowDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 
-  //   update(
-  //     id: number,
-  //     dto: UpdateCategoryDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<CategoryEntity>>;
+  update(
+    id: number,
+    dto: UpdateApprovalWorkflowDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 
-  //   delete(id: number, manager?: EntityManager): Promise<void>;
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

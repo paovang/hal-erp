@@ -10,6 +10,18 @@ import { PermissionGroupId } from '../../domain/value-objects/permission-group-i
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 export class PermissionDataAccessMapper {
+  toEntities(ormPermissions: PermissionOrmEntity[]): PermissionEntity[] {
+    return ormPermissions.map((ormData) =>
+      PermissionEntity.builder()
+        .setId(new PermissionId(ormData.id))
+        .setName(ormData.name)
+        .setCreatedAt(ormData.created_at)
+        .setUpdatedAt(ormData.updated_at)
+        .setDeletedAt(ormData.deleted_at)
+        .build(),
+    );
+  }
+
   toOrmEntity(
     roleEntity: PermissionEntity,
     method: OrmEntityMethod,

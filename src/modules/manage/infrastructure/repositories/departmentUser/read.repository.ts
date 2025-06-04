@@ -49,9 +49,11 @@ export class ReadDepartmentUserRepository
       .createQueryBuilder(DepartmentUserOrmEntity, 'department_users')
       .leftJoinAndSelect('department_users.departments', 'departments')
       .leftJoinAndSelect('department_users.users', 'users')
+      .leftJoinAndSelect('users.userHasPermissions', 'user_has_permissions')
+      .leftJoinAndSelect('user_has_permissions.permission', 'permissions')
       .leftJoinAndSelect('department_users.positions', 'positions')
       .leftJoinAndSelect('users.roles', 'roles')
-      .leftJoinAndSelect('roles.permissions', 'permissions');
+      .leftJoinAndSelect('roles.permissions', 'role_permissions');
 
     if (departmentId) {
       qb.where('department_users.department_id = :departmentId', {

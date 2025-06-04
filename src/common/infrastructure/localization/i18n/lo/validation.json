@@ -10,5 +10,6 @@
     "IS_ARRAY": "{property} ຕ້ອງເປັນອາເຣ.",
     "IS_DEFINED": "ຕ້ອງຕື່ມຂໍ້ມູນນີ້.",
     "IS_BOOLEAN": "ຂໍ້ມູນນີ້ຕ້ອງເປັນ true ຫຼື false.",
-    "ARRAY_NOT_EMPTY": "{property} ບໍ່ຫວ່າງເປົ່າໄດ້."
+    "ARRAY_NOT_EMPTY": "{property} ບໍ່ຫວ່າງເປົ່າໄດ້.",
+    "NO_SPACES_ALLOWED": "{property} ບໍ່ສາມາດຍະຫວ່າງໄດ້."
 }

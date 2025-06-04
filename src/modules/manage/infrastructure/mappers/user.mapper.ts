@@ -7,10 +7,14 @@ import { UserId } from '../../domain/value-objects/user-id.vo';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { Injectable } from '@nestjs/common';
 import { RoleDataAccessMapper } from './role.mapper';
+import { PermissionDataAccessMapper } from './permission.mapper';
 
 @Injectable()
 export class UserDataAccessMapper {
-  constructor(private readonly roleMapper: RoleDataAccessMapper) {}
+  constructor(
+    private readonly roleMapper: RoleDataAccessMapper,
+    private readonly permissionMapper: PermissionDataAccessMapper,
+  ) {}
   toOrmEntity(userEntity: UserEntity, method: OrmEntityMethod): UserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = userEntity.getId();
@@ -44,9 +48,16 @@ export class UserDataAccessMapper {
       .setUpdatedAt(ormData.updated_at)
       .setDeletedAt(ormData.deleted_at);
 
-    // ✅ Set roles before calling build()
     if (ormData.roles) {
       builder.setRoles(this.roleMapper.toEntities(ormData.roles));
+    }
+
+    if (ormData.userHasPermissions) {
+      const permissions = ormData.userHasPermissions
+        .map((uhp) => uhp.permission)
+        .filter((p) => p != null);
+
+      builder.setPermissions(this.permissionMapper.toEntities(permissions));
     }
 
     return builder.build();

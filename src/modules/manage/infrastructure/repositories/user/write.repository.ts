@@ -9,6 +9,7 @@ import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.orm';
 import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/permission.orm';
+import { UserHasPermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/model-has-permission.orm';
 
 @Injectable()
 export class WriteUserRepository implements IWriteUserRepository {
@@ -45,10 +46,14 @@ export class WriteUserRepository implements IWriteUserRepository {
       id: In(permissionIds),
     });
 
-    for (const role of roles) {
-      role.permissions = permissions;
-      await manager.save(role);
-    }
+    const userHasPermissions = permissions.map((permission) => {
+      const userHasPermission = new UserHasPermissionOrmEntity();
+      userHasPermission.user = savedUser;
+      userHasPermission.permission = permission;
+      return userHasPermission;
+    });
+
+    await manager.save(UserHasPermissionOrmEntity, userHasPermissions);
 
     return this._dataAccessMapper.toEntity(savedUser);
   }
@@ -59,7 +64,7 @@ export class WriteUserRepository implements IWriteUserRepository {
     roleIds: number[],
     permissionIds: number[],
   ): Promise<ResponseResult<UserEntity>> {
-    try {
+    return await manager.transaction(async (transactionalEntityManager) => {
       const userOrmEntity = this._dataAccessMapper.toOrmEntity(
         entity,
         OrmEntityMethod.UPDATE,
@@ -68,70 +73,61 @@ export class WriteUserRepository implements IWriteUserRepository {
 
       delete (userOrmEntity as any).roles;
 
-      const savedUser = await manager.save(userOrmEntity);
+      const savedUser = await transactionalEntityManager.save(userOrmEntity);
 
-      const dbRoles = await manager.findBy(RoleOrmEntity, {
-        id: In(roleIds),
-      });
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .relation(UserOrmEntity, 'roles')
+        .of(savedUser.id)
+        .remove(
+          await transactionalEntityManager
+            .createQueryBuilder()
+            .relation(UserOrmEntity, 'roles')
+            .of(savedUser.id)
+            .loadMany(),
+        );
 
-      const currentUser = await manager.findOne(UserOrmEntity, {
-        where: { id: savedUser.id },
-        relations: ['roles'],
-      });
+      const rolesToAdd = await transactionalEntityManager.findBy(
+        RoleOrmEntity,
+        {
+          id: In(roleIds),
+        },
+      );
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .relation(UserOrmEntity, 'roles')
+        .of(savedUser.id)
+        .add(rolesToAdd);
 
-      if (currentUser?.roles?.length) {
-        await manager
-          .createQueryBuilder()
-          .relation(UserOrmEntity, 'roles')
-          .of(savedUser.id)
-          .remove(currentUser.roles);
-      }
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .delete()
+        .from(UserHasPermissionOrmEntity)
+        .where('user_id = :userId', { userId: savedUser.id })
+        .execute();
 
-      if (dbRoles.length) {
-        await manager
-          .createQueryBuilder()
-          .relation(UserOrmEntity, 'roles')
-          .of(savedUser.id)
-          .add(dbRoles);
-      }
+      const insertValues = permissionIds.map((permissionId) => ({
+        user_id: savedUser.id,
+        permission_id: permissionId,
+      }));
 
-      if (permissionIds?.length) {
-        const permissions = await manager.findBy(PermissionOrmEntity, {
-          id: In(permissionIds),
-        });
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .insert()
+        .into(UserHasPermissionOrmEntity)
+        .values(insertValues)
+        .execute();
 
-        for (const role of dbRoles) {
-          const currentRole = await manager.findOne(RoleOrmEntity, {
-            where: { id: role.id },
-            relations: ['permissions'],
-          });
-
-          if (currentRole?.permissions?.length) {
-            await manager
-              .createQueryBuilder()
-              .relation(RoleOrmEntity, 'permissions')
-              .of(role.id)
-              .remove(currentRole.permissions);
-          }
-          if (permissions.length) {
-            await manager
-              .createQueryBuilder()
-              .relation(RoleOrmEntity, 'permissions')
-              .of(role.id)
-              .add(permissions);
-          }
-        }
-      }
-
-      const updatedUser = await manager.findOne(UserOrmEntity, {
-        where: { id: savedUser.id },
-        relations: ['roles'],
-      });
+      const updatedUser = await transactionalEntityManager.findOne(
+        UserOrmEntity,
+        {
+          where: { id: savedUser.id },
+          relations: ['roles', 'userHasPermissions'],
+        },
+      );
 
       return this._dataAccessMapper.toEntity(updatedUser!);
-    } catch (error) {
-      throw error;
-    }
+    });
   }
 
   async changePassword(

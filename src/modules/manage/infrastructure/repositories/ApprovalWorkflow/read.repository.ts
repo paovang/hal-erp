@@ -11,6 +11,7 @@ import { ApprovalWorkflowEntity } from '@src/modules/manage/domain/entities/appr
 import { IReadApprovalWorkflowRepository } from '@src/modules/manage/domain/ports/output/approval-workflow-repository.interface';
 import { EntityManager } from 'typeorm';
 import { ApprovalWorkflowDataAccessMapper } from '../../mappers/approval-workflow.mapper';
+import { ApprovalWorkflowId } from '@src/modules/manage/domain/value-objects/approval-workflow-id.vo';
 
 @Injectable()
 export class ReadApprovalWorkflowRepository
@@ -50,5 +51,16 @@ export class ReadApprovalWorkflowRepository
       dateColumn: '',
       filterByColumns: [],
     };
+  }
+
+  async findOne(
+    id: ApprovalWorkflowId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
+    const item = await this.createBaseQuery(manager)
+      .where('approval_workflows.id = :id', { id: id.value })
+      .getOneOrFail();
+
+    return this._dataAccessMapper.toEntity(item);
   }
 }

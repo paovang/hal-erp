@@ -33,5 +33,6 @@
   "incorrect_password": "ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ",
   "min_amount_greater_than_max_amount": "ຈຳນວນຂັ້ນຕ່ຳຕ້ອງນ້ອຍກວ່າຈຳນວນສູງສຸດ",
   "invalid_credentials": "ກະລຸນາກວດສອບກ່ອນ...",
-  "already_exists": "ມີໃນລະບົບແລ້ວ"
+  "already_exists": "ມີໃນລະບົບແລ້ວ",
+  "username_already_exists": "ຊື່ຜູ້ໃຊ້ມີໃນລະບົບແລ້ວ"
 }

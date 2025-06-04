@@ -9,6 +9,8 @@ import { models } from './index';
 import { PermissionSeeder } from './seeders/permission.seeder';
 import { PermissionGroupSeeder } from './seeders/permission-group.seeder';
 import { RoleSeeder } from './seeders/role.seeder';
+import { ProvinceSeeder } from './seeders/province.seeder';
+import { UserSeeder } from './seeders/user.seeder';
 
 @Global()
 @Module({
@@ -64,6 +66,8 @@ import { RoleSeeder } from './seeders/role.seeder';
     PermissionGroupSeeder,
     PermissionSeeder,
     RoleSeeder,
+    ProvinceSeeder,
+    UserSeeder,
   ],
 })
 export class TypeOrmRepositoryModule {}

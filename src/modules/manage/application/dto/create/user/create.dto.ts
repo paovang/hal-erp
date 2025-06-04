@@ -15,6 +15,9 @@ export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  @Matches(/^\S+$/, {
+    message: i18nValidationMessage('validation.NO_SPACES_ALLOWED'),
+  })
   readonly username: string;
 
   @ApiProperty()

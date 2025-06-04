@@ -13,7 +13,6 @@ import {
 import { UserQueryDto } from '@src/modules/manage/application/dto/query/user-query.dto';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
-import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 
 @Injectable()
 export class ReadUserRepository implements IReadUserRepository {
@@ -44,9 +43,9 @@ export class ReadUserRepository implements IReadUserRepository {
     id: UserId,
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>> {
-    const item = await findOneOrFail(manager, UserOrmEntity, {
-      id: id.value,
-    });
+    const item = await this.createBaseQuery(manager)
+      .where('users.id = :id', { id: id.value })
+      .getOneOrFail();
 
     return this._dataAccessMapper.toEntity(item);
   }
@@ -54,8 +53,10 @@ export class ReadUserRepository implements IReadUserRepository {
   private createBaseQuery(manager: EntityManager) {
     return manager
       .createQueryBuilder(UserOrmEntity, 'users')
+      .leftJoinAndSelect('users.userHasPermissions', 'user_has_permissions')
+      .leftJoinAndSelect('user_has_permissions.permission', 'permissions')
       .leftJoinAndSelect('users.roles', 'roles')
-      .leftJoinAndSelect('roles.permissions', 'permissions');
+      .leftJoinAndSelect('roles.permissions', 'role_permissions');
   }
 
   private getFilterOptions(): FilterOptions {

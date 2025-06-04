@@ -24,12 +24,7 @@ export class UpdateCommandHandler
     private readonly _dataMapper: UserDataMapper,
   ) {}
   async execute(query: UpdateCommand): Promise<any> {
-    if (isNaN(query.id)) {
-      throw new ManageDomainException(
-        'errors.must_be_number',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    await this.checkData(query);
 
     for (const roleId of query.dto.roleIds) {
       await findOneOrFail(query.manager, RoleOrmEntity, {
@@ -42,8 +37,6 @@ export class UpdateCommandHandler
         id: permissionId,
       });
     }
-
-    await this.checkData(query);
 
     // Map to entity
     const entity = this._dataMapper.toEntityForUpdate(query.dto);
@@ -66,9 +59,25 @@ export class UpdateCommandHandler
   }
 
   private async checkData(query: UpdateCommand): Promise<void> {
+    if (isNaN(query.id)) {
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     await findOneOrFail(query.manager, UserOrmEntity, {
       id: query.id,
     });
+
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'username',
+      query.dto.username,
+      query.manager,
+      'errors.username_already_exists',
+      query.id,
+    );
 
     await _checkColumnDuplicate(
       UserOrmEntity,

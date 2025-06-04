@@ -9,10 +9,15 @@ import { UpdateUserDto } from '../dto/create/user/update.dto';
 import { ChangePasswordDto } from '../dto/create/user/change-password.dto';
 import { SendMailDto } from '../dto/create/user/send-email.dto';
 import { RoleDataMapper } from './role.mapper';
+import { PermissionDataMapper } from './permission.mapper';
+import { PermissionResponse } from '../dto/response/permission.response';
 
 @Injectable()
 export class UserDataMapper {
-  constructor(private readonly roleDataMapper: RoleDataMapper) {}
+  constructor(
+    private readonly roleDataMapper: RoleDataMapper,
+    private readonly permissionDataMapper: PermissionDataMapper,
+  ) {}
 
   /** Mapper Dto To Entity */
   toEntity(dto: CreateUserDto): UserEntity {
@@ -39,7 +44,7 @@ export class UserDataMapper {
     }
 
     if (dto.permissionIds) {
-      builder.setPermissions(dto.permissionIds);
+      builder.setPermissionIds(dto.permissionIds);
     }
 
     return builder.build();
@@ -109,6 +114,16 @@ export class UserDataMapper {
 
     response.roles = entity.roles
       ? entity.roles.map((role) => this.roleDataMapper.toResponse(role))
+      : [];
+
+    response.permissions = entity.permissions
+      ? entity.permissions.map((p) => {
+          const permission = new PermissionResponse();
+          permission.id = p.getId().value;
+          permission.name = p.name;
+          permission.display_name = p.displayName;
+          return permission;
+        })
       : [];
 
     return response;

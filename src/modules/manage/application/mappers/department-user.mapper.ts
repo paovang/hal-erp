@@ -6,6 +6,9 @@ import { UpdateDepartmentUserDto } from '../dto/create/departmentUser/update.dto
 import { DepartmentDataMapper } from './department.mapper';
 import { PositionDataMapper } from './position.mapper';
 import { UserDataMapper } from './user.mapper';
+import moment from 'moment-timezone';
+import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 
 @Injectable()
 export class DepartmentUserDataMapper {
@@ -69,8 +72,12 @@ export class DepartmentUserDataMapper {
     response.position_id = entity.position?.getId().value;
     response.signature_file = entity.signature_file ?? null;
     response.signature_file_url = entity.signature_file ? file : null;
-    response.created_at = entity.createdAt?.toISOString() ?? '';
-    response.updated_at = entity.updatedAt?.toISOString() ?? '';
+    response.created_at = moment
+      .tz(entity.createdAt, Timezone.LAOS)
+      .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.updated_at = moment
+      .tz(entity.updatedAt, Timezone.LAOS)
+      .format(DateFormat.DATETIME_READABLE_FORMAT);
 
     response.department = entity.department
       ? this.departmentDataMapper.toResponse(entity.department)

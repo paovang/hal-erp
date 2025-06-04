@@ -6,6 +6,7 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DocumentTypeDataMapper } from './document-type.mapper';
+import { UpdateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/update.dto';
 
 @Injectable()
 export class ApprovalWorkflowDataMapper {
@@ -13,7 +14,9 @@ export class ApprovalWorkflowDataMapper {
     private readonly _documentTypeDataMapper: DocumentTypeDataMapper,
   ) {}
   /** Mapper Dto To Entity */
-  toEntity(dto: CreateApprovalWorkflowDto): ApprovalWorkflowEntity {
+  toEntity(
+    dto: CreateApprovalWorkflowDto | UpdateApprovalWorkflowDto,
+  ): ApprovalWorkflowEntity {
     const builder = ApprovalWorkflowEntity.builder();
 
     if (dto.name) {

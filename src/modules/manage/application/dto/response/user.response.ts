@@ -28,5 +28,5 @@ export class UserResponse {
   roles: RoleResponse[];
 
   @ApiProperty()
-  permissions: PermissionResponse[];
+  permissions: PermissionResponse[] | null;
 }

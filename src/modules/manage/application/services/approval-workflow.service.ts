@@ -9,6 +9,10 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { CreateCommand } from '../commands/ApprovalWorkflow/create.command';
 import { ApprovalWorkflowQueryDto } from '../dto/query/approval-workflow.dto';
 import { GetAllQuery } from '../queries/ApprovalWorkflow/get-all.query';
+import { GetOneQuery } from '../queries/ApprovalWorkflow/get-one.query';
+import { UpdateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/update.dto';
+import { UpdateCommand } from '../commands/ApprovalWorkflow/update.command';
+import { DeleteCommand } from '../commands/ApprovalWorkflow/delete.command';
 
 @Injectable()
 export class ApprovalWorkflowService
@@ -39,28 +43,28 @@ export class ApprovalWorkflowService
     );
   }
 
-  //   async getOne(
-  //     id: number,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<CategoryEntity>> {
-  //     return await this._queryBus.execute(
-  //       new GetOneQuery(id, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
+    return await this._queryBus.execute(
+      new GetOneQuery(id, manager ?? this._readEntityManager),
+    );
+  }
 
-  //   async update(
-  //     id: number,
-  //     dto: UpdateCategoryDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<CategoryEntity>> {
-  //     return await this._commandBus.execute(
-  //       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async update(
+    id: number,
+    dto: UpdateApprovalWorkflowDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
+    return await this._commandBus.execute(
+      new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
 
-  //   async delete(id: number, manager?: EntityManager): Promise<void> {
-  //     return await this._commandBus.execute(
-  //       new DeleteCommand(id, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async delete(id: number, manager?: EntityManager): Promise<void> {
+    return await this._commandBus.execute(
+      new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
 }

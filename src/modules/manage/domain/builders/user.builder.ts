@@ -1,3 +1,4 @@
+import { PermissionEntity } from '../entities/permission.entity';
 import { RoleEntity } from '../entities/role.entity';
 import { UserEntity } from '../entities/user.entity';
 import { UserId } from '../value-objects/user-id.vo';
@@ -14,6 +15,7 @@ export class UserBuilder {
   roleIds: number[] | null = null;
   permissionIds: number[] | null = null;
   roles: RoleEntity[];
+  permissions: PermissionEntity[] | null;
 
   setUserId(value: UserId): this {
     this.userId = value;
@@ -60,8 +62,13 @@ export class UserBuilder {
     return this;
   }
 
-  setPermissions(permissions: number[] | null): this {
-    this.permissionIds = permissions;
+  setPermissions(permissions: PermissionEntity[] | null): this {
+    this.permissions = permissions;
+    return this;
+  }
+
+  setPermissionIds(permissionIds: number[] | null): this {
+    this.permissionIds = permissionIds;
     return this;
   }
 

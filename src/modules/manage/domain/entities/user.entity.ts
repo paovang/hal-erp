@@ -2,6 +2,7 @@ import { UserId } from '../value-objects/user-id.vo';
 import { UserBuilder } from '../builders/user.builder';
 import { Entity } from '@src/common/domain/entities/entity';
 import { RoleEntity } from './role.entity';
+import { PermissionEntity } from './permission.entity';
 
 export class UserEntity extends Entity<UserId> {
   private readonly _username: string;
@@ -14,6 +15,7 @@ export class UserEntity extends Entity<UserId> {
   private readonly _roleIds: number[] | null;
   private readonly _permissionIds: number[] | null;
   private readonly _roles: RoleEntity[];
+  private readonly _permissions: PermissionEntity[] | null;
 
   private constructor(builder: UserBuilder) {
     super();
@@ -28,6 +30,7 @@ export class UserEntity extends Entity<UserId> {
     this._roleIds = builder.roleIds ?? null;
     this._permissionIds = builder.permissionIds ?? null;
     this._roles = builder.roles;
+    this._permissions = builder.permissions ?? null;
   }
 
   get username(): string {
@@ -68,6 +71,10 @@ export class UserEntity extends Entity<UserId> {
 
   get roles(): RoleEntity[] {
     return this._roles;
+  }
+
+  get permissions(): PermissionEntity[] | null {
+    return this._permissions;
   }
 
   public static builder(): UserBuilder {

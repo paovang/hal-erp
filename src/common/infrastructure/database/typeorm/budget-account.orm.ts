@@ -4,12 +4,15 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { SubBudgetAccountOrmEntity } from './sub-buget-account.orm';
+import { DepartmentOrmEntity } from './department.orm';
+import { BudgetItemOrmEntity } from './budget-item.orm';
 
 @Entity('budget_accounts')
 export class BudgetAccountOrmEntity {
@@ -33,28 +36,14 @@ export class BudgetAccountOrmEntity {
   allocated_amount?: number;
 
   @Index()
-  @Column({ type: 'text', nullable: true })
-  description?: string;
-
-  //   @Index()
-  //   @Column({ nullable: true })
-  //   department_id?: number;
-  //   @ManyToOne(
-  //     () => DepartmentOrmEntity,
-  //     (departments) => departments.budget_accounts,
-  //   )
-  //   @JoinColumn({ name: 'department_id' })
-  //   departments: Relation<DepartmentOrmEntity>;
-
-  //   @Index()
-  //   @Column({ nullable: true })
-  //   document_type_id?: number;
-  //   @ManyToOne(
-  //     () => DocumentTypeOrmEntity,
-  //     (document_types) => document_types.budget_accounts,
-  //   )
-  //   @JoinColumn({ name: 'document_type_id' })
-  //   document_types: Relation<DocumentTypeOrmEntity>;
+  @Column({ nullable: true })
+  department_id?: number;
+  @ManyToOne(
+    () => DepartmentOrmEntity,
+    (departments) => departments.budget_accounts,
+  )
+  @JoinColumn({ name: 'department_id' })
+  departments: Relation<DepartmentOrmEntity>;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
@@ -68,8 +57,14 @@ export class BudgetAccountOrmEntity {
   deleted_at: Date | null;
 
   @OneToMany(
-    () => SubBudgetAccountOrmEntity,
-    (sub_budget_accounts) => sub_budget_accounts.budget_accounts,
+    () => BudgetItemOrmEntity,
+    (budget_items) => budget_items.budget_accounts,
   )
-  sub_budget_accounts: Relation<SubBudgetAccountOrmEntity[]>;
+  budget_items: Relation<BudgetItemOrmEntity[]>;
+
+  // @OneToMany(
+  //   () => SubBudgetAccountOrmEntity,
+  //   (sub_budget_accounts) => sub_budget_accounts.budget_accounts,
+  // )
+  // sub_budget_accounts: Relation<SubBudgetAccountOrmEntity[]>;
 }

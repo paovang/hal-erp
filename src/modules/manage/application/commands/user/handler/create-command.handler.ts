@@ -32,6 +32,8 @@ export class CreateCommandHandler
   ) {}
 
   async execute(query: CreateCommand): Promise<ResponseResult<UserEntity>> {
+    await this.checkData(query);
+
     for (const roleId of query.dto.roleIds) {
       await findOneOrFail(query.manager, RoleOrmEntity, {
         id: roleId,
@@ -46,21 +48,6 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        await _checkColumnDuplicate(
-          UserOrmEntity,
-          'email',
-          query.dto.email,
-          query.manager,
-          'errors.email_already_exists',
-        );
-        await _checkColumnDuplicate(
-          UserOrmEntity,
-          'tel',
-          query.dto.tel,
-          query.manager,
-          'errors.tel_already_exists',
-        );
-
         const hashedPassword = await bcrypt.hash(query.dto.password, 10);
 
         const dtoWithHashedPassword = {
@@ -77,6 +64,30 @@ export class CreateCommandHandler
           query.dto.permissionIds,
         );
       },
+    );
+  }
+
+  private async checkData(query: CreateCommand): Promise<void> {
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'username',
+      query.dto.username,
+      query.manager,
+      'errors.username_already_exists',
+    );
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'email',
+      query.dto.email,
+      query.manager,
+      'errors.email_already_exists',
+    );
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'tel',
+      query.dto.tel,
+      query.manager,
+      'errors.tel_already_exists',
     );
   }
 }
