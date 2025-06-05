@@ -61,4 +61,4 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Ignore Migrations
-# /src/common/infrastructure/database/migrations/*update-schema.ts
+/src/common/infrastructure/database/migrations/*update-schema.ts
