@@ -24,7 +24,7 @@
     "migration:revert": "pnpm run typeorm migration:revert -d ./src/common/infrastructure/database/data-source.ts",
     "db:seed": "ts-node -r tsconfig-paths/register ./src/common/infrastructure/database/data-seed.ts",
     "deploy": "scp -r dist/ package.json pnpm-lock.yaml root@134.209.101.30:/var/www/apis/",
-    "migration-dev:generate": "node ./node_modules/typeorm/cli.js migration:generate -d ./dist/common/infrastructure/database/data-source.js -n update-schema",
+    "migration-dev:generate": "node ./node_modules/typeorm/cli.js migration:generate -d ./dist/common/infrastructure/database/data-source.js ./dist/common/infrastructure/database/migrations/update-schema",
     "migration-dev:run": "node ./node_modules/typeorm/cli.js migration:run -d ./dist/common/infrastructure/database/data-source.js",
     "db-dev:seed": "node dist/common/infrastructure/database/data-seed.js"
   },
