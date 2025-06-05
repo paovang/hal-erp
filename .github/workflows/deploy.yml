@@ -35,6 +35,7 @@ jobs:
       - name: Add server to known_hosts to avoid host verification error
         run: ssh-keyscan -H 134.209.101.30 >> ~/.ssh/known_hosts
 
+      # Copy Project
       - name: Copy dist folder to server
         run: |
           rsync -az --delete \
@@ -44,14 +45,33 @@ jobs:
             --exclude '.env*' \
             . root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/apis/
 
+      # Create .env
       - name: Create .env file on server
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "echo '${{ secrets.ENV_CONTENT }}' > /var/www/apis/.env"
 
+      # Install Dependencies On Server
       - name: Install dependencies on server
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "cd /var/www/apis && pnpm install --prod"
           
+      # Migration Generate
+      - name: Generate database migrations
+        run: |
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
+            cd /var/www/apis && 
+            pnpm run migration:generate
+          "
+
+      # Migration Run
+      - name: Run database migrations
+        run: |
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
+            cd /var/www/apis && 
+            pnpm run migration:run
+          "
+
+      # Restart Server
       - name: Restart server app (optional)
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
