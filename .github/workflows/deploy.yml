@@ -64,7 +64,7 @@ jobs:
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
             cd /var/www/apis && 
-            pnpm run migration:generate
+            (pnpm run migration:generate || true)
           "
 
       # Migration Run
