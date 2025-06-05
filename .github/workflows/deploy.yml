@@ -53,7 +53,11 @@ jobs:
       # Install Dependencies On Server
       - name: Install dependencies on server
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "cd /var/www/apis && pnpm install --prod"
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
+            cd /var/www/apis && 
+            pnpm install &&
+            pnpm add ts-node tsconfig-paths
+          "
           
       # Migration Generate
       - name: Generate database migrations
