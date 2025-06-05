@@ -11,5 +11,8 @@
     "IS_DEFINED": "ຕ້ອງຕື່ມຂໍ້ມູນນີ້.",
     "IS_BOOLEAN": "ຂໍ້ມູນນີ້ຕ້ອງເປັນ true ຫຼື false.",
     "ARRAY_NOT_EMPTY": "{property} ບໍ່ຫວ່າງເປົ່າໄດ້.",
-    "NO_SPACES_ALLOWED": "{property} ບໍ່ສາມາດຍະຫວ່າງໄດ້."
+    "NO_SPACES_ALLOWED": "{property} ບໍ່ສາມາດຍະຫວ່າງໄດ້.",
+    "IS_INT": "{property} ຄ່າຕ້ອງເປັນຈຳນວນເຕັມ.",
+    "YEAR_MUST_BE_CURRENT_OR_NEXT": "{property} ປີງົບປະມານຕ້ອງເປັນປີນີ້ ຫຼື ປີໜ້າ.",
+    "MUST_BE_YEAR_FORMAT": "{property} ປີງົບປະມານຕ້ອງເປັນ 4 ຕົວເລກ (ເຊັ່ນ 2025)."
 }

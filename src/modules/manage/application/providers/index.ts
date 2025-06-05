@@ -12,6 +12,7 @@ import { VendorProvider } from './vendor';
 import { VendorBankAccountProvider } from './vendorBankAccount';
 import { BudgetApprovalRuleProvider } from './BudgetApprovalRule';
 import { ApprovalWorkflowProvider } from './ApprovalWorkflow';
+import { BudgetAccountProvider } from './BudgetAccount';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
@@ -27,4 +28,5 @@ export const AllRegisterProviders: Provider[] = [
   ...VendorBankAccountProvider,
   ...BudgetApprovalRuleProvider,
   ...ApprovalWorkflowProvider,
+  ...BudgetAccountProvider,
 ];

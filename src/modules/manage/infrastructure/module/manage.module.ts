@@ -19,6 +19,7 @@ import { CoreAuthModule } from '@core-system/auth';
 import { UserService } from '@src/common/infrastructure/auth/user.service';
 import { UserModule } from '@src/common/infrastructure/auth/user.module';
 import { ApprovalWorkflowController } from '../../controllers/approval-workflow.controller';
+import { BudgetAccountController } from '../../controllers/budget-account.controller';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { ApprovalWorkflowController } from '../../controllers/approval-workflow.
     VendorBankAccountController,
     BudgetApprovalRuleController,
     ApprovalWorkflowController,
+    BudgetAccountController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
