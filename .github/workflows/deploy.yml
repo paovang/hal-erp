@@ -75,6 +75,14 @@ jobs:
             pnpm run migration:run
           "
 
+      # Seed Data
+      - name: Seed database
+        run: |
+          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
+            cd /var/www/apis && 
+            pnpm run db:seed
+          "
+
       # Restart Server
       - name: Restart server app (optional)
         run: |
