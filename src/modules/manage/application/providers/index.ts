@@ -13,6 +13,8 @@ import { VendorBankAccountProvider } from './vendorBankAccount';
 import { BudgetApprovalRuleProvider } from './BudgetApprovalRule';
 import { ApprovalWorkflowProvider } from './ApprovalWorkflow';
 import { BudgetAccountProvider } from './BudgetAccount';
+import { BudgetItemProvider } from './BudgetItem';
+import { BudgetItemDetailProvider } from './BudgetItemDetail';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
@@ -29,4 +31,6 @@ export const AllRegisterProviders: Provider[] = [
   ...BudgetApprovalRuleProvider,
   ...ApprovalWorkflowProvider,
   ...BudgetAccountProvider,
+  ...BudgetItemProvider,
+  ...BudgetItemDetailProvider,
 ];

@@ -34,5 +34,6 @@
   "min_amount_greater_than_max_amount": "ຈຳນວນຂັ້ນຕ່ຳຕ້ອງນ້ອຍກວ່າຈຳນວນສູງສຸດ",
   "invalid_credentials": "ກະລຸນາກວດສອບກ່ອນ...",
   "already_exists": "ມີໃນລະບົບແລ້ວ",
-  "username_already_exists": "ຊື່ຜູ້ໃຊ້ມີໃນລະບົບແລ້ວ"
+  "username_already_exists": "ຊື່ຜູ້ໃຊ້ມີໃນລະບົບແລ້ວ",
+  "allocated_amount_exceeds_budget_account": "ຈໍານວນເງິນທີ່ຈັດສັນເກີນງົບປະມານທີ່ມີໃນບັນຊີ."
 }

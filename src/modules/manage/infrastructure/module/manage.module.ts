@@ -20,6 +20,7 @@ import { UserService } from '@src/common/infrastructure/auth/user.service';
 import { UserModule } from '@src/common/infrastructure/auth/user.module';
 import { ApprovalWorkflowController } from '../../controllers/approval-workflow.controller';
 import { BudgetAccountController } from '../../controllers/budget-account.controller';
+import { BudgetItemController } from '../../controllers/budget-item.controller';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { BudgetAccountController } from '../../controllers/budget-account.contro
     BudgetApprovalRuleController,
     ApprovalWorkflowController,
     BudgetAccountController,
+    BudgetItemController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

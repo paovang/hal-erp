@@ -58,6 +58,62 @@ export class UpdateCommandHandler
   ) {}
 
   async execute(query: UpdateCommand): Promise<any> {
+    await this.checkData(query);
+    const optimizedImageProfile = await this._optimizeService.optimizeImage(
+      query.dto.signatureFile,
+    );
+
+    const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+      optimizedImageProfile,
+      USER_PROFILE_IMAGE_FOLDER,
+    );
+
+    return await this._transactionManagerService.runInTransaction(
+      this._dataSource,
+      async (manager) => {
+        const userEntity = this._dataUserMapper.toEntityForUpdate(query.dto);
+
+        await userEntity.initializeUpdateSetId(new UserId(query.id));
+        await userEntity.validateExistingIdForUpdate();
+
+        const data = await this._writeUser.update(
+          userEntity,
+          query.manager,
+          query.dto.roleIds,
+          query.dto.permissionIds,
+        );
+
+        const updatedUserId = (data as any)._id._value;
+
+        const existingDeptUser = await findOneOrFail(
+          manager,
+          DepartmentUserOrmEntity,
+          { user_id: updatedUserId },
+        );
+
+        const departmentUserEntity = this._dataMapper.toEntity(
+          query.dto,
+          false,
+          updatedUserId,
+          s3ImageResponse,
+        );
+
+        await departmentUserEntity.initializeUpdateSetId(
+          new DepartmentUserId(existingDeptUser.id),
+        );
+        await departmentUserEntity.validateExistingIdForUpdate();
+        await findOneOrFail(manager, DepartmentUserOrmEntity, {
+          id: departmentUserEntity.getId().value,
+        });
+
+        const result = await this._write.update(departmentUserEntity, manager);
+
+        return result;
+      },
+    );
+  }
+
+  private async checkData(query: UpdateCommand): Promise<void> {
     if (isNaN(query.id)) {
       throw new ManageDomainException(
         'errors.must_be_number',
@@ -76,6 +132,15 @@ export class UpdateCommandHandler
     await findOneOrFail(query.manager, PositionOrmEntity, {
       id: query.dto.positionId,
     });
+
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'username',
+      query.dto.username,
+      query.manager,
+      'errors.username_already_exists',
+      query.id,
+    );
 
     await _checkColumnDuplicate(
       UserOrmEntity,
@@ -106,61 +171,5 @@ export class UpdateCommandHandler
         id: permissionId,
       });
     }
-
-    const optimizedImageProfile = await this._optimizeService.optimizeImage(
-      query.dto.signatureFile,
-    );
-
-    const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
-      optimizedImageProfile,
-      USER_PROFILE_IMAGE_FOLDER,
-    );
-
-    return await this._transactionManagerService.runInTransaction(
-      this._dataSource,
-      async (manager) => {
-        const userEntity = this._dataUserMapper.toEntityForUpdate(query.dto);
-
-        await userEntity.initializeUpdateSetId(new UserId(query.id));
-        await userEntity.validateExistingIdForUpdate();
-
-        const data = await this._writeUser.update(
-          userEntity,
-          query.manager,
-          query.dto.roleIds,
-          query.dto.permissionIds,
-        );
-
-        const updatedUserId = (data as any)._id._value;
-
-        // Validate department user exists by user_id
-        const existingDeptUser = await findOneOrFail(
-          manager,
-          DepartmentUserOrmEntity,
-          { user_id: updatedUserId },
-        );
-        // Map to DepartmentUserEntity and set ID
-        const departmentUserEntity = this._dataMapper.toEntity(
-          query.dto,
-          false,
-          updatedUserId,
-          s3ImageResponse,
-        );
-
-        await departmentUserEntity.initializeUpdateSetId(
-          new DepartmentUserId(existingDeptUser.id),
-        );
-        await departmentUserEntity.validateExistingIdForUpdate();
-        // Confirm DepartmentUser exists by id before update
-        await findOneOrFail(manager, DepartmentUserOrmEntity, {
-          id: departmentUserEntity.getId().value,
-        });
-
-        // Perform update
-        const result = await this._write.update(departmentUserEntity, manager);
-
-        return result;
-      },
-    );
   }
 }

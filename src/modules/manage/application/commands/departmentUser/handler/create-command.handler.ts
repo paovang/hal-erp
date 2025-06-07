@@ -125,6 +125,14 @@ export class CreateCommandHandler
 
     await _checkColumnDuplicate(
       UserOrmEntity,
+      'username',
+      query.dto.username,
+      query.manager,
+      'errors.username_already_exists',
+    );
+
+    await _checkColumnDuplicate(
+      UserOrmEntity,
       'email',
       query.dto.email,
       query.manager,
