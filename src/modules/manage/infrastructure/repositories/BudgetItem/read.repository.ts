@@ -65,7 +65,14 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
           AND bid.deleted_at IS NULL
       )`,
         'budget_items_details_count',
-      );
+      )
+      .leftJoin('budget_item_details.provinces', 'provinces')
+      .addSelect([
+        'provinces.id',
+        'provinces.name',
+        'provinces.created_at',
+        'provinces.updated_at',
+      ]);
   }
 
   private getFilterOptions(): FilterOptions {
