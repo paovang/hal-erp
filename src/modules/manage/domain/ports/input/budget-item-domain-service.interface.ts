@@ -10,10 +10,10 @@ export interface IBudgetItemServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<BudgetItemEntity>>;
 
-  //   getOne(
-  //     id: number,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<CategoryEntity>>;
+  getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>>;
 
   create(
     dto: CreateBudgetItemDto,

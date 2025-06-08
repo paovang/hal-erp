@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { BUDGET_ITEM_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
@@ -37,6 +45,18 @@ export class BudgetItemController {
     @Query() dto: BudgetItemQueryDto,
   ): Promise<ResponseResult<BudgetItemResponse>> {
     const result = await this._budgetItemService.getAll(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get(':id')
+  async getOne(
+    @Param('id') id: number,
+  ): Promise<ResponseResult<BudgetItemResponse>> {
+    const result = await this._budgetItemService.getOne(id);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
