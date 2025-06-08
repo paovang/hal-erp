@@ -41,7 +41,10 @@ export class BudgetItemDataAccessMapper {
       .setBudgetAccountId(ormData.budget_account_id ?? 0)
       .setAllocatedAmount(ormData.allocated_amount ?? 0)
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at);
+      .setUpdatedAt(ormData.updated_at)
+      .setCountDetails(
+        Number((ormData as any).budget_items_details_count ?? 0),
+      );
 
     if (Array.isArray(ormData.budget_item_details)) {
       const transformedDetails: BudgetItemDetailEntity[] = [];

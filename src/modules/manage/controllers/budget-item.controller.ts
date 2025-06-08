@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { BUDGET_ITEM_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
@@ -16,6 +18,7 @@ import { CreateBudgetItemDto } from '../application/dto/create/BudgetItem/create
 import { IBudgetItemServiceInterface } from '../domain/ports/input/budget-item-domain-service.interface';
 import { BudgetItemDataMapper } from '../application/mappers/budget-item.mapper';
 import { BudgetItemQueryDto } from '../application/dto/query/budget-item.dto';
+import { UpdateBudgetItemDto } from '../application/dto/create/BudgetItem/update.dto';
 
 @Controller('budget-items')
 export class BudgetItemController {
@@ -45,7 +48,7 @@ export class BudgetItemController {
     @Query() dto: BudgetItemQueryDto,
   ): Promise<ResponseResult<BudgetItemResponse>> {
     const result = await this._budgetItemService.getAll(dto);
-
+    console.log('object', result);
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
@@ -62,5 +65,23 @@ export class BudgetItemController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateBudgetItemDto,
+  ): Promise<ResponseResult<BudgetItemResponse>> {
+    const result = await this._budgetItemService.update(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number): Promise<void> {
+    return await this._budgetItemService.delete(id);
   }
 }

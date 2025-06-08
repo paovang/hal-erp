@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ProvinceResponse } from './province.response';
 
 export class BudgetItemDetailResponse {
   @ApiProperty()
@@ -27,4 +28,7 @@ export class BudgetItemDetailResponse {
 
   @ApiProperty()
   deleted_at: string | null;
+
+  @ApiProperty()
+  province: ProvinceResponse | null;
 }

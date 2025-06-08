@@ -11,6 +11,7 @@ export class BudgetItemBuilder {
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   details: BudgetItemDetailEntity[] | null;
+  count_details: number | null;
 
   setBudgetItemId(value: BudgetItemId): this {
     this.budgetItemId = value;
@@ -44,6 +45,11 @@ export class BudgetItemBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setCountDetails(count_details: number | null): this {
+    this.count_details = count_details;
     return this;
   }
 

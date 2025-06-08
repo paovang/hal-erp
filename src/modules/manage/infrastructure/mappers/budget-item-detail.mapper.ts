@@ -5,8 +5,13 @@ import { BudgetItemDetailId } from '../../domain/value-objects/budget-item-detai
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { Injectable } from '@nestjs/common';
+import { ProvinceDataAccessMapper } from './province.mapper';
 
+@Injectable()
 export class BudgetItemDetailDataAccessMapper {
+  constructor(private readonly province: ProvinceDataAccessMapper) {}
+
   toOrmEntity(
     budgetItemDetailEntity: BudgetItemDetailEntity,
     method: OrmEntityMethod,
@@ -33,7 +38,7 @@ export class BudgetItemDetailDataAccessMapper {
   }
 
   toEntity(ormData: BudgetItemDetailOrmEntity): BudgetItemDetailEntity {
-    return BudgetItemDetailEntity.builder()
+    const builder = BudgetItemDetailEntity.builder()
       .setBudgetItemDetailId(new BudgetItemDetailId(ormData.id))
       .setName(ormData.name ?? '')
       .setBudgetItemId(ormData.budget_item_id ?? 0)
@@ -41,7 +46,12 @@ export class BudgetItemDetailDataAccessMapper {
       .setDescription(ormData.description ?? '')
       .setAllocatedAmount(ormData.allocated_amount ?? 0)
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at)
-      .build();
+      .setUpdatedAt(ormData.updated_at);
+
+    if (ormData.provinces) {
+      builder.setProvince(this.province.toEntity(ormData.provinces));
+    }
+
+    return builder.build();
   }
 }

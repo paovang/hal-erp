@@ -15,6 +15,7 @@ import { ApprovalWorkflowProvider } from './ApprovalWorkflow';
 import { BudgetAccountProvider } from './BudgetAccount';
 import { BudgetItemProvider } from './BudgetItem';
 import { BudgetItemDetailProvider } from './BudgetItemDetail';
+import { ProvinceProvider } from './Province';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
@@ -31,6 +32,7 @@ export const AllRegisterProviders: Provider[] = [
   ...BudgetApprovalRuleProvider,
   ...ApprovalWorkflowProvider,
   ...BudgetAccountProvider,
+  ...ProvinceProvider,
   ...BudgetItemProvider,
   ...BudgetItemDetailProvider,
 ];

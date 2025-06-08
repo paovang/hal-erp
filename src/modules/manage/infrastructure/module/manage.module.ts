@@ -21,6 +21,8 @@ import { UserModule } from '@src/common/infrastructure/auth/user.module';
 import { ApprovalWorkflowController } from '../../controllers/approval-workflow.controller';
 import { BudgetAccountController } from '../../controllers/budget-account.controller';
 import { BudgetItemController } from '../../controllers/budget-item.controller';
+import { BudgetItemDetailController } from '../../controllers/budget-item-detail.controller';
+import { ProvinceController } from '../../controllers/province.controller';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { BudgetItemController } from '../../controllers/budget-item.controller';
     ApprovalWorkflowController,
     BudgetAccountController,
     BudgetItemController,
+    BudgetItemDetailController,
+    ProvinceController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

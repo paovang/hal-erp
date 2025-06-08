@@ -24,5 +24,8 @@ export class BudgetItemResponse {
   deleted_at: string | null;
 
   @ApiProperty()
+  count_details: number | null;
+
+  @ApiProperty()
   budget_item_details: BudgetItemDetailResponse[] | null;
 }

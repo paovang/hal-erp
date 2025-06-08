@@ -3,6 +3,7 @@ import { EntityManager } from 'typeorm';
 import { BudgetItemEntity } from '../../entities/budget-item.entity';
 import { CreateBudgetItemDto } from '@src/modules/manage/application/dto/create/BudgetItem/create.dto';
 import { BudgetItemQueryDto } from '@src/modules/manage/application/dto/query/budget-item.dto';
+import { UpdateBudgetItemDto } from '@src/modules/manage/application/dto/create/BudgetItem/update.dto';
 
 export interface IBudgetItemServiceInterface {
   getAll(
@@ -20,11 +21,11 @@ export interface IBudgetItemServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<BudgetItemEntity>>;
 
-  //   update(
-  //     id: number,
-  //     dto: UpdateCategoryDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<CategoryEntity>>;
+  update(
+    id: number,
+    dto: UpdateBudgetItemDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>>;
 
-  //   delete(id: number, manager?: EntityManager): Promise<void>;
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

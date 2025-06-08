@@ -6,11 +6,12 @@ import { BudgetItemDetailEntity } from './budget-item-detail.entity';
 export class BudgetItemEntity extends Entity<BudgetItemId> {
   private readonly _name: string;
   private readonly _budgetAccountId: number;
-  private readonly _allocatedAmount: number;
+  private _allocatedAmount: number;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _details: BudgetItemDetailEntity[] | null;
+  private readonly _count_details: number | null;
 
   private constructor(builder: BudgetItemBuilder) {
     super();
@@ -22,6 +23,7 @@ export class BudgetItemEntity extends Entity<BudgetItemId> {
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._details = builder.details ?? null;
+    this._count_details = builder.count_details ?? null;
   }
 
   get budgetAccountId(): number {
@@ -45,6 +47,10 @@ export class BudgetItemEntity extends Entity<BudgetItemId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get count_details(): number | null {
+    return this._count_details;
   }
 
   get details(): BudgetItemDetailEntity[] | null {
@@ -74,5 +80,10 @@ export class BudgetItemEntity extends Entity<BudgetItemId> {
 
   async initializeUpdateSetId(budgetItemId: BudgetItemId) {
     this.setId(budgetItemId);
+  }
+
+  // ✅ Newly added method
+  public setAllocatedAmount(amount: number): void {
+    this._allocatedAmount = amount;
   }
 }

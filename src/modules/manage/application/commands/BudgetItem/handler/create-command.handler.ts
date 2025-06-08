@@ -19,6 +19,7 @@ import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/type
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item.orm';
+import { ProvinceOrmEntity } from '@src/common/infrastructure/database/typeorm/province.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -105,6 +106,10 @@ export class CreateCommandHandler
         }
 
         for (const item of query.dto.budget_item_details) {
+          await findOneOrFail(manager, ProvinceOrmEntity, {
+            id: item.provinceId,
+          });
+
           const mapToDetailEntities = this._dataMapperDetail.toEntity(
             item,
             budgetItemId,

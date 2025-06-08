@@ -7,8 +7,14 @@ import {
 } from '@src/common/constants/inject-key.const';
 import { LocalizationService } from '@src/common/infrastructure/localization/localization.service';
 import { TransactionManagerService } from '@src/common/infrastructure/transaction/transaction.service';
-import { WRITE_BUDGET_ITEM_DETAIL_REPOSITORY } from '../../constants/inject-key.const';
+import {
+  BUDGET_ITEM_DETAIL_APPLICATION_SERVICE,
+  READ_BUDGET_ITEM_DETAIL_REPOSITORY,
+  WRITE_BUDGET_ITEM_DETAIL_REPOSITORY,
+} from '../../constants/inject-key.const';
 import { WriteBudgetItemDetailRepository } from '@src/modules/manage/infrastructure/repositories/BudgetItemDetail/write.repository';
+import { BudgetItemDetailService } from '../../services/budget-item-detail.service';
+import { ReadBudgetItemDetailRepository } from '@src/modules/manage/infrastructure/repositories/BudgetItemDetail/read.repository';
 
 export const BudgetItemDetailProvider: Provider[] = [
   ...BudgetItemDetailHandlersProviders,
@@ -21,16 +27,16 @@ export const BudgetItemDetailProvider: Provider[] = [
     provide: TRANSACTION_MANAGER_SERVICE,
     useClass: TransactionManagerService,
   },
-  //   {
-  //     provide: BUDGET_ITEM_DETAIL_APPLICATION_SERVICE,
-  //     useClass: BudgetItemDetailService,
-  //   },
+  {
+    provide: BUDGET_ITEM_DETAIL_APPLICATION_SERVICE,
+    useClass: BudgetItemDetailService,
+  },
   {
     provide: WRITE_BUDGET_ITEM_DETAIL_REPOSITORY,
     useClass: WriteBudgetItemDetailRepository,
   },
-  //   {
-  //     provide: READ_BUDGET_ITEM_DETAIL_REPOSITORY,
-  //     useClass: ReadBudgetItemDetailRepository,
-  //   },
+  {
+    provide: READ_BUDGET_ITEM_DETAIL_REPOSITORY,
+    useClass: ReadBudgetItemDetailRepository,
+  },
 ];

@@ -5,9 +5,12 @@ import { BudgetItemDetailResponse } from '../dto/response/budget-item-detail.res
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { ProvinceDataMapper } from './province.mapper';
 
 @Injectable()
 export class BudgetItemDetailDataMapper {
+  constructor(private readonly province: ProvinceDataMapper) {}
+
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateBudgetItemDetailDto,
@@ -53,6 +56,10 @@ export class BudgetItemDetailDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+
+    response.province = entity.province
+      ? this.province.toResponse(entity.province)
+      : null;
 
     return response;
   }

@@ -1,4 +1,5 @@
 import { BudgetItemDetailEntity } from '../entities/budget-item-detail.entity';
+import { ProvinceEntity } from '../entities/province.entity';
 import { BudgetItemDetailId } from '../value-objects/budget-item-detail-rule-id.vo';
 
 export class BudgetItemDetailBuilder {
@@ -11,6 +12,7 @@ export class BudgetItemDetailBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  province: ProvinceEntity | null;
 
   setBudgetItemDetailId(value: BudgetItemDetailId): this {
     this.budgetItemDetailId = value;
@@ -54,6 +56,11 @@ export class BudgetItemDetailBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setProvince(province: ProvinceEntity | null): this {
+    this.province = province;
     return this;
   }
 

@@ -1,6 +1,7 @@
 import { Entity } from '@src/common/domain/entities/entity';
 import { BudgetItemDetailId } from '../value-objects/budget-item-detail-rule-id.vo';
 import { BudgetItemDetailBuilder } from '../builders/budget-item-detail.builder';
+import { ProvinceEntity } from './province.entity';
 
 export class BudgetItemDetailEntity extends Entity<BudgetItemDetailId> {
   private readonly _budgetItemId: number;
@@ -11,6 +12,7 @@ export class BudgetItemDetailEntity extends Entity<BudgetItemDetailId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _province: ProvinceEntity | null;
 
   private constructor(builder: BudgetItemDetailBuilder) {
     super();
@@ -23,6 +25,7 @@ export class BudgetItemDetailEntity extends Entity<BudgetItemDetailId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._province = builder.province ?? null;
   }
 
   get budgetItemId(): number {
@@ -55,6 +58,10 @@ export class BudgetItemDetailEntity extends Entity<BudgetItemDetailId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get province(): ProvinceEntity | null {
+    return this._province;
   }
 
   public static builder(): BudgetItemDetailBuilder {

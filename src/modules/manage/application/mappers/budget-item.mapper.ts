@@ -6,19 +6,20 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { BudgetItemDetailDataMapper } from './budget-item-detail.mapper';
+import { UpdateBudgetItemDto } from '../dto/create/BudgetItem/update.dto';
 
 @Injectable()
 export class BudgetItemDataMapper {
   constructor(private readonly details: BudgetItemDetailDataMapper) {}
   /** Mapper Dto To Entity */
-  toEntity(dto: CreateBudgetItemDto): BudgetItemEntity {
+  toEntity(dto: CreateBudgetItemDto | UpdateBudgetItemDto): BudgetItemEntity {
     const builder = BudgetItemEntity.builder();
 
     if (dto.name) {
       builder.setName(dto.name);
     }
 
-    if (dto.budget_accountId) {
+    if ('budget_accountId' in dto) {
       builder.setBudgetAccountId(dto.budget_accountId);
     }
 
@@ -38,6 +39,8 @@ export class BudgetItemDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+
+    response.count_details = entity.count_details;
 
     response.budget_item_details = entity.details
       ? entity.details.map((detail) => this.details.toResponse(detail))

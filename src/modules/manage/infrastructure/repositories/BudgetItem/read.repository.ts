@@ -11,6 +11,7 @@ import { EntityManager } from 'typeorm';
 import { BudgetItemQueryDto } from '@src/modules/manage/application/dto/query/budget-item.dto';
 import { BudgetItemEntity } from '@src/modules/manage/domain/entities/budget-item.entity';
 import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item.orm';
+import { BudgetItemId } from '@src/modules/manage/domain/value-objects/budget-item-id.vo';
 
 @Injectable()
 export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
@@ -39,9 +40,31 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
   private createBaseQuery(manager: EntityManager) {
     return manager
       .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
-      .leftJoinAndSelect(
-        'budget_items.budget_item_details',
-        'budget_item_details',
+      .select([
+        'budget_items.id',
+        'budget_items.name',
+        'budget_items.budget_account_id',
+        'budget_items.allocated_amount',
+        'budget_items.created_at',
+        'budget_items.updated_at',
+        'budget_item_details.id',
+        'budget_item_details.budget_item_id',
+        'budget_item_details.province_id',
+        'budget_item_details.name',
+        'budget_item_details.allocated_amount',
+        'budget_item_details.description',
+        'budget_item_details.created_at',
+        'budget_item_details.updated_at',
+      ])
+      .leftJoin('budget_items.budget_item_details', 'budget_item_details')
+      .addSelect(
+        `(
+        SELECT COUNT(bid.id)
+        FROM budget_item_details bid
+        WHERE bid.budget_item_id = budget_items.id
+          AND bid.deleted_at IS NULL
+      )`,
+        'budget_items_details_count',
       );
   }
 
@@ -51,5 +74,16 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       dateColumn: '',
       filterByColumns: [],
     };
+  }
+
+  async findOne(
+    id: BudgetItemId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>> {
+    const item = await this.createBaseQuery(manager)
+      .where('budget_items.id = :id', { id: id.value })
+      .getOneOrFail();
+
+    return this._dataAccessMapper.toEntity(item);
   }
 }
