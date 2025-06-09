@@ -7,6 +7,8 @@ import { BudgetAccountId } from '@src/modules/manage/domain/value-objects/budget
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-account.orm';
+import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item.orm';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -37,5 +39,12 @@ export class DeleteCommandHandler
     await findOneOrFail(query.manager, BudgetAccountOrmEntity, {
       id: query.id,
     });
+
+    await checkRelationOrThrow(
+      query.manager,
+      BudgetItemOrmEntity,
+      { budget_account_id: query.id },
+      'errors.already_in_use',
+    );
   }
 }

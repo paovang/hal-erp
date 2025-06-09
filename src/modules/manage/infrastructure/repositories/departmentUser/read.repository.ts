@@ -31,7 +31,11 @@ export class ReadDepartmentUserRepository
     manager: EntityManager,
     departmentId?: number,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager, departmentId);
+    const queryBuilder = await this.createBaseQuery(
+      manager,
+      departmentId,
+      query.type,
+    );
 
     query.sort_by = 'department_users.id';
 
@@ -44,21 +48,68 @@ export class ReadDepartmentUserRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager, departmentId?: number) {
+  private createBaseQuery(
+    manager: EntityManager,
+    departmentId?: number,
+    type?: string,
+  ) {
     const qb = manager
       .createQueryBuilder(DepartmentUserOrmEntity, 'department_users')
-      .leftJoinAndSelect('department_users.departments', 'departments')
-      .leftJoinAndSelect('department_users.users', 'users')
-      .leftJoinAndSelect('users.userHasPermissions', 'user_has_permissions')
-      .leftJoinAndSelect('user_has_permissions.permission', 'permissions')
-      .leftJoinAndSelect('department_users.positions', 'positions')
-      .leftJoinAndSelect('users.roles', 'roles')
-      .leftJoinAndSelect('roles.permissions', 'role_permissions');
+      .leftJoin('department_users.departments', 'departments')
+      .leftJoin('department_users.users', 'users')
+      .leftJoin('users.userHasPermissions', 'user_has_permissions')
+      .leftJoin('user_has_permissions.permission', 'permissions')
+      .leftJoin('department_users.positions', 'positions')
+      .leftJoin('users.roles', 'roles')
+      .leftJoin('roles.permissions', 'role_permissions')
+      .addSelect([
+        'departments.id',
+        'departments.name',
+        'departments.code',
+        'users.id',
+        'users.username',
+        'users.email',
+        'users.tel',
+        'user_has_permissions.user_id',
+        'user_has_permissions.permission_id',
+        'permissions.id',
+        'permissions.name',
+        'positions.id',
+        'positions.name',
+        'roles.id',
+        'roles.name',
+        'role_permissions.id',
+        'role_permissions.name',
+      ]);
 
     if (departmentId) {
-      qb.where('department_users.department_id = :departmentId', {
+      qb.andWhere('department_users.department_id = :departmentId', {
         departmentId,
       });
+    }
+
+    if (type === 'approvers') {
+      qb.andWhere(
+        `NOT EXISTS (
+        SELECT 1
+        FROM department_approvers da
+        WHERE da.user_id = department_users.user_id
+        AND da.department_id = :departmentId
+      )`,
+        { departmentId },
+      );
+    }
+
+    if (type === 'approval_rules') {
+      qb.andWhere(
+        `NOT EXISTS (
+        SELECT 1
+        FROM budget_approval_rules bar
+        WHERE bar.approver_id = department_users.user_id
+        AND bar.department_id = :departmentId
+      )`,
+        { departmentId },
+      );
     }
 
     return qb;
@@ -66,7 +117,12 @@ export class ReadDepartmentUserRepository
 
   private getFilterOptions(): FilterOptions {
     return {
-      searchColumns: ['', ''],
+      searchColumns: [
+        'users.username',
+        'users.email',
+        'users.tel',
+        'departments.name',
+      ],
       dateColumn: '',
       filterByColumns: [],
     };

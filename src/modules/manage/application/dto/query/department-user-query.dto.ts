@@ -1,6 +1,7 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { PaginationDto } from "@src/common/validations/dto/pagination.dto";
-import { IsOptional, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { PaginationDto } from '@src/common/validations/dto/pagination.dto';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class DepartmentUserQueryDto extends PaginationDto {
   @ApiProperty({
@@ -10,4 +11,9 @@ export class DepartmentUserQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  type: string;
 }

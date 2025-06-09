@@ -18,6 +18,12 @@ export class DeleteCommandHandler
   ) {}
 
   async execute(query: DeleteCommand): Promise<void> {
+    await this.checkData(query);
+
+    return await this._write.delete(new CategoryId(query.id), query.manager);
+  }
+
+  private async checkData(query: DeleteCommand): Promise<void> {
     if (isNaN(query.id)) {
       throw new ManageDomainException(
         'errors.must_be_number',
@@ -28,7 +34,5 @@ export class DeleteCommandHandler
     await findOneOrFail(query.manager, CategoryOrmEntity, {
       id: query.id,
     });
-
-    return await this._write.delete(new CategoryId(query.id), query.manager);
   }
 }

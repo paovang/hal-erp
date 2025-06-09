@@ -15,7 +15,6 @@ export class DeleteCommandHandler
   constructor(
     @Inject(WRITE_DEPARTMENT_APPROVER_REPOSITORY)
     private readonly _write: IWriteDepartmentApproverRepository,
-    // private readonly _dataMapper: DepartmentApproverDataMapper,
   ) {}
 
   async execute(query: DeleteCommand): Promise<void> {

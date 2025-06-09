@@ -17,6 +17,7 @@ import { DataSource } from 'typeorm';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { IWriteBudgetItemDetailRepository } from '@src/modules/manage/domain/ports/output/budget-item-detail-repository.interface';
 import { BudgetItemDetailId } from '@src/modules/manage/domain/value-objects/budget-item-detail-rule-id.vo';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -37,22 +38,7 @@ export class DeleteCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        if (isNaN(query.id)) {
-          throw new ManageDomainException(
-            'errors.must_be_number',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-        /** Check Exits CategoryId Id */
-        await findOneOrFail(manager, BudgetItemOrmEntity, {
-          id: query.id,
-        });
-
-        /** Check Exits CategoryId Id */
-        await findOneOrFail(manager, BudgetItemDetailOrmEntity, {
-          budget_item_id: query.id,
-        });
-
+        await this.checkData(query);
         const details = await query.manager.find(BudgetItemDetailOrmEntity, {
           where: { budget_item_id: query.id },
         });
@@ -66,6 +52,29 @@ export class DeleteCommandHandler
 
         return await this._write.delete(new BudgetItemId(query.id), manager);
       },
+    );
+  }
+
+  private async checkData(query: DeleteCommand): Promise<void> {
+    if (isNaN(query.id)) {
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    await findOneOrFail(query.manager, BudgetItemOrmEntity, {
+      id: query.id,
+    });
+
+    await findOneOrFail(query.manager, BudgetItemDetailOrmEntity, {
+      budget_item_id: query.id,
+    });
+    await checkRelationOrThrow(
+      query.manager,
+      BudgetItemDetailOrmEntity,
+      { budget_item_id: query.id },
+      'errors.already_in_use',
     );
   }
 }

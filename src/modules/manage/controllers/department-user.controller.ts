@@ -71,7 +71,6 @@ export class DepartmentUserController {
     );
   }
 
-  // @Public()
   @Get('')
   async getAll(
     @Query() dto: DepartmentUserQueryDto,
@@ -85,7 +84,6 @@ export class DepartmentUserController {
   }
 
   /** Get One */
-  // @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
