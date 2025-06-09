@@ -91,23 +91,23 @@ export class ReadDepartmentUserRepository
     if (type === 'approvers') {
       qb.andWhere(
         `NOT EXISTS (
-        SELECT 1
-        FROM department_approvers da
-        WHERE da.user_id = department_users.user_id
+      SELECT 1
+      FROM department_approvers da
+      WHERE da.user_id = department_users.user_id
         AND da.department_id = :departmentId
-      )`,
+        AND da.deleted_at IS NULL
+    )`,
         { departmentId },
       );
-    }
-
-    if (type === 'approval_rules') {
+    } else if (type === 'approval_rules') {
       qb.andWhere(
         `NOT EXISTS (
-        SELECT 1
-        FROM budget_approval_rules bar
-        WHERE bar.approver_id = department_users.user_id
+      SELECT 1
+      FROM budget_approval_rules bar
+      WHERE bar.approver_id = department_users.user_id
         AND bar.department_id = :departmentId
-      )`,
+        AND bar.deleted_at IS NULL
+    )`,
         { departmentId },
       );
     }
