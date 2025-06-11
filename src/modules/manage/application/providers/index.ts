@@ -16,6 +16,7 @@ import { BudgetAccountProvider } from './BudgetAccount';
 import { BudgetItemProvider } from './BudgetItem';
 import { BudgetItemDetailProvider } from './BudgetItemDetail';
 import { ProvinceProvider } from './Province';
+import { DocumentProvider } from './Document';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
@@ -35,4 +36,5 @@ export const AllRegisterProviders: Provider[] = [
   ...ProvinceProvider,
   ...BudgetItemProvider,
   ...BudgetItemDetailProvider,
+  ...DocumentProvider,
 ];

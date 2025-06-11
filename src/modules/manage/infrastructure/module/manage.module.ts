@@ -23,6 +23,7 @@ import { BudgetAccountController } from '../../controllers/budget-account.contro
 import { BudgetItemController } from '../../controllers/budget-item.controller';
 import { BudgetItemDetailController } from '../../controllers/budget-item-detail.controller';
 import { ProvinceController } from '../../controllers/province.controller';
+import { DocumentController } from '../../controllers/document.controller';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ProvinceController } from '../../controllers/province.controller';
     BudgetItemController,
     BudgetItemDetailController,
     ProvinceController,
+    DocumentController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

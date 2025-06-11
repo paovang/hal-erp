@@ -15,6 +15,7 @@ import { DepartmentApproverOrmEntity } from './department-approver.orm';
 import { RoleOrmEntity } from './role.orm';
 import { BudgetApprovalRuleOrmEntity } from './budget-approval-rule.orm';
 import { UserHasPermissionOrmEntity } from './model-has-permission.orm';
+import { DocumentOrmEntity } from './document.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -74,11 +75,8 @@ export class UserOrmEntity {
   // )
   // document_attachments: Relation<DocumentAttachmentEntity[]>;
 
-  // @OneToMany(
-  // () => DocumentEntity,
-  //     (documents) => documents.users,
-  // )
-  // documents: Relation<DocumentEntity[]>;
+  @OneToMany(() => DocumentOrmEntity, (documents) => documents.users)
+  documents: Relation<DocumentOrmEntity[]>;
 
   @ManyToMany(() => RoleOrmEntity, (role) => role.users, {
     onDelete: 'CASCADE',

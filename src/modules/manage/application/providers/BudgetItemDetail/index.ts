@@ -12,9 +12,9 @@ import {
   READ_BUDGET_ITEM_DETAIL_REPOSITORY,
   WRITE_BUDGET_ITEM_DETAIL_REPOSITORY,
 } from '../../constants/inject-key.const';
-import { WriteBudgetItemDetailRepository } from '@src/modules/manage/infrastructure/repositories/BudgetItemDetail/write.repository';
+import { WriteBudgetItemDetailRepository } from '@src/modules/manage/infrastructure/repositories/budgetItemDetail/write.repository';
 import { BudgetItemDetailService } from '../../services/budget-item-detail.service';
-import { ReadBudgetItemDetailRepository } from '@src/modules/manage/infrastructure/repositories/BudgetItemDetail/read.repository';
+import { ReadBudgetItemDetailRepository } from '@src/modules/manage/infrastructure/repositories/budgetItemDetail/read.repository';
 
 export const BudgetItemDetailProvider: Provider[] = [
   ...BudgetItemDetailHandlersProviders,

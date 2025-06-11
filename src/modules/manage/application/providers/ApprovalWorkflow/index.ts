@@ -12,9 +12,9 @@ import {
   READ_APPROVAL_WORKFLOW_REPOSITORY,
   WRITE_APPROVAL_WORKFLOW_REPOSITORY,
 } from '../../constants/inject-key.const';
-import { WriteApprovalWorkflowRepository } from '@src/modules/manage/infrastructure/repositories/ApprovalWorkflow/write.repository';
+import { WriteApprovalWorkflowRepository } from '@src/modules/manage/infrastructure/repositories/approvalWorkflow/write.repository';
 import { ApprovalWorkflowService } from '../../services/approval-workflow.service';
-import { ReadApprovalWorkflowRepository } from '@src/modules/manage/infrastructure/repositories/ApprovalWorkflow/read.repository';
+import { ReadApprovalWorkflowRepository } from '@src/modules/manage/infrastructure/repositories/approvalWorkflow/read.repository';
 
 export const ApprovalWorkflowProvider: Provider[] = [
   ...ApprovalWorkflowHandlersProviders,

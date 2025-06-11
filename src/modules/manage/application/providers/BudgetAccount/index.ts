@@ -13,8 +13,8 @@ import {
   WRITE_BUDGET_ACCOUNT_REPOSITORY,
 } from '../../constants/inject-key.const';
 import { BudgetAccountService } from '../../services/budget-account.service';
-import { WriteBudgetAccountRepository } from '@src/modules/manage/infrastructure/repositories/BudgetAccount/write.repository';
-import { ReadBudgetAccountRepository } from '@src/modules/manage/infrastructure/repositories/BudgetAccount/read.repository';
+import { WriteBudgetAccountRepository } from '@src/modules/manage/infrastructure/repositories/budgetAccount/write.repository';
+import { ReadBudgetAccountRepository } from '@src/modules/manage/infrastructure/repositories/budgetAccount/read.repository';
 
 export const BudgetAccountProvider: Provider[] = [
   ...BudgetAccountHandlersProviders,

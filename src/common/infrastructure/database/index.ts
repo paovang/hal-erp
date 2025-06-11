@@ -9,11 +9,14 @@ import { DepartmentApproverOrmEntity } from './typeorm/department-approver.orm';
 import { DepartmentUserOrmEntity } from './typeorm/department-user.orm';
 import { DepartmentOrmEntity } from './typeorm/department.orm';
 import { DocumentTypeOrmEntity } from './typeorm/document-type.orm';
+import { DocumentOrmEntity } from './typeorm/document.orm';
 import { UserHasPermissionOrmEntity } from './typeorm/model-has-permission.orm';
 import { PermissionGroupOrmEntity } from './typeorm/permission-group.orm';
 import { PermissionOrmEntity } from './typeorm/permission.orm';
 import { PositionOrmEntity } from './typeorm/position.orm';
 import { ProvinceOrmEntity } from './typeorm/province.orm';
+import { PurchaseRequestItemOrmEntity } from './typeorm/purchase-request-item.orm';
+import { PurchaseRequestOrmEntity } from './typeorm/purchase-request.orm';
 import { RoleOrmEntity } from './typeorm/role.orm';
 import { SeederLogOrmEntity } from './typeorm/seeder-log.orm';
 import { UnitOrmEntity } from './typeorm/unit.orm';
@@ -44,4 +47,7 @@ export const models = [
   ProvinceOrmEntity,
   BudgetItemDetailOrmEntity,
   UserHasPermissionOrmEntity,
+  DocumentOrmEntity,
+  PurchaseRequestOrmEntity,
+  PurchaseRequestItemOrmEntity,
 ];

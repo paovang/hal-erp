@@ -13,6 +13,7 @@ import { DepartmentUserOrmEntity } from './department-user.orm';
 import { DepartmentApproverOrmEntity } from './department-approver.orm';
 import { BudgetApprovalRuleOrmEntity } from './budget-approval-rule.orm';
 import { BudgetAccountOrmEntity } from './budget-account.orm';
+import { DocumentOrmEntity } from './document.orm';
 // import { BudgetAccountOrmEntity } from './budget-account.orm';
 
 @Entity('departments')
@@ -62,4 +63,7 @@ export class DepartmentOrmEntity {
     (budget_approval_rules) => budget_approval_rules.departments,
   )
   budget_approval_rules: Relation<BudgetApprovalRuleOrmEntity[]>;
+
+  @OneToMany(() => DocumentOrmEntity, (documents) => documents.departments)
+  documents: Relation<DocumentOrmEntity[]>;
 }
