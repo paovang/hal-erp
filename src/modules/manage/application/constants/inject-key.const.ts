@@ -71,6 +71,9 @@ export const WRITE_CATEGORY_REPOSITORY = Symbol('WRITE_CATEGORY_REPOSITORY');
 export const READ_CATEGORY_REPOSITORY = Symbol('READ_CATEGORY_REPOSITORY');
 
 export const USER_PROFILE_IMAGE_FOLDER = 'department_signature';
+export const USER_SIGNATURE_IMAGE_FOLDER = 'user_signature';
+export const IMAGE_FOLDER = process.env.IMAGE_FOLDER || 'assets/uploads';
+export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 // department approver
 export const DEPARTMENT_APPROVER_APPLICATION_SERVICE = Symbol(
@@ -195,4 +198,15 @@ export const WRITE_PURCHASE_REQUEST_ITEM_REPOSITORY = Symbol(
 );
 export const READ_PURCHASE_REQUEST_ITEM_REPOSITORY = Symbol(
   'READ_PURCHASE_REQUEST_ITEM_REPOSITORY',
+);
+
+// user signature
+export const USER_SIGNATURE_APPLICATION_SERVICE = Symbol(
+  'USER_SIGNATURE_APPLICATION_SERVICE',
+);
+export const WRITE_USER_SIGNATURE_REPOSITORY = Symbol(
+  'WRITE_USER_SIGNATURE_REPOSITORY',
+);
+export const READ_USER_SIGNATURE_REPOSITORY = Symbol(
+  'READ_USER_SIGNATURE_REPOSITORY',
 );

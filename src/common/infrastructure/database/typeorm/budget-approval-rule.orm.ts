@@ -24,6 +24,10 @@ export class BudgetApprovalRuleOrmEntity {
   @ManyToOne(
     () => DepartmentOrmEntity,
     (departments) => departments.budget_approval_rules,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
   )
   @JoinColumn({ name: 'department_id' })
   departments: Relation<DepartmentOrmEntity>;
@@ -31,7 +35,10 @@ export class BudgetApprovalRuleOrmEntity {
   @Index()
   @Column({ nullable: true })
   approver_id?: number;
-  @ManyToOne(() => UserOrmEntity, (users) => users.budget_approval_rules)
+  @ManyToOne(() => UserOrmEntity, (users) => users.budget_approval_rules, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'approver_id' })
   users: Relation<UserOrmEntity>;
 

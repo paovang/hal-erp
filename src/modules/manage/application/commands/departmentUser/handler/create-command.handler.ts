@@ -88,6 +88,7 @@ export class CreateCommandHandler
         const dtoWithHashedPassword = {
           ...query.dto,
           password: hashedPassword,
+          signature: query.dto.signatureFile,
         };
         // Step 1: Save the user entity
         const userEntity = this._dataUserMapper.toEntity(dtoWithHashedPassword);

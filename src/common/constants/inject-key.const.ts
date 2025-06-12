@@ -18,3 +18,9 @@ export const PROFILE_IMAGE_ALLOW_MIME_TYPE = [
   'image/jpg',
   'image/jpeg',
 ];
+
+export const SIGNATURE_ALLOW_MIME_TYPE = [
+  'image/png',
+  'image/jpg',
+  'image/jpeg',
+];

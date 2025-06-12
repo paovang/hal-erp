@@ -1,5 +1,6 @@
 import { PermissionEntity } from '../entities/permission.entity';
 import { RoleEntity } from '../entities/role.entity';
+import { UserSignatureEntity } from '../entities/user-signature.entity';
 import { UserEntity } from '../entities/user.entity';
 import { UserId } from '../value-objects/user-id.vo';
 
@@ -16,6 +17,7 @@ export class UserBuilder {
   permissionIds: number[] | null = null;
   roles: RoleEntity[];
   permissions: PermissionEntity[] | null;
+  userSignature: UserSignatureEntity | null = null;
 
   setUserId(value: UserId): this {
     this.userId = value;
@@ -54,6 +56,11 @@ export class UserBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setUserSignature(userSignature: UserSignatureEntity | null): this {
+    this.userSignature = userSignature;
     return this;
   }
 

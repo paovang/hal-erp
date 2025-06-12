@@ -3,6 +3,7 @@ import { UserBuilder } from '../builders/user.builder';
 import { Entity } from '@src/common/domain/entities/entity';
 import { RoleEntity } from './role.entity';
 import { PermissionEntity } from './permission.entity';
+import { UserSignatureEntity } from './user-signature.entity';
 
 export class UserEntity extends Entity<UserId> {
   private readonly _username: string;
@@ -16,6 +17,7 @@ export class UserEntity extends Entity<UserId> {
   private readonly _permissionIds: number[] | null;
   private readonly _roles: RoleEntity[];
   private readonly _permissions: PermissionEntity[] | null;
+  private readonly _userSignature: UserSignatureEntity | null;
 
   private constructor(builder: UserBuilder) {
     super();
@@ -31,6 +33,7 @@ export class UserEntity extends Entity<UserId> {
     this._permissionIds = builder.permissionIds ?? null;
     this._roles = builder.roles;
     this._permissions = builder.permissions ?? null;
+    this._userSignature = builder.userSignature ?? null;
   }
 
   get username(): string {
@@ -59,6 +62,10 @@ export class UserEntity extends Entity<UserId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get userSignature(): UserSignatureEntity | null {
+    return this._userSignature;
   }
 
   get roleIds(): number[] | null {

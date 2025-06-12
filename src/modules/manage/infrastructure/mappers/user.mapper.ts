@@ -8,12 +8,14 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { Injectable } from '@nestjs/common';
 import { RoleDataAccessMapper } from './role.mapper';
 import { PermissionDataAccessMapper } from './permission.mapper';
+import { UserSignatureDataAccessMapper } from './user-signature.mapper';
 
 @Injectable()
 export class UserDataAccessMapper {
   constructor(
     private readonly roleMapper: RoleDataAccessMapper,
     private readonly permissionMapper: PermissionDataAccessMapper,
+    private readonly userSignature: UserSignatureDataAccessMapper,
   ) {}
   toOrmEntity(userEntity: UserEntity, method: OrmEntityMethod): UserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
@@ -47,6 +49,12 @@ export class UserDataAccessMapper {
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .setDeletedAt(ormData.deleted_at);
+
+    if (ormData.user_signatures && ormData.user_signatures.length > 0) {
+      builder.setUserSignature(
+        this.userSignature.toEntity(ormData.user_signatures[0]),
+      );
+    }
 
     if (ormData.roles) {
       builder.setRoles(this.roleMapper.toEntities(ormData.roles));

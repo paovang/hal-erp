@@ -41,6 +41,10 @@ export class BudgetAccountOrmEntity {
   @ManyToOne(
     () => DepartmentOrmEntity,
     (departments) => departments.budget_accounts,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
   )
   @JoinColumn({ name: 'department_id' })
   departments: Relation<DepartmentOrmEntity>;

@@ -21,7 +21,10 @@ export class VendorBankAccountOrmEntity {
   @Index()
   @Column({ nullable: true })
   vendor_id?: number;
-  @ManyToOne(() => VendorOrmEntity, (vendors) => vendors.vendor_bank_accounts)
+  @ManyToOne(() => VendorOrmEntity, (vendors) => vendors.vendor_bank_accounts, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'vendor_id' })
   vendors: Relation<VendorOrmEntity>;
 

@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Length,
   Matches,
@@ -59,4 +60,10 @@ export class CreateUserDto {
     { each: true, message: i18nValidationMessage('validation.IS_NUMBER') },
   )
   permissionIds: number[];
+
+  @ApiProperty()
+  @IsOptional()
+  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  signature?: any;
 }

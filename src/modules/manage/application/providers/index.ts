@@ -17,6 +17,7 @@ import { BudgetItemProvider } from './budgetItem';
 import { BudgetItemDetailProvider } from './budgetItemDetail';
 import { ProvinceProvider } from './Province';
 import { DocumentProvider } from './document';
+import { UserSignatureProvider } from './userSignature';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
@@ -37,4 +38,5 @@ export const AllRegisterProviders: Provider[] = [
   ...BudgetItemProvider,
   ...BudgetItemDetailProvider,
   ...DocumentProvider,
+  ...UserSignatureProvider,
 ];

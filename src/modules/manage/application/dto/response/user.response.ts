@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RoleResponse } from './role.response';
 import { PermissionResponse } from './permission.response';
+import { UserSignatureResponse } from './user-signature.response';
 
 export class UserResponse {
   @ApiProperty()
@@ -23,6 +24,12 @@ export class UserResponse {
 
   @ApiProperty()
   updated_at: string;
+
+  @ApiProperty()
+  deleted_at: string | null;
+
+  @ApiProperty()
+  user_signature: UserSignatureResponse | null;
 
   @ApiProperty()
   roles: RoleResponse[];

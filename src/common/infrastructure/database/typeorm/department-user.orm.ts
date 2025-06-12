@@ -32,14 +32,24 @@ export class DepartmentUserOrmEntity {
   @Index()
   @Column({ nullable: true })
   position_id?: number;
-  @ManyToOne(() => PositionOrmEntity, (positions) => positions.department_users)
+  @ManyToOne(
+    () => PositionOrmEntity,
+    (positions) => positions.department_users,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
   @JoinColumn({ name: 'position_id' })
   positions: Relation<PositionOrmEntity>;
 
   @Index()
   @Column({ nullable: true })
   user_id?: number;
-  @ManyToOne(() => UserOrmEntity, (users) => users.department_users)
+  @ManyToOne(() => UserOrmEntity, (users) => users.department_users, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   users: Relation<UserOrmEntity>;
 
@@ -53,6 +63,10 @@ export class DepartmentUserOrmEntity {
   @ManyToOne(
     () => UserOrmEntity,
     (line_manager) => line_manager.department_users,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
   )
   @JoinColumn({ name: 'line_manager_id' })
   line_manager: Relation<UserOrmEntity>;

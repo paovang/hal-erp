@@ -9,14 +9,14 @@ import { UpdateUserDto } from '../dto/create/user/update.dto';
 import { ChangePasswordDto } from '../dto/create/user/change-password.dto';
 import { SendMailDto } from '../dto/create/user/send-email.dto';
 import { RoleDataMapper } from './role.mapper';
-import { PermissionDataMapper } from './permission.mapper';
 import { PermissionResponse } from '../dto/response/permission.response';
+import { UserSignatureDataMapper } from './user-signature.mapper';
 
 @Injectable()
 export class UserDataMapper {
   constructor(
     private readonly roleDataMapper: RoleDataMapper,
-    private readonly permissionDataMapper: PermissionDataMapper,
+    private readonly userSignature: UserSignatureDataMapper,
   ) {}
 
   /** Mapper Dto To Entity */
@@ -111,6 +111,10 @@ export class UserDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+
+    response.user_signature = entity.userSignature
+      ? this.userSignature.toResponse(entity.userSignature)
+      : null;
 
     response.roles = entity.roles
       ? entity.roles.map((role) => this.roleDataMapper.toResponse(role))

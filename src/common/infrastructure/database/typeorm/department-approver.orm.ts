@@ -22,13 +22,20 @@ export class DepartmentApproverOrmEntity {
   @ManyToOne(
     () => DepartmentOrmEntity,
     (departments) => departments.department_approvers,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
   )
   @JoinColumn({ name: 'department_id' })
   departments: Relation<DepartmentOrmEntity>;
 
   @Column({ nullable: true })
   user_id?: number;
-  @ManyToOne(() => UserOrmEntity, (users) => users.department_approvers)
+  @ManyToOne(() => UserOrmEntity, (users) => users.department_approvers, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   users: Relation<UserOrmEntity>;
 

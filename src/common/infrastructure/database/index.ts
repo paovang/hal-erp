@@ -1,3 +1,4 @@
+import { ApprovalWorkflowStepOrmEntity } from './typeorm/approval-workflow-step.orm';
 import { ApprovalWorkflowOrmEntity } from './typeorm/approval-workflow.orm';
 import { BudgetAccountOrmEntity } from './typeorm/budget-account.orm';
 import { BudgetApprovalRuleOrmEntity } from './typeorm/budget-approval-rule.orm';
@@ -20,6 +21,7 @@ import { PurchaseRequestOrmEntity } from './typeorm/purchase-request.orm';
 import { RoleOrmEntity } from './typeorm/role.orm';
 import { SeederLogOrmEntity } from './typeorm/seeder-log.orm';
 import { UnitOrmEntity } from './typeorm/unit.orm';
+import { UserSignatureOrmEntity } from './typeorm/user-signature.orm';
 import { UserOrmEntity } from './typeorm/user.orm';
 import { VendorOrmEntity } from './typeorm/vendor.orm';
 import { VendorBankAccountOrmEntity } from './typeorm/vendor_bank_account.orm';
@@ -42,6 +44,7 @@ export const models = [
   VendorBankAccountOrmEntity,
   BudgetApprovalRuleOrmEntity,
   ApprovalWorkflowOrmEntity,
+  ApprovalWorkflowStepOrmEntity,
   BudgetAccountOrmEntity,
   BudgetItemOrmEntity,
   ProvinceOrmEntity,
@@ -50,4 +53,5 @@ export const models = [
   DocumentOrmEntity,
   PurchaseRequestOrmEntity,
   PurchaseRequestItemOrmEntity,
+  UserSignatureOrmEntity,
 ];
