@@ -29,7 +29,7 @@ export class ReadDepartmentUserRepository
   async findAll(
     query: DepartmentUserQueryDto,
     manager: EntityManager,
-    departmentId?: number,
+    departmentId?: number | null,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     const queryBuilder = await this.createBaseQuery(
       manager,
@@ -50,7 +50,7 @@ export class ReadDepartmentUserRepository
 
   private createBaseQuery(
     manager: EntityManager,
-    departmentId?: number,
+    departmentId?: number | null,
     type?: string,
   ) {
     const qb = manager
@@ -82,13 +82,13 @@ export class ReadDepartmentUserRepository
         'role_permissions.name',
       ]);
 
-    if (departmentId) {
+    if (departmentId && departmentId != null) {
       qb.andWhere('department_users.department_id = :departmentId', {
         departmentId,
       });
     }
 
-    if (type === 'approvers') {
+    if (departmentId && type === 'approvers') {
       qb.andWhere(
         `NOT EXISTS (
       SELECT 1
@@ -99,7 +99,7 @@ export class ReadDepartmentUserRepository
     )`,
         { departmentId },
       );
-    } else if (type === 'approval_rules') {
+    } else if (departmentId && type === 'approval_rules') {
       qb.andWhere(
         `NOT EXISTS (
       SELECT 1

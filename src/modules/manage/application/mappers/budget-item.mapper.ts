@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { BudgetItemResponse } from '../dto/response/budget-item.response';
 import { BudgetItemEntity } from '../../domain/entities/budget-item.entity';
-import { CreateBudgetItemDto } from '../dto/create/BudgetItem/create.dto';
+import { CreateBudgetItemDto } from '../dto/create/budgetItem/create.dto';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { BudgetItemDetailDataMapper } from './budget-item-detail.mapper';
-import { UpdateBudgetItemDto } from '../dto/create/BudgetItem/update.dto';
+import { UpdateBudgetItemDto } from '../dto/create/budgetItem/update.dto';
 
 @Injectable()
 export class BudgetItemDataMapper {

@@ -1,4 +1,3 @@
-import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
@@ -7,6 +6,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Length,
   Matches,
@@ -53,7 +53,7 @@ export class CreateDepartmentUserDto {
   readonly positionId: number;
 
   // @ApiProperty()
-  @Optional()
+  @IsOptional()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   signatureFile: any;
 

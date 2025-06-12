@@ -4,7 +4,6 @@ import { BudgetApprovalRuleMapperProviders } from './mapper.provider';
 import {
   LOCALIZATION_SERVICE,
   TRANSACTION_MANAGER_SERVICE,
-  TRANSFORM_RESULT_SERVICE,
 } from '@src/common/constants/inject-key.const';
 import { LocalizationService } from '@src/common/infrastructure/localization/localization.service';
 import { TransactionManagerService } from '@src/common/infrastructure/transaction/transaction.service';
@@ -15,7 +14,6 @@ import {
 } from '../../constants/inject-key.const';
 import { BudgetApprovalRuleService } from '../../services/budget-approval-rule.service';
 import { WriteBudgetApprovalRuleRepository } from '@src/modules/manage/infrastructure/repositories/budgetApprovalRule/write.repository';
-import { TransformResultService } from '@src/common/utils/services/transform-result.service';
 import { ReadBudgetApprovalRuleRepository } from '@src/modules/manage/infrastructure/repositories/budgetApprovalRule/read.repository';
 
 export const BudgetApprovalRuleProvider: Provider[] = [

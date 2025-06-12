@@ -9,6 +9,14 @@ import { Injectable } from '@nestjs/common';
 import { BudgetItemDetailDataAccessMapper } from './budget-item-detail.mapper';
 import { BudgetItemDetailEntity } from '../../domain/entities/budget-item-detail.entity';
 
+// interface BudgetItemOrmEntityWithCount extends BudgetItemOrmEntity {
+//   details_count?: number | null;
+// }
+
+// type BudgetItemOrmEntityWithCount = BudgetItemOrmEntity & {
+//   details_count?: number | null;
+// };
+
 @Injectable()
 export class BudgetItemDataAccessMapper {
   constructor(private readonly details: BudgetItemDetailDataAccessMapper) {}
@@ -34,22 +42,23 @@ export class BudgetItemDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  toEntity(ormData: BudgetItemOrmEntity): BudgetItemEntity {
-    const builder = BudgetItemEntity.builder()
-      .setBudgetItemId(new BudgetItemId(ormData.id))
-      .setName(ormData.name ?? '')
-      .setBudgetAccountId(ormData.budget_account_id ?? 0)
-      .setAllocatedAmount(ormData.allocated_amount ?? 0)
-      .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at)
-      .setCountDetails(
-        Number((ormData as any).budget_items_details_count ?? 0),
-      );
+  // toEntity(ormData: BudgetItemOrmEntityWithCount): BudgetItemEntity {
+  toEntity(row: any): BudgetItemEntity {
+    console.log('object', row.details_count);
 
-    if (Array.isArray(ormData.budget_item_details)) {
+    const builder = BudgetItemEntity.builder()
+      .setBudgetItemId(new BudgetItemId(row.id))
+      .setName(row.name ?? '')
+      .setBudgetAccountId(row.budget_account_id ?? 0)
+      .setAllocatedAmount(row.allocated_amount ?? 0)
+      .setCreatedAt(row.created_at)
+      .setUpdatedAt(row.updated_at)
+      .setCountDetails(row.details_count ?? 0);
+
+    if (Array.isArray(row.budget_item_details)) {
       const transformedDetails: BudgetItemDetailEntity[] = [];
 
-      for (const detail of ormData.budget_item_details) {
+      for (const detail of row.budget_item_details) {
         transformedDetails.push(this.details.toEntity(detail));
       }
 

@@ -26,8 +26,10 @@ export class GetAllQueryHandler
     if (!departmentUser) {
       throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
     }
+    console.log('object', departmentUser);
 
-    const departmentId = (departmentUser as any).departments.id;
+    const departmentId = (departmentUser as any).departments?.id ?? null;
+    console.log('object', departmentId);
 
     const data = await this._readRepo.findAll(
       query.dto,

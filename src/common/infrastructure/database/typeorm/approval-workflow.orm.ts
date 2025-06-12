@@ -6,11 +6,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { DocumentTypeOrmEntity } from './document-type.orm';
+import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 
 @Entity('approval_workflows')
 export class ApprovalWorkflowOrmEntity {
@@ -41,4 +43,10 @@ export class ApprovalWorkflowOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  @OneToMany(
+    () => ApprovalWorkflowStepOrmEntity,
+    (approval_workflow_steps) => approval_workflow_steps.approval_workflows,
+  )
+  approval_workflow_steps: Relation<ApprovalWorkflowStepOrmEntity[]>;
 }

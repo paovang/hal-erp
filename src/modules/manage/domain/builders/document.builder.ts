@@ -1,4 +1,6 @@
+import { DepartmentEntity } from '../entities/department.entity';
 import { DocumentEntity } from '../entities/document.entity';
+import { UserEntity } from '../entities/user.entity';
 import { DocumentId } from '../value-objects/document-id.vo';
 
 export class DocumentBuilder {
@@ -12,6 +14,8 @@ export class DocumentBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  department: DepartmentEntity;
+  requester: UserEntity;
 
   setDocumentId(value: DocumentId): this {
     this.documentId = value;
@@ -60,6 +64,16 @@ export class DocumentBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setDepartment(department: DepartmentEntity): this {
+    this.department = department;
+    return this;
+  }
+
+  setRequester(requester: UserEntity): this {
+    this.requester = requester;
     return this;
   }
 

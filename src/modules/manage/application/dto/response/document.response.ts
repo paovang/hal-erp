@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { DepartmentResponse } from './department.response';
+import { UserResponse } from './user.response';
 
 export class DocumentResponse {
   @ApiProperty()
@@ -27,4 +29,13 @@ export class DocumentResponse {
 
   @ApiProperty()
   updated_at: string;
+
+  @ApiProperty()
+  deleted_at: string | null;
+
+  @ApiProperty()
+  department: DepartmentResponse | null;
+
+  @ApiProperty()
+  requester: UserResponse | null;
 }

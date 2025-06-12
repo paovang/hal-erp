@@ -57,14 +57,10 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'budget_item_details.updated_at',
       ])
       .leftJoin('budget_items.budget_item_details', 'budget_item_details')
-      .addSelect(
-        `(
-        SELECT COUNT(bid.id)
-        FROM budget_item_details bid
-        WHERE bid.budget_item_id = budget_items.id
-          AND bid.deleted_at IS NULL
-      )`,
-        'budget_items_details_count',
+      .loadRelationCountAndMap(
+        'budget_items.details_count',
+        'budget_items.budget_item_details',
+        'bid',
       )
       .leftJoin('budget_item_details.provinces', 'provinces')
       .addSelect([
@@ -74,7 +70,6 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'provinces.updated_at',
       ]);
   }
-
   private getFilterOptions(): FilterOptions {
     return {
       searchColumns: ['budget_items.name'],

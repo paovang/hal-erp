@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApprovalWorkflowOrmEntity } from './approval-workflow.orm';
+import { DocumentOrmEntity } from './document.orm';
 
 @Entity('document_types')
 export class DocumentTypeOrmEntity {
@@ -40,4 +41,7 @@ export class DocumentTypeOrmEntity {
     (approval_workflows) => approval_workflows.document_types,
   )
   approval_workflows: Relation<ApprovalWorkflowOrmEntity[]>;
+
+  @OneToMany(() => DocumentOrmEntity, (documents) => documents.document_types)
+  documents: Relation<DocumentOrmEntity[]>;
 }

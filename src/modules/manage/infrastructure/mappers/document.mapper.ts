@@ -6,9 +6,15 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import moment from 'moment-timezone';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DocumentId } from '../../domain/value-objects/document-id.vo';
+import { DepartmentDataAccessMapper } from './department.mapper';
+import { UserDataAccessMapper } from './user.mapper';
 
 @Injectable()
 export class DocumentDataAccessMapper {
+  constructor(
+    private readonly departmentMapper: DepartmentDataAccessMapper,
+    private readonly requesterMapper: UserDataAccessMapper,
+  ) {}
   toOrmEntity(
     documentTypeEntity: DocumentEntity,
     method: OrmEntityMethod,
@@ -36,7 +42,7 @@ export class DocumentDataAccessMapper {
   }
 
   toEntity(ormData: DocumentOrmEntity): DocumentEntity {
-    return DocumentEntity.builder()
+    const builder = DocumentEntity.builder()
       .setDocumentId(new DocumentId(ormData.id))
       .setDocumentNumber(ormData.document_number)
       .setTitle(ormData.title ?? '')
@@ -45,7 +51,17 @@ export class DocumentDataAccessMapper {
       .setDepartmentId(ormData.department_id ?? 0)
       .setRequesterId(ormData.requester_id ?? 0)
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at)
-      .build();
+      .setUpdatedAt(ormData.updated_at);
+
+    if (ormData.departments) {
+      builder.setDepartment(
+        this.departmentMapper.toEntity(ormData.departments),
+      );
+    }
+    if (ormData.users) {
+      builder.setRequester(this.requesterMapper.toEntity(ormData.users));
+    }
+
+    return builder.build();
   }
 }

@@ -1,5 +1,5 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
-import { DeleteCommand } from '../delete-command';
+import { DeleteCommand } from '../delete.command';
 import { WRITE_UNIT_REPOSITORY } from '../../../constants/inject-key.const';
 import { HttpStatus, Inject } from '@nestjs/common';
 import { IWriteUnitRepository } from '@src/modules/manage/domain/ports/output/unit-repository.interface';

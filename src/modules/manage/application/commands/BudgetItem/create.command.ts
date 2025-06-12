@@ -1,5 +1,5 @@
 import { EntityManager } from 'typeorm';
-import { CreateBudgetItemDto } from '../../dto/create/BudgetItem/create.dto';
+import { CreateBudgetItemDto } from '../../dto/create/budgetItem/create.dto';
 
 export class CreateCommand {
   constructor(

@@ -3,7 +3,7 @@ import { IBudgetItemDetailServiceInterface } from '../../domain/ports/input/budg
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { CreateBudgetItemDetailDto } from '../dto/create/BudgetItemDetail/create.dto';
+import { CreateBudgetItemDetailDto } from '../dto/create/budgetItemDetail/create.dto';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { BudgetItemDetailEntity } from '../../domain/entities/budget-item-detail.entity';
 import { CreateCommand } from '../commands/BudgetItemDetail/create.command';

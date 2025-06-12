@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBudgetItemDetailDto } from '../dto/create/BudgetItemDetail/create.dto';
+import { CreateBudgetItemDetailDto } from '../dto/create/budgetItemDetail/create.dto';
 import { BudgetItemDetailEntity } from '../../domain/entities/budget-item-detail.entity';
 import { BudgetItemDetailResponse } from '../dto/response/budget-item-detail.response';
 import moment from 'moment-timezone';

@@ -16,6 +16,7 @@ import { RoleOrmEntity } from './role.orm';
 import { BudgetApprovalRuleOrmEntity } from './budget-approval-rule.orm';
 import { UserHasPermissionOrmEntity } from './model-has-permission.orm';
 import { DocumentOrmEntity } from './document.orm';
+import { UserSignatureOrmEntity } from './user-signature.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -69,6 +70,12 @@ export class UserOrmEntity {
   )
   department_users: Relation<DepartmentUserOrmEntity[]>;
 
+  @OneToMany(
+    () => DepartmentUserOrmEntity,
+    (line_manager) => line_manager.users,
+  )
+  line_manager: Relation<DepartmentUserOrmEntity[]>;
+
   // @OneToMany(
   // () => DocumentAttachmentEntity,
   //     (document_attachments) => document_attachments.users,
@@ -100,4 +107,10 @@ export class UserOrmEntity {
     (userHasPermission) => userHasPermission.user,
   )
   userHasPermissions: Relation<UserHasPermissionOrmEntity[]>;
+
+  @OneToMany(
+    () => UserSignatureOrmEntity,
+    (user_signatures) => user_signatures.users,
+  )
+  user_signatures: Relation<UserSignatureOrmEntity[]>;
 }

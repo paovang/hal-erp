@@ -8,7 +8,7 @@ export interface IReadDepartmentUserRepository {
   findAll(
     query: DepartmentUserQueryDto,
     manager: EntityManager,
-    departmentId?: number,
+    departmentId?: number | null,
   ): Promise<ResponseResult<DepartmentUserEntity>>;
 
   findOne(

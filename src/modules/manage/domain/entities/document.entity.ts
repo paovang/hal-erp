@@ -1,6 +1,8 @@
 import { Entity } from '@src/common/domain/entities/entity';
 import { DocumentId } from '../value-objects/document-id.vo';
 import { DocumentBuilder } from '../builders/document.builder';
+import { DepartmentEntity } from './department.entity';
+import { UserEntity } from './user.entity';
 
 export class DocumentEntity extends Entity<DocumentId> {
   private readonly _document_number: string;
@@ -12,6 +14,8 @@ export class DocumentEntity extends Entity<DocumentId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _department: DepartmentEntity | null;
+  private readonly _requester: UserEntity | null;
 
   private constructor(builder: DocumentBuilder) {
     super();
@@ -25,6 +29,8 @@ export class DocumentEntity extends Entity<DocumentId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._department = builder.department ?? null;
+    this._requester = builder.requester ?? null;
   }
 
   get document_number(): string {
@@ -61,6 +67,14 @@ export class DocumentEntity extends Entity<DocumentId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get department(): DepartmentEntity | null {
+    return this._department;
+  }
+
+  get requester(): UserEntity | null {
+    return this._requester;
   }
 
   public static builder(): DocumentBuilder {

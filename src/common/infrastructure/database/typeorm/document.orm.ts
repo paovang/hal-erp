@@ -14,6 +14,7 @@ import {
 import { DepartmentOrmEntity } from './department.orm';
 import { UserOrmEntity } from './user.orm';
 import { PurchaseRequestOrmEntity } from './purchase-request.orm';
+import { DocumentTypeOrmEntity } from './document-type.orm';
 
 @Entity('documents')
 export class DocumentOrmEntity {
@@ -35,6 +36,20 @@ export class DocumentOrmEntity {
   @Index()
   @Column({ type: 'double precision', nullable: true })
   total_amount?: number;
+
+  @Index()
+  @Column({ nullable: true })
+  document_type_id?: number;
+  @ManyToOne(
+    () => DocumentTypeOrmEntity,
+    (document_types) => document_types.documents,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'document_type_id' })
+  document_types: Relation<DocumentTypeOrmEntity>;
 
   @Index()
   @Column({ nullable: true })

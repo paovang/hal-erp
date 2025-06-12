@@ -1,7 +1,7 @@
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { EntityManager } from 'typeorm';
 import { BudgetItemDetailEntity } from '../../entities/budget-item-detail.entity';
-import { CreateBudgetItemDetailDto } from '@src/modules/manage/application/dto/create/BudgetItemDetail/create.dto';
+import { CreateBudgetItemDetailDto } from '@src/modules/manage/application/dto/create/budgetItemDetail/create.dto';
 import { BudgetItemDetailQueryDto } from '@src/modules/manage/application/dto/query/budget-item-detail.dto';
 
 export interface IBudgetItemDetailServiceInterface {

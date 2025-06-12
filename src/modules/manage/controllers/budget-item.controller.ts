@@ -14,11 +14,11 @@ import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { BudgetItemResponse } from '../application/dto/response/budget-item.response';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
-import { CreateBudgetItemDto } from '../application/dto/create/BudgetItem/create.dto';
+import { CreateBudgetItemDto } from '../application/dto/create/budgetItem/create.dto';
 import { IBudgetItemServiceInterface } from '../domain/ports/input/budget-item-domain-service.interface';
 import { BudgetItemDataMapper } from '../application/mappers/budget-item.mapper';
 import { BudgetItemQueryDto } from '../application/dto/query/budget-item.dto';
-import { UpdateBudgetItemDto } from '../application/dto/create/BudgetItem/update.dto';
+import { UpdateBudgetItemDto } from '../application/dto/create/budgetItem/update.dto';
 
 @Controller('budget-items')
 export class BudgetItemController {

@@ -1,15 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDocumentDto } from '../dto/create/Document/create.dto';
+import { CreateDocumentDto } from '../dto/create/document/create.dto';
 import { DocumentEntity } from '../../domain/entities/document.entity';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DocumentResponse } from '../dto/response/document.response';
+import { UserDataMapper } from './user.mapper';
+import { DepartmentDataMapper } from './department.mapper';
+import { UpdateDocumentDto } from '../dto/create/document/update.dto';
 
 @Injectable()
 export class DocumentDataMapper {
+  constructor(
+    private readonly departmentDataMapper: DepartmentDataMapper,
+    private readonly requesterDataMapper: UserDataMapper,
+  ) {}
   /** Mapper Dto To Entity */
-  toEntity(dto: CreateDocumentDto, generateCode: string): DocumentEntity {
+  toEntity(
+    dto: CreateDocumentDto | UpdateDocumentDto,
+    generateCode?: string,
+  ): DocumentEntity {
     const builder = DocumentEntity.builder();
 
     if (dto.title) {
@@ -42,12 +52,12 @@ export class DocumentDataMapper {
   /** Mapper Entity To Response */
   toResponse(entity: DocumentEntity): DocumentResponse {
     const response = new DocumentResponse();
-    response.id = entity.getId().value;
+    response.id = Number(entity.getId().value);
     response.document_number = entity.document_number;
     response.title = entity.title;
     response.description = entity.description;
     response.total_amount = entity.total_amount;
-    response.department_id = entity.department_id;
+    response.department_id = Number(entity.department_id);
     response.requester_id = entity.requester_id;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
@@ -55,6 +65,14 @@ export class DocumentDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+
+    response.department = entity.department
+      ? this.departmentDataMapper.toResponse(entity.department)
+      : null;
+
+    response.requester = entity.requester
+      ? this.requesterDataMapper.toResponse(entity.requester)
+      : null;
 
     return response;
   }

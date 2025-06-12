@@ -14,11 +14,11 @@ import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { IBudgetApprovalRuleServiceInterface } from '../domain/ports/input/budget-approval-rule-service.interface';
 import { BudgetApprovalRuleDataMapper } from '../application/mappers/budget-approval-rule.mapper';
-import { CreateBudgetApprovalRuleDto } from '../application/dto/create/BudgetApprovalRule/create.dto';
+import { CreateBudgetApprovalRuleDto } from '../application/dto/create/budgetApprovalRule/create.dto';
 import { BudgetApprovalRuleResponse } from '../application/dto/response/budget-approval-rule.response';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { BudgetApprovalRuleQueryDto } from '../application/dto/query/budget-approval-rule.dto';
-import { UpdateBudgetApprovalRuleDto } from '../application/dto/create/BudgetApprovalRule/update.dto';
+import { UpdateBudgetApprovalRuleDto } from '../application/dto/create/budgetApprovalRule/update.dto';
 
 @Controller('budget-approval-rules')
 export class BudgetApprovalRuleController {

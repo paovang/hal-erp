@@ -1,5 +1,5 @@
 import { EntityManager } from 'typeorm';
-import { CreateDocumentDto } from '../../dto/create/Document/create.dto';
+import { CreateDocumentDto } from '../../dto/create/document/create.dto';
 
 export class CreateCommand {
   constructor(

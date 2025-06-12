@@ -14,11 +14,11 @@ import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { IApprovalWorkflowServiceInterface } from '../domain/ports/input/approval-workflow-service.interface';
 import { ApprovalWorkflowDataMapper } from '../application/mappers/approval-workflow.mapper';
-import { CreateApprovalWorkflowDto } from '../application/dto/create/ApprovalWorkflow/create.dto';
+import { CreateApprovalWorkflowDto } from '../application/dto/create/approvalWorkflow/create.dto';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ApprovalWorkflowResponse } from '../application/dto/response/approval-workflow.response';
 import { ApprovalWorkflowQueryDto } from '../application/dto/query/approval-workflow.dto';
-import { UpdateApprovalWorkflowDto } from '../application/dto/create/ApprovalWorkflow/update.dto';
+import { UpdateApprovalWorkflowDto } from '../application/dto/create/approvalWorkflow/update.dto';
 
 @Controller('approval-workflows')
 export class ApprovalWorkflowController {
