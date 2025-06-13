@@ -15,7 +15,6 @@ export class UserSignatureDataMapper {
     user_id?: number,
   ): UserSignatureEntity {
     const builder = UserSignatureEntity.builder();
-
     if (user_id) {
       builder.setUserId(user_id);
     }

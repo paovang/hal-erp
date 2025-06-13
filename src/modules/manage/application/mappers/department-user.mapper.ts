@@ -23,7 +23,6 @@ export class DepartmentUserDataMapper {
     dto: Partial<CreateDepartmentUserDto | UpdateDepartmentUserDto>,
     isCreate: boolean,
     userId?: number,
-    s3ImageResponse: { fileKey: string } | null = null,
   ): DepartmentUserEntity {
     const builder = DepartmentUserEntity.builder();
 
@@ -56,22 +55,19 @@ export class DepartmentUserDataMapper {
       builder.setUserId(userId);
     }
 
-    if (s3ImageResponse) {
-      builder.setSignatureFile(s3ImageResponse.fileKey);
-    }
+    // if (s3ImageResponse) {
+    //   builder.setSignatureFile(s3ImageResponse.fileKey);
+    // }
 
     return builder.build();
   }
 
   /** Mapper Entity To Response */
   toResponse(entity: DepartmentUserEntity): DepartmentUserResponse {
-    const file = `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${entity.signature_file}`;
     const response = new DepartmentUserResponse();
     response.id = entity.getId().value;
     response.department_id = entity.department?.getId().value;
     response.position_id = entity.position?.getId().value;
-    response.signature_file = entity.signature_file ?? null;
-    response.signature_file_url = entity.signature_file ? file : null;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);

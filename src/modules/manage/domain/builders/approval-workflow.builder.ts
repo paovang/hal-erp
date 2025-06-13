@@ -1,3 +1,4 @@
+import { ApprovalWorkflowStepEntity } from '../entities/approval-workflow-step.entity';
 import { ApprovalWorkflowEntity } from '../entities/approval-workflow.entity';
 import { DocumentTypeEntity } from '../entities/document-type.entity';
 import { ApprovalWorkflowId } from '../value-objects/approval-workflow-id.vo';
@@ -10,6 +11,7 @@ export class ApprovalWorkflowBuilder {
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   document_type: DocumentTypeEntity;
+  steps: ApprovalWorkflowStepEntity[] | null;
 
   setApprovalWorkflowId(value: ApprovalWorkflowId): this {
     this.approvalWorkflowId = value;
@@ -43,6 +45,11 @@ export class ApprovalWorkflowBuilder {
 
   setDocumentType(documentType: DocumentTypeEntity): this {
     this.document_type = documentType;
+    return this;
+  }
+
+  setSteps(steps: ApprovalWorkflowStepEntity[] | null): this {
+    this.steps = steps;
     return this;
   }
 

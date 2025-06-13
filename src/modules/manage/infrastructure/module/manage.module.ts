@@ -24,6 +24,7 @@ import { BudgetItemController } from '../../controllers/budget-item.controller';
 import { BudgetItemDetailController } from '../../controllers/budget-item-detail.controller';
 import { ProvinceController } from '../../controllers/province.controller';
 import { DocumentController } from '../../controllers/document.controller';
+import { ApprovalWorkflowStepController } from '../../controllers/approval-workflow-step.controller';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { DocumentController } from '../../controllers/document.controller';
     BudgetItemDetailController,
     ProvinceController,
     DocumentController,
+    ApprovalWorkflowStepController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

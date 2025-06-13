@@ -38,5 +38,7 @@
   "allocated_amount_exceeds_budget_account": "The allocated amount exceeds the available budget in the account.",
   "already_in_use": "Cannot delete because this item is already in use",
   "not_found_file": "File not found.",
-  "not_found_directory": "Directory not found."
+  "not_found_directory": "Directory not found.",
+  "duplicate_step_number": "Duplicate step number",
+  "step_number_exist": "Step number already exists"
 }

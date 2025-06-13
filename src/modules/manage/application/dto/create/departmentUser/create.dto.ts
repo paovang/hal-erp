@@ -54,7 +54,6 @@ export class CreateDepartmentUserDto {
 
   // @ApiProperty()
   @IsOptional()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   signatureFile: any;
 
   @Transform(({ value }) => {

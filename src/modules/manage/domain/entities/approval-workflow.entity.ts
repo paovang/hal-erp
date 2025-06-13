@@ -2,6 +2,7 @@ import { Entity } from '@src/common/domain/entities/entity';
 import { ApprovalWorkflowId } from '../value-objects/approval-workflow-id.vo';
 import { ApprovalWorkflowBuilder } from '../builders/approval-workflow.builder';
 import { DocumentTypeEntity } from './document-type.entity';
+import { ApprovalWorkflowStepEntity } from './approval-workflow-step.entity';
 
 export class ApprovalWorkflowEntity extends Entity<ApprovalWorkflowId> {
   private readonly _name: string;
@@ -10,6 +11,7 @@ export class ApprovalWorkflowEntity extends Entity<ApprovalWorkflowId> {
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _document_type: DocumentTypeEntity;
+  private readonly _steps: ApprovalWorkflowStepEntity[] | null;
 
   private constructor(builder: ApprovalWorkflowBuilder) {
     super();
@@ -20,6 +22,7 @@ export class ApprovalWorkflowEntity extends Entity<ApprovalWorkflowId> {
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._document_type = builder.document_type;
+    this._steps = builder.steps ?? null;
   }
 
   get name(): string {
@@ -44,6 +47,10 @@ export class ApprovalWorkflowEntity extends Entity<ApprovalWorkflowId> {
 
   get documentType(): DocumentTypeEntity {
     return this._document_type;
+  }
+
+  get steps(): ApprovalWorkflowStepEntity[] | null {
+    return this._steps;
   }
 
   public static builder(): ApprovalWorkflowBuilder {

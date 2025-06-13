@@ -18,6 +18,7 @@ import { BudgetItemDetailProvider } from './budgetItemDetail';
 import { ProvinceProvider } from './Province';
 import { DocumentProvider } from './document';
 import { UserSignatureProvider } from './userSignature';
+import { ApprovalWorkflowStepProvider } from './approvalWorkflowStep';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
@@ -39,4 +40,5 @@ export const AllRegisterProviders: Provider[] = [
   ...BudgetItemDetailProvider,
   ...DocumentProvider,
   ...UserSignatureProvider,
+  ...ApprovalWorkflowStepProvider,
 ];

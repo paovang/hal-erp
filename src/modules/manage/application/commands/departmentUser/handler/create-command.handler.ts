@@ -3,9 +3,10 @@ import { CreateCommand } from '../create.command';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import {
-  USER_PROFILE_IMAGE_FOLDER,
+  USER_SIGNATURE_IMAGE_FOLDER,
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
+  WRITE_USER_SIGNATURE_REPOSITORY,
 } from '../../../constants/inject-key.const';
 import { DepartmentUserDataMapper } from '../../../mappers/department-user.mapper';
 import { IWriteDepartmentUserRepository } from '@src/modules/manage/domain/ports/output/department-user-repository.interface';
@@ -31,6 +32,8 @@ import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/in
 import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
 import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.orm';
 import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/permission.orm';
+import { UserSignatureDataMapper } from '../../../mappers/user-signature.mapper';
+import { IWriteUserSignatureRepository } from '@src/modules/manage/domain/ports/output/user-signature-repository.interface';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -43,6 +46,9 @@ export class CreateCommandHandler
     private readonly _dataUserMapper: UserDataMapper,
     @Inject(WRITE_USER_REPOSITORY)
     private readonly _writeUser: IWriteUserRepository,
+    private readonly _dataUserSignatureMapper: UserSignatureDataMapper,
+    @Inject(WRITE_USER_SIGNATURE_REPOSITORY)
+    private readonly _writeUserSignature: IWriteUserSignatureRepository,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -63,7 +69,7 @@ export class CreateCommandHandler
 
     const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
       optimizedImageProfile,
-      USER_PROFILE_IMAGE_FOLDER,
+      USER_SIGNATURE_IMAGE_FOLDER,
     );
 
     for (const roleId of query.dto.roleIds) {
@@ -88,7 +94,6 @@ export class CreateCommandHandler
         const dtoWithHashedPassword = {
           ...query.dto,
           password: hashedPassword,
-          signature: query.dto.signatureFile,
         };
         // Step 1: Save the user entity
         const userEntity = this._dataUserMapper.toEntity(dtoWithHashedPassword);
@@ -101,12 +106,25 @@ export class CreateCommandHandler
 
         const id = (data as any)._id._value;
 
+        const mergeData = {
+          ...query.dto,
+          signature: s3ImageResponse.fileKey,
+        };
+
+        if (query.dto.signatureFile) {
+          const userSignatureEntity = this._dataUserSignatureMapper.toEntity(
+            mergeData,
+            id,
+          );
+
+          await this._writeUserSignature.create(userSignatureEntity, manager);
+        }
+
         // Step 4: Map and save the department-user entity
         const departmentUserEntity = this._dataMapper.toEntity(
           query.dto,
           true,
           id,
-          s3ImageResponse,
         );
         // departmentUserEntity.signature_file = s3ImageResponse.fileKey;
         const result = await this._write.create(departmentUserEntity, manager);

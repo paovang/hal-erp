@@ -4,9 +4,10 @@ import { ResponseResult } from '@common/infrastructure/pagination/pagination.int
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import { HttpStatus, Inject } from '@nestjs/common';
 import {
-  USER_PROFILE_IMAGE_FOLDER,
+  USER_SIGNATURE_IMAGE_FOLDER,
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
+  WRITE_USER_SIGNATURE_REPOSITORY,
 } from '../../../constants/inject-key.const';
 import { IWriteDepartmentUserRepository } from '@src/modules/manage/domain/ports/output/department-user-repository.interface';
 import { DepartmentUserDataMapper } from '../../../mappers/department-user.mapper';
@@ -34,6 +35,10 @@ import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.orm';
 import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/permission.orm';
+import { UserSignatureDataMapper } from '../../../mappers/user-signature.mapper';
+import { IWriteUserSignatureRepository } from '@src/modules/manage/domain/ports/output/user-signature-repository.interface';
+import { UserSignatureId } from '@src/modules/manage/domain/value-objects/user-signature-id.vo';
+import { UserSignatureOrmEntity } from '@src/common/infrastructure/database/typeorm/user-signature.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -45,6 +50,9 @@ export class UpdateCommandHandler
     private readonly _dataMapper: DepartmentUserDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
+    private readonly _dataUserSignatureMapper: UserSignatureDataMapper,
+    @Inject(WRITE_USER_SIGNATURE_REPOSITORY)
+    private readonly _writeUserSignature: IWriteUserSignatureRepository,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
     private readonly _dataUserMapper: UserDataMapper,
@@ -58,15 +66,18 @@ export class UpdateCommandHandler
   ) {}
 
   async execute(query: UpdateCommand): Promise<any> {
+    let s3ImageResponse = null;
     await this.checkData(query);
-    const optimizedImageProfile = await this._optimizeService.optimizeImage(
-      query.dto.signatureFile,
-    );
+    if (query.dto.signatureFile) {
+      const optimizedImageProfile = await this._optimizeService.optimizeImage(
+        query.dto.signatureFile,
+      );
 
-    const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
-      optimizedImageProfile,
-      USER_PROFILE_IMAGE_FOLDER,
-    );
+      s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+        optimizedImageProfile,
+        USER_SIGNATURE_IMAGE_FOLDER,
+      );
+    }
 
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
@@ -95,7 +106,6 @@ export class UpdateCommandHandler
           query.dto,
           false,
           updatedUserId,
-          s3ImageResponse,
         );
 
         await departmentUserEntity.initializeUpdateSetId(
@@ -107,6 +117,35 @@ export class UpdateCommandHandler
         });
 
         const result = await this._write.update(departmentUserEntity, manager);
+
+        const UserSignature = await findOneOrFail(
+          manager,
+          UserSignatureOrmEntity,
+          { user_id: updatedUserId },
+        );
+
+        const mergeData = {
+          ...query.dto,
+          signature: s3ImageResponse?.fileKey ?? null,
+        };
+
+        if (query.dto.signatureFile) {
+          const userSignatureEntity = this._dataUserSignatureMapper.toEntity(
+            mergeData,
+            query.id,
+          );
+          console.log('object 4', userSignatureEntity);
+          await userSignatureEntity.initializeUpdateSetId(
+            new UserSignatureId(UserSignature.id),
+          );
+          await userSignatureEntity.validateExistingIdForUpdate();
+          await findOneOrFail(manager, UserSignatureOrmEntity, {
+            id: userSignatureEntity.getId().value,
+          });
+
+          await this._writeUserSignature.update(userSignatureEntity, manager);
+        }
+        console.log('object 5');
 
         return result;
       },

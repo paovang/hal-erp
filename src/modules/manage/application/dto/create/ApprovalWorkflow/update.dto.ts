@@ -1,6 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
+import { OmitType } from '@nestjs/swagger';
 import { CreateApprovalWorkflowDto } from './create.dto';
 
-export class UpdateApprovalWorkflowDto extends PartialType(
+export class UpdateApprovalWorkflowDto extends OmitType(
   CreateApprovalWorkflowDto,
+  ['steps'],
 ) {}

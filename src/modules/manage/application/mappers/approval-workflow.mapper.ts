@@ -7,11 +7,13 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DocumentTypeDataMapper } from './document-type.mapper';
 import { UpdateApprovalWorkflowDto } from '../dto/create/approvalWorkflow/update.dto';
+import { ApprovalWorkflowStepDataMapper } from './approval-workflow-step.mapper';
 
 @Injectable()
 export class ApprovalWorkflowDataMapper {
   constructor(
     private readonly _documentTypeDataMapper: DocumentTypeDataMapper,
+    private readonly _step: ApprovalWorkflowStepDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
@@ -45,6 +47,9 @@ export class ApprovalWorkflowDataMapper {
     response.document_type = entity.documentType
       ? this._documentTypeDataMapper.toResponse(entity.documentType)
       : null;
+
+    response.steps =
+      entity.steps?.map((step) => this._step.toResponse(step)) ?? null;
 
     return response;
   }

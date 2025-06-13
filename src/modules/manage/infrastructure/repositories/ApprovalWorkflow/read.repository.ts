@@ -42,7 +42,25 @@ export class ReadApprovalWorkflowRepository
   private createBaseQuery(manager: EntityManager) {
     return manager
       .createQueryBuilder(ApprovalWorkflowOrmEntity, 'approval_workflows')
-      .leftJoinAndSelect('approval_workflows.document_types', 'document_types');
+      .leftJoin('approval_workflows.document_types', 'document_types')
+      .leftJoin(
+        'approval_workflows.approval_workflow_steps',
+        'approval_workflow_steps',
+      )
+      .addSelect([
+        'document_types.id',
+        'document_types.name',
+        'document_types.code',
+        'document_types.created_at',
+        'document_types.updated_at',
+        'approval_workflow_steps.id',
+        'approval_workflow_steps.approval_workflow_id',
+        'approval_workflow_steps.step_name',
+        'approval_workflow_steps.step_number',
+        'approval_workflow_steps.department_id',
+        'approval_workflow_steps.created_at',
+        'approval_workflow_steps.updated_at',
+      ]);
   }
 
   private getFilterOptions(): FilterOptions {
