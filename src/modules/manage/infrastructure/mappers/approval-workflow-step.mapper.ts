@@ -6,10 +6,11 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { ApprovalWorkflowStepId } from '../../domain/value-objects/approval-workflow-step-id.vo';
+import { DepartmentDataAccessMapper } from './department.mapper';
 
 @Injectable()
 export class ApprovalWorkflowStepDataAccessMapper {
-  constructor() {} // private readonly _documentTypeMapper: DocumentTypeDataAccessMapper,
+  constructor(private readonly _departmentMapper: DepartmentDataAccessMapper) {}
   toOrmEntity(
     approvalWorkflowStepEntity: ApprovalWorkflowStepEntity,
     method: OrmEntityMethod,
@@ -46,11 +47,9 @@ export class ApprovalWorkflowStepDataAccessMapper {
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 
-    // if (ormData.document_types) {
-    //   build.setDocumentType(
-    //     this._documentTypeMapper.toEntity(ormData.document_types),
-    //   );
-    // }
+    if (ormData.departments) {
+      build.setDepartment(this._departmentMapper.toEntity(ormData.departments));
+    }
 
     return build.build();
   }

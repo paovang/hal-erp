@@ -47,4 +47,26 @@ export class WriteApprovalWorkflowStepRepository
       throw error;
     }
   }
+
+  async update(
+    entity: ApprovalWorkflowStepEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowStepEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
+
+    try {
+      await manager.update(
+        ApprovalWorkflowStepOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -36,6 +36,7 @@ export class ReadDocumentRepository implements IReadDocumentRepository {
       this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
       this.getFilterOptions(),
     );
+    console.log('object', data);
     return data;
   }
 
@@ -55,8 +56,35 @@ export class ReadDocumentRepository implements IReadDocumentRepository {
       .createQueryBuilder(DocumentOrmEntity, 'documents')
       .leftJoin('documents.departments', 'departments')
       .leftJoin('documents.users', 'users')
-      .addSelect(['departments.id', 'departments.name', 'departments.code'])
-      .addSelect(['users.id', 'users.username', 'users.email', 'users.tel']);
+      .leftJoin('users.user_signatures', 'user_signatures')
+      .leftJoin('documents.document_types', 'document_types')
+      .addSelect([
+        'departments.id',
+        'departments.name',
+        'departments.code',
+        'departments.created_at',
+        'departments.updated_at',
+        'users.id',
+        'users.username',
+        'users.email',
+        'users.tel',
+        'users.created_at',
+        'users.updated_at',
+      ])
+      .addSelect([
+        'user_signatures.id',
+        'user_signatures.user_id',
+        'user_signatures.signature_file',
+        'user_signatures.created_at',
+        'user_signatures.updated_at',
+      ])
+      .addSelect([
+        'document_types.id',
+        'document_types.code',
+        'document_types.name',
+        'document_types.created_at',
+        'document_types.updated_at',
+      ]);
   }
 
   private getFilterOptions(): FilterOptions {

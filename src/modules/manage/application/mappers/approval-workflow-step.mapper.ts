@@ -5,13 +5,15 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { ApprovalWorkflowStepResponse } from '../dto/response/approval-workflow-step.response';
 import { CreateApprovalWorkflowStepDto } from '../dto/create/approvalWorkflowStep/create.dto';
+import { DepartmentDataMapper } from './department.mapper';
+import { UpdateApprovalWorkflowStepDto } from '../dto/create/approvalWorkflowStep/update.dto';
 
 @Injectable()
 export class ApprovalWorkflowStepDataMapper {
-  constructor() {} // private readonly _documentTypeDataMapper: DocumentTypeDataMapper,
+  constructor(private readonly _departmentDataMapper: DepartmentDataMapper) {}
   /** Mapper Dto To Entity */
   toEntity(
-    dto: CreateApprovalWorkflowStepDto,
+    dto: CreateApprovalWorkflowStepDto | UpdateApprovalWorkflowStepDto,
     workflow_id?: number,
   ): ApprovalWorkflowStepEntity {
     const builder = ApprovalWorkflowStepEntity.builder();
@@ -50,9 +52,9 @@ export class ApprovalWorkflowStepDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
 
-    // response.document_type = entity.documentType
-    //   ? this._documentTypeDataMapper.toResponse(entity.documentType)
-    //   : null;
+    response.department = entity.department
+      ? this._departmentDataMapper.toResponse(entity.department)
+      : null;
 
     return response;
   }

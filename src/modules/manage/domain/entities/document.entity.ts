@@ -3,6 +3,7 @@ import { DocumentId } from '../value-objects/document-id.vo';
 import { DocumentBuilder } from '../builders/document.builder';
 import { DepartmentEntity } from './department.entity';
 import { UserEntity } from './user.entity';
+import { DocumentTypeEntity } from './document-type.entity';
 
 export class DocumentEntity extends Entity<DocumentId> {
   private readonly _document_number: string;
@@ -11,11 +12,13 @@ export class DocumentEntity extends Entity<DocumentId> {
   private readonly _total_amount: number;
   private readonly _department_id: number;
   private readonly _requester_id: number;
+  private readonly _document_type_id: number;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _department: DepartmentEntity | null;
   private readonly _requester: UserEntity | null;
+  private readonly _documentType: DocumentTypeEntity | null;
 
   private constructor(builder: DocumentBuilder) {
     super();
@@ -26,11 +29,13 @@ export class DocumentEntity extends Entity<DocumentId> {
     this._total_amount = builder.total_amount;
     this._department_id = builder.department_id;
     this._requester_id = builder.requester_id;
+    this._document_type_id = builder.document_type_id;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._department = builder.department ?? null;
     this._requester = builder.requester ?? null;
+    this._documentType = builder.documentType ?? null;
   }
 
   get document_number(): string {
@@ -57,6 +62,10 @@ export class DocumentEntity extends Entity<DocumentId> {
     return this._requester_id;
   }
 
+  get document_type_id(): number {
+    return this._document_type_id;
+  }
+
   get createdAt(): Date {
     return this._createdAt;
   }
@@ -71,6 +80,10 @@ export class DocumentEntity extends Entity<DocumentId> {
 
   get department(): DepartmentEntity | null {
     return this._department;
+  }
+
+  get documentType(): DocumentTypeEntity | null {
+    return this._documentType;
   }
 
   get requester(): UserEntity | null {

@@ -1,4 +1,14 @@
-import { Body, Controller, Inject, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { APPROVAL_WORKFLOW_STEP_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
@@ -7,6 +17,8 @@ import { IApprovalWorkflowStepServiceInterface } from '../domain/ports/input/app
 import { CreateApprovalWorkflowStepDto } from '../application/dto/create/approvalWorkflowStep/create.dto';
 import { ApprovalWorkflowStepResponse } from '../application/dto/response/approval-workflow-step.response';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
+import { ApprovalWorkflowStepQueryDto } from '../application/dto/query/approval-workflow-step.dto';
+import { UpdateApprovalWorkflowStepDto } from '../application/dto/create/approvalWorkflowStep/update.dto';
 
 @Controller('approval-workflow-steps')
 export class ApprovalWorkflowStepController {
@@ -29,5 +41,48 @@ export class ApprovalWorkflowStepController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  @Get('/approval-workflow-id/:id')
+  async getAll(
+    @Param('id') id: number,
+    @Query() dto: ApprovalWorkflowStepQueryDto,
+  ): Promise<ResponseResult<ApprovalWorkflowStepResponse>> {
+    const result = await this._approvalWorkflowStepService.getAll(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get('work-flow-step-id/:id')
+  async getOne(
+    @Param('id') id: number,
+  ): Promise<ResponseResult<ApprovalWorkflowStepResponse>> {
+    const result = await this._approvalWorkflowStepService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateApprovalWorkflowStepDto,
+  ): Promise<ResponseResult<ApprovalWorkflowStepResponse>> {
+    const result = await this._approvalWorkflowStepService.update(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number): Promise<void> {
+    return await this._approvalWorkflowStepService.delete(id);
   }
 }

@@ -47,7 +47,7 @@ export class DocumentController {
     @Query() dto: DocumentQueryDto,
   ): Promise<ResponseResult<DocumentResponse>> {
     const result = await this._documentService.getAll(dto);
-
+    console.log('object', result);
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,

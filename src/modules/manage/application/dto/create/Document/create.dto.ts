@@ -26,5 +26,5 @@ export class CreateDocumentDto {
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
-  readonly requesterId: number;
+  readonly documentTypeId: number;
 }

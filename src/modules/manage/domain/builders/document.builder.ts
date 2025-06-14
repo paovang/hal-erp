@@ -1,4 +1,5 @@
 import { DepartmentEntity } from '../entities/department.entity';
+import { DocumentTypeEntity } from '../entities/document-type.entity';
 import { DocumentEntity } from '../entities/document.entity';
 import { UserEntity } from '../entities/user.entity';
 import { DocumentId } from '../value-objects/document-id.vo';
@@ -11,11 +12,13 @@ export class DocumentBuilder {
   total_amount: number;
   department_id: number;
   requester_id: number;
+  document_type_id: number;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   department: DepartmentEntity;
   requester: UserEntity;
+  documentType: DocumentTypeEntity;
 
   setDocumentId(value: DocumentId): this {
     this.documentId = value;
@@ -52,6 +55,11 @@ export class DocumentBuilder {
     return this;
   }
 
+  setDocumentTypeId(document_type_id: number): this {
+    this.document_type_id = document_type_id;
+    return this;
+  }
+
   setCreatedAt(createdAt: Date): this {
     this.createdAt = createdAt;
     return this;
@@ -69,6 +77,11 @@ export class DocumentBuilder {
 
   setDepartment(department: DepartmentEntity): this {
     this.department = department;
+    return this;
+  }
+
+  setDocumentType(documentType: DocumentTypeEntity): this {
+    this.documentType = documentType;
     return this;
   }
 

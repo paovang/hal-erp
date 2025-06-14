@@ -14,8 +14,8 @@ import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/d
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { IWriteDocumentRepository } from '@src/modules/manage/domain/ports/output/document-repository.interface';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
-import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
+import { DocumentEntityMode } from '@src/common/utils/orm-entity-method.enum';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -30,15 +30,19 @@ export class CreateCommandHandler
   ) {}
 
   async execute(query: CreateCommand): Promise<ResponseResult<DocumentEntity>> {
-    // const user = this._userContextService.getAuthUser()?.user;
-    // const user_id = (user as any).id;
-    // console.log('user: ', user);
+    const user = this._userContextService.getAuthUser()?.user;
+    const user_id = (user as any).id;
 
     await this.checkData(query);
 
     const code = await this.generateCode(query);
 
-    const entity = this._dataMapper.toEntity(query.dto, code);
+    const entity = this._dataMapper.toEntity(
+      query.dto,
+      DocumentEntityMode.CREATE,
+      code,
+      user_id,
+    );
     return await this._write.create(entity, query.manager);
   }
 
@@ -47,13 +51,12 @@ export class CreateCommandHandler
       id: query.dto.departmentId,
     });
 
-    await findOneOrFail(query.manager, UserOrmEntity, {
-      id: query.dto.requesterId,
+    await findOneOrFail(query.manager, DocumentOrmEntity, {
+      id: query.dto.documentTypeId,
     });
 
     await findOneOrFail(query.manager, DepartmentUserOrmEntity, {
       department_id: query.dto.departmentId,
-      user_id: query.dto.requesterId,
     });
   }
 

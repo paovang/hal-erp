@@ -1,4 +1,5 @@
 import { ApprovalWorkflowStepEntity } from '../entities/approval-workflow-step.entity';
+import { DepartmentEntity } from '../entities/department.entity';
 import { ApprovalWorkflowStepId } from '../value-objects/approval-workflow-step-id.vo';
 
 export class ApprovalWorkflowStepBuilder {
@@ -10,6 +11,7 @@ export class ApprovalWorkflowStepBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  department: DepartmentEntity | null;
 
   setApprovalWorkflowStepId(value: ApprovalWorkflowStepId): this {
     this.approvalWorkflowStepId = value;
@@ -48,6 +50,11 @@ export class ApprovalWorkflowStepBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setDepartment(department: DepartmentEntity | null): this {
+    this.department = department;
     return this;
   }
 

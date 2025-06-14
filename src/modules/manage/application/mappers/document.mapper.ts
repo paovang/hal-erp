@@ -8,17 +8,22 @@ import { DocumentResponse } from '../dto/response/document.response';
 import { UserDataMapper } from './user.mapper';
 import { DepartmentDataMapper } from './department.mapper';
 import { UpdateDocumentDto } from '../dto/create/document/update.dto';
+import { DocumentTypeDataMapper } from './document-type.mapper';
+import { DocumentEntityMode } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class DocumentDataMapper {
   constructor(
     private readonly departmentDataMapper: DepartmentDataMapper,
     private readonly requesterDataMapper: UserDataMapper,
+    private readonly documentTypeDataMapper: DocumentTypeDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateDocumentDto | UpdateDocumentDto,
+    mode: DocumentEntityMode,
     generateCode?: string,
+    user_id?: number,
   ): DocumentEntity {
     const builder = DocumentEntity.builder();
 
@@ -26,8 +31,8 @@ export class DocumentDataMapper {
       builder.setTitle(dto.title);
     }
 
-    if (generateCode) {
-      builder.setDocumentNumber(generateCode);
+    if (mode === DocumentEntityMode.CREATE) {
+      builder.setDocumentNumber(generateCode as string);
     }
 
     if (dto.description) {
@@ -38,12 +43,16 @@ export class DocumentDataMapper {
       builder.setTotalAmount(dto.total_amount);
     }
 
-    if (dto.requesterId) {
-      builder.setRequesterId(dto.requesterId);
+    if (user_id) {
+      builder.setRequesterId(user_id);
     }
 
     if (dto.departmentId) {
       builder.setDepartmentId(dto.departmentId);
+    }
+
+    if (dto.documentTypeId) {
+      builder.setDocumentTypeId(dto.documentTypeId);
     }
 
     return builder.build();
@@ -59,6 +68,7 @@ export class DocumentDataMapper {
     response.total_amount = entity.total_amount;
     response.department_id = Number(entity.department_id);
     response.requester_id = entity.requester_id;
+    response.document_type_id = entity.document_type_id;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
@@ -68,6 +78,10 @@ export class DocumentDataMapper {
 
     response.department = entity.department
       ? this.departmentDataMapper.toResponse(entity.department)
+      : null;
+
+    response.document_type = entity.documentType
+      ? this.documentTypeDataMapper.toResponse(entity.documentType)
       : null;
 
     response.requester = entity.requester

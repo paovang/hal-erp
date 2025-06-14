@@ -2,18 +2,20 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { EntityManager } from 'typeorm';
 import { ApprovalWorkflowStepEntity } from '../../entities/approval-workflow-step.entity';
 import { ApprovalWorkflowStepId } from '../../value-objects/approval-workflow-step-id.vo';
+import { ApprovalWorkflowStepQueryDto } from '@src/modules/manage/application/dto/query/approval-workflow-step.dto';
 
-// export interface IReadApprovalWorkflowStepRepository {
-//   findAll(
-//     query: ApprovalWorkflowQueryDto,
-//     manager: EntityManager,
-//   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
+export interface IReadApprovalWorkflowStepRepository {
+  findAll(
+    id: number,
+    query: ApprovalWorkflowStepQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowStepEntity>>;
 
-//   findOne(
-//     id: ApprovalWorkflowId,
-//     manager: EntityManager,
-//   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
-// }
+  findOne(
+    id: ApprovalWorkflowStepId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowStepEntity>>;
+}
 
 export interface IWriteApprovalWorkflowStepRepository {
   create(
@@ -21,10 +23,10 @@ export interface IWriteApprovalWorkflowStepRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowStepEntity>>;
 
-  //   update(
-  //     entity: ApprovalWorkflowEntity,
-  //     manager: EntityManager,
-  //   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
+  update(
+    entity: ApprovalWorkflowStepEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowStepEntity>>;
 
   delete(id: ApprovalWorkflowStepId, manager: EntityManager): Promise<void>;
 }

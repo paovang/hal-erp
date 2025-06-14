@@ -1,6 +1,7 @@
 import { Entity } from '@src/common/domain/entities/entity';
 import { ApprovalWorkflowStepId } from '../value-objects/approval-workflow-step-id.vo';
 import { ApprovalWorkflowStepBuilder } from '../builders/approval-workflow-step.builder';
+import { DepartmentEntity } from './department.entity';
 
 export class ApprovalWorkflowStepEntity extends Entity<ApprovalWorkflowStepId> {
   private readonly _step_name: string;
@@ -10,6 +11,7 @@ export class ApprovalWorkflowStepEntity extends Entity<ApprovalWorkflowStepId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _department: DepartmentEntity | null;
 
   private constructor(builder: ApprovalWorkflowStepBuilder) {
     super();
@@ -21,6 +23,7 @@ export class ApprovalWorkflowStepEntity extends Entity<ApprovalWorkflowStepId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._department = builder.department ?? null;
   }
 
   get step_name(): string {
@@ -49,6 +52,10 @@ export class ApprovalWorkflowStepEntity extends Entity<ApprovalWorkflowStepId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get department(): DepartmentEntity | null {
+    return this._department;
   }
 
   public static builder(): ApprovalWorkflowStepBuilder {

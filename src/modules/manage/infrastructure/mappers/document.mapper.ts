@@ -8,12 +8,14 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DocumentId } from '../../domain/value-objects/document-id.vo';
 import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
+import { DocumentTypeDataAccessMapper } from './document-type.mapper';
 
 @Injectable()
 export class DocumentDataAccessMapper {
   constructor(
     private readonly departmentMapper: DepartmentDataAccessMapper,
     private readonly requesterMapper: UserDataAccessMapper,
+    private readonly documentType: DocumentTypeDataAccessMapper,
   ) {}
   toOrmEntity(
     documentTypeEntity: DocumentEntity,
@@ -32,6 +34,7 @@ export class DocumentDataAccessMapper {
     mediaOrmEntity.description = documentTypeEntity.description;
     mediaOrmEntity.total_amount = documentTypeEntity.total_amount;
     mediaOrmEntity.department_id = documentTypeEntity.department_id;
+    mediaOrmEntity.document_type_id = documentTypeEntity.document_type_id;
     mediaOrmEntity.requester_id = documentTypeEntity.requester_id;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = documentTypeEntity.createdAt ?? new Date(now);
@@ -50,12 +53,18 @@ export class DocumentDataAccessMapper {
       .setTotalAmount(ormData.total_amount ?? 0)
       .setDepartmentId(ormData.department_id ?? 0)
       .setRequesterId(ormData.requester_id ?? 0)
+      .setDocumentTypeId(ormData.document_type_id ?? 0)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 
     if (ormData.departments) {
       builder.setDepartment(
         this.departmentMapper.toEntity(ormData.departments),
+      );
+    }
+    if (ormData.document_types) {
+      builder.setDocumentType(
+        this.documentType.toEntity(ormData.document_types),
       );
     }
     if (ormData.users) {
