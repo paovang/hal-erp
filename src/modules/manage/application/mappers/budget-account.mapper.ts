@@ -5,8 +5,8 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { BudgetAccountEntity } from '../../domain/entities/budget-account.entity';
 import { DepartmentDataMapper } from './department.mapper';
-import { CreateBudgetAccountDto } from '../dto/create/budgetAccount/create.dto';
-import { UpdateBudgetAccountDto } from '../dto/create/budgetAccount/update.dto';
+import { CreateBudgetAccountDto } from '../dto/create/BudgetAccount/create.dto';
+import { UpdateBudgetAccountDto } from '../dto/create/BudgetAccount/update.dto';
 
 @Injectable()
 export class BudgetAccountDataMapper {

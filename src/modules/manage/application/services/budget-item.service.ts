@@ -10,9 +10,9 @@ import { GetAllQuery } from '../queries/BudgetItem/get-all.query';
 import { GetOneQuery } from '../queries/BudgetItem/get-one.query';
 import { UpdateCommand } from '../commands/BudgetItem/update.command';
 import { DeleteCommand } from '../commands/BudgetItem/delete.command';
-import { CreateBudgetItemDto } from '../dto/create/budgetItem/create.dto';
+import { CreateBudgetItemDto } from '../dto/create/BudgetItem/create.dto';
 import { BudgetItemQueryDto } from '../dto/query/budget-item.dto';
-import { UpdateBudgetItemDto } from '../dto/create/budgetItem/update.dto';
+import { UpdateBudgetItemDto } from '../dto/create/BudgetItem/update.dto';
 
 @Injectable()
 export class BudgetItemService implements IBudgetItemServiceInterface {

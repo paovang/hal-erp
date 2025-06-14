@@ -2,8 +2,8 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { EntityManager } from 'typeorm';
 import { BudgetAccountEntity } from '../../entities/budget-account.entity';
 import { BudgetAccountQueryDto } from '@src/modules/manage/application/dto/query/budget-account.dto';
-import { CreateBudgetAccountDto } from '@src/modules/manage/application/dto/create/budgetAccount/create.dto';
-import { UpdateBudgetAccountDto } from '@src/modules/manage/application/dto/create/budgetAccount/update.dto';
+import { CreateBudgetAccountDto } from '@src/modules/manage/application/dto/create/BudgetAccount/create.dto';
+import { UpdateBudgetAccountDto } from '@src/modules/manage/application/dto/create/BudgetAccount/update.dto';
 
 export interface IBudgetAccountServiceInterface {
   getAll(

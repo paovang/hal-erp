@@ -16,9 +16,9 @@ import { IBudgetApprovalRuleServiceInterface } from '../domain/ports/input/budge
 import { BudgetApprovalRuleDataMapper } from '../application/mappers/budget-approval-rule.mapper';
 import { BudgetApprovalRuleResponse } from '../application/dto/response/budget-approval-rule.response';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
-import { CreateBudgetApprovalRuleDto } from '../application/dto/create/budgetApprovalRule/create.dto';
+import { CreateBudgetApprovalRuleDto } from '../application/dto/create/BudgetApprovalRule/create.dto';
 import { BudgetApprovalRuleQueryDto } from '../application/dto/query/budget-approval-rule.dto';
-import { UpdateBudgetApprovalRuleDto } from '../application/dto/create/budgetApprovalRule/update.dto';
+import { UpdateBudgetApprovalRuleDto } from '../application/dto/create/BudgetApprovalRule/update.dto';
 
 @Controller('budget-approval-rules')
 export class BudgetApprovalRuleController {

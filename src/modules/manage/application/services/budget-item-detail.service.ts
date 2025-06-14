@@ -9,7 +9,7 @@ import { CreateCommand } from '../commands/BudgetItemDetail/create.command';
 import { GetAllQuery } from '../queries/BudgetItemDetail/get-all.query';
 import { GetOneQuery } from '../queries/BudgetItemDetail/get-one.query';
 import { DeleteCommand } from '../commands/BudgetItemDetail/delete.command';
-import { CreateBudgetItemDetailDto } from '../dto/create/budgetItemDetail/create.dto';
+import { CreateBudgetItemDetailDto } from '../dto/create/BudgetItemDetail/create.dto';
 import { BudgetItemDetailQueryDto } from '../dto/query/budget-item-detail.dto';
 
 @Injectable()
