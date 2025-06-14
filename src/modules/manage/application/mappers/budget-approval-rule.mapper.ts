@@ -6,8 +6,8 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DepartmentDataMapper } from './department.mapper';
 import { UserDataMapper } from './user.mapper';
-import { CreateBudgetApprovalRuleDto } from '../dto/create/budgetApprovalRule/create.dto';
-import { UpdateBudgetApprovalRuleDto } from '../dto/create/budgetApprovalRule/update.dto';
+import { CreateBudgetApprovalRuleDto } from '../dto/create/BudgetApprovalRule/create.dto';
+import { UpdateBudgetApprovalRuleDto } from '../dto/create/BudgetApprovalRule/update.dto';
 
 @Injectable()
 export class BudgetApprovalRuleDataMapper {

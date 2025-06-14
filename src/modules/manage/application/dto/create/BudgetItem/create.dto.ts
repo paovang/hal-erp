@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 import { Type } from 'class-transformer';
-import { CreateBudgetItemDetailDto } from '../budgetItemDetail/create.dto';
+import { CreateBudgetItemDetailDto } from '../BudgetItemDetail/create.dto';
 
 export class CreateBudgetItemDto {
   @ApiProperty()

@@ -10,9 +10,9 @@ import { GetAllQuery } from '../queries/BudgetApprovalRule/get-all.query';
 import { GetOneQuery } from '../queries/BudgetApprovalRule/get-one.query';
 import { UpdateCommand } from '../commands/BudgetApprovalRule/update.command';
 import { DeleteCommand } from '../commands/BudgetApprovalRule/delete.command';
-import { CreateBudgetApprovalRuleDto } from '../dto/create/budgetApprovalRule/create.dto';
+import { CreateBudgetApprovalRuleDto } from '../dto/create/BudgetApprovalRule/create.dto';
 import { BudgetApprovalRuleQueryDto } from '../dto/query/budget-approval-rule.dto';
-import { UpdateBudgetApprovalRuleDto } from '../dto/create/budgetApprovalRule/update.dto';
+import { UpdateBudgetApprovalRuleDto } from '../dto/create/BudgetApprovalRule/update.dto';
 
 @Injectable()
 export class BudgetApprovalRuleService

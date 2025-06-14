@@ -5,7 +5,7 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { ProvinceDataMapper } from './province.mapper';
-import { CreateBudgetItemDetailDto } from '../dto/create/budgetItemDetail/create.dto';
+import { CreateBudgetItemDetailDto } from '../dto/create/BudgetItemDetail/create.dto';
 
 @Injectable()
 export class BudgetItemDetailDataMapper {

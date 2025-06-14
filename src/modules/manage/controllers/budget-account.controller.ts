@@ -16,9 +16,9 @@ import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { BudgetAccountDataMapper } from '../application/mappers/budget-account.mapper';
 import { IBudgetAccountServiceInterface } from '../domain/ports/input/budget-account-service.interface';
-import { CreateBudgetAccountDto } from '../application/dto/create/budgetAccount/create.dto';
+import { CreateBudgetAccountDto } from '../application/dto/create/BudgetAccount/create.dto';
 import { BudgetAccountQueryDto } from '../application/dto/query/budget-account.dto';
-import { UpdateBudgetAccountDto } from '../application/dto/create/budgetAccount/update.dto';
+import { UpdateBudgetAccountDto } from '../application/dto/create/BudgetAccount/update.dto';
 
 @Controller('budget-accounts')
 export class BudgetAccountController {
