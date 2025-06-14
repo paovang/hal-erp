@@ -10,15 +10,15 @@ import { DepartmentApproverProvider } from './departmentApprover';
 import { CurrencyProvider } from './currency';
 import { VendorProvider } from './vendor';
 import { VendorBankAccountProvider } from './vendorBankAccount';
+import { ProvinceProvider } from './Province';
+import { UserSignatureProvider } from './userSignature';
+import { ApprovalWorkflowStepProvider } from './approvalWorkflowStep';
 import { BudgetApprovalRuleProvider } from './budgetApprovalRule';
 import { ApprovalWorkflowProvider } from './approvalWorkflow';
 import { BudgetAccountProvider } from './budgetAccount';
 import { BudgetItemProvider } from './budgetItem';
 import { BudgetItemDetailProvider } from './budgetItemDetail';
-import { ProvinceProvider } from './Province';
-import { DocumentProvider } from './document';
-import { UserSignatureProvider } from './userSignature';
-import { ApprovalWorkflowStepProvider } from './approvalWorkflowStep';
+import { DocumentProvider } from './Document';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,

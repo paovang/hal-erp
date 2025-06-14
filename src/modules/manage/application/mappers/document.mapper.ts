@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDocumentDto } from '../dto/create/document/create.dto';
 import { DocumentEntity } from '../../domain/entities/document.entity';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
@@ -7,9 +6,10 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DocumentResponse } from '../dto/response/document.response';
 import { UserDataMapper } from './user.mapper';
 import { DepartmentDataMapper } from './department.mapper';
-import { UpdateDocumentDto } from '../dto/create/document/update.dto';
 import { DocumentTypeDataMapper } from './document-type.mapper';
 import { DocumentEntityMode } from '@src/common/utils/orm-entity-method.enum';
+import { CreateDocumentDto } from '../dto/create/document/create.dto';
+import { UpdateDocumentDto } from '../dto/create/document/update.dto';
 
 @Injectable()
 export class DocumentDataMapper {

@@ -3,16 +3,16 @@ import { IApprovalWorkflowServiceInterface } from '../../domain/ports/input/appr
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { CreateApprovalWorkflowDto } from '../dto/create/approvalWorkflow/create.dto';
 import { ApprovalWorkflowEntity } from '../../domain/entities/approval-workflow.entity';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { CreateCommand } from '../commands/ApprovalWorkflow/create.command';
-import { ApprovalWorkflowQueryDto } from '../dto/query/approval-workflow.dto';
 import { GetAllQuery } from '../queries/ApprovalWorkflow/get-all.query';
 import { GetOneQuery } from '../queries/ApprovalWorkflow/get-one.query';
-import { UpdateApprovalWorkflowDto } from '../dto/create/approvalWorkflow/update.dto';
 import { UpdateCommand } from '../commands/ApprovalWorkflow/update.command';
 import { DeleteCommand } from '../commands/ApprovalWorkflow/delete.command';
+import { CreateApprovalWorkflowDto } from '../dto/create/approvalWorkflow/create.dto';
+import { ApprovalWorkflowQueryDto } from '../dto/query/approval-workflow.dto';
+import { UpdateApprovalWorkflowDto } from '../dto/create/approvalWorkflow/update.dto';
 
 @Injectable()
 export class ApprovalWorkflowService

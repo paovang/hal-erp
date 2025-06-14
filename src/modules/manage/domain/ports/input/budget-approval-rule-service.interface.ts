@@ -1,8 +1,8 @@
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
-import { CreateBudgetApprovalRuleDto } from '@src/modules/manage/application/dto/create/budgetApprovalRule/create.dto';
 import { EntityManager } from 'typeorm';
 import { BudgetApprovalRuleEntity } from '../../entities/budget-approval-rule.entity';
 import { BudgetApprovalRuleQueryDto } from '@src/modules/manage/application/dto/query/budget-approval-rule.dto';
+import { CreateBudgetApprovalRuleDto } from '@src/modules/manage/application/dto/create/budgetApprovalRule/create.dto';
 import { UpdateBudgetApprovalRuleDto } from '@src/modules/manage/application/dto/create/budgetApprovalRule/update.dto';
 
 export interface IBudgetApprovalRuleServiceInterface {
