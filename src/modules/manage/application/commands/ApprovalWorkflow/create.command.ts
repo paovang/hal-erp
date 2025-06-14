@@ -1,5 +1,5 @@
 import { EntityManager } from 'typeorm';
-import { CreateApprovalWorkflowDto } from '../../dto/create/approvalWorkflow/create.dto';
+import { CreateApprovalWorkflowDto } from '../../dto/create/ApprovalWorkflow/create.dto';
 export class CreateCommand {
   constructor(
     public readonly dto: CreateApprovalWorkflowDto,

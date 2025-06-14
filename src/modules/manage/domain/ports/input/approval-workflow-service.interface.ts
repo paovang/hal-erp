@@ -2,8 +2,8 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { ApprovalWorkflowEntity } from '../../entities/approval-workflow.entity';
 import { EntityManager } from 'typeorm';
 import { ApprovalWorkflowQueryDto } from '@src/modules/manage/application/dto/query/approval-workflow.dto';
-import { CreateApprovalWorkflowDto } from '@src/modules/manage/application/dto/create/approvalWorkflow/create.dto';
-import { UpdateApprovalWorkflowDto } from '@src/modules/manage/application/dto/create/approvalWorkflow/update.dto';
+import { CreateApprovalWorkflowDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/create.dto';
+import { UpdateApprovalWorkflowDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/update.dto';
 
 export interface IApprovalWorkflowServiceInterface {
   getAll(
