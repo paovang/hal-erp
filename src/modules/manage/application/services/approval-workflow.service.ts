@@ -10,9 +10,9 @@ import { GetAllQuery } from '../queries/ApprovalWorkflow/get-all.query';
 import { GetOneQuery } from '../queries/ApprovalWorkflow/get-one.query';
 import { UpdateCommand } from '../commands/ApprovalWorkflow/update.command';
 import { DeleteCommand } from '../commands/ApprovalWorkflow/delete.command';
-import { CreateApprovalWorkflowDto } from '../dto/create/approvalWorkflow/create.dto';
+import { CreateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/create.dto';
 import { ApprovalWorkflowQueryDto } from '../dto/query/approval-workflow.dto';
-import { UpdateApprovalWorkflowDto } from '../dto/create/approvalWorkflow/update.dto';
+import { UpdateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/update.dto';
 
 @Injectable()
 export class ApprovalWorkflowService
