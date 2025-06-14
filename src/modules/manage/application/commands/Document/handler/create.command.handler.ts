@@ -14,7 +14,6 @@ import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/d
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { IWriteDocumentRepository } from '@src/modules/manage/domain/ports/output/document-repository.interface';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
-import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { DocumentEntityMode } from '@src/common/utils/orm-entity-method.enum';
 
 @CommandHandler(CreateCommand)
@@ -53,10 +52,6 @@ export class CreateCommandHandler
 
     await findOneOrFail(query.manager, DocumentOrmEntity, {
       id: query.dto.documentTypeId,
-    });
-
-    await findOneOrFail(query.manager, DepartmentUserOrmEntity, {
-      department_id: query.dto.departmentId,
     });
   }
 
