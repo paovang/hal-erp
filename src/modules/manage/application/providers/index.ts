@@ -13,11 +13,11 @@ import { VendorBankAccountProvider } from './vendorBankAccount';
 import { ProvinceProvider } from './Province';
 import { UserSignatureProvider } from './userSignature';
 import { ApprovalWorkflowStepProvider } from './approvalWorkflowStep';
-import { BudgetApprovalRuleProvider } from './budgetApprovalRule';
-import { ApprovalWorkflowProvider } from './approvalWorkflow';
-import { BudgetAccountProvider } from './budgetAccount';
-import { BudgetItemProvider } from './budgetItem';
-import { BudgetItemDetailProvider } from './budgetItemDetail';
+import { BudgetApprovalRuleProvider } from './BudgetApprovalRule';
+import { ApprovalWorkflowProvider } from './ApprovalWorkflow';
+import { BudgetAccountProvider } from './BudgetAccount';
+import { BudgetItemProvider } from './BudgetItem';
+import { BudgetItemDetailProvider } from './BudgetItemDetail';
 import { DocumentProvider } from './Document';
 
 export const AllRegisterProviders: Provider[] = [

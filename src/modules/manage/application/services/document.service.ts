@@ -11,8 +11,8 @@ import { GetOneQuery } from '../queries/Document/get-one.query';
 import { UpdateCommand } from '../commands/Document/update.command';
 import { DeleteCommand } from '../commands/Document/delete.command';
 import { DocumentQueryDto } from '../dto/query/document.dto';
-import { CreateDocumentDto } from '../dto/create/document/create.dto';
-import { UpdateDocumentDto } from '../dto/create/document/update.dto';
+import { CreateDocumentDto } from '../dto/create/Document/create.dto';
+import { UpdateDocumentDto } from '../dto/create/Document/update.dto';
 
 @Injectable()
 export class DocumentService implements IDocumentServiceInterface {

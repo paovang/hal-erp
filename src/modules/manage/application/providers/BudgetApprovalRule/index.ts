@@ -13,8 +13,8 @@ import {
   WRITE_BUDGET_APPROVAL_RULE_REPOSITORY,
 } from '../../constants/inject-key.const';
 import { BudgetApprovalRuleService } from '../../services/budget-approval-rule.service';
-import { WriteBudgetApprovalRuleRepository } from '@src/modules/manage/infrastructure/repositories/budgetApprovalRule/write.repository';
-import { ReadBudgetApprovalRuleRepository } from '@src/modules/manage/infrastructure/repositories/budgetApprovalRule/read.repository';
+import { WriteBudgetApprovalRuleRepository } from '@src/modules/manage/infrastructure/repositories/BudgetApprovalRule/write.repository';
+import { ReadBudgetApprovalRuleRepository } from '@src/modules/manage/infrastructure/repositories/BudgetApprovalRule/read.repository';
 
 export const BudgetApprovalRuleProvider: Provider[] = [
   ...BudgetApprovalRuleHandlersProviders,
