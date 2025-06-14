@@ -16,9 +16,9 @@ import { IDocumentServiceInterface } from '../domain/ports/input/document-domain
 import { DocumentDataMapper } from '../application/mappers/document.mapper';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { DocumentResponse } from '../application/dto/response/document.response';
-import { CreateDocumentDto } from '../application/dto/create/document/create.dto';
+import { CreateDocumentDto } from '../application/dto/create/Document/create.dto';
 import { DocumentQueryDto } from '../application/dto/query/document.dto';
-import { UpdateDocumentDto } from '../application/dto/create/document/update.dto';
+import { UpdateDocumentDto } from '../application/dto/create/Document/update.dto';
 
 @Controller('documents')
 export class DocumentController {

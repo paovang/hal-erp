@@ -8,8 +8,8 @@ import { UserDataMapper } from './user.mapper';
 import { DepartmentDataMapper } from './department.mapper';
 import { DocumentTypeDataMapper } from './document-type.mapper';
 import { DocumentEntityMode } from '@src/common/utils/orm-entity-method.enum';
-import { CreateDocumentDto } from '../dto/create/document/create.dto';
-import { UpdateDocumentDto } from '../dto/create/document/update.dto';
+import { CreateDocumentDto } from '../dto/create/Document/create.dto';
+import { UpdateDocumentDto } from '../dto/create/Document/update.dto';
 
 @Injectable()
 export class DocumentDataMapper {

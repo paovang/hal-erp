@@ -2,8 +2,8 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { EntityManager } from 'typeorm';
 import { DocumentEntity } from '../../entities/document.entity';
 import { DocumentQueryDto } from '@src/modules/manage/application/dto/query/document.dto';
-import { CreateDocumentDto } from '@src/modules/manage/application/dto/create/document/create.dto';
-import { UpdateDocumentDto } from '@src/modules/manage/application/dto/create/document/update.dto';
+import { CreateDocumentDto } from '@src/modules/manage/application/dto/create/Document/create.dto';
+import { UpdateDocumentDto } from '@src/modules/manage/application/dto/create/Document/update.dto';
 
 export interface IDocumentServiceInterface {
   getAll(
