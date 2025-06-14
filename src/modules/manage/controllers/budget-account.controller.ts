@@ -84,4 +84,9 @@ export class BudgetAccountController {
   async delete(@Param('id') id: number): Promise<void> {
     return await this._budgetAccountService.delete(id);
   }
+
+  // @Put(':id')
+  // async update(@Param('id') id: number, @Body() dto: UpdateBudgetAccountDto) {
+  //   return await this._budgetAccountService.update(id, dto);
+  // }
 }
