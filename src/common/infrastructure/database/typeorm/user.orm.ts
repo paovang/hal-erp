@@ -17,6 +17,7 @@ import { BudgetApprovalRuleOrmEntity } from './budget-approval-rule.orm';
 import { UserHasPermissionOrmEntity } from './model-has-permission.orm';
 import { DocumentOrmEntity } from './document.orm';
 import { UserSignatureOrmEntity } from './user-signature.orm';
+import { UserApprovalStepOrmEntity } from './user-approval-step.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -46,11 +47,11 @@ export class UserOrmEntity {
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
 
-  // @OneToMany(
-  // () => UserApprovalStepEntity,
-  //     (user_approval_steps) => user_approval_steps.users,
-  // )
-  // user_approval_steps: Relation<UserApprovalStepEntity[]>;
+  @OneToMany(
+    () => UserApprovalStepOrmEntity,
+    (user_approval_steps) => user_approval_steps.users,
+  )
+  user_approval_steps: Relation<UserApprovalStepOrmEntity[]>;
 
   @OneToMany(
     () => BudgetApprovalRuleOrmEntity,

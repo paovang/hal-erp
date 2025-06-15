@@ -6,12 +6,14 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { BudgetItemOrmEntity } from './budget-item.orm';
 import { ProvinceOrmEntity } from './province.orm';
+import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
 
 @Entity('budget_item_details')
 export class BudgetItemDetailOrmEntity {
@@ -64,9 +66,9 @@ export class BudgetItemDetailOrmEntity {
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
 
-  // @OneToMany(
-  //   () => PurchaseRequestItemOrmEntity,
-  //   (purchase_request_items) => purchase_request_items.budget_item_details,
-  // )
-  // purchase_request_items: Relation<PurchaseRequestItemOrmEntity[]>;
+  @OneToMany(
+    () => PurchaseOrderItemOrmEntity,
+    (purchase_order_items) => purchase_order_items.budget_item_details,
+  )
+  purchase_order_items: Relation<PurchaseOrderItemOrmEntity[]>;
 }
