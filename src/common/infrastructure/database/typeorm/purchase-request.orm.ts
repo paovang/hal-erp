@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { DocumentOrmEntity } from './document.orm';
 import { PurchaseRequestItemOrmEntity } from './purchase-request-item.orm';
+import { PurchaseOrderOrmEntity } from './purchase-order.orm';
 
 @Entity('purchase_requests')
 export class PurchaseRequestOrmEntity {
@@ -65,4 +66,10 @@ export class PurchaseRequestOrmEntity {
     (purchase_request_items) => purchase_request_items.purchase_requests,
   )
   purchase_request_items: Relation<PurchaseRequestItemOrmEntity[]>;
+
+  @OneToMany(
+    () => PurchaseOrderOrmEntity,
+    (purchase_orders) => purchase_orders.purchase_requests,
+  )
+  purchase_orders: Relation<PurchaseOrderOrmEntity[]>;
 }

@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { DocumentTypeOrmEntity } from './document-type.orm';
 import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
+import { UserApprovalOrmEntity } from './user-approval.orm';
 
 @Entity('approval_workflows')
 export class ApprovalWorkflowOrmEntity {
@@ -49,4 +50,10 @@ export class ApprovalWorkflowOrmEntity {
     (approval_workflow_steps) => approval_workflow_steps.approval_workflows,
   )
   approval_workflow_steps: Relation<ApprovalWorkflowStepOrmEntity[]>;
+
+  @OneToMany(
+    () => UserApprovalOrmEntity,
+    (user_approvals) => user_approvals.approval_workflows,
+  )
+  user_approvals: Relation<UserApprovalOrmEntity[]>;
 }

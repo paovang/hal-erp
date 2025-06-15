@@ -10,6 +10,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { VendorBankAccountOrmEntity } from './vendor_bank_account.orm';
+import { PurchaseOrderSelectedVendorOrmEntity } from './purchase-order-selected-vendor.orm';
+import { PurchaseOrderItemQuoteOrmEntity } from './purchase-order-item-quote.orm';
 
 @Entity('vendors')
 export class VendorOrmEntity {
@@ -40,4 +42,19 @@ export class VendorOrmEntity {
     (vendor_bank_accounts) => vendor_bank_accounts.vendors,
   )
   vendor_bank_accounts: Relation<VendorBankAccountOrmEntity[]>;
+
+  @OneToMany(
+    () => PurchaseOrderSelectedVendorOrmEntity,
+    (purchase_order_selected_vendors) =>
+      purchase_order_selected_vendors.vendors,
+  )
+  purchase_order_selected_vendors: Relation<
+    PurchaseOrderSelectedVendorOrmEntity[]
+  >;
+
+  @OneToMany(
+    () => PurchaseOrderItemQuoteOrmEntity,
+    (purchase_order_item_quotes) => purchase_order_item_quotes.vendors,
+  )
+  purchase_order_item_quotes: Relation<PurchaseOrderItemQuoteOrmEntity[]>;
 }

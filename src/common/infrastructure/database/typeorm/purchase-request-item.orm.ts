@@ -6,12 +6,14 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { PurchaseRequestOrmEntity } from './purchase-request.orm';
 import { UnitOrmEntity } from './unit.orm';
+import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
 
 @Entity('purchase_request_items')
 export class PurchaseRequestItemOrmEntity {
@@ -90,4 +92,10 @@ export class PurchaseRequestItemOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  @OneToMany(
+    () => PurchaseOrderItemOrmEntity,
+    (purchase_order_items) => purchase_order_items.purchase_request_items,
+  )
+  purchase_order_items: Relation<PurchaseOrderItemOrmEntity[]>;
 }

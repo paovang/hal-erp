@@ -15,6 +15,7 @@ import { DepartmentOrmEntity } from './department.orm';
 import { UserOrmEntity } from './user.orm';
 import { PurchaseRequestOrmEntity } from './purchase-request.orm';
 import { DocumentTypeOrmEntity } from './document-type.orm';
+import { UserApprovalOrmEntity } from './user-approval.orm';
 
 @Entity('documents')
 export class DocumentOrmEntity {
@@ -91,4 +92,10 @@ export class DocumentOrmEntity {
     (purchase_requests) => purchase_requests.documents,
   )
   purchase_requests: Relation<PurchaseRequestOrmEntity[]>;
+
+  @OneToMany(
+    () => UserApprovalOrmEntity,
+    (user_approvals) => user_approvals.documents,
+  )
+  user_approvals: Relation<UserApprovalOrmEntity[]>;
 }

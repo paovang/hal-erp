@@ -9,6 +9,7 @@ import { CurrencyOrmEntity } from './typeorm/currency.orm';
 import { DepartmentApproverOrmEntity } from './typeorm/department-approver.orm';
 import { DepartmentUserOrmEntity } from './typeorm/department-user.orm';
 import { DepartmentOrmEntity } from './typeorm/department.orm';
+import { DocumentStatusOrmEntity } from './typeorm/document-statuse.orm';
 import { DocumentTypeOrmEntity } from './typeorm/document-type.orm';
 import { DocumentOrmEntity } from './typeorm/document.orm';
 import { UserHasPermissionOrmEntity } from './typeorm/model-has-permission.orm';
@@ -16,11 +17,17 @@ import { PermissionGroupOrmEntity } from './typeorm/permission-group.orm';
 import { PermissionOrmEntity } from './typeorm/permission.orm';
 import { PositionOrmEntity } from './typeorm/position.orm';
 import { ProvinceOrmEntity } from './typeorm/province.orm';
+import { PurchaseOrderItemQuoteOrmEntity } from './typeorm/purchase-order-item-quote.orm';
+import { PurchaseOrderItemOrmEntity } from './typeorm/purchase-order-item.orm';
+import { PurchaseOrderSelectedVendorOrmEntity } from './typeorm/purchase-order-selected-vendor.orm';
+import { PurchaseOrderOrmEntity } from './typeorm/purchase-order.orm';
 import { PurchaseRequestItemOrmEntity } from './typeorm/purchase-request-item.orm';
 import { PurchaseRequestOrmEntity } from './typeorm/purchase-request.orm';
 import { RoleOrmEntity } from './typeorm/role.orm';
 import { SeederLogOrmEntity } from './typeorm/seeder-log.orm';
 import { UnitOrmEntity } from './typeorm/unit.orm';
+import { UserApprovalStepOrmEntity } from './typeorm/user-approval-step.orm';
+import { UserApprovalOrmEntity } from './typeorm/user-approval.orm';
 import { UserSignatureOrmEntity } from './typeorm/user-signature.orm';
 import { UserOrmEntity } from './typeorm/user.orm';
 import { VendorOrmEntity } from './typeorm/vendor.orm';
@@ -53,5 +60,12 @@ export const models = [
   DocumentOrmEntity,
   PurchaseRequestOrmEntity,
   PurchaseRequestItemOrmEntity,
+  PurchaseOrderOrmEntity,
+  PurchaseOrderItemOrmEntity,
+  PurchaseOrderSelectedVendorOrmEntity,
+  PurchaseOrderItemQuoteOrmEntity,
   UserSignatureOrmEntity,
+  DocumentStatusOrmEntity,
+  UserApprovalOrmEntity,
+  UserApprovalStepOrmEntity,
 ];
