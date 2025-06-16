@@ -59,7 +59,6 @@ export class ReadApprovalWorkflowStepRepository
     return {
       searchColumns: [
         'approval_workflow_steps.step_name',
-        'approval_workflow_steps.step_number',
         'departments.name',
         'departments.code',
       ],
