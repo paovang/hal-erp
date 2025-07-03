@@ -40,5 +40,16 @@
   "not_found_file": "File not found.",
   "not_found_directory": "Directory not found.",
   "duplicate_step_number": "Duplicate step number",
-  "step_number_exist": "Step number already exists"
+  "step_number_exist": "Step number already exists",
+  "invalid_current_step": "The current step is invalid.",
+  "previous_step_not_approved": "The previous approval step has not been approved.",
+  "approval_step_not_found": "No approval step found for the department.",
+  "previous_step_cancelled": "The previous approval step was cancelled.",
+  "invalid_type": "Invalid type",
+  "forbidden_resource": "You do not have permission to access this resource.",
+  "expired_date_must_not_be_in_past": "The expired date must not be in the past.",
+  "cannot_update": "Cannot be edited because this has already been approved.",
+  "cannot_delete": "Cannot be deleted because this has already been approved.",
+  "already_approved": "This has already been approved.",
+  "duplicate_vendor_id_in_selected_vendor": "Duplicate vendor id in selected vendor"
 }

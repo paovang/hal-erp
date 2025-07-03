@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -52,7 +53,7 @@ export class PurchaseOrderItemOrmEntity {
   @Index()
   @Column({ nullable: true })
   budget_item_detail_id?: number;
-  @ManyToOne(
+  @OneToOne(
     () => BudgetItemDetailOrmEntity,
     (budget_item_details) => budget_item_details.purchase_order_items,
     {

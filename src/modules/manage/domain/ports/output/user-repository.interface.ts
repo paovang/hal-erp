@@ -41,6 +41,7 @@ export interface IReadUserRepository {
   findAll(
     query: UserQueryDto,
     manager: EntityManager,
+    userId?: number,
   ): Promise<ResponseResult<UserEntity>>;
 
   findOne(

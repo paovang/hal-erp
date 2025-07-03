@@ -43,7 +43,7 @@ export class ProvinceEntity extends Entity<ProvinceId> {
   }
 
   static getEntityName() {
-    return 'position';
+    return 'Province';
   }
 
   async validateExistingIdForUpdate() {

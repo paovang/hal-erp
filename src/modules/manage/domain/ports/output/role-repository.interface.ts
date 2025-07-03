@@ -15,3 +15,19 @@ export interface IReadRoleRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<RoleEntity>>;
 }
+
+export interface IWriteRoleRepository {
+  create(
+    entity: RoleEntity,
+    manager: EntityManager,
+    permissions?: number[],
+  ): Promise<ResponseResult<RoleEntity>>;
+
+  update(
+    entity: RoleEntity,
+    manager: EntityManager,
+    permissions?: number[],
+  ): Promise<ResponseResult<RoleEntity>>;
+
+  delete(id: RoleId, manager: EntityManager): Promise<void>;
+}

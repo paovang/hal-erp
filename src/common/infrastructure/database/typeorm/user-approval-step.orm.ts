@@ -51,12 +51,12 @@ export class UserApprovalStepOrmEntity {
   @Index()
   @Column({ nullable: true })
   approver_id?: number;
-  @ManyToOne(() => UserOrmEntity, (users) => users.user_approval_steps, {
+  @ManyToOne(() => UserOrmEntity, (approver) => approver.user_approval_steps, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'approver_id' })
-  users: Relation<UserOrmEntity>;
+  approver: Relation<UserOrmEntity>;
 
   @Index()
   @Column({ type: 'timestamp', nullable: true })
@@ -67,14 +67,14 @@ export class UserApprovalStepOrmEntity {
   status_id?: number;
   @ManyToOne(
     () => DocumentStatusOrmEntity,
-    (document_statuses) => document_statuses.user_approval_steps,
+    (status) => status.user_approval_steps,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   )
   @JoinColumn({ name: 'status_id' })
-  document_statuses: Relation<DocumentStatusOrmEntity>;
+  status: Relation<DocumentStatusOrmEntity>;
 
   @Column({ type: 'text', nullable: true })
   remark?: string;

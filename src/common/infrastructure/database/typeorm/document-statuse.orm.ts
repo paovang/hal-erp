@@ -40,7 +40,7 @@ export class DocumentStatusOrmEntity {
 
   @OneToMany(
     () => UserApprovalStepOrmEntity,
-    (user_approval_steps) => user_approval_steps.document_statuses,
+    (user_approval_steps) => user_approval_steps.status,
   )
   user_approval_steps: Relation<UserApprovalStepOrmEntity[]>;
 }

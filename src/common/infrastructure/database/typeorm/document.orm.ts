@@ -6,7 +6,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -16,6 +16,7 @@ import { UserOrmEntity } from './user.orm';
 import { PurchaseRequestOrmEntity } from './purchase-request.orm';
 import { DocumentTypeOrmEntity } from './document-type.orm';
 import { UserApprovalOrmEntity } from './user-approval.orm';
+import { PurchaseOrderOrmEntity } from './purchase-order.orm';
 
 @Entity('documents')
 export class DocumentOrmEntity {
@@ -87,15 +88,21 @@ export class DocumentOrmEntity {
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
 
-  @OneToMany(
+  @OneToOne(
     () => PurchaseRequestOrmEntity,
     (purchase_requests) => purchase_requests.documents,
   )
-  purchase_requests: Relation<PurchaseRequestOrmEntity[]>;
+  purchase_requests: Relation<PurchaseRequestOrmEntity>;
 
-  @OneToMany(
+  @OneToOne(
+    () => PurchaseOrderOrmEntity,
+    (purchase_orders) => purchase_orders.documents,
+  )
+  purchase_orders: Relation<PurchaseOrderOrmEntity>;
+
+  @OneToOne(
     () => UserApprovalOrmEntity,
     (user_approvals) => user_approvals.documents,
   )
-  user_approvals: Relation<UserApprovalOrmEntity[]>;
+  user_approvals: Relation<UserApprovalOrmEntity>;
 }

@@ -26,8 +26,9 @@ export class ReadUserRepository implements IReadUserRepository {
   async findAll(
     query: UserQueryDto,
     manager: EntityManager,
+    userId?: number,
   ): Promise<ResponseResult<UserEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const queryBuilder = await this.createBaseQuery(manager, userId);
     query.sort_by = 'users.id';
 
     const data = await this._paginationService.paginate(
@@ -50,14 +51,23 @@ export class ReadUserRepository implements IReadUserRepository {
     return this._dataAccessMapper.toEntity(item);
   }
 
-  private createBaseQuery(manager: EntityManager) {
-    return manager
+  private createBaseQuery(manager: EntityManager, userId?: number) {
+    const roleName = ['super-admin'];
+
+    const query = manager
       .createQueryBuilder(UserOrmEntity, 'users')
       .leftJoinAndSelect('users.userHasPermissions', 'user_has_permissions')
       .leftJoinAndSelect('user_has_permissions.permission', 'permissions')
       .leftJoinAndSelect('users.roles', 'roles')
       .leftJoinAndSelect('roles.permissions', 'role_permissions')
-      .leftJoinAndSelect('users.user_signatures', 'user_signatures');
+      .leftJoinAndSelect('users.user_signatures', 'user_signatures')
+      .where('roles.name NOT IN (:...roleName)', { roleName });
+
+    if (userId) {
+      query.andWhere('users.id != :userId', { userId });
+    }
+
+    return query;
   }
 
   private getFilterOptions(): FilterOptions {

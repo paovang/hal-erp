@@ -6,6 +6,7 @@ import { UpdateCommandHandler } from '../../commands/user/handler/update-command
 import { DeleteCommandHandler } from '../../commands/user/handler/delete-command.handler';
 import { ChangePasswordCommandHandler } from '../../commands/user/handler/change-password-command.handler';
 import { SendMailCommandHandler } from '../../commands/user/handler/send-mail-command.handler';
+import { LoginCommandHandler } from '../../commands/user/handler/login.command.handler';
 
 export const UserHandlersProviders: Provider[] = [
   CreateCommandHandler,
@@ -15,4 +16,5 @@ export const UserHandlersProviders: Provider[] = [
   DeleteCommandHandler,
   ChangePasswordCommandHandler,
   SendMailCommandHandler,
+  LoginCommandHandler,
 ];

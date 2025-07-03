@@ -40,5 +40,16 @@
   "not_found_file": "ບໍ່ພົບໄຟລ໌.",
   "not_found_directory": "ບໍ່ພົບໂຟນເດີ.",
   "duplicate_step_number": "ເລກຂັ້ນຕອນຊໍ້າກັນ.",
-  "step_number_exist": "ເລກຂັ້ນຕອນມີໃນລະບົບແລ້ວ"
+  "step_number_exist": "ເລກຂັ້ນຕອນມີໃນລະບົບແລ້ວ",
+  "previous_step_not_approved": "ຂັ້ນຕອນກ່ອນໜ້າຍັງບໍ່ໄດ້ຖືກອະນຸມັດ.",
+  "invalid_current_step": "ຂັ້ນຕອນປະຈຸບັນບໍ່ຖືກຕ້ອງ.",
+  "approval_step_not_found": "ບໍ່ພົບຂັ້ນຕອນການອະນຸມັດສໍາລັບພະແນກນີ້.",
+  "previous_step_cancelled": "ຂັ້ນຕອນກ່ອນໜ້າຖືກຍົກເລີກ.",
+  "invalid_type": "ປະເພດບໍ່ຖືກຕ້ອງ",
+  "forbidden_resource": "ທ່ານບໍ່ມີສິດເຂົ້າເຖິງຂໍ້ມູນນີ້.",
+  "expired_date_must_not_be_in_past": "ວັນທີຕ້ອງການບໍ່ຄວນເປັນວັນທີຜ່ານມາແລ້ວ.",
+  "cannot_update": "ບໍ່ສາມາດແກ້ໄຂໄດ້ ເພາະວ່າໃບນີ້ຖືກອະນຸມັດແລ້ວ.",
+  "cannot_delete": "ບໍ່ສາມາດລຶບໄດ້ ເພາະວ່າໃບນີ້ຖືກອະນຸມັດແລ້ວ.",
+  "already_approved": "ບໍ່ສາມາດອະນຸມັດໄດ້ ເພາະວ່າໃບນີ້ຖືກອະນຸມັດແລ້ວ.",
+  "duplicate_vendor_id_in_selected_vendor": "ບໍ່ສາມາດເລືອກຜູູ້ສະໝອງຊໍ້າກັນໄດ້ ເພາະວ່າຜູູ້ສະໝອງນີ້ມີການເລືອກແລ້ວ."
 }

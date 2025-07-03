@@ -28,55 +28,140 @@ export class PermissionSeeder {
 
     // Define your mapping here
     const permissionGroupMapping: Record<string, number> = {
-      'write-department': 1,
+      'create-department': 1,
       'read-department': 1,
       'update-department': 1,
       'delete-department': 1,
 
-      'write-unit': 2,
+      'create-unit': 2,
       'read-unit': 2,
       'update-unit': 2,
       'delete-unit': 2,
 
-      'write-position': 3,
+      'create-position': 3,
       'read-position': 3,
       'update-position': 3,
       'delete-position': 3,
 
-      'write-role': 4,
+      'create-role': 4,
       'read-role': 4,
       'update-role': 4,
       'delete-role': 4,
 
-      'write-user': 5,
+      'create-user': 5,
       'read-user': 5,
       'update-user': 5,
       'delete-user': 5,
 
-      'write-permission': 6,
+      'create-permission': 6,
       'read-permission': 6,
       'update-permission': 6,
       'delete-permission': 6,
 
-      'write-document-type': 7,
+      'create-document-type': 7,
       'read-document-type': 7,
       'update-document-type': 7,
       'delete-document-type': 7,
 
-      'write-department-user': 8,
+      'create-department-user': 8,
       'read-department-user': 8,
       'update-department-user': 8,
       'delete-department-user': 8,
 
-      'write-department-approver': 9,
+      'create-department-approver': 9,
       'read-department-approver': 9,
       'update-department-approver': 9,
       'delete-department-approver': 9,
 
-      'write-currency': 10,
+      'create-currency': 10,
       'read-currency': 10,
       'update-currency': 10,
       'delete-currency': 10,
+
+      'create-vendor': 11,
+      'read-vendor': 11,
+      'update-vendor': 11,
+      'delete-vendor': 11,
+
+      'create-vendor-bank-account': 12,
+      'read-vendor-bank-account': 12,
+      'update-vendor-bank-account': 12,
+      'delete-vendor-bank-account': 12,
+
+      'create-budget-account': 13,
+      'read-budget-account': 13,
+      'update-budget-account': 13,
+      'delete-budget-account': 13,
+
+      'create-budget-item': 14,
+      'read-budget-item': 14,
+      'update-budget-item': 14,
+      'delete-budget-item': 14,
+
+      'create-budget-item-detail': 15,
+      'read-budget-item-detail': 15,
+      'update-budget-item-detail': 15,
+      'delete-budget-item-detail': 15,
+
+      'create-budget-approval-rule': 16,
+      'read-budget-approval-rule': 16,
+      'update-budget-approval-rule': 16,
+      'delete-budget-approval-rule': 16,
+
+      'create-approval-workflow': 17,
+      'read-approval-workflow': 17,
+      'update-approval-workflow': 17,
+      'delete-approval-workflow': 17,
+
+      'create-approval-workflow-step': 18,
+      'read-approval-workflow-step': 18,
+      'update-approval-workflow-step': 18,
+      'delete-approval-workflow-step': 18,
+
+      'create-document': 19,
+      'read-document': 19,
+      'update-document': 19,
+      'delete-document': 19,
+
+      'create-purchase-request': 20,
+      'read-purchase-request': 20,
+      'update-purchase-request': 20,
+      'delete-purchase-request': 20,
+
+      'create-purchase-request-item': 21,
+      'read-purchase-request-item': 21,
+      'update-purchase-request-item': 21,
+      'delete-purchase-request-item': 21,
+
+      'create-purchase-order': 22,
+      'read-purchase-order': 22,
+      'update-purchase-order': 22,
+      'delete-purchase-order': 22,
+
+      'create-purchase-order-item': 23,
+      'read-purchase-order-item': 23,
+      'update-purchase-order-item': 23,
+      'delete-purchase-order-item': 23,
+
+      'create-purchase-selected-vendor': 24,
+      'read-purchase-selected-vendor': 24,
+      'update-purchase-selected-vendor': 24,
+      'delete-purchase-selected-vendor': 24,
+
+      'create-purchase-order-item-quote': 25,
+      'read-purchase-order-item-quote': 25,
+      'update-purchase-order-item-quote': 25,
+      'delete-purchase-order-item-quote': 25,
+
+      'create-user-approval': 26,
+      'read-user-approval': 26,
+      'update-user-approval': 26,
+      'delete-user-approval': 26,
+
+      'create-user-approval-step': 27,
+      'read-user-approval-step': 27,
+      'update-user-approval-step': 27,
+      'delete-user-approval-step': 27,
     };
 
     const items = Object.entries(permissionGroupMapping).map(

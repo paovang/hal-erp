@@ -7,6 +7,12 @@ import { CreatePurchaseRequestDto } from '../dto/create/purchaseRequest/create.d
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { PurchaseRequestEntity } from '../../domain/entities/purchase-request.entity';
 import { CreateCommand } from '../commands/purchaseRequest/create.command';
+import { PurchaseRequestQueryDto } from '../dto/query/purchase-request.dto';
+import { GetAllQuery } from '../queries/purchaseRequest/get-all.query';
+import { GetOneQuery } from '../queries/purchaseRequest/get-one.query';
+import { UpdatePurchaseRequestDto } from '../dto/create/purchaseRequest/update.dto';
+import { UpdateCommand } from '../commands/purchaseRequest/update.command';
+import { DeleteCommand } from '../commands/purchaseRequest/delete.command';
 
 @Injectable()
 export class PurchaseRequestService
@@ -19,23 +25,23 @@ export class PurchaseRequestService
     private readonly _readEntityManager: EntityManager,
   ) {}
 
-  //   async getAll(
-  //     dto: PositionQueryDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<PositionEntity>> {
-  //     return await this._queryBus.execute(
-  //       new GetAllQuery(dto, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async getAll(
+    dto: PurchaseRequestQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseRequestEntity>> {
+    return await this._queryBus.execute(
+      new GetAllQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
 
-  //   async getOne(
-  //     id: number,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<PositionEntity>> {
-  //     return await this._queryBus.execute(
-  //       new GetOneQuery(id, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseRequestEntity>> {
+    return await this._queryBus.execute(
+      new GetOneQuery(id, manager ?? this._readEntityManager),
+    );
+  }
 
   async create(
     dto: CreatePurchaseRequestDto,
@@ -46,19 +52,19 @@ export class PurchaseRequestService
     );
   }
 
-  //   async update(
-  //     id: number,
-  //     dto: UpdatePositionDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<PositionEntity>> {
-  //     return await this._commandBus.execute(
-  //       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async update(
+    id: number,
+    dto: UpdatePurchaseRequestDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseRequestEntity>> {
+    return await this._commandBus.execute(
+      new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
 
-  //   async delete(id: number, manager?: EntityManager): Promise<void> {
-  //     return await this._commandBus.execute(
-  //       new DeleteCommand(id, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async delete(id: number, manager?: EntityManager): Promise<void> {
+    return await this._commandBus.execute(
+      new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
 }

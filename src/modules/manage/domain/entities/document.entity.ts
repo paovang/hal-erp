@@ -4,6 +4,7 @@ import { DocumentBuilder } from '../builders/document.builder';
 import { DepartmentEntity } from './department.entity';
 import { UserEntity } from './user.entity';
 import { DocumentTypeEntity } from './document-type.entity';
+import { PositionEntity } from './position.entity';
 
 export class DocumentEntity extends Entity<DocumentId> {
   private readonly _document_number: string;
@@ -18,6 +19,7 @@ export class DocumentEntity extends Entity<DocumentId> {
   private readonly _deletedAt: Date | null;
   private readonly _department: DepartmentEntity | null;
   private readonly _requester: UserEntity | null;
+  private readonly _position: PositionEntity | null;
   private readonly _documentType: DocumentTypeEntity | null;
 
   private constructor(builder: DocumentBuilder) {
@@ -35,6 +37,7 @@ export class DocumentEntity extends Entity<DocumentId> {
     this._deletedAt = builder.deletedAt ?? null;
     this._department = builder.department ?? null;
     this._requester = builder.requester ?? null;
+    this._position = builder.position ?? null;
     this._documentType = builder.documentType ?? null;
   }
 
@@ -60,6 +63,10 @@ export class DocumentEntity extends Entity<DocumentId> {
 
   get requester_id(): number {
     return this._requester_id;
+  }
+
+  get position(): PositionEntity | null {
+    return this._position;
   }
 
   get document_type_id(): number {

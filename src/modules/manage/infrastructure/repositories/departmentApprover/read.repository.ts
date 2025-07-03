@@ -46,7 +46,7 @@ export class ReadDepartmentApproverRepository
       .leftJoinAndSelect('department_approvers.departments', 'departments')
       .leftJoinAndSelect('department_approvers.users', 'users');
 
-    if (departmentId) {
+    if (departmentId && departmentId !== undefined && departmentId !== null) {
       qb.where('department_approvers.department_id = :departmentId', {
         departmentId,
       });

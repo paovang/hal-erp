@@ -5,20 +5,26 @@ import { RoleEntity } from '../../domain/entities/role.entity';
 import { RoleResponse } from '../dto/response/role.response';
 import moment from 'moment-timezone';
 import { PermissionDataMapper } from './permission.mapper';
+import { CreateRoleDto } from '../dto/create/user/role/create.dto';
+import { UpdateRoleDto } from '../dto/create/user/role/update.dto';
 
 @Injectable()
 export class RoleDataMapper {
   constructor(private readonly permissionDataMapper: PermissionDataMapper) {}
   /** Mapper Dto To Entity */
-  //   toEntity(dto: CreateDepartmentDto | UpdateDepartmentDto): DepartmentEntity {
-  //     const builder = DepartmentEntity.builder();
+  toEntity(dto: CreateRoleDto | UpdateRoleDto, GUARD_NAME: string): RoleEntity {
+    const builder = RoleEntity.builder();
 
-  //     if (dto.name) {
-  //       builder.setName(dto.name);
-  //     }
+    if (dto.name) {
+      builder.setName(dto.name);
+    }
 
-  //     return builder.build();
-  //   }
+    if (GUARD_NAME) {
+      builder.setGuardName(GUARD_NAME);
+    }
+
+    return builder.build();
+  }
 
   /** Mapper Entity To Response */
   toResponse(entity: RoleEntity): RoleResponse {

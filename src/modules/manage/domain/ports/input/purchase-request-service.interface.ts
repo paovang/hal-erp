@@ -2,24 +2,29 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { CreatePurchaseRequestDto } from '@src/modules/manage/application/dto/create/purchaseRequest/create.dto';
 import { EntityManager } from 'typeorm';
 import { PurchaseRequestEntity } from '../../entities/purchase-request.entity';
+import { PurchaseRequestQueryDto } from '@src/modules/manage/application/dto/query/purchase-request.dto';
+import { UpdatePurchaseRequestDto } from '@src/modules/manage/application/dto/create/purchaseRequest/update.dto';
 
 export interface IPurchaseRequestServiceInterface {
-  //   getAll(
-  //     dto: PositionQueryDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<PositionEntity>>;
-  //   getOne(
-  //     id: number,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<PositionEntity>>;
+  getAll(
+    dto: PurchaseRequestQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseRequestEntity>>;
+  getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseRequestEntity>>;
+
   create(
     dto: CreatePurchaseRequestDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<PurchaseRequestEntity>>;
-  //   update(
-  //     id: number,
-  //     dto: UpdatePositionDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<PositionEntity>>;
-  //   delete(id: number, manager?: EntityManager): Promise<void>;
+
+  update(
+    id: number,
+    dto: UpdatePurchaseRequestDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseRequestEntity>>;
+
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

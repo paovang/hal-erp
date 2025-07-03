@@ -53,7 +53,10 @@ export class ReadRoleRepository implements IReadRoleRepository {
   }
 
   private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(RoleOrmEntity, 'roles');
+    const roleName = ['super-admin', 'admin'];
+    return manager
+      .createQueryBuilder(RoleOrmEntity, 'roles')
+      .where('roles.name NOT IN (:...roleName)', { roleName });
   }
 
   private getFilterOptions(): FilterOptions {

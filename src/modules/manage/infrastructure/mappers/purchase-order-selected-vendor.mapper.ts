@@ -1,0 +1,71 @@
+import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
+import { PurchaseOrderSelectedVendorEntity } from '../../domain/entities/purchase-order-selected-vendor.entity';
+import { PurchaseOrderSelectedVendorId } from '../../domain/value-objects/purchase-order-selected-vendor-id.vo';
+import { Injectable } from '@nestjs/common';
+import { VendorDataAccessMapper } from './vendor.mapper';
+import { VendorBankAccountDataAccessMapper } from './vendor-bank-account.mapper';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import moment from 'moment-timezone';
+import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+
+@Injectable()
+export class PurchaseOrderSelectedVendorDataAccessMapper {
+  constructor(
+    private readonly _vendor: VendorDataAccessMapper,
+    private readonly _vendorBankAccount: VendorBankAccountDataAccessMapper,
+  ) {}
+
+  toOrmEntity(
+    svEntity: PurchaseOrderSelectedVendorEntity,
+    method: OrmEntityMethod,
+  ): PurchaseOrderSelectedVendorOrmEntity {
+    const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
+    const id = svEntity.getId();
+
+    const mediaOrmEntity = new PurchaseOrderSelectedVendorOrmEntity();
+    if (id) {
+      mediaOrmEntity.id = id.value;
+    }
+
+    mediaOrmEntity.purchase_order_id = svEntity.purchase_order_id;
+    mediaOrmEntity.vendor_id = svEntity.vendor_id;
+    mediaOrmEntity.filename = svEntity.filename;
+    mediaOrmEntity.reason = svEntity.reason;
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.created_at = svEntity.createdAt ?? new Date(now);
+    }
+    mediaOrmEntity.updated_at = new Date(now);
+
+    return mediaOrmEntity;
+  }
+
+  toEntity(
+    ormData: PurchaseOrderSelectedVendorOrmEntity,
+  ): PurchaseOrderSelectedVendorEntity {
+    const builder = PurchaseOrderSelectedVendorEntity.builder()
+      .setPurchaseOrderSelectedVendorId(
+        new PurchaseOrderSelectedVendorId(ormData.id),
+      )
+      .setPurchaseOrderId(ormData.purchase_order_id ?? 0)
+      .setVendorId(ormData.vendor_id ?? 0)
+      .setFilename(ormData.filename ?? '')
+      .setReason(ormData.reason ?? '')
+      .setCreatedAt(ormData.created_at)
+      .setUpdatedAt(ormData.updated_at);
+
+    if (ormData.vendors) {
+      builder.setVendor(this._vendor.toEntity(ormData.vendors));
+    }
+
+    if (ormData.vendors?.vendor_bank_accounts) {
+      const vendorBankAccounts = ormData.vendors.vendor_bank_accounts.map(
+        (vendorBankAccount) =>
+          this._vendorBankAccount.toEntity(vendorBankAccount),
+      );
+      builder.setVendorBankAccount(vendorBankAccounts);
+    }
+
+    return builder.build();
+  }
+}
