@@ -19,6 +19,14 @@ import { BudgetAccountProvider } from './BudgetAccount';
 import { BudgetItemProvider } from './BudgetItem';
 import { BudgetItemDetailProvider } from './BudgetItemDetail';
 import { DocumentProvider } from './Document';
+import { PurchaseRequestProvider } from './purchaseRequest';
+import { PurchaseRequestItemProvider } from './purchaseRequestItem';
+import { UserApprovalProvider } from './userApproval';
+import { UserApprovalStepProvider } from './userApprovalStep';
+import { DocumentStatusProvider } from './documentStatus';
+import { PurchaseOrderProvider } from './purchaseOrder';
+import { PurchaseOrderItemProvider } from './purchaseOrderItem';
+import { PurchaseOrderSelectedVendorProvider } from './purchaseOrderSelectedVendor';
 
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
@@ -41,4 +49,12 @@ export const AllRegisterProviders: Provider[] = [
   ...DocumentProvider,
   ...UserSignatureProvider,
   ...ApprovalWorkflowStepProvider,
+  ...PurchaseRequestProvider,
+  ...PurchaseRequestItemProvider,
+  ...UserApprovalProvider,
+  ...UserApprovalStepProvider,
+  ...DocumentStatusProvider,
+  ...PurchaseOrderProvider,
+  ...PurchaseOrderItemProvider,
+  ...PurchaseOrderSelectedVendorProvider,
 ];

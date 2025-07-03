@@ -25,7 +25,7 @@ export class PurchaseOrderItemQuoteOrmEntity {
 
   @Index()
   @Column({ nullable: true })
-  purchase_order_id?: number;
+  purchase_order_item_id?: number;
   @ManyToOne(
     () => PurchaseOrderItemOrmEntity,
     (purchase_order_items) => purchase_order_items.purchase_order_item_quotes,
@@ -34,7 +34,7 @@ export class PurchaseOrderItemQuoteOrmEntity {
       onUpdate: 'CASCADE',
     },
   )
-  @JoinColumn({ name: 'purchase_order_id' })
+  @JoinColumn({ name: 'purchase_order_item_id' })
   purchase_order_items: Relation<PurchaseOrderItemOrmEntity>;
 
   @Index()

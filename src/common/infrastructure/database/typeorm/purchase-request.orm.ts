@@ -5,8 +5,8 @@ import {
   Entity,
   Index,
   JoinColumn,
-  ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -23,7 +23,7 @@ export class PurchaseRequestOrmEntity {
   @Index()
   @Column({ nullable: true })
   document_id?: number;
-  @ManyToOne(
+  @OneToOne(
     () => DocumentOrmEntity,
     (documents) => documents.purchase_requests,
     {

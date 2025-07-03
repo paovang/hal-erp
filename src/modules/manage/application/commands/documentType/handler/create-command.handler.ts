@@ -2,7 +2,10 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '@src/modules/manage/application/commands/documentType/create.command';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DocumentTypeEntity } from '@src/modules/manage/domain/entities/document-type.entity';
-import { WRITE_DOCUMENT_TYPE_REPOSITORY } from '../../../constants/inject-key.const';
+import {
+  LENGTH_DOCUMENT_TYPE_CODE,
+  WRITE_DOCUMENT_TYPE_REPOSITORY,
+} from '../../../constants/inject-key.const';
 import { Inject } from '@nestjs/common';
 import { IWriteDocumentTypeRepository } from '@src/modules/manage/domain/ports/output/document-type-repository.interface';
 import { DocumentTypeDataMapper } from '../../../mappers/document-type.mapper';
@@ -37,7 +40,7 @@ export class CreateCommandHandler
 
     if (!code) {
       code = await this._codeGeneratorUtil.generateUniqueCode(
-        6,
+        LENGTH_DOCUMENT_TYPE_CODE,
         async (generatedCode: string) => {
           try {
             await findOneOrFail(query.manager, DocumentTypeOrmEntity, {

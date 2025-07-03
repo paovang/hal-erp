@@ -57,6 +57,8 @@ export class ReadDocumentRepository implements IReadDocumentRepository {
       .leftJoin('documents.users', 'users')
       .leftJoin('users.user_signatures', 'user_signatures')
       .leftJoin('documents.document_types', 'document_types')
+      .leftJoin('users.department_users', 'department_users')
+      .leftJoin('department_users.positions', 'positions')
       .addSelect([
         'departments.id',
         'departments.name',
@@ -69,6 +71,16 @@ export class ReadDocumentRepository implements IReadDocumentRepository {
         'users.tel',
         'users.created_at',
         'users.updated_at',
+        'department_users.id',
+        'department_users.department_id',
+        'department_users.user_id',
+        'department_users.position_id',
+        'department_users.created_at',
+        'department_users.updated_at',
+        'positions.id',
+        'positions.name',
+        'positions.created_at',
+        'positions.updated_at',
       ])
       .addSelect([
         'user_signatures.id',

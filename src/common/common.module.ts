@@ -15,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PaginationModule } from '@common/infrastructure/pagination/pagination.module';
 import { AmazonS3Module } from '@common/infrastructure/aws3/config/aws3.module';
 import { ClsAuthModule } from '@common/infrastructure/cls/cls.module';
+import { PermissionGuard } from './guards/permission.guard';
 
 @Global()
 @Module({
@@ -46,6 +47,10 @@ import { ClsAuthModule } from '@common/infrastructure/cls/cls.module';
       provide: APP_GUARD,
       useFactory: (reflector: Reflector) => new JwtAuthGuard(reflector),
       inject: [Reflector],
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
     },
   ],
   exports: [],

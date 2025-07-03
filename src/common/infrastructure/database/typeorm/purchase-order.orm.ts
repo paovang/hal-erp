@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -14,11 +15,22 @@ import {
 import { PurchaseRequestOrmEntity } from './purchase-request.orm';
 import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
 import { PurchaseOrderSelectedVendorOrmEntity } from './purchase-order-selected-vendor.orm';
+import { DocumentOrmEntity } from './document.orm';
 
 @Entity('purchase_orders')
 export class PurchaseOrderOrmEntity {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
+
+  @Index()
+  @Column({ nullable: true })
+  document_id?: number;
+  @OneToOne(() => DocumentOrmEntity, (documents) => documents.purchase_orders, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'document_id' })
+  documents: Relation<DocumentOrmEntity>;
 
   @Index()
   @Column({ nullable: true })

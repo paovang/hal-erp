@@ -39,6 +39,11 @@ import { IImageOptimizeService } from '@src/common/utils/services/images/interfa
 import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
 import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
 import { multerStorage } from '@src/common/utils/multer.utils';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Permissions } from '@src/common/decorators/permission.decorator';
+import { PermissionName } from '@src/common/enums/permission.enum';
 
 @Controller('users')
 export class UserController {
@@ -48,17 +53,21 @@ export class UserController {
     @Inject(TRANSFORM_RESULT_SERVICE)
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: UserDataMapper,
-    private readonly _authService: AuthService,
     @Inject(USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY)
     private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
+    private readonly _authService: AuthService,
+    @InjectRepository(UserOrmEntity)
+    private readonly userRepository: Repository<UserOrmEntity>,
   ) {}
 
   @Public()
   @Post('login')
   async login(@Body() dto: any): Promise<any> {
-    return this._authService.validateUser(dto);
+    return await this._userService.login(dto);
+
+    // const result = await this._authService.validateUser(dto);
   }
 
   @Public()
@@ -92,6 +101,7 @@ export class UserController {
     };
   }
 
+  @Permissions(PermissionName.READ_USER)
   @Get('')
   async getAll(
     @Query() dto: UserQueryDto,

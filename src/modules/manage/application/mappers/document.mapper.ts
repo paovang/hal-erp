@@ -10,12 +10,14 @@ import { DocumentTypeDataMapper } from './document-type.mapper';
 import { DocumentEntityMode } from '@src/common/utils/orm-entity-method.enum';
 import { CreateDocumentDto } from '../dto/create/Document/create.dto';
 import { UpdateDocumentDto } from '../dto/create/Document/update.dto';
+import { PositionDataMapper } from './position.mapper';
 
 @Injectable()
 export class DocumentDataMapper {
   constructor(
     private readonly departmentDataMapper: DepartmentDataMapper,
     private readonly requesterDataMapper: UserDataMapper,
+    private readonly positionDataMapper: PositionDataMapper,
     private readonly documentTypeDataMapper: DocumentTypeDataMapper,
   ) {}
   /** Mapper Dto To Entity */
@@ -24,6 +26,7 @@ export class DocumentDataMapper {
     mode: DocumentEntityMode,
     generateCode?: string,
     user_id?: number,
+    department_id?: number,
   ): DocumentEntity {
     const builder = DocumentEntity.builder();
 
@@ -47,8 +50,8 @@ export class DocumentDataMapper {
       builder.setRequesterId(user_id);
     }
 
-    if (dto.departmentId) {
-      builder.setDepartmentId(dto.departmentId);
+    if (department_id) {
+      builder.setDepartmentId(department_id);
     }
 
     if (dto.documentTypeId) {
@@ -86,6 +89,10 @@ export class DocumentDataMapper {
 
     response.requester = entity.requester
       ? this.requesterDataMapper.toResponse(entity.requester)
+      : null;
+
+    response.position = entity.position
+      ? this.positionDataMapper.toResponse(entity.position)
       : null;
 
     return response;

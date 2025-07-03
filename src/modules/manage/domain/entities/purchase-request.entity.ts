@@ -2,24 +2,57 @@ import { Entity } from '@src/common/domain/entities/entity';
 import { PurchaseRequestId } from '../value-objects/purchase-request-id.vo';
 import { PurchaseRequestBuilder } from '../builders/purchase-request.builder';
 import { BadRequestException } from '@nestjs/common';
+import { PurchaseRequestItemEntity } from './purchase-request-item.entity';
+import { DocumentEntity } from './document.entity';
+import { UserApprovalEntity } from './user-approval.entity';
 
 export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
-  private readonly _name: string;
+  private readonly _document_id: number;
+  private readonly _pr_number: string;
+  private readonly _requested_date: Date;
+  private readonly _expired_date: Date;
+  private readonly _purposes: string;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _purchaseRequestItems: PurchaseRequestItemEntity[] | null;
+  private readonly _document: DocumentEntity | null;
+  private readonly _user_approval: UserApprovalEntity | null;
 
   private constructor(builder: PurchaseRequestBuilder) {
     super();
     this.setId(builder.purchaseRequestId);
-    this._name = builder.name;
+    this._document_id = builder.document_id;
+    this._pr_number = builder.pr_number;
+    this._requested_date = builder.requested_date;
+    this._expired_date = builder.expired_date;
+    this._purposes = builder.purposes;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._purchaseRequestItems = builder.purchaseRequestItem ?? null;
+    this._document = builder.document ?? null;
+    this._user_approval = builder.user_approval ?? null;
   }
 
-  get name(): string {
-    return this._name;
+  get document_id(): number {
+    return this._document_id;
+  }
+
+  get pr_number(): string {
+    return this._pr_number;
+  }
+
+  get requested_date(): Date {
+    return this._requested_date;
+  }
+
+  get expired_date(): Date {
+    return this._expired_date;
+  }
+
+  get purposes(): string {
+    return this._purposes;
   }
 
   get createdAt(): Date {
@@ -32,6 +65,18 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get document(): DocumentEntity | null {
+    return this._document;
+  }
+
+  get user_approval(): UserApprovalEntity | null {
+    return this._user_approval;
+  }
+
+  get purchaseRequestItems(): PurchaseRequestItemEntity[] | null {
+    return this._purchaseRequestItems;
   }
 
   public static builder(): PurchaseRequestBuilder {

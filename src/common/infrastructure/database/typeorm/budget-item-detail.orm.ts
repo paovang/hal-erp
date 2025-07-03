@@ -6,7 +6,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -66,9 +66,9 @@ export class BudgetItemDetailOrmEntity {
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
 
-  @OneToMany(
+  @OneToOne(
     () => PurchaseOrderItemOrmEntity,
     (purchase_order_items) => purchase_order_items.budget_item_details,
   )
-  purchase_order_items: Relation<PurchaseOrderItemOrmEntity[]>;
+  purchase_order_items: Relation<PurchaseOrderItemOrmEntity>;
 }

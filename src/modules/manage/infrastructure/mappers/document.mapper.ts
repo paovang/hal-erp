@@ -9,12 +9,14 @@ import { DocumentId } from '../../domain/value-objects/document-id.vo';
 import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { DocumentTypeDataAccessMapper } from './document-type.mapper';
+import { PositionDataAccessMapper } from './position.mapper';
 
 @Injectable()
 export class DocumentDataAccessMapper {
   constructor(
     private readonly departmentMapper: DepartmentDataAccessMapper,
     private readonly requesterMapper: UserDataAccessMapper,
+    private readonly positionMapper: PositionDataAccessMapper,
     private readonly documentType: DocumentTypeDataAccessMapper,
   ) {}
   toOrmEntity(
@@ -69,6 +71,11 @@ export class DocumentDataAccessMapper {
     }
     if (ormData.users) {
       builder.setRequester(this.requesterMapper.toEntity(ormData.users));
+    }
+
+    const position = ormData.users?.department_users?.[0]?.positions;
+    if (position) {
+      builder.setPosition(this.positionMapper.toEntity(position));
     }
 
     return builder.build();

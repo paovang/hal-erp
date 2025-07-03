@@ -14,5 +14,6 @@
     "NO_SPACES_ALLOWED": "{property} ບໍ່ສາມາດຍະຫວ່າງໄດ້.",
     "IS_INT": "{property} ຄ່າຕ້ອງເປັນຈຳນວນເຕັມ.",
     "YEAR_MUST_BE_CURRENT_OR_NEXT": "{property} ປີງົບປະມານຕ້ອງເປັນປີນີ້ ຫຼື ປີໜ້າ.",
-    "MUST_BE_YEAR_FORMAT": "{property} ປີງົບປະມານຕ້ອງເປັນ 4 ຕົວເລກ (ເຊັ່ນ 2025)."
+    "MUST_BE_YEAR_FORMAT": "{property} ປີງົບປະມານຕ້ອງເປັນ 4 ຕົວເລກ (ເຊັ່ນ 2025).",
+    "IS_DATE": "{property} ຕ້ອງເປັນວັນທີ."
 }

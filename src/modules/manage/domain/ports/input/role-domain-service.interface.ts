@@ -2,6 +2,8 @@ import { ResponseResult } from '@common/infrastructure/pagination/pagination.int
 import { RoleQueryDto } from '@src/modules/manage/application/dto/query/role-query.dto';
 import { EntityManager } from 'typeorm';
 import { RoleEntity } from '../../entities/role.entity';
+import { CreateRoleDto } from '@src/modules/manage/application/dto/create/user/role/create.dto';
+import { UpdateRoleDto } from '@src/modules/manage/application/dto/create/user/role/update.dto';
 
 export interface IRoleServiceInterface {
   getAll(
@@ -14,16 +16,16 @@ export interface IRoleServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<RoleEntity>>;
 
-  //   create(
-  //     dto: CreateUserDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<UserEntity>>;
+  create(
+    dto: CreateRoleDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<RoleEntity>>;
 
-  //   update(
-  //     id: number,
-  //     dto: UpdateUserDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<UserEntity>>;
+  update(
+    id: number,
+    dto: UpdateRoleDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<RoleEntity>>;
 
-  //   delete(id: number, manager?: EntityManager): Promise<void>;
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

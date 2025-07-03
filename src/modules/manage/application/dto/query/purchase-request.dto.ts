@@ -10,4 +10,18 @@ export class PurchaseRequestQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by document type id',
+  })
+  @IsOptional()
+  document_type_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by approval status id',
+  })
+  @IsOptional()
+  status_id?: number;
 }

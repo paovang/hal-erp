@@ -25,6 +25,10 @@ import { BudgetItemDetailController } from '../../controllers/budget-item-detail
 import { ProvinceController } from '../../controllers/province.controller';
 import { DocumentController } from '../../controllers/document.controller';
 import { ApprovalWorkflowStepController } from '../../controllers/approval-workflow-step.controller';
+import { PurchaseRequestController } from '../../controllers/purchase-request.controller';
+import { PurchaseOrderController } from '../../controllers/purchase-order.controller';
+import { UserApprovalController } from '../../controllers/user-approval.controller';
+import { UserApprovalStepController } from '../../controllers/user-approval-step.controller';
 
 @Module({
   imports: [
@@ -58,6 +62,10 @@ import { ApprovalWorkflowStepController } from '../../controllers/approval-workf
     ProvinceController,
     DocumentController,
     ApprovalWorkflowStepController,
+    PurchaseRequestController,
+    PurchaseOrderController,
+    UserApprovalController,
+    UserApprovalStepController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

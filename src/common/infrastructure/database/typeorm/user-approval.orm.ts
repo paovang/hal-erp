@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -24,7 +25,7 @@ export class UserApprovalOrmEntity {
   @Index()
   @Column({ nullable: true })
   document_id?: number;
-  @ManyToOne(() => DocumentOrmEntity, (documents) => documents.user_approvals, {
+  @OneToOne(() => DocumentOrmEntity, (documents) => documents.user_approvals, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

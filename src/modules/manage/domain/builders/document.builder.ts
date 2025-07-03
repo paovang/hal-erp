@@ -1,6 +1,7 @@
 import { DepartmentEntity } from '../entities/department.entity';
 import { DocumentTypeEntity } from '../entities/document-type.entity';
 import { DocumentEntity } from '../entities/document.entity';
+import { PositionEntity } from '../entities/position.entity';
 import { UserEntity } from '../entities/user.entity';
 import { DocumentId } from '../value-objects/document-id.vo';
 
@@ -18,6 +19,7 @@ export class DocumentBuilder {
   deletedAt!: Date | null;
   department: DepartmentEntity;
   requester: UserEntity;
+  position: PositionEntity;
   documentType: DocumentTypeEntity;
 
   setDocumentId(value: DocumentId): this {
@@ -52,6 +54,11 @@ export class DocumentBuilder {
 
   setRequesterId(requester_id: number): this {
     this.requester_id = requester_id;
+    return this;
+  }
+
+  setPosition(position: PositionEntity): this {
+    this.position = position;
     return this;
   }
 

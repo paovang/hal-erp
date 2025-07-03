@@ -28,5 +28,4 @@ export interface IUnitServiceInterface {
   ): Promise<ResponseResult<UnitEntity>>;
 
   delete(id: number, manager?: EntityManager): Promise<void>;
-  // eslint-disable-next-line prettier/prettier
 }

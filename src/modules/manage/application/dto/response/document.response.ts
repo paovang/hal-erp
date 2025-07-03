@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { DepartmentResponse } from './department.response';
 import { UserResponse } from './user.response';
 import { DocumentTypeResponse } from './document-type.response';
+import { PositionResponse } from './position.response';
 
 export class DocumentResponse {
   @ApiProperty()
@@ -45,4 +46,7 @@ export class DocumentResponse {
 
   @ApiProperty()
   requester: UserResponse | null;
+
+  @ApiProperty()
+  position: PositionResponse | null;
 }

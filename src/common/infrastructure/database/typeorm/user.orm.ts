@@ -49,7 +49,7 @@ export class UserOrmEntity {
 
   @OneToMany(
     () => UserApprovalStepOrmEntity,
-    (user_approval_steps) => user_approval_steps.users,
+    (user_approval_steps) => user_approval_steps.approver,
   )
   user_approval_steps: Relation<UserApprovalStepOrmEntity[]>;
 
