@@ -32,6 +32,9 @@ export class PurchaseRequestResponse {
   deleted_at: string | null;
 
   @ApiProperty()
+  total: number | 0;
+
+  @ApiProperty()
   document: DocumentResponse | null;
 
   @ApiProperty()

@@ -106,6 +106,7 @@ export class TransformResponseInterceptor<T>
     return {
       status_code: statusCode,
       message,
+      status: data.status,
       data: data.data,
       pagination: data.pagination,
     };

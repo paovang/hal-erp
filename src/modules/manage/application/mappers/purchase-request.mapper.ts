@@ -63,6 +63,7 @@ export class PurchaseRequestDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.total = entity.total;
 
     response.document = entity.document
       ? this.documentMapper.toResponse(entity.document)

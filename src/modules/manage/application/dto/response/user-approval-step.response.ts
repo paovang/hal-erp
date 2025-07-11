@@ -38,7 +38,7 @@ export class UserApprovalStepResponse {
   document_status: DocumentStatusResponse | null;
 
   @ApiProperty()
-  user: UserResponse | null;
+  approver: UserResponse | null;
 
   @ApiProperty()
   approval_workflow_step: ApprovalWorkflowStepResponse | null;

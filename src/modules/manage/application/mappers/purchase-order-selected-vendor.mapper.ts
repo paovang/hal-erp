@@ -7,6 +7,7 @@ import { PurchaseOrderSelectedVendorEntity } from '../../domain/entities/purchas
 import { VendorDataMapper } from './vendor.mapper';
 import { VendorBankAccountDataMapper } from './vendor-bank-account.mapper';
 import { CreatePurchaseOrderSelectedVendorDto } from '../dto/create/purchaseOrderSelectedVendor/create.dto';
+import { UpdatePurchaseOrderSelectedVendorDto } from '../dto/create/purchaseOrderSelectedVendor/update.dto';
 
 @Injectable()
 export class PurchaseOrderSelectedVendorDataMapper {
@@ -16,13 +17,15 @@ export class PurchaseOrderSelectedVendorDataMapper {
   ) {}
 
   toEntity(
-    dto: CreatePurchaseOrderSelectedVendorDto,
-    po_id?: number,
+    dto:
+      | CreatePurchaseOrderSelectedVendorDto
+      | UpdatePurchaseOrderSelectedVendorDto,
+    po_item_id?: number,
   ): PurchaseOrderSelectedVendorEntity {
     const builder = PurchaseOrderSelectedVendorEntity.builder();
 
-    if (po_id) {
-      builder.setPurchaseOrderId(po_id);
+    if (po_item_id) {
+      builder.setPurchaseOrderItemId(po_item_id);
     }
 
     if (dto.vendor_id) {
@@ -37,6 +40,10 @@ export class PurchaseOrderSelectedVendorDataMapper {
       builder.setReason(dto.reason);
     }
 
+    if (dto.selected) {
+      builder.setSelected(dto.selected);
+    }
+
     return builder.build();
   }
 
@@ -44,12 +51,17 @@ export class PurchaseOrderSelectedVendorDataMapper {
   toResponse(
     entity: PurchaseOrderSelectedVendorEntity,
   ): PurchaseOrderSelectedVendorResponse {
+    const file = entity?.filename
+      ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${entity.filename}`
+      : '';
     const response = new PurchaseOrderSelectedVendorResponse();
     response.id = entity.getId().value;
-    response.purchase_order_id = Number(entity.purchase_order_id);
+    response.purchase_order_item_id = Number(entity.purchase_order_item_id);
     response.vendor_id = Number(entity.vendor_id);
     response.filename = entity.filename;
+    response.filename_url = file;
     response.reason = entity.reason;
+    response.selected = entity.selected;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);

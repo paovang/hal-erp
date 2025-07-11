@@ -12,6 +12,8 @@ import {
   WRITE_PURCHASE_ORDER_ITEM_REPOSITORY,
   WRITE_PURCHASE_ORDER_REPOSITORY,
   WRITE_PURCHASE_ORDER_SELECTED_VENDOR_REPOSITORY,
+  WRITE_USER_APPROVAL_REPOSITORY,
+  WRITE_USER_APPROVAL_STEP_REPOSITORY,
 } from '../../../constants/inject-key.const';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
@@ -25,7 +27,7 @@ import {
 } from '@src/common/constants/inject-key.const';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
 import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
@@ -43,10 +45,32 @@ import { createMockMulterFile } from '@src/common/utils/services/file-utils.serv
 import { PurchaseOrderSelectedVendorDataMapper } from '../../../mappers/purchase-order-selected-vendor.mapper';
 import { IWritePurchaseOrderSelectedVendorRepository } from '@src/modules/manage/domain/ports/output/Purchase-order-selected-vendor-repository.interface';
 import { VendorOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor.orm';
+import { IWriteUserApprovalRepository } from '@src/modules/manage/domain/ports/output/user-approval-repository.interface';
+import { UserApprovalDataMapper } from '../../../mappers/user-approval.mapper';
+import { IWriteUserApprovalStepRepository } from '@src/modules/manage/domain/ports/output/user-approval-step-repository.interface';
+import { UserApprovalStepDataMapper } from '../../../mappers/user-approval-step.mapper';
+import { STATUS_KEY } from '../../../constants/status-key.const';
+import { CreateUserApprovalDto } from '../../../dto/create/userApproval/create.dto';
+import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
+import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
+import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
   remark: string;
+  price: number;
+  quantity: number;
+  total: number;
+  is_vat: boolean;
+}
+
+interface CustomUserApprovalDto extends CreateUserApprovalDto {
+  status: number;
+}
+
+interface CustomApprovalDto extends ApprovalDto {
+  user_approval_id: number;
+  approval_workflow_step_id: number;
 }
 
 @CommandHandler(CreateCommand)
@@ -72,6 +96,15 @@ export class CreateCommandHandler
     private readonly _writeSV: IWritePurchaseOrderSelectedVendorRepository,
     private readonly _dataSVMapper: PurchaseOrderSelectedVendorDataMapper,
 
+    // user approval
+    @Inject(WRITE_USER_APPROVAL_REPOSITORY)
+    private readonly _writeUserApproval: IWriteUserApprovalRepository,
+    private readonly _dataUserApprovalMapper: UserApprovalDataMapper,
+    // user approval step
+    @Inject(WRITE_USER_APPROVAL_STEP_REPOSITORY)
+    private readonly _writeUserApprovalStep: IWriteUserApprovalStepRepository,
+    private readonly _dataUserApprovalMapperStep: UserApprovalStepDataMapper,
+
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -91,12 +124,6 @@ export class CreateCommandHandler
       this._dataSource,
       async (manager) => {
         const user_id = this._userContextService.getAuthUser()?.user.id;
-        let processedItems = null;
-
-        const baseFolder = path.join(
-          __dirname,
-          '../../../../../../../assets/uploads/',
-        );
 
         const department = await findOneOrFail(
           query.manager,
@@ -175,67 +202,171 @@ export class CreateCommandHandler
 
         const po_id = (po_result as any)._id._value;
 
-        const pr_item = await manager.find(PurchaseRequestItemOrmEntity, {
-          where: {
-            purchase_request_id: pr.id,
-          },
-        });
+        // const pr_item = await manager.find(PurchaseRequestItemOrmEntity, {
+        //   where: {
+        //     purchase_request_id: pr.id,
+        //   },
+        // });
 
-        for (const item of pr_item) {
-          const itemDto: CustomPurchaseOrderItemDto = {
-            purchase_request_item_id: item.id,
-            remark: item.remark ?? '',
-          };
-          const itemEntity = this._dataItemMapper.toEntity(itemDto, po_id);
-          await this._writeItem.create(itemEntity, manager);
-        }
+        // save po item
+        await this.savePOItem(query, manager, po_id);
 
-        const vendorIds = query.dto.selected_vendor.map((v) => v.vendor_id);
-        const uniqueVendorIds = new Set(vendorIds);
+        // save selected vendor
+        // await this.saveSelectedVendor(query, manager, po_id);
 
-        if (vendorIds.length !== uniqueVendorIds.size) {
-          throw new ManageDomainException(
-            'errors.duplicate_vendor_id_in_selected_vendor',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-
-        for (const vendor of query.dto.selected_vendor) {
-          let fileKey = null;
-
-          await findOneOrFail(manager, VendorOrmEntity, {
-            id: vendor.vendor_id,
-          });
-
-          if (vendor.filename) {
-            const mockFile = await createMockMulterFile(
-              baseFolder,
-              vendor.filename,
-            );
-            const optimizedImage =
-              await this._optimizeService.optimizeImage(mockFile);
-            const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
-              optimizedImage,
-              PO_FILE_NAME_FOLDER,
-            );
-            fileKey = s3ImageResponse.fileKey;
-          }
-
-          processedItems = {
-            ...vendor,
-            filename: fileKey ?? '',
-          };
-
-          const vendorEntity = this._dataSVMapper.toEntity(
-            processedItems,
-            po_id,
-          );
-
-          await this._writeSV.create(vendorEntity, manager);
-        }
+        // save user approval
+        await this.saveUserApproval(query, manager, document_id);
 
         return po_result;
       },
     );
+  }
+
+  private async saveUserApproval(
+    query: CreateCommand,
+    manager: EntityManager,
+    document_id: number,
+  ): Promise<void> {
+    const approval_workflow = await findOneOrFail(
+      manager,
+      ApprovalWorkflowOrmEntity,
+      {
+        document_type_id: query.dto.document.documentTypeId,
+      },
+    );
+
+    const aw_id = (approval_workflow as any).id;
+
+    const a_w_s = await query.manager.findOne(ApprovalWorkflowStepOrmEntity, {
+      where: { approval_workflow_id: aw_id },
+      order: { step_number: 'ASC' },
+    });
+
+    const merge: CustomUserApprovalDto = {
+      documentId: document_id,
+      status: STATUS_KEY.PENDING,
+    };
+
+    const user_approval_entity = this._dataUserApprovalMapper.toEntity(
+      merge,
+      aw_id,
+    );
+
+    const user_approval = await this._writeUserApproval.create(
+      user_approval_entity,
+      manager,
+    );
+
+    const ua_id = (user_approval as any)._id._value;
+
+    const pendingDto: CustomApprovalDto = {
+      user_approval_id: ua_id,
+      approval_workflow_step_id: a_w_s!.id,
+      statusId: STATUS_KEY.PENDING,
+      remark: null,
+    };
+    const aw_step =
+      this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);
+    await this._writeUserApprovalStep.create(aw_step, manager);
+  }
+
+  private async saveSelectedVendor(
+    query: CreateCommand,
+    manager: EntityManager,
+    po_item_id: number,
+    selected_vendor: any[],
+  ): Promise<void> {
+    let processedItems = null;
+
+    const baseFolder = path.join(
+      __dirname,
+      '../../../../../../../assets/uploads/',
+    );
+    const vendorIds = selected_vendor.map((v) => v.vendor_id);
+    const uniqueVendorIds = new Set(vendorIds);
+
+    if (vendorIds.length !== uniqueVendorIds.size) {
+      throw new ManageDomainException(
+        'errors.duplicate_vendor_id_in_selected_vendor',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    for (const vendor of selected_vendor) {
+      let fileKey = null;
+
+      await findOneOrFail(manager, VendorOrmEntity, {
+        id: vendor.vendor_id,
+      });
+
+      if (vendor.filename) {
+        const mockFile = await createMockMulterFile(
+          baseFolder,
+          vendor.filename,
+        );
+        const optimizedImage =
+          await this._optimizeService.optimizeImage(mockFile);
+        const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+          optimizedImage,
+          PO_FILE_NAME_FOLDER,
+        );
+        fileKey = s3ImageResponse.fileKey;
+      }
+
+      processedItems = {
+        ...vendor,
+        filename: fileKey ?? '',
+      };
+
+      const vendorEntity = this._dataSVMapper.toEntity(
+        processedItems,
+        po_item_id,
+      );
+
+      await this._writeSV.create(vendorEntity, manager);
+    }
+  }
+
+  private async savePOItem(
+    query: CreateCommand,
+    manager: EntityManager,
+    po_id: number,
+  ): Promise<void> {
+    for (const item of query.dto.items) {
+      const pr_item = await query.manager.findOne(
+        PurchaseRequestItemOrmEntity,
+        {
+          where: {
+            id: item.purchase_request_item_id,
+          },
+        },
+      );
+
+      if (!pr_item) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const itemDto: CustomPurchaseOrderItemDto = {
+        purchase_request_item_id: item.purchase_request_item_id,
+        remark: pr_item?.remark ?? '',
+        quantity: pr_item?.quantity ?? 0,
+        price: item.price ?? 0,
+        total: (pr_item?.quantity ?? 0) * (item.price ?? 0),
+        is_vat: item?.is_vat ?? false,
+      };
+      const itemEntity = this._dataItemMapper.toEntity(itemDto, po_id);
+      const po_item = await this._writeItem.create(itemEntity, manager);
+      const po_item_id = (po_item as any)._id._value;
+
+      await this.saveSelectedVendor(
+        query,
+        manager,
+        po_item_id,
+        item.selected_vendor,
+      );
+    }
   }
 }

@@ -7,7 +7,7 @@ export class PurchaseOrderSelectedVendorResponse {
   id: number;
 
   @ApiProperty()
-  purchase_order_id: number;
+  purchase_order_item_id: number;
 
   @ApiProperty()
   vendor_id: number;
@@ -16,7 +16,13 @@ export class PurchaseOrderSelectedVendorResponse {
   filename: string;
 
   @ApiProperty()
+  filename_url: string;
+
+  @ApiProperty()
   reason: string;
+
+  @ApiProperty()
+  selected: boolean;
 
   @ApiProperty()
   created_at: string;

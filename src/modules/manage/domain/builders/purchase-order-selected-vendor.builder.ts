@@ -5,10 +5,11 @@ import { PurchaseOrderSelectedVendorId } from '../value-objects/purchase-order-s
 
 export class PurchaseOrderSelectedVendorBuilder {
   purchaseOrderSelectedVendorId: PurchaseOrderSelectedVendorId;
-  purchase_order_id: number;
+  purchase_order_item_id: number;
   vendor_id: number;
   filename: string;
   reason: string;
+  selected: boolean;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -20,8 +21,8 @@ export class PurchaseOrderSelectedVendorBuilder {
     return this;
   }
 
-  setPurchaseOrderId(purchase_order_id: number): this {
-    this.purchase_order_id = purchase_order_id;
+  setPurchaseOrderItemId(purchase_order_item_id: number): this {
+    this.purchase_order_item_id = purchase_order_item_id;
     return this;
   }
 
@@ -37,6 +38,11 @@ export class PurchaseOrderSelectedVendorBuilder {
 
   setReason(reason: string): this {
     this.reason = reason;
+    return this;
+  }
+
+  setSelected(selected: boolean): this {
+    this.selected = selected;
     return this;
   }
 

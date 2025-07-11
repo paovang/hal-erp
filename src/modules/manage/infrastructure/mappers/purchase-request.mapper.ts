@@ -46,6 +46,18 @@ export class PurchaseRequestDataAccessMapper {
   }
 
   toEntity(ormData: PurchaseRequestOrmEntity): PurchaseRequestEntity {
+    const items = ormData.purchase_request_items || [];
+    interface PurchaseRequestItemLike {
+      total_price?: number;
+      [key: string]: any;
+    }
+
+    const total: number = items.reduce(
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + (item.total_price || 0),
+      0,
+    );
+
     const builder = PurchaseRequestEntity.builder()
       .setPurchaseRequestId(new PurchaseRequestId(ormData.id))
       .setDocumentId(ormData.document_id ?? 0)
@@ -54,7 +66,9 @@ export class PurchaseRequestDataAccessMapper {
       .setExpiredDate(ormData.expired_date ?? new Date())
       .setPurposes(ormData.purposes ?? '')
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at);
+      .setUpdatedAt(ormData.updated_at)
+      .setDeletedAt(ormData.deleted_at)
+      .setTotal(total);
 
     if (ormData.documents) {
       builder.setDocument(this.documentMapper.toEntity(ormData.documents));

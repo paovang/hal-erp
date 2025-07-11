@@ -9,6 +9,7 @@ import {
   PaginationInput,
   StandardPaginationInput,
   StandardPaginationResult,
+  StatusAmount,
 } from '@common/infrastructure/pagination/pagination.interface';
 
 @Injectable()
@@ -24,6 +25,7 @@ export class PaginationService implements IPaginationService {
     paginationInput: PaginationInput,
     mapper: (item: OrmEntity) => Entity,
     filterOptions?: FilterOptions,
+    status?: StatusAmount[] | null,
   ): Promise<PaginatedResult<Entity> | Entity[]> {
     this.applyFilters(queryBuilder, paginationInput, filterOptions);
     if (!paginationInput.limit) {
@@ -37,9 +39,14 @@ export class PaginationService implements IPaginationService {
     }
 
     if (this.isCursorPaginationInput(paginationInput)) {
-      return this.cursorPaginate(queryBuilder, paginationInput, mapper);
+      return this.cursorPaginate(queryBuilder, paginationInput, mapper, status);
     } else {
-      return this.standardPaginate(queryBuilder, paginationInput, mapper);
+      return this.standardPaginate(
+        queryBuilder,
+        paginationInput,
+        mapper,
+        status,
+      );
     }
   }
 
@@ -132,6 +139,7 @@ export class PaginationService implements IPaginationService {
       sort_order = 'DESC',
     }: StandardPaginationInput,
     mapper: (item: OrmEntity) => Entity,
+    status?: StatusAmount[] | null,
   ): Promise<StandardPaginationResult<Entity>> {
     const total = await queryBuilder.getCount();
     const total_pages = Math.ceil(total / limit);
@@ -145,8 +153,9 @@ export class PaginationService implements IPaginationService {
       .take(limit)
       .skip((page - 1) * limit)
       .getManyAndCount();
-
+    console.log('data', status);
     return {
+      status: status,
       data: data.map(mapper),
       pagination: {
         total: totalData,
@@ -167,6 +176,7 @@ export class PaginationService implements IPaginationService {
       sort_order = 'DESC',
     }: CursorPaginationInput,
     mapper: (item: OrmEntity) => Entity,
+    status?: StatusAmount[] | null,
   ): Promise<CursorPaginationResult<Entity>> {
     const isBackward = Boolean(previous_cursor);
     this.applyCursorPagination(queryBuilder, {
@@ -206,6 +216,7 @@ export class PaginationService implements IPaginationService {
     }
 
     return {
+      status: status,
       data: resultData.map(mapper),
       pagination: {
         limit,

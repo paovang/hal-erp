@@ -84,7 +84,7 @@ export class UserApprovalStepDataMapper {
       ? this.documentStatusDataMapper.toResponse(entity.status)
       : null;
 
-    response.user = entity.user
+    response.approver = entity.user
       ? this.userDataMapper.toResponse(entity.user)
       : null;
 

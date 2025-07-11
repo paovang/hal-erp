@@ -1,6 +1,7 @@
 import { BudgetItemDetailEntity } from '../entities/budget-item-detail.entity';
-import { PurchaseOrderItemQuoteEntity } from '../entities/purchase-order-item-quote.entity';
+// import { PurchaseOrderItemQuoteEntity } from '../entities/purchase-order-item-quote.entity';
 import { PurchaseOrderItemEntity } from '../entities/purchase-order-item.entity';
+import { PurchaseOrderSelectedVendorEntity } from '../entities/purchase-order-selected-vendor.entity';
 import { PurchaseOrderItemId } from '../value-objects/purchase-order-item-id.vo';
 
 export class PurchaseOrderItemBuilder {
@@ -9,11 +10,18 @@ export class PurchaseOrderItemBuilder {
   purchase_request_item_id: number;
   budget_item_detail_id: number;
   remark: string;
+  quantity: number;
+  price: number;
+  total: number;
+  is_vat: boolean;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
-  quote: PurchaseOrderItemQuoteEntity[] | null;
+  vat_total: number | 0;
+  total_with_vat: number | 0;
+  // quote: PurchaseOrderItemQuoteEntity[] | null;
   budgetItemDetail: BudgetItemDetailEntity | null;
+  selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
 
   setPurchaseOrderItemId(value: PurchaseOrderItemId): this {
     this.purchaseOrderItemId = value;
@@ -40,6 +48,26 @@ export class PurchaseOrderItemBuilder {
     return this;
   }
 
+  setQuantity(quantity: number): this {
+    this.quantity = quantity;
+    return this;
+  }
+
+  setPrice(price: number): this {
+    this.price = price;
+    return this;
+  }
+
+  setTotal(total: number): this {
+    this.total = total;
+    return this;
+  }
+
+  setIsVat(is_vat: boolean): this {
+    this.is_vat = is_vat;
+    return this;
+  }
+
   setCreatedAt(createdAt: Date): this {
     this.createdAt = createdAt;
     return this;
@@ -55,8 +83,25 @@ export class PurchaseOrderItemBuilder {
     return this;
   }
 
-  setQuote(quote: PurchaseOrderItemQuoteEntity[] | null): this {
-    this.quote = quote;
+  setVatTotal(vat_total: number | 0): this {
+    this.vat_total = vat_total;
+    return this;
+  }
+
+  setTotalWithVat(total_with_vat: number | 0): this {
+    this.total_with_vat = total_with_vat;
+    return this;
+  }
+
+  // setQuote(quote: PurchaseOrderItemQuoteEntity[] | null): this {
+  //   this.quote = quote;
+  //   return this;
+  // }
+
+  setSelectedVendor(
+    selectedVendor: PurchaseOrderSelectedVendorEntity[] | null,
+  ): this {
+    this.selectedVendor = selectedVendor;
     return this;
   }
 

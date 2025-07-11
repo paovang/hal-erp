@@ -5,32 +5,33 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { PurchaseOrderItemDataMapper } from './purchase-order-item.mapper';
-import { PurchaseOrderSelectedVendorDataMapper } from './purchase-order-selected-vendor.mapper';
+// import { PurchaseOrderSelectedVendorDataMapper } from './purchase-order-selected-vendor.mapper';
 import { PurchaseRequestDataMapper } from './purchase-request.mapper';
 import { DocumentDataMapper } from './document.mapper';
 import { UserApprovalDataMapper } from './user-approval.mapper';
 import { CreatePurchaseOrderDto } from '../dto/create/purchaseOrder/create.dto';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
+import { UpdatePurchaseOrderDto } from '../dto/create/purchaseOrder/update.dto';
 
 @Injectable()
 export class PurchaseOrderDataMapper {
   constructor(
     private readonly purchaseOrderItemMapper: PurchaseOrderItemDataMapper,
-    private readonly selectedVendorMapper: PurchaseOrderSelectedVendorDataMapper,
+    // private readonly selectedVendorMapper: PurchaseOrderSelectedVendorDataMapper,
     private readonly purchaseRequestMapper: PurchaseRequestDataMapper,
     private readonly documentMapper: DocumentDataMapper,
     private readonly userApprovalMapper: UserApprovalDataMapper,
   ) {}
 
   toEntity(
-    dto: CreatePurchaseOrderDto,
+    dto: CreatePurchaseOrderDto | UpdatePurchaseOrderDto,
     document_id?: number,
     pr?: PurchaseRequestOrmEntity,
     po_number?: string,
   ): PurchaseOrderEntity {
     const builder = PurchaseOrderEntity.builder();
 
-    if (dto.purchase_request_id) {
+    if ('purchase_request_id' in dto) {
       builder.setPurchaseRequestId(dto.purchase_request_id);
     }
 
@@ -72,6 +73,7 @@ export class PurchaseOrderDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.total = entity.total;
 
     response.purchase_request = entity.purchaseRequest
       ? this.purchaseRequestMapper.toResponse(entity.purchaseRequest)
@@ -90,11 +92,11 @@ export class PurchaseOrderDataMapper {
         return this.purchaseOrderItemMapper.toResponse(item);
       }) ?? null;
 
-    response.selected_vendor = entity.selectedVendor
-      ? entity.selectedVendor.map((vendor) =>
-          this.selectedVendorMapper.toResponse(vendor),
-        )
-      : null;
+    // response.selected_vendor = entity.selectedVendor
+    //   ? entity.selectedVendor.map((vendor) =>
+    //       this.selectedVendorMapper.toResponse(vendor),
+    //     )
+    //   : null;
 
     return response;
   }

@@ -15,6 +15,7 @@
     "IS_INT": "{property} must be an integer.",
     "YEAR_MUST_BE_CURRENT_OR_NEXT": "{property} must be this year or next year.",
     "MUST_BE_YEAR_FORMAT": "{property} must be a 4-digit year (e.g. 2025).",
-    "IS_DATE": "{property} must be a valid date."
+    "IS_DATE": "{property} must be a valid date.",
+    "IS_ENUM_TYPE": "{property} must be either 'vendor' or 'budget_item_detail'."
 
 }

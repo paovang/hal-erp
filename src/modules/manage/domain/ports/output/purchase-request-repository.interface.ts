@@ -22,6 +22,9 @@ export interface IReadPurchaseRequestRepository {
     query: PurchaseRequestQueryDto,
     manager: EntityManager,
     departmentId?: number,
+    user_id?: number,
+    min?: number,
+    max?: number,
   ): Promise<ResponseResult<PurchaseRequestEntity>>;
   findOne(
     id: PurchaseRequestId,

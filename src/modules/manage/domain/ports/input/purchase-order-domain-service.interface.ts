@@ -3,6 +3,7 @@ import { PurchaseOrderQueryDto } from '@src/modules/manage/application/dto/query
 import { EntityManager } from 'typeorm';
 import { PurchaseOrderEntity } from '../../entities/purchase-order.entity';
 import { CreatePurchaseOrderDto } from '@src/modules/manage/application/dto/create/purchaseOrder/create.dto';
+import { UpdatePurchaseOrderDto } from '@src/modules/manage/application/dto/create/purchaseOrder/update.dto';
 
 export interface IPurchaseOrderServiceInterface {
   getAll(
@@ -20,10 +21,17 @@ export interface IPurchaseOrderServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<PurchaseOrderEntity>>;
 
-  //   update(
-  //     id: number,
-  //     dto: UpdatePositionDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<PositionEntity>>;
-  //   delete(id: number, manager?: EntityManager): Promise<void>;
+  update(
+    id: number,
+    dto: UpdatePurchaseOrderDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseOrderEntity>>;
+
+  updateBudgetItem(
+    id: number,
+    dto: UpdatePurchaseOrderDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseOrderEntity>>;
+
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

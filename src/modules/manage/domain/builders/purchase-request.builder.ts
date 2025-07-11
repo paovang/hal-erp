@@ -14,6 +14,7 @@ export class PurchaseRequestBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  total: number | 0;
   purchaseRequestItem: PurchaseRequestItemEntity[] | null;
   document: DocumentEntity | null;
   user_approval: UserApprovalEntity | null;
@@ -60,6 +61,11 @@ export class PurchaseRequestBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setTotal(total: number | 0): this {
+    this.total = total;
     return this;
   }
 

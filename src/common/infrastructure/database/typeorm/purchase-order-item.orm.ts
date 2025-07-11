@@ -7,7 +7,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -15,7 +14,8 @@ import {
 import { PurchaseOrderOrmEntity } from './purchase-order.orm';
 import { PurchaseRequestItemOrmEntity } from './purchase-request-item.orm';
 import { BudgetItemDetailOrmEntity } from './budget-item-detail.orm';
-import { PurchaseOrderItemQuoteOrmEntity } from './purchase-order-item-quote.orm';
+import { SelectStatus } from '@src/modules/manage/application/constants/status-key.const';
+import { PurchaseOrderSelectedVendorOrmEntity } from './purchase-order-selected-vendor.orm';
 
 @Entity('purchase_order_items')
 export class PurchaseOrderItemOrmEntity {
@@ -53,7 +53,7 @@ export class PurchaseOrderItemOrmEntity {
   @Index()
   @Column({ nullable: true })
   budget_item_detail_id?: number;
-  @OneToOne(
+  @ManyToOne(
     () => BudgetItemDetailOrmEntity,
     (budget_item_details) => budget_item_details.purchase_order_items,
     {
@@ -65,8 +65,32 @@ export class PurchaseOrderItemOrmEntity {
   budget_item_details: Relation<BudgetItemDetailOrmEntity>;
 
   @Index()
+  @Column({ type: 'integer', nullable: true })
+  quantity?: number;
+
+  @Index()
+  @Column({ type: 'double precision', nullable: true })
+  price?: number;
+
+  @Index()
+  @Column({ type: 'double precision', nullable: true })
+  total?: number;
+
+  @Index()
   @Column({ type: 'text', nullable: true })
   remark?: string;
+
+  @Column({
+    type: 'enum',
+    enum: SelectStatus,
+    nullable: true,
+    default: SelectStatus.TRUE,
+  })
+  is_vat?: SelectStatus;
+
+  // @Index()
+  // @Column({ type: 'double precision', nullable: true })
+  // vat?: number;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
@@ -80,9 +104,11 @@ export class PurchaseOrderItemOrmEntity {
   deleted_at: Date | null;
 
   @OneToMany(
-    () => PurchaseOrderItemQuoteOrmEntity,
-    (purchase_order_item_quotes) =>
-      purchase_order_item_quotes.purchase_order_items,
+    () => PurchaseOrderSelectedVendorOrmEntity,
+    (purchase_order_selected_vendors) =>
+      purchase_order_selected_vendors.purchase_order_items,
   )
-  purchase_order_item_quotes: Relation<PurchaseOrderItemQuoteOrmEntity[]>;
+  purchase_order_selected_vendors: Relation<
+    PurchaseOrderSelectedVendorOrmEntity[]
+  >;
 }

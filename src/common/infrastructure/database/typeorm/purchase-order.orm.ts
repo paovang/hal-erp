@@ -14,7 +14,6 @@ import {
 } from 'typeorm';
 import { PurchaseRequestOrmEntity } from './purchase-request.orm';
 import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
-import { PurchaseOrderSelectedVendorOrmEntity } from './purchase-order-selected-vendor.orm';
 import { DocumentOrmEntity } from './document.orm';
 
 @Entity('purchase_orders')
@@ -79,12 +78,12 @@ export class PurchaseOrderOrmEntity {
   )
   purchase_order_items: Relation<PurchaseOrderItemOrmEntity[]>;
 
-  @OneToMany(
-    () => PurchaseOrderSelectedVendorOrmEntity,
-    (purchase_order_selected_vendors) =>
-      purchase_order_selected_vendors.purchase_orders,
-  )
-  purchase_order_selected_vendors: Relation<
-    PurchaseOrderSelectedVendorOrmEntity[]
-  >;
+  // @OneToMany(
+  //   () => PurchaseOrderSelectedVendorOrmEntity,
+  //   (purchase_order_selected_vendors) =>
+  //     purchase_order_selected_vendors.purchase_orders,
+  // )
+  // purchase_order_selected_vendors: Relation<
+  //   PurchaseOrderSelectedVendorOrmEntity[]
+  // >;
 }

@@ -5,6 +5,10 @@ export const selectPurchaseOrderItems = [
   'purchase_order_items.purchase_request_item_id',
   'purchase_order_items.budget_item_detail_id',
   'purchase_order_items.remark',
+  'purchase_order_items.price',
+  'purchase_order_items.quantity',
+  'purchase_order_items.total',
+  'purchase_order_items.is_vat',
   'purchase_order_items.created_at',
   'purchase_order_items.updated_at',
 ];
@@ -12,24 +16,26 @@ export const selectPurchaseOrderItems = [
 // select purchase order selected vendors
 export const selectPurchaseOrderSelectedVendors = [
   'purchase_order_selected_vendors.id',
-  'purchase_order_selected_vendors.purchase_order_id',
+  'purchase_order_selected_vendors.purchase_order_item_id',
   'purchase_order_selected_vendors.vendor_id',
   'purchase_order_selected_vendors.filename',
+  'purchase_order_selected_vendors.reason',
+  'purchase_order_selected_vendors.is_selected',
   'purchase_order_selected_vendors.created_at',
   'purchase_order_selected_vendors.updated_at',
 ];
 
 // select quotes
-export const selectQuotes = [
-  'quotes.id',
-  'quotes.purchase_order_item_id',
-  'quotes.vendor_id',
-  'quotes.price',
-  'quotes.total',
-  'quotes.is_selected',
-  'quotes.created_at',
-  'quotes.updated_at',
-];
+// export const selectQuotes = [
+//   'quotes.id',
+//   'quotes.purchase_order_item_id',
+//   'quotes.vendor_id',
+//   'quotes.price',
+//   'quotes.total',
+//   'quotes.is_selected',
+//   'quotes.created_at',
+//   'quotes.updated_at',
+// ];
 
 // select purchase requests
 export const selectPurchaseRequests = [

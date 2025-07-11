@@ -10,6 +10,10 @@ import { GetAllQuery } from '../queries/purchaseOrder/get-all.query';
 import { GetOneQuery } from '../queries/purchaseOrder/get-one.query';
 import { CreatePurchaseOrderDto } from '../dto/create/purchaseOrder/create.dto';
 import { CreateCommand } from '../commands/purchaseOrder/create.command';
+import { UpdatePurchaseOrderDto } from '../dto/create/purchaseOrder/update.dto';
+import { UpdateCommand } from '../commands/purchaseOrder/update.command';
+import { UpdateBudgetItemDetailCommand } from '../commands/purchaseOrder/update-budget-item-detail.command';
+import { DeleteCommand } from '../commands/purchaseOrder/delete.command';
 
 @Injectable()
 export class PurchaseOrderService implements IPurchaseOrderServiceInterface {
@@ -44,6 +48,36 @@ export class PurchaseOrderService implements IPurchaseOrderServiceInterface {
   ): Promise<ResponseResult<PurchaseOrderEntity>> {
     return await this._commandBus.execute(
       new CreateCommand(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async update(
+    id: number,
+    dto: UpdatePurchaseOrderDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseOrderEntity>> {
+    return await this._commandBus.execute(
+      new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async updateBudgetItem(
+    id: number,
+    dto: UpdatePurchaseOrderDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseOrderEntity>> {
+    return await this._commandBus.execute(
+      new UpdateBudgetItemDetailCommand(
+        id,
+        dto,
+        manager ?? this._readEntityManager,
+      ),
+    );
+  }
+
+  async delete(id: number, manager?: EntityManager): Promise<void> {
+    return await this._commandBus.execute(
+      new DeleteCommand(id, manager ?? this._readEntityManager),
     );
   }
 }
