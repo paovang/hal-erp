@@ -1,6 +1,6 @@
 import { DocumentEntity } from '../entities/document.entity';
 import { PurchaseOrderItemEntity } from '../entities/purchase-order-item.entity';
-import { PurchaseOrderSelectedVendorEntity } from '../entities/purchase-order-selected-vendor.entity';
+// import { PurchaseOrderSelectedVendorEntity } from '../entities/purchase-order-selected-vendor.entity';
 import { PurchaseOrderEntity } from '../entities/purchase-order.entity';
 import { PurchaseRequestEntity } from '../entities/purchase-request.entity';
 import { UserApprovalEntity } from '../entities/user-approval.entity';
@@ -17,9 +17,10 @@ export class PurchaseOrderBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  total: number | 0;
   purchaseRequest: PurchaseRequestEntity | null;
   orderItem: PurchaseOrderItemEntity[] | null;
-  selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
+  // selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
   document: DocumentEntity | null;
   user_approval: UserApprovalEntity | null;
 
@@ -73,6 +74,11 @@ export class PurchaseOrderBuilder {
     return this;
   }
 
+  setTotal(total: number | 0): this {
+    this.total = total;
+    return this;
+  }
+
   setPurchaseRequest(purchaseRequest: PurchaseRequestEntity | null): this {
     this.purchaseRequest = purchaseRequest;
     return this;
@@ -83,12 +89,12 @@ export class PurchaseOrderBuilder {
     return this;
   }
 
-  setSelectedVendor(
-    selectedVendor: PurchaseOrderSelectedVendorEntity[] | null,
-  ): this {
-    this.selectedVendor = selectedVendor;
-    return this;
-  }
+  // setSelectedVendor(
+  //   selectedVendor: PurchaseOrderSelectedVendorEntity[] | null,
+  // ): this {
+  //   this.selectedVendor = selectedVendor;
+  //   return this;
+  // }
 
   setDocument(document: DocumentEntity | null): this {
     this.document = document;

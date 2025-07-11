@@ -7,9 +7,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
-import { CreatePurchaseOrderSelectedVendorDto } from '../purchaseOrderSelectedVendor/create.dto';
 import { Type } from 'class-transformer';
 import { CreateDocumentDto } from '../Document/create.dto';
+import { CreatePurchaseOrderItemDto } from '../purchaseOrderItem/create.dto';
 
 export class CreatePurchaseOrderDto {
   @ApiProperty()
@@ -28,6 +28,6 @@ export class CreatePurchaseOrderDto {
     message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
   })
   @ValidateNested({ each: true })
-  @Type(() => CreatePurchaseOrderSelectedVendorDto)
-  readonly selected_vendor: CreatePurchaseOrderSelectedVendorDto[];
+  @Type(() => CreatePurchaseOrderItemDto)
+  readonly items: CreatePurchaseOrderItemDto[];
 }

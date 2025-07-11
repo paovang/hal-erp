@@ -15,6 +15,7 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _total: number | 0;
   private readonly _purchaseRequestItems: PurchaseRequestItemEntity[] | null;
   private readonly _document: DocumentEntity | null;
   private readonly _user_approval: UserApprovalEntity | null;
@@ -30,6 +31,7 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._total = builder.total;
     this._purchaseRequestItems = builder.purchaseRequestItem ?? null;
     this._document = builder.document ?? null;
     this._user_approval = builder.user_approval ?? null;
@@ -65,6 +67,10 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get total(): number | 0 {
+    return this._total;
   }
 
   get document(): DocumentEntity | null {

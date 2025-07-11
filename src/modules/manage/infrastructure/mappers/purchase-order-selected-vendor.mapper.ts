@@ -8,6 +8,7 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { SelectStatus } from '../../application/constants/status-key.const';
 
 @Injectable()
 export class PurchaseOrderSelectedVendorDataAccessMapper {
@@ -28,10 +29,13 @@ export class PurchaseOrderSelectedVendorDataAccessMapper {
       mediaOrmEntity.id = id.value;
     }
 
-    mediaOrmEntity.purchase_order_id = svEntity.purchase_order_id;
+    mediaOrmEntity.purchase_order_item_id = svEntity.purchase_order_item_id;
     mediaOrmEntity.vendor_id = svEntity.vendor_id;
     mediaOrmEntity.filename = svEntity.filename;
     mediaOrmEntity.reason = svEntity.reason;
+    mediaOrmEntity.is_selected = svEntity.selected
+      ? SelectStatus.TRUE
+      : SelectStatus.FALSE;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = svEntity.createdAt ?? new Date(now);
     }
@@ -47,10 +51,15 @@ export class PurchaseOrderSelectedVendorDataAccessMapper {
       .setPurchaseOrderSelectedVendorId(
         new PurchaseOrderSelectedVendorId(ormData.id),
       )
-      .setPurchaseOrderId(ormData.purchase_order_id ?? 0)
+      .setPurchaseOrderItemId(ormData.purchase_order_item_id ?? 0)
       .setVendorId(ormData.vendor_id ?? 0)
       .setFilename(ormData.filename ?? '')
       .setReason(ormData.reason ?? '')
+      .setSelected(
+        (ormData.is_selected as SelectStatus) === SelectStatus.TRUE
+          ? true
+          : false,
+      )
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 

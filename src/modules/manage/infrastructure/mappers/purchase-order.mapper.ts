@@ -51,6 +51,16 @@ export class PurchaseOrderDataAccessMapper {
   }
 
   toEntity(ormData: PurchaseOrderOrmEntity): PurchaseOrderEntity {
+    const items = ormData.purchase_order_items || [];
+    interface PurchaseRequestItemLike {
+      total?: number;
+      [key: string]: any;
+    }
+
+    const total: number = items.reduce(
+      (sum: number, item: PurchaseRequestItemLike) => sum + (item.total || 0),
+      0,
+    );
     const builder = PurchaseOrderEntity.builder()
       .setPurchaseOrderId(new PurchaseOrderId(ormData.id))
       .setPurchaseRequestId(ormData.purchase_request_id ?? 0)
@@ -59,7 +69,8 @@ export class PurchaseOrderDataAccessMapper {
       .setExpiredDate(ormData.expired_date ?? new Date())
       .setPurposes(ormData.purposes ?? '')
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at);
+      .setUpdatedAt(ormData.updated_at)
+      .setTotal(total);
 
     if (ormData.purchase_requests) {
       builder.setPurchaseRequest(
@@ -84,13 +95,13 @@ export class PurchaseOrderDataAccessMapper {
       );
     }
 
-    if (ormData.purchase_order_selected_vendors) {
-      builder.setSelectedVendor(
-        ormData.purchase_order_selected_vendors.map((vendor) =>
-          this._selectedVendor.toEntity(vendor),
-        ),
-      );
-    }
+    // if (ormData.purchase_order_selected_vendors) {
+    //   builder.setSelectedVendor(
+    //     ormData.purchase_order_selected_vendors.map((vendor) =>
+    //       this._selectedVendor.toEntity(vendor),
+    //     ),
+    //   );
+    // }
 
     return builder.build();
   }

@@ -11,7 +11,6 @@ import {
 } from 'typeorm';
 import { VendorBankAccountOrmEntity } from './vendor_bank_account.orm';
 import { PurchaseOrderSelectedVendorOrmEntity } from './purchase-order-selected-vendor.orm';
-import { PurchaseOrderItemQuoteOrmEntity } from './purchase-order-item-quote.orm';
 
 @Entity('vendors')
 export class VendorOrmEntity {
@@ -51,10 +50,4 @@ export class VendorOrmEntity {
   purchase_order_selected_vendors: Relation<
     PurchaseOrderSelectedVendorOrmEntity[]
   >;
-
-  @OneToMany(
-    () => PurchaseOrderItemQuoteOrmEntity,
-    (purchase_order_item_quotes) => purchase_order_item_quotes.vendors,
-  )
-  purchase_order_item_quotes: Relation<PurchaseOrderItemQuoteOrmEntity[]>;
 }

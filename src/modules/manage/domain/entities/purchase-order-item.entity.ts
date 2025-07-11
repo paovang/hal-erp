@@ -2,19 +2,27 @@ import { Entity } from '@src/common/domain/entities/entity';
 import { PurchaseOrderItemId } from '../value-objects/purchase-order-item-id.vo';
 import { BadRequestException } from '@nestjs/common';
 import { PurchaseOrderItemBuilder } from '../builders/purchase-order-item.builder';
-import { PurchaseOrderItemQuoteEntity } from './purchase-order-item-quote.entity';
+// import { PurchaseOrderItemQuoteEntity } from './purchase-order-item-quote.entity';
 import { BudgetItemDetailEntity } from './budget-item-detail.entity';
+import { PurchaseOrderSelectedVendorEntity } from './purchase-order-selected-vendor.entity';
 
 export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   private readonly _purchase_order_id: number;
   private readonly _purchase_request_item_id: number;
   private readonly _budget_item_detail_id: number;
   private readonly _remark: string;
+  private readonly _quantity: number;
+  private readonly _price: number;
+  private readonly _total: number;
+  private readonly _is_vat: boolean;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
-  private readonly _quote: PurchaseOrderItemQuoteEntity[] | null;
+  private readonly _vat_total: number | 0;
+  private readonly _total_with_vat: number | 0;
+  // private readonly _quote: PurchaseOrderItemQuoteEntity[] | null;
   private readonly _budgetItemDetail: BudgetItemDetailEntity | null;
+  private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
 
   private constructor(builder: PurchaseOrderItemBuilder) {
     super();
@@ -23,11 +31,17 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     this._purchase_request_item_id = builder.purchase_request_item_id;
     this._budget_item_detail_id = builder.budget_item_detail_id;
     this._remark = builder.remark;
+    this._quantity = builder.quantity;
+    this._price = builder.price;
+    this._total = builder.total;
+    this._is_vat = builder.is_vat;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
-    this._quote = builder.quote ?? null;
+    this._vat_total = builder.vat_total;
+    this._total_with_vat = builder.total_with_vat;
     this._budgetItemDetail = builder.budgetItemDetail ?? null;
+    this._selectedVendor = builder.selectedVendor ?? null;
   }
 
   get purchase_order_id(): number {
@@ -46,6 +60,22 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     return this._remark;
   }
 
+  get quantity(): number {
+    return this._quantity;
+  }
+
+  get price(): number {
+    return this._price;
+  }
+
+  get total(): number {
+    return this._total;
+  }
+
+  get is_vat(): boolean {
+    return this._is_vat;
+  }
+
   get createdAt(): Date {
     return this._createdAt;
   }
@@ -58,12 +88,24 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     return this._deletedAt;
   }
 
+  get vat_total(): number | 0 {
+    return this._vat_total;
+  }
+
+  get total_with_vat(): number | 0 {
+    return this._total_with_vat;
+  }
+
   get budgetItemDetail(): BudgetItemDetailEntity | null {
     return this._budgetItemDetail;
   }
 
-  get quote(): PurchaseOrderItemQuoteEntity[] | null {
-    return this._quote;
+  // get quote(): PurchaseOrderItemQuoteEntity[] | null {
+  //   return this._quote;
+  // }
+
+  get selectedVendor(): PurchaseOrderSelectedVendorEntity[] | null {
+    return this._selectedVendor;
   }
 
   public static builder(): PurchaseOrderItemBuilder {

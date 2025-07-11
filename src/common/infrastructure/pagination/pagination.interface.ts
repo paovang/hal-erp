@@ -22,6 +22,7 @@ export interface CursorPaginationInput {
 export type PaginationInput = StandardPaginationInput | CursorPaginationInput;
 
 export interface StandardPaginationResult<Entity> {
+  status?: StatusAmount[] | null;
   data: Entity[];
   pagination: {
     total: number;
@@ -32,6 +33,7 @@ export interface StandardPaginationResult<Entity> {
 }
 
 export interface CursorPaginationResult<Entity> {
+  status?: StatusAmount[] | null;
   data: Entity[];
   pagination: {
     limit: number;
@@ -63,4 +65,11 @@ export interface IPaginationService {
     mapper: (item: T) => Entity,
     filterOptions?: FilterOptions,
   ): Promise<PaginatedResult<Entity> | Entity[]>;
+}
+
+// Define your StatusAmount type
+export interface StatusAmount {
+  id: number;
+  status: string;
+  amount: number;
 }

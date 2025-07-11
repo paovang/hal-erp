@@ -10,8 +10,9 @@ import {
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { PurchaseOrderOrmEntity } from './purchase-order.orm';
 import { VendorOrmEntity } from './vendor.orm';
+import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
+import { SelectStatus } from '@src/modules/manage/application/constants/status-key.const';
 
 @Entity('purchase_order_selected_vendors')
 export class PurchaseOrderSelectedVendorOrmEntity {
@@ -20,17 +21,18 @@ export class PurchaseOrderSelectedVendorOrmEntity {
 
   @Index()
   @Column({ nullable: true })
-  purchase_order_id?: number;
+  purchase_order_item_id?: number;
   @ManyToOne(
-    () => PurchaseOrderOrmEntity,
-    (purchase_orders) => purchase_orders.purchase_order_selected_vendors,
+    () => PurchaseOrderItemOrmEntity,
+    (purchase_order_items) =>
+      purchase_order_items.purchase_order_selected_vendors,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   )
-  @JoinColumn({ name: 'purchase_order_id' })
-  purchase_orders: Relation<PurchaseOrderOrmEntity>;
+  @JoinColumn({ name: 'purchase_order_item_id' })
+  purchase_order_items: Relation<PurchaseOrderItemOrmEntity>;
 
   @Index()
   @Column({ nullable: true })
@@ -53,6 +55,14 @@ export class PurchaseOrderSelectedVendorOrmEntity {
   @Index()
   @Column({ type: 'text', nullable: true })
   reason?: string;
+
+  @Column({
+    type: 'enum',
+    enum: SelectStatus,
+    nullable: true,
+    default: SelectStatus.TRUE,
+  })
+  is_selected?: SelectStatus;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

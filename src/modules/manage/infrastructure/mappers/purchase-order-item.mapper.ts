@@ -2,18 +2,22 @@ import { PurchaseOrderItemOrmEntity } from '@src/common/infrastructure/database/
 import { PurchaseOrderItemId } from '../../domain/value-objects/purchase-order-item-id.vo';
 import { PurchaseOrderItemEntity } from '../../domain/entities/purchase-order-item.entity';
 import { Injectable } from '@nestjs/common';
-import { PurchaseOrderItemQuoteDataAccessMapper } from './purchase-order-item-quote.mapper';
 import { BudgetItemDetailDataAccessMapper } from './budget-item-detail.mapper';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import moment from 'moment-timezone';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import {
+  SelectStatus,
+  VAT_RATE,
+} from '../../application/constants/status-key.const';
+import { PurchaseOrderSelectedVendorDataAccessMapper } from './purchase-order-selected-vendor.mapper';
 
 @Injectable()
 export class PurchaseOrderItemDataAccessMapper {
   constructor(
-    private readonly _quote: PurchaseOrderItemQuoteDataAccessMapper,
     private readonly _budgetItemDetail: BudgetItemDetailDataAccessMapper,
+    private readonly _selectedVendor: PurchaseOrderSelectedVendorDataAccessMapper,
   ) {}
 
   toOrmEntity(
@@ -31,8 +35,16 @@ export class PurchaseOrderItemDataAccessMapper {
     mediaOrmEntity.purchase_order_id = poItemEntity.purchase_order_id;
     mediaOrmEntity.purchase_request_item_id =
       poItemEntity.purchase_request_item_id;
-    // mediaOrmEntity.budget_item_detail_id = poItemEntity.budget_item_detail_id;
+    if (method === OrmEntityMethod.UPDATE) {
+      mediaOrmEntity.budget_item_detail_id = poItemEntity.budget_item_detail_id;
+    }
     mediaOrmEntity.remark = poItemEntity.remark;
+    mediaOrmEntity.quantity = poItemEntity.quantity;
+    mediaOrmEntity.price = poItemEntity.price;
+    mediaOrmEntity.total = poItemEntity.total;
+    mediaOrmEntity.is_vat = poItemEntity.is_vat
+      ? SelectStatus.TRUE
+      : SelectStatus.FALSE;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = poItemEntity.createdAt ?? new Date(now);
     }
@@ -42,14 +54,28 @@ export class PurchaseOrderItemDataAccessMapper {
   }
 
   toEntity(ormData: PurchaseOrderItemOrmEntity): PurchaseOrderItemEntity {
+    const isVat = (ormData.is_vat as SelectStatus) === SelectStatus.TRUE;
+
+    const total = ormData.total ?? 0;
+    const vatAmount = isVat ? total * (VAT_RATE / 100) : 0;
+    const totalWithVat = total + vatAmount;
+
     const builder = PurchaseOrderItemEntity.builder()
       .setPurchaseOrderItemId(new PurchaseOrderItemId(ormData.id))
       .setPurchaseOrderId(ormData.purchase_order_id ?? 0)
       .setPurchaseRequestItemId(ormData.purchase_request_item_id ?? 0)
       .setBudgetItemDetailId(ormData.budget_item_detail_id ?? 0)
       .setRemark(ormData.remark ?? '')
+      .setQuantity(ormData.quantity ?? 0)
+      .setPrice(ormData.price ?? 0)
+      .setTotal(ormData.total ?? 0)
+      .setIsVat(
+        (ormData.is_vat as SelectStatus) === SelectStatus.TRUE ? true : false,
+      )
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at);
+      .setUpdatedAt(ormData.updated_at)
+      .setVatTotal(vatAmount)
+      .setTotalWithVat(totalWithVat);
 
     if (ormData.budget_item_details) {
       builder.setBudgetItemDetail(
@@ -57,10 +83,10 @@ export class PurchaseOrderItemDataAccessMapper {
       );
     }
 
-    if (ormData.purchase_order_item_quotes) {
-      builder.setQuote(
-        ormData.purchase_order_item_quotes.map((item) =>
-          this._quote.toEntity(item),
+    if (ormData.purchase_order_selected_vendors) {
+      builder.setSelectedVendor(
+        ormData.purchase_order_selected_vendors.map((vendor) =>
+          this._selectedVendor.toEntity(vendor),
         ),
       );
     }

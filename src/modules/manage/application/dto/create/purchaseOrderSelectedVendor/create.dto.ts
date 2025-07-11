@@ -19,5 +19,5 @@ export class CreatePurchaseOrderSelectedVendorDto {
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsBoolean({ message: i18nValidationMessage('validation.IS_BOOLEAN') })
-  readonly status: boolean;
+  readonly selected: boolean;
 }

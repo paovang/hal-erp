@@ -1,5 +1,6 @@
 export interface StandardResponseData<T> {
   data: T;
+  status?: [];
   message?: string;
 }
 

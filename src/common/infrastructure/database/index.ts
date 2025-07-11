@@ -17,7 +17,6 @@ import { PermissionGroupOrmEntity } from './typeorm/permission-group.orm';
 import { PermissionOrmEntity } from './typeorm/permission.orm';
 import { PositionOrmEntity } from './typeorm/position.orm';
 import { ProvinceOrmEntity } from './typeorm/province.orm';
-import { PurchaseOrderItemQuoteOrmEntity } from './typeorm/purchase-order-item-quote.orm';
 import { PurchaseOrderItemOrmEntity } from './typeorm/purchase-order-item.orm';
 import { PurchaseOrderSelectedVendorOrmEntity } from './typeorm/purchase-order-selected-vendor.orm';
 import { PurchaseOrderOrmEntity } from './typeorm/purchase-order.orm';
@@ -63,7 +62,6 @@ export const models = [
   PurchaseOrderOrmEntity,
   PurchaseOrderItemOrmEntity,
   PurchaseOrderSelectedVendorOrmEntity,
-  PurchaseOrderItemQuoteOrmEntity,
   UserSignatureOrmEntity,
   DocumentStatusOrmEntity,
   UserApprovalOrmEntity,

@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PurchaseOrderItemResponse } from './purchase-order-item.response';
-import { PurchaseOrderSelectedVendorResponse } from './purchase-order-selected-vendor.response';
 import { PurchaseRequestResponse } from './purchase-request.response';
 import { DocumentResponse } from './document.response';
 import { UserApprovalResponse } from './user-approval.response';
@@ -34,6 +33,9 @@ export class PurchaseOrderResponse {
   deleted_at: string | null;
 
   @ApiProperty()
+  total: number | 0;
+
+  @ApiProperty()
   purchase_request: PurchaseRequestResponse | null;
 
   @ApiProperty()
@@ -45,6 +47,6 @@ export class PurchaseOrderResponse {
   @ApiProperty()
   purchase_order_item: PurchaseOrderItemResponse[] | null;
 
-  @ApiProperty()
-  selected_vendor: PurchaseOrderSelectedVendorResponse[] | null;
+  // @ApiProperty()
+  // selected_vendor: PurchaseOrderSelectedVendorResponse[] | null;
 }

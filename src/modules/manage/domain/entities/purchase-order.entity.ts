@@ -3,7 +3,7 @@ import { PurchaseOrderId } from '../value-objects/purchase-order-id.vo';
 import { PurchaseOrderBuilder } from '../builders/purchase-order.builder';
 import { BadRequestException } from '@nestjs/common';
 import { PurchaseOrderItemEntity } from './purchase-order-item.entity';
-import { PurchaseOrderSelectedVendorEntity } from './purchase-order-selected-vendor.entity';
+// import { PurchaseOrderSelectedVendorEntity } from './purchase-order-selected-vendor.entity';
 import { PurchaseRequestEntity } from './purchase-request.entity';
 import { DocumentEntity } from './document.entity';
 import { UserApprovalEntity } from './user-approval.entity';
@@ -18,9 +18,10 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _total: number | 0;
   private readonly _purchaseRequest: PurchaseRequestEntity | null;
   private readonly _orderItem: PurchaseOrderItemEntity[] | null;
-  private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
+  // private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
   private readonly _document: DocumentEntity | null;
   private readonly _user_approval: UserApprovalEntity | null;
 
@@ -36,9 +37,10 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._total = builder.total;
     this._purchaseRequest = builder.purchaseRequest ?? null;
     this._orderItem = builder.orderItem ?? null;
-    this._selectedVendor = builder.selectedVendor ?? null;
+    // this._selectedVendor = builder.selectedVendor ?? null;
     this._document = builder.document ?? null;
     this._user_approval = builder.user_approval ?? null;
   }
@@ -79,6 +81,10 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
     return this._deletedAt;
   }
 
+  get total(): number | 0 {
+    return this._total;
+  }
+
   get purchaseRequest(): PurchaseRequestEntity | null {
     return this._purchaseRequest;
   }
@@ -87,9 +93,9 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
     return this._orderItem;
   }
 
-  get selectedVendor(): PurchaseOrderSelectedVendorEntity[] | null {
-    return this._selectedVendor;
-  }
+  // get selectedVendor(): PurchaseOrderSelectedVendorEntity[] | null {
+  //   return this._selectedVendor;
+  // }
 
   get document(): DocumentEntity | null {
     return this._document;

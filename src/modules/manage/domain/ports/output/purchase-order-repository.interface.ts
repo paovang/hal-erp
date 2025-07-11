@@ -8,6 +8,7 @@ export interface IReadPurchaseOrderRepository {
   findAll(
     query: PurchaseOrderQueryDto,
     manager: EntityManager,
+    departmentId?: number,
   ): Promise<ResponseResult<PurchaseOrderEntity>>;
 
   findOne(
@@ -27,5 +28,5 @@ export interface IWritePurchaseOrderRepository {
   //   manager: EntityManager,
   // ): Promise<ResponseResult<PurchaseRequestItemEntity>>;
 
-  // delete(id: PurchaseRequestItemId, manager: EntityManager): Promise<void>;
+  delete(id: PurchaseOrderId, manager: EntityManager): Promise<void>;
 }
