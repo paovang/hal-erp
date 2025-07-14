@@ -8,7 +8,7 @@ import { ApprovalWorkflowStepEntity } from './approval-workflow-step.entity';
 
 export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
   private readonly _user_approval_id: number;
-  private readonly _approval_workflow_step_id: number;
+  private readonly _step_number: number;
   private readonly _approver_id: number;
   private readonly _approved_at: Date | null;
   private readonly _status_id: number;
@@ -24,7 +24,7 @@ export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
     super();
     this.setId(builder.userApprovalStepId);
     this._user_approval_id = builder.user_approval_id;
-    this._approval_workflow_step_id = builder.approval_workflow_step_id;
+    this._step_number = builder.step_number;
     this._approver_id = builder.approver_id;
     this._approved_at = builder.approved_at;
     this._status_id = builder.status_id;
@@ -41,8 +41,8 @@ export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
     return this._user_approval_id;
   }
 
-  get approval_workflow_step_id(): number {
-    return this._approval_workflow_step_id;
+  get step_number(): number {
+    return this._step_number;
   }
 
   get approver_id(): number {

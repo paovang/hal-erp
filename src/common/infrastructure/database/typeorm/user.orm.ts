@@ -18,6 +18,9 @@ import { UserHasPermissionOrmEntity } from './model-has-permission.orm';
 import { DocumentOrmEntity } from './document.orm';
 import { UserSignatureOrmEntity } from './user-signature.orm';
 import { UserApprovalStepOrmEntity } from './user-approval-step.orm';
+import { DepartmentOrmEntity } from './department.orm';
+import { DocumentApproverOrmEntity } from './document-approver.orm';
+import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -114,4 +117,19 @@ export class UserOrmEntity {
     (user_signatures) => user_signatures.users,
   )
   user_signatures: Relation<UserSignatureOrmEntity[]>;
+
+  @OneToMany(() => DepartmentOrmEntity, (departments) => departments.users)
+  departments: Relation<DepartmentOrmEntity[]>;
+
+  @OneToMany(
+    () => DocumentApproverOrmEntity,
+    (document_approvers) => document_approvers.users,
+  )
+  document_approvers: Relation<DocumentApproverOrmEntity[]>;
+
+  @OneToMany(
+    () => ApprovalWorkflowStepOrmEntity,
+    (approval_workflow_steps) => approval_workflow_steps.users,
+  )
+  approval_workflow_steps: Relation<ApprovalWorkflowStepOrmEntity[]>;
 }

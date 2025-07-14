@@ -7,7 +7,7 @@ import { UserApprovalStepId } from '../value-objects/user-approval-step-id.vo';
 export class UserApprovalStepBuilder {
   userApprovalStepId: UserApprovalStepId;
   user_approval_id: number;
-  approval_workflow_step_id: number;
+  step_number: number;
   approver_id: number;
   approved_at: Date | null;
   status_id: number;
@@ -29,8 +29,8 @@ export class UserApprovalStepBuilder {
     return this;
   }
 
-  setApprovalWorkflowStepId(approval_workflow_step_id: number): this {
-    this.approval_workflow_step_id = approval_workflow_step_id;
+  setStepNumber(step_number: number): this {
+    this.step_number = step_number;
     return this;
   }
 

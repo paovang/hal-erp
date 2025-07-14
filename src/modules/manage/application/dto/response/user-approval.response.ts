@@ -11,9 +11,6 @@ export class UserApprovalResponse {
   document_id: number;
 
   @ApiProperty()
-  approval_workflow_id: number;
-
-  @ApiProperty()
   status_id: number;
 
   @ApiProperty()

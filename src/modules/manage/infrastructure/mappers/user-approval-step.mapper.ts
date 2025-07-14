@@ -4,7 +4,6 @@ import { UserApprovalStepId } from '../../domain/value-objects/user-approval-ste
 import { DocumentStatusDataAccessMapper } from './document-status.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { Injectable } from '@nestjs/common';
-import { ApprovalWorkflowStepDataAccessMapper } from './approval-workflow-step.mapper';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
@@ -15,7 +14,6 @@ export class UserApprovalStepDataAccessMapper {
   constructor(
     private readonly DocumentStatusDataMapper: DocumentStatusDataAccessMapper,
     private readonly userDataMapper: UserDataAccessMapper,
-    private readonly approvalWorkflowStepDataMapper: ApprovalWorkflowStepDataAccessMapper,
   ) {}
 
   toOrmEntity(
@@ -38,8 +36,7 @@ export class UserApprovalStepDataAccessMapper {
     mediaOrmEntity.remark = userApprovalStepEntity.remark ?? '';
     mediaOrmEntity.status_id = userApprovalStepEntity.status_id;
     mediaOrmEntity.user_approval_id = userApprovalStepEntity.user_approval_id;
-    mediaOrmEntity.approval_workflow_step_id =
-      userApprovalStepEntity.approval_workflow_step_id;
+    mediaOrmEntity.step_number = userApprovalStepEntity.step_number;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at =
         userApprovalStepEntity.createdAt ?? new Date(now);
@@ -53,7 +50,7 @@ export class UserApprovalStepDataAccessMapper {
     const build = UserApprovalStepEntity.builder()
       .setUserApprovalStepId(new UserApprovalStepId(ormData.id))
       .setUserApprovalId(ormData.user_approval_id ?? 0)
-      .setApprovalWorkflowStepId(ormData.approval_workflow_step_id ?? 0)
+      .setStepNumber(ormData.step_number ?? 0)
       .setApproverId(ormData.approver_id ?? 0)
       .setApprovedAt(ormData.approved_at ?? null)
       .setStatusId(ormData.status_id ?? 0)
@@ -67,14 +64,6 @@ export class UserApprovalStepDataAccessMapper {
 
     if (ormData.approver) {
       build.setApprover(this.userDataMapper.toEntity(ormData.approver));
-    }
-
-    if (ormData.approval_workflow_steps) {
-      build.setApprovalWorkflowStep(
-        this.approvalWorkflowStepDataMapper.toEntity(
-          ormData.approval_workflow_steps,
-        ),
-      );
     }
 
     return build.build();

@@ -6,14 +6,14 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { ApprovalWorkflowOrmEntity } from './approval-workflow.orm';
 import { DepartmentOrmEntity } from './department.orm';
-import { UserApprovalStepOrmEntity } from './user-approval-step.orm';
+import { EnumWorkflowStep } from '@src/modules/manage/application/constants/status-key.const';
+import { UserOrmEntity } from './user.orm';
 
 @Entity('approval_workflow_steps')
 export class ApprovalWorkflowStepOrmEntity {
@@ -43,6 +43,15 @@ export class ApprovalWorkflowStepOrmEntity {
   step_number?: number;
 
   @Index()
+  @Column({
+    type: 'enum',
+    enum: EnumWorkflowStep,
+    nullable: true,
+    default: EnumWorkflowStep.DEPARTMENT,
+  })
+  type?: EnumWorkflowStep;
+
+  @Index()
   @Column({ nullable: true })
   department_id?: number;
   @ManyToOne(
@@ -56,6 +65,16 @@ export class ApprovalWorkflowStepOrmEntity {
   @JoinColumn({ name: 'department_id' })
   departments: Relation<DepartmentOrmEntity>;
 
+  @Index()
+  @Column({ nullable: true })
+  user_id?: number;
+  @ManyToOne(() => UserOrmEntity, (users) => users.approval_workflow_steps, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
+  users: Relation<UserOrmEntity>;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
@@ -66,10 +85,4 @@ export class ApprovalWorkflowStepOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
-
-  @OneToMany(
-    () => UserApprovalStepOrmEntity,
-    (user_approval_steps) => user_approval_steps.approval_workflow_steps,
-  )
-  user_approval_steps: Relation<UserApprovalStepOrmEntity[]>;
 }

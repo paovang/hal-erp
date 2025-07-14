@@ -13,7 +13,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { DocumentOrmEntity } from './document.orm';
-import { ApprovalWorkflowOrmEntity } from './approval-workflow.orm';
 import { DocumentStatusOrmEntity } from './document-statuse.orm';
 import { UserApprovalStepOrmEntity } from './user-approval-step.orm';
 
@@ -32,19 +31,19 @@ export class UserApprovalOrmEntity {
   @JoinColumn({ name: 'document_id' })
   documents: Relation<DocumentOrmEntity>;
 
-  @Index()
-  @Column({ nullable: true })
-  approval_workflow_id?: number;
-  @ManyToOne(
-    () => ApprovalWorkflowOrmEntity,
-    (approval_workflows) => approval_workflows.user_approvals,
-    {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
-  )
-  @JoinColumn({ name: 'approval_workflow_id' })
-  approval_workflows: Relation<ApprovalWorkflowOrmEntity>;
+  // @Index()
+  // @Column({ nullable: true })
+  // approval_workflow_id?: number;
+  // @ManyToOne(
+  //   () => ApprovalWorkflowOrmEntity,
+  //   (approval_workflows) => approval_workflows.user_approvals,
+  //   {
+  //     onDelete: 'CASCADE',
+  //     onUpdate: 'CASCADE',
+  //   },
+  // )
+  // @JoinColumn({ name: 'approval_workflow_id' })
+  // approval_workflows: Relation<ApprovalWorkflowOrmEntity>;
 
   @Index()
   @Column({ nullable: true })

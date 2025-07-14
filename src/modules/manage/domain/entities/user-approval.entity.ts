@@ -7,7 +7,6 @@ import { DocumentStatusEntity } from './document-status.entity';
 
 export class UserApprovalEntity extends Entity<UserApprovalId> {
   private readonly _document_id: number;
-  private readonly _approval_workflow_id: number;
   private readonly _status_id: number;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
@@ -19,7 +18,6 @@ export class UserApprovalEntity extends Entity<UserApprovalId> {
     super();
     this.setId(builder.userApprovalId);
     this._document_id = builder.document_id;
-    this._approval_workflow_id = builder.approval_workflow_id;
     this._status_id = builder.status_id;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
@@ -30,10 +28,6 @@ export class UserApprovalEntity extends Entity<UserApprovalId> {
 
   get document_id(): number {
     return this._document_id;
-  }
-
-  get approval_workflow_id(): number {
-    return this._approval_workflow_id;
   }
 
   get status_id(): number {

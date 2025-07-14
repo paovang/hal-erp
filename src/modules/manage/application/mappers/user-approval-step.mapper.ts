@@ -6,13 +6,13 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DocumentStatusDataMapper } from './document-status.mapper';
 import { UserDataMapper } from './user.mapper';
-import { ApprovalWorkflowStepDataMapper } from './approval-workflow-step.mapper';
 import { ApprovalDto } from '../dto/create/userApprovalStep/update-statue.dto';
 import { UserApprovalStepId } from '../../domain/value-objects/user-approval-step-id.vo';
 
-interface CustomApprovalDto extends ApprovalDto {
+interface CustomApprovalDto {
   user_approval_id: number;
-  approval_workflow_step_id: number;
+  step_number: number;
+  statusId: number;
 }
 
 @Injectable()
@@ -20,11 +20,10 @@ export class UserApprovalStepDataMapper {
   constructor(
     private readonly documentStatusDataMapper: DocumentStatusDataMapper,
     private readonly userDataMapper: UserDataMapper,
-    private readonly approvalWorkflowStepDataMapper: ApprovalWorkflowStepDataMapper,
   ) {}
   toEntity(
     dto: ApprovalDto,
-    userApprovalId?: number,
+    approver?: number,
     userApprovalStepId?: number,
   ): UserApprovalStepEntity {
     const builder = UserApprovalStepEntity.builder();
@@ -33,8 +32,8 @@ export class UserApprovalStepDataMapper {
       builder.setUserApprovalStepId(new UserApprovalStepId(userApprovalStepId));
     }
 
-    if (userApprovalId) {
-      builder.setApproverId(userApprovalId);
+    if (approver) {
+      builder.setApproverId(approver);
     }
 
     if (dto.statusId) {
@@ -51,8 +50,7 @@ export class UserApprovalStepDataMapper {
   toEntityForInsert(dto: CustomApprovalDto): UserApprovalStepEntity {
     const builder = UserApprovalStepEntity.builder();
     builder.setUserApprovalId(dto.user_approval_id);
-    builder.setApprovalWorkflowStepId(dto.approval_workflow_step_id);
-    builder.setApproverId(dto.user_approval_id);
+    builder.setStepNumber(dto.step_number);
     builder.setStatusId(dto.statusId);
     return builder.build();
   }
@@ -62,9 +60,7 @@ export class UserApprovalStepDataMapper {
     const response = new UserApprovalStepResponse();
     response.id = Number(entity.getId().value);
     response.user_approval_id = Number(entity.user_approval_id);
-    response.approval_workflow_step_id = Number(
-      entity.approval_workflow_step_id,
-    );
+    response.step_number = Number(entity.step_number);
     response.approver_id = Number(entity.approver_id);
     response.approved_at = entity.approved_at
       ? moment
@@ -86,12 +82,6 @@ export class UserApprovalStepDataMapper {
 
     response.approver = entity.user
       ? this.userDataMapper.toResponse(entity.user)
-      : null;
-
-    response.approval_workflow_step = entity.approvalWorkflowStep
-      ? this.approvalWorkflowStepDataMapper.toResponse(
-          entity.approvalWorkflowStep,
-        )
       : null;
 
     return response;

@@ -6,7 +6,6 @@ import { UserApprovalId } from '../value-objects/user-approval-id.vo';
 export class UserApprovalBuilder {
   userApprovalId: UserApprovalId;
   document_id: number;
-  approval_workflow_id: number;
   status_id: number;
   createdAt!: Date;
   updatedAt!: Date | null;
@@ -21,11 +20,6 @@ export class UserApprovalBuilder {
 
   setDocumentId(document_id: number): this {
     this.document_id = document_id;
-    return this;
-  }
-
-  setApprovalWorkflowId(approval_workflow_id: number): this {
-    this.approval_workflow_id = approval_workflow_id;
     return this;
   }
 

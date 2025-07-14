@@ -29,8 +29,6 @@ export class UserApprovalDataAccessMapper {
     }
 
     mediaOrmEntity.document_id = userApprovalEntity.document_id;
-    mediaOrmEntity.approval_workflow_id =
-      userApprovalEntity.approval_workflow_id;
     mediaOrmEntity.status_id = userApprovalEntity.status_id;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = userApprovalEntity.createdAt ?? new Date(now);
@@ -44,7 +42,6 @@ export class UserApprovalDataAccessMapper {
     const builder = UserApprovalEntity.builder()
       .setUserApprovalId(new UserApprovalId(ormData.id))
       .setDocumentId(ormData.document_id ?? 0)
-      .setApprovalWorkflowId(ormData.approval_workflow_id ?? 0)
       .setStatusId(ormData.status_id ?? 0)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
