@@ -12,7 +12,6 @@ import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { EntityManager } from 'typeorm';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
-import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 
 @Injectable()
 export class ReadDepartmentRepository implements IReadDepartmentRepository {
@@ -45,15 +44,21 @@ export class ReadDepartmentRepository implements IReadDepartmentRepository {
     id: DepartmentId,
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentEntity>> {
-    const item = await findOneOrFail(manager, DepartmentOrmEntity, {
-      id: id.value,
-    });
+    // const item = await findOneOrFail(manager, DepartmentOrmEntity, {
+    //   id: id.value,
+    // });
+
+    const item = await this.createBaseQuery(manager)
+      .where('departments.id = :id', { id: id.value })
+      .getOneOrFail();
 
     return this._dataAccessMapper.toEntity(item);
   }
 
   private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(DepartmentOrmEntity, 'departments');
+    return manager
+      .createQueryBuilder(DepartmentOrmEntity, 'departments')
+      .leftJoinAndSelect('departments.users', 'users');
   }
 
   private getFilterOptions(): FilterOptions {

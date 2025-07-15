@@ -5,6 +5,8 @@ import { DocumentApproverEntity } from '@src/modules/manage/domain/entities/docu
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
 import { EntityManager } from 'typeorm';
 import { DocumentApproverDataAccessMapper } from '../../mappers/document-approver.mapper';
+import { DocumentApproverId } from '@src/modules/manage/domain/value-objects/document-approver-id.vo';
+import { DocumentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/document-approver.orm';
 
 @Injectable()
 export class WriteDocumentApproverRepository
@@ -23,5 +25,13 @@ export class WriteDocumentApproverRepository
         this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
       ),
     );
+  }
+
+  async delete(id: DocumentApproverId, manager: EntityManager): Promise<void> {
+    try {
+      await manager.softDelete(DocumentApproverOrmEntity, id.value);
+    } catch (error) {
+      throw error;
+    }
   }
 }

@@ -13,12 +13,14 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _email: string;
   private readonly _password: string;
   private readonly _tel: string;
+  private readonly _line_manager_id: number;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _user: UserEntity;
   private readonly _department: DepartmentEntity;
   private readonly _position: PositionEntity;
+  private readonly _line_manager: UserEntity | null;
 
   private constructor(builder: DepartmentUserBuilder) {
     super();
@@ -30,12 +32,14 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
     this._email = builder.email;
     this._password = builder.password;
     this._tel = builder.tel;
+    this._line_manager_id = builder.line_manager_id;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._user = builder.user;
     this._department = builder.department ?? null;
     this._position = builder.position ?? null;
+    this._line_manager = builder.line_manager ?? null;
   }
 
   get departmentId(): number {
@@ -66,6 +70,10 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
     return this._tel;
   }
 
+  get line_manager_id(): number {
+    return this._line_manager_id;
+  }
+
   get createdAt(): Date {
     return this._createdAt;
   }
@@ -88,6 +96,10 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
 
   get user(): UserEntity {
     return this._user;
+  }
+
+  get line_manager(): UserEntity | null {
+    return this._line_manager;
   }
 
   public static builder(): DepartmentUserBuilder {

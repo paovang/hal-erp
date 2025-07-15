@@ -13,12 +13,14 @@ export class DepartmentUserBuilder {
   email: string;
   password: string;
   tel: string;
+  line_manager_id: number;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   department: DepartmentEntity;
   user: UserEntity;
   position: PositionEntity;
+  line_manager: UserEntity;
 
   setDepartmentUserId(value: DepartmentUserId): this {
     this.departmentUserId = value;
@@ -75,6 +77,11 @@ export class DepartmentUserBuilder {
     return this;
   }
 
+  setLineManagerId(line_manager_id: number): this {
+    this.line_manager_id = line_manager_id;
+    return this;
+  }
+
   setDepartment(department: DepartmentEntity): this {
     this.department = department;
     return this;
@@ -87,6 +94,11 @@ export class DepartmentUserBuilder {
 
   setUser(user: UserEntity): this {
     this.user = user;
+    return this;
+  }
+
+  setLineManager(line_manager: UserEntity): this {
+    this.line_manager = line_manager;
     return this;
   }
 

@@ -80,158 +80,104 @@ export class UpdateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        let processedItems = null;
+        const processedItems = null;
 
         await findOneOrFail(manager, PurchaseOrderOrmEntity, {
           id: query.id,
         });
-
-        // const po_id = (po as any).id;
 
         const baseFolder = path.join(
           __dirname,
           '../../../../../../../assets/uploads/',
         );
 
-        // const vendorIds = query.dto.items.flatMap((item) =>
-        //   item.selected_vendor.map((v) => v.vendor_id),
-        // );
-        // const uniqueVendorIds = new Set(vendorIds);
-
-        // if (vendorIds.length !== uniqueVendorIds.size) {
-        //   throw new ManageDomainException(
-        //     'errors.duplicate_vendor_id_in_selected_vendor',
-        //     HttpStatus.BAD_REQUEST,
+        // for (const item of query.dto.items) {
+        //   const pr_item = await query.manager.findOne(
+        //     PurchaseOrderItemOrmEntity,
+        //     {
+        //       where: {
+        //         id: item.id,
+        //       },
+        //     },
         //   );
-        // }
 
-        for (const item of query.dto.items) {
-          const pr_item = await query.manager.findOne(
-            PurchaseOrderItemOrmEntity,
-            {
-              where: {
-                id: item.id,
-              },
-            },
-          );
+        //   if (!pr_item) {
+        //     throw new ManageDomainException(
+        //       'errors.not_found',
+        //       HttpStatus.BAD_REQUEST,
+        //     );
+        //   }
 
-          if (!pr_item) {
-            throw new ManageDomainException(
-              'errors.not_found',
-              HttpStatus.BAD_REQUEST,
-            );
-          }
-
-          const customItem: CustomPurchaseOrderItemDto = {
-            purchase_request_item_id: pr_item?.purchase_request_item_id ?? 0,
-            remark: pr_item.remark ?? '', // or some default value
-            quantity: pr_item.quantity ?? 0, // or some default value
-            price: item.price, // assuming this property exists
-            total: (pr_item?.quantity ?? 0) * (item.price ?? 0),
-            is_vat: item?.is_vat ?? false,
-          };
-          const itemEntity = this._dataItemMapper.toEntity(
-            customItem,
-            query.id,
-          );
-
-          await itemEntity.initializeUpdateSetId(
-            new PurchaseOrderItemId(item.id),
-          );
-          await itemEntity.validateExistingIdForUpdate();
-
-          await this._writeItem.update(itemEntity, manager);
-
-          for (const vendor of item.selected_vendor) {
-            let fileKey = null;
-            await findOneOrFail(manager, VendorOrmEntity, {
-              id: vendor.vendor_id,
-            });
-
-            if (vendor.id) {
-              await findOneOrFail(
-                manager,
-                PurchaseOrderSelectedVendorOrmEntity,
-                {
-                  id: vendor.id,
-                },
-              );
-            }
-
-            if (vendor.filename) {
-              const mockFile = await createMockMulterFile(
-                baseFolder,
-                vendor.filename,
-              );
-              const optimizedImage =
-                await this._optimizeService.optimizeImage(mockFile);
-              const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
-                optimizedImage,
-                PO_FILE_NAME_FOLDER,
-              );
-              fileKey = s3ImageResponse.fileKey;
-            }
-
-            processedItems = {
-              ...vendor,
-              filename: fileKey ?? '',
-            };
-
-            const vendorEntity = this._dataSVMapper.toEntity(
-              processedItems,
-              item.id,
-            );
-
-            await vendorEntity.initializeUpdateSetId(
-              new PurchaseOrderSelectedVendorId(vendor.id),
-            );
-            await vendorEntity.validateExistingIdForUpdate();
-
-            await this._writeSV.update(vendorEntity, manager);
-          }
-        }
-
-        // const po_item = await manager.find(PurchaseOrderItemOrmEntity, {
-        //   where: {
-        //     purchase_order_id: po_id,
-        //   },
-        // });
-
-        // const selectedVendor = query.dto.selected_vendor.find(
-        //   (v) => v.status === true,
-        // );
-
-        // for (const item of po_item) {
-        // const IQ = await manager.findOne(PurchaseOrderItemQuoteOrmEntity, {
-        //   where: {
-        //     purchase_order_item_id: item.id,
-        //   },
-        // });
-
-        // if (!IQ) {
-        //   throw new ManageDomainException(
-        //     'errors.not_found',
-        //     HttpStatus.BAD_REQUEST,
+        //   const customItem: CustomPurchaseOrderItemDto = {
+        //     purchase_request_item_id: pr_item?.purchase_request_item_id ?? 0,
+        //     remark: pr_item.remark ?? '', // or some default value
+        //     quantity: pr_item.quantity ?? 0, // or some default value
+        //     price: item.price, // assuming this property exists
+        //     total: (pr_item?.quantity ?? 0) * (item.price ?? 0),
+        //     is_vat: item?.is_vat ?? false,
+        //   };
+        //   const itemEntity = this._dataItemMapper.toEntity(
+        //     customItem,
+        //     query.id,
         //   );
+
+        //   await itemEntity.initializeUpdateSetId(
+        //     new PurchaseOrderItemId(item.id),
+        //   );
+        //   await itemEntity.validateExistingIdForUpdate();
+
+        //   await this._writeItem.update(itemEntity, manager);
+
+        //   for (const vendor of item.selected_vendor) {
+        //     let fileKey = null;
+        //     await findOneOrFail(manager, VendorOrmEntity, {
+        //       id: vendor.vendor_id,
+        //     });
+
+        //     if (vendor.id) {
+        //       await findOneOrFail(
+        //         manager,
+        //         PurchaseOrderSelectedVendorOrmEntity,
+        //         {
+        //           id: vendor.id,
+        //         },
+        //       );
+        //     }
+
+        //     if (vendor.filename) {
+        //       const mockFile = await createMockMulterFile(
+        //         baseFolder,
+        //         vendor.filename,
+        //       );
+        //       const optimizedImage =
+        //         await this._optimizeService.optimizeImage(mockFile);
+        //       const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+        //         optimizedImage,
+        //         PO_FILE_NAME_FOLDER,
+        //       );
+        //       fileKey = s3ImageResponse.fileKey;
+        //     }
+
+        //     processedItems = {
+        //       ...vendor,
+        //       filename: fileKey ?? '',
+        //     };
+
+        //     const vendorEntity = this._dataSVMapper.toEntity(
+        //       processedItems,
+        //       item.id,
+        //     );
+
+        //     await vendorEntity.initializeUpdateSetId(
+        //       new PurchaseOrderSelectedVendorId(vendor.id),
+        //     );
+        //     await vendorEntity.validateExistingIdForUpdate();
+
+        //     await this._writeSV.update(vendorEntity, manager);
+        //   }
         // }
 
-        // const quoteDto: CustomPurchaseOrderItemQuoteDto = {
-        //   purchase_order_item_id: item.id,
-        //   vendor_id: selectedVendor?.vendor_id ?? 0,
-        //   price: IQ.price ?? 0,
-        //   total: IQ.total ?? 0,
-        //   is_selected: selectedVendor?.status ?? false,
-        // };
-
-        // const IQEntity = this._dataIQMapper.toEntity(quoteDto);
-
-        // await IQEntity.initializeUpdateSetId(
-        //   new PurchaseOrderItemQuoteId(IQ.id),
-        // );
-        // await IQEntity.validateExistingIdForUpdate();
-
-        // await this._writeIQ.update(IQEntity, manager);
-        // }
+        await this.updateItem(query, manager, baseFolder, processedItems);
 
         const purchaseOrderEntity = this._dataMapper.toEntity(query.dto);
         await purchaseOrderEntity.initializeUpdateSetId(
@@ -281,4 +227,85 @@ export class UpdateCommandHandler
   //       await this._writeIQ.update(IQEntity, manager);
   //     }
   //   }
+
+  private async updateItem(
+    query: UpdateCommand,
+    manager: DataSource['manager'],
+    baseFolder: string,
+    processedItems: any,
+  ): Promise<void> {
+    for (const item of query.dto.items) {
+      const pr_item = await query.manager.findOne(PurchaseOrderItemOrmEntity, {
+        where: {
+          id: item.id,
+        },
+      });
+
+      if (!pr_item) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const customItem: CustomPurchaseOrderItemDto = {
+        purchase_request_item_id: pr_item?.purchase_request_item_id ?? 0,
+        remark: pr_item.remark ?? '', // or some default value
+        quantity: pr_item.quantity ?? 0, // or some default value
+        price: item.price, // assuming this property exists
+        total: (pr_item?.quantity ?? 0) * (item.price ?? 0),
+        is_vat: item?.is_vat ?? false,
+      };
+      const itemEntity = this._dataItemMapper.toEntity(customItem, query.id);
+
+      await itemEntity.initializeUpdateSetId(new PurchaseOrderItemId(item.id));
+      await itemEntity.validateExistingIdForUpdate();
+
+      await this._writeItem.update(itemEntity, manager);
+
+      for (const vendor of item.selected_vendor) {
+        let fileKey = null;
+        await findOneOrFail(manager, VendorOrmEntity, {
+          id: vendor.vendor_id,
+        });
+
+        if (vendor.id) {
+          await findOneOrFail(manager, PurchaseOrderSelectedVendorOrmEntity, {
+            id: vendor.id,
+          });
+        }
+
+        if (vendor.filename) {
+          const mockFile = await createMockMulterFile(
+            baseFolder,
+            vendor.filename,
+          );
+          const optimizedImage =
+            await this._optimizeService.optimizeImage(mockFile);
+          const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+            optimizedImage,
+            PO_FILE_NAME_FOLDER,
+          );
+          fileKey = s3ImageResponse.fileKey;
+        }
+
+        processedItems = {
+          ...vendor,
+          filename: fileKey ?? '',
+        };
+
+        const vendorEntity = this._dataSVMapper.toEntity(
+          processedItems,
+          item.id,
+        );
+
+        await vendorEntity.initializeUpdateSetId(
+          new PurchaseOrderSelectedVendorId(vendor.id),
+        );
+        await vendorEntity.validateExistingIdForUpdate();
+
+        await this._writeSV.update(vendorEntity, manager);
+      }
+    }
+  }
 }

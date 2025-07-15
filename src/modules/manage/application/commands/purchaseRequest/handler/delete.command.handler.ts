@@ -2,6 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { DeleteCommand } from '../delete.command';
 import { HttpStatus, Inject } from '@nestjs/common';
 import {
+  WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_REPOSITORY,
   WRITE_PURCHASE_REQUEST_ITEM_REPOSITORY,
   WRITE_PURCHASE_REQUEST_REPOSITORY,
@@ -30,6 +31,10 @@ import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/t
 import { UserApprovalStepId } from '@src/modules/manage/domain/value-objects/user-approval-step-id.vo';
 import { UserApprovalId } from '@src/modules/manage/domain/value-objects/user-approval-id.vo';
 import { STATUS_KEY } from '../../../constants/status-key.const';
+import { assertOrThrow } from '@src/common/utils/assert.util';
+import { DocumentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/document-approver.orm';
+import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
+import { DocumentApproverId } from '@src/modules/manage/domain/value-objects/document-approver-id.vo';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -50,6 +55,9 @@ export class DeleteCommandHandler
     // user approval step
     @Inject(WRITE_USER_APPROVAL_STEP_REPOSITORY)
     private readonly _writeUserApprovalStep: IWriteUserApprovalStepRepository,
+    // document approver
+    @Inject(WRITE_DOCUMENT_APPROVER_REPOSITORY)
+    private readonly _writeDocumentApprover: IWriteDocumentApproverRepository,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -76,9 +84,9 @@ export class DeleteCommandHandler
 
         await this.deleteItem(query, pr_id);
 
-        await this.deleteDocument(query, document_id);
+        await this.deleteDocument(query, document_id, manager);
 
-        await this.deleteUserApproval(query, document_id);
+        await this.deleteUserApproval(query, document_id, manager);
 
         return await this._write.delete(
           new PurchaseRequestId(query.id),
@@ -115,8 +123,9 @@ export class DeleteCommandHandler
   private async deleteDocument(
     query: DeleteCommand,
     document_id: number,
+    manager: DataSource['manager'],
   ): Promise<void> {
-    const document = await findOneOrFail(query.manager, DocumentOrmEntity, {
+    const document = await findOneOrFail(manager, DocumentOrmEntity, {
       id: document_id,
     });
 
@@ -129,6 +138,7 @@ export class DeleteCommandHandler
   private async deleteUserApproval(
     query: DeleteCommand,
     document_id: number,
+    manager: DataSource['manager'],
   ): Promise<void> {
     const user_approval = await findOneOrFail(
       query.manager,
@@ -140,14 +150,11 @@ export class DeleteCommandHandler
 
     const user_approval_id = (user_approval as any).id;
 
-    const user_approval_step = await query.manager.find(
-      UserApprovalStepOrmEntity,
-      {
-        where: {
-          user_approval_id: user_approval_id,
-        },
+    const user_approval_step = await manager.find(UserApprovalStepOrmEntity, {
+      where: {
+        user_approval_id: user_approval_id,
       },
-    );
+    });
 
     for (const step of user_approval_step) {
       if (step.status_id === STATUS_KEY.APPROVED) {
@@ -160,11 +167,32 @@ export class DeleteCommandHandler
         new UserApprovalStepId(step.id),
         query.manager,
       );
+
+      await this.deleteDocumentApprover(step.id, manager);
     }
 
     await this._writeUserApproval.delete(
       new UserApprovalId(user_approval_id),
       query.manager,
     );
+  }
+
+  private async deleteDocumentApprover(
+    step_id: number,
+    manager: DataSource['manager'],
+  ): Promise<void> {
+    const document_approver = await manager.find(DocumentApproverOrmEntity, {
+      where: {
+        user_approval_step_id: step_id,
+      },
+    });
+
+    for (const approver of document_approver) {
+      assertOrThrow(approver, 'errors.not_found', HttpStatus.NOT_FOUND);
+      await this._writeDocumentApprover.delete(
+        new DocumentApproverId(approver.id),
+        manager,
+      );
+    }
   }
 }

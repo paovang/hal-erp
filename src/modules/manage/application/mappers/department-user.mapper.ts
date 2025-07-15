@@ -55,6 +55,10 @@ export class DepartmentUserDataMapper {
       builder.setUserId(userId);
     }
 
+    if (dto.line_manager_id) {
+      builder.setLineManagerId(dto.line_manager_id);
+    }
+
     // if (s3ImageResponse) {
     //   builder.setSignatureFile(s3ImageResponse.fileKey);
     // }
@@ -66,8 +70,10 @@ export class DepartmentUserDataMapper {
   toResponse(entity: DepartmentUserEntity): DepartmentUserResponse {
     const response = new DepartmentUserResponse();
     response.id = entity.getId().value;
-    response.department_id = entity.department?.getId().value;
-    response.position_id = entity.position?.getId().value;
+    response.department_id = entity.departmentId;
+    response.position_id = entity.positionId;
+    response.user_id = entity.userId;
+    response.line_manager_id = entity.line_manager_id ?? null;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
@@ -85,6 +91,10 @@ export class DepartmentUserDataMapper {
 
     response.user = entity.user
       ? this.userDataMapper.toResponse(entity.user)
+      : null;
+
+    response.line_manager = entity.line_manager
+      ? this.userDataMapper.toResponse(entity.line_manager)
       : null;
 
     return response;

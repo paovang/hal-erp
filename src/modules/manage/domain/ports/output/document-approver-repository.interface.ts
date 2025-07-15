@@ -1,6 +1,7 @@
 import { EntityManager } from 'typeorm';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { DocumentApproverEntity } from '../../entities/document-approver.entity';
+import { DocumentApproverId } from '../../value-objects/document-approver-id.vo';
 
 export interface IWriteDocumentApproverRepository {
   create(
@@ -13,5 +14,5 @@ export interface IWriteDocumentApproverRepository {
   //     manager: EntityManager,
   //   ): Promise<ResponseResult<DocumentEntity>>;
 
-  //   delete(id: DocumentId, manager: EntityManager): Promise<void>;
+  delete(id: DocumentApproverId, manager: EntityManager): Promise<void>;
 }
