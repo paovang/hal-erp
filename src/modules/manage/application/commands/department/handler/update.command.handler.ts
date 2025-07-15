@@ -21,7 +21,17 @@ export class UpdateCommandHandler
   ) {}
 
   async execute(query: UpdateCommand): Promise<any> {
-    const entity = this._dataMapper.toEntity(query.dto);
+    let isLineManager: boolean;
+    if (
+      query.dto.department_head_id &&
+      query.dto.department_head_id > 0 &&
+      query.dto.department_head_id != null
+    ) {
+      isLineManager = false;
+    } else {
+      isLineManager = true;
+    }
+    const entity = this._dataMapper.toEntity(query.dto, isLineManager);
     await entity.initializeUpdateSetId(new DepartmentId(query.id));
     await entity.validateExistingIdForUpdate();
 

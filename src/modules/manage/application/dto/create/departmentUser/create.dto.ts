@@ -52,7 +52,13 @@ export class CreateDepartmentUserDto {
   // @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly positionId: number;
 
-  // @ApiProperty()
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  readonly line_manager_id?: number;
+
+  @ApiProperty()
   @IsOptional()
   signatureFile: any;
 

@@ -2,6 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { DeleteCommand } from '../delete.command';
 import { HttpStatus, Inject } from '@nestjs/common';
 import {
+  WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_REPOSITORY,
   WRITE_PURCHASE_ORDER_ITEM_REPOSITORY,
   WRITE_PURCHASE_ORDER_REPOSITORY,
@@ -34,6 +35,10 @@ import { UserApprovalId } from '@src/modules/manage/domain/value-objects/user-ap
 import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purchase-order-id.vo';
 import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
 import { PurchaseOrderSelectedVendorId } from '@src/modules/manage/domain/value-objects/purchase-order-selected-vendor-id.vo';
+import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
+import { DocumentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/document-approver.orm';
+import { DocumentApproverId } from '@src/modules/manage/domain/value-objects/document-approver-id.vo';
+import { assertOrThrow } from '@src/common/utils/assert.util';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -58,6 +63,9 @@ export class DeleteCommandHandler
     // user approval step
     @Inject(WRITE_USER_APPROVAL_STEP_REPOSITORY)
     private readonly _writeUserApprovalStep: IWriteUserApprovalStepRepository,
+    // document approver
+    @Inject(WRITE_DOCUMENT_APPROVER_REPOSITORY)
+    private readonly _writeDocumentApprover: IWriteDocumentApproverRepository,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -151,6 +159,8 @@ export class DeleteCommandHandler
         new UserApprovalStepId(step.id),
         manager,
       );
+
+      await this.deleteDocumentApprover(step.id, manager);
     }
 
     await this._writeUserApproval.delete(
@@ -175,6 +185,25 @@ export class DeleteCommandHandler
     for (const vendor of selected_vendor) {
       await this._writeSV.delete(
         new PurchaseOrderSelectedVendorId(vendor.id),
+        manager,
+      );
+    }
+  }
+
+  private async deleteDocumentApprover(
+    step_id: number,
+    manager: DataSource['manager'],
+  ): Promise<void> {
+    const document_approver = await manager.find(DocumentApproverOrmEntity, {
+      where: {
+        user_approval_step_id: step_id,
+      },
+    });
+
+    for (const approver of document_approver) {
+      assertOrThrow(approver, 'errors.not_found', HttpStatus.NOT_FOUND);
+      await this._writeDocumentApprover.delete(
+        new DocumentApproverId(approver.id),
         manager,
       );
     }

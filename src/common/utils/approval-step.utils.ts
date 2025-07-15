@@ -8,6 +8,7 @@ import { EnumWorkflowStep } from '@src/modules/manage/application/constants/stat
 import { DepartmentApproverOrmEntity } from '../infrastructure/database/typeorm/department-approver.orm';
 import { DepartmentUserOrmEntity } from '../infrastructure/database/typeorm/department-user.orm';
 import { DepartmentOrmEntity } from '../infrastructure/database/typeorm/department.orm';
+import { assertOrThrow } from './assert.util';
 
 interface CustomDocumentApprover {
   user_approval_step_id: number;
@@ -76,23 +77,15 @@ export async function handleApprovalStep({
         where: { user_id },
       });
 
-      if (!department_user) {
-        throw new ManageDomainException(
-          'errors.not_found',
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      assertOrThrow(department_user, 'errors.not_found', HttpStatus.NOT_FOUND);
 
       const department = await manager.findOne(DepartmentOrmEntity, {
-        where: { id: department_user.department_id },
+        where: { id: department_user?.department_id },
       });
 
-      if (!department) {
-        throw new ManageDomainException(
-          'errors.not_found',
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      assertOrThrow(department, 'errors.not_found', HttpStatus.NOT_FOUND);
+      const department_head = department?.department_head_id;
+      assertOrThrow(department_head, 'errors.not_found', HttpStatus.NOT_FOUND);
 
       const d_approver: CustomDocumentApprover = {
         user_approval_step_id,
@@ -137,14 +130,13 @@ export async function handleApprovalStep({
         where: { user_id },
       });
 
-      if (!user_line_manager) {
-        throw new ManageDomainException(
-          'errors.not_found',
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      assertOrThrow(
+        user_line_manager,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+      );
 
-      if (user_line_manager.line_manager_id === null) {
+      if (user_line_manager?.line_manager_id === null) {
         throw new ManageDomainException(
           'errors.not_found_line_manager',
           HttpStatus.NOT_FOUND,

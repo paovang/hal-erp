@@ -8,6 +8,7 @@ import {
   LENGTH_DOCUMENT_CODE,
   LENGTH_PURCHASE_ORDER_CODE,
   PO_FILE_NAME_FOLDER,
+  WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_REPOSITORY,
   WRITE_PURCHASE_ORDER_ITEM_REPOSITORY,
   WRITE_PURCHASE_ORDER_REPOSITORY,
@@ -27,7 +28,7 @@ import {
 } from '@src/common/constants/inject-key.const';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
 import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
@@ -54,6 +55,12 @@ import { CreateUserApprovalDto } from '../../../dto/create/userApproval/create.d
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
+import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
+import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
+import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
+import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
+import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
+import { assertOrThrow } from '@src/common/utils/assert.util';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -105,6 +112,11 @@ export class CreateCommandHandler
     private readonly _writeUserApprovalStep: IWriteUserApprovalStepRepository,
     private readonly _dataUserApprovalMapperStep: UserApprovalStepDataMapper,
 
+    // document approver
+    @Inject(WRITE_DOCUMENT_APPROVER_REPOSITORY)
+    private readonly _writeDocumentApprover: IWriteDocumentApproverRepository,
+    private readonly _dataDocumentApproverMapper: DocumentApproverDataMapper,
+
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -139,12 +151,23 @@ export class CreateCommandHandler
           },
         });
 
-        if (!pr) {
-          throw new ManageDomainException(
-            'errors.not_found',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
+        assertOrThrow(pr, 'errors.not_found', HttpStatus.NOT_FOUND);
+
+        const checkDocumentApproval = await manager.findOne(
+          UserApprovalOrmEntity,
+          {
+            where: {
+              document_id: pr?.document_id,
+              status_id: STATUS_KEY.APPROVED,
+            },
+          },
+        );
+
+        assertOrThrow(
+          checkDocumentApproval,
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+        );
 
         const department_id = (department as any).department_id;
 
@@ -194,28 +217,26 @@ export class CreateCommandHandler
         const entity = this._dataMapper.toEntity(
           query.dto,
           document_id,
-          pr,
+          pr!,
           po_number,
         );
 
         const po_result = await this._write.create(entity, manager);
 
         const po_id = (po_result as any)._id._value;
-
-        // const pr_item = await manager.find(PurchaseRequestItemOrmEntity, {
-        //   where: {
-        //     purchase_request_id: pr.id,
-        //   },
-        // });
-
         // save po item
         await this.savePOItem(query, manager, po_id);
 
-        // save selected vendor
-        // await this.saveSelectedVendor(query, manager, po_id);
+        const total = await this.calculateTotal(query, manager);
 
         // save user approval
-        await this.saveUserApproval(query, manager, document_id);
+        await this.saveUserApproval(
+          query,
+          manager,
+          document_id,
+          total,
+          user_id,
+        );
 
         return po_result;
       },
@@ -226,6 +247,8 @@ export class CreateCommandHandler
     query: CreateCommand,
     manager: EntityManager,
     document_id: number,
+    total: number,
+    user_id: number,
   ): Promise<void> {
     const approval_workflow = await findOneOrFail(
       manager,
@@ -247,10 +270,7 @@ export class CreateCommandHandler
       status: STATUS_KEY.PENDING,
     };
 
-    const user_approval_entity = this._dataUserApprovalMapper.toEntity(
-      merge,
-      // aw_id,
-    );
+    const user_approval_entity = this._dataUserApprovalMapper.toEntity(merge);
 
     const user_approval = await this._writeUserApproval.create(
       user_approval_entity,
@@ -261,14 +281,29 @@ export class CreateCommandHandler
 
     const pendingDto: CustomApprovalDto = {
       user_approval_id: ua_id,
-      // approval_workflow_step_id: a_w_s!.id,
       statusId: STATUS_KEY.PENDING,
       step_number: a_w_s?.step_number ?? 1,
       remark: null,
     };
     const aw_step =
       this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);
-    await this._writeUserApprovalStep.create(aw_step, manager);
+    const user_approval_step = await this._writeUserApprovalStep.create(
+      aw_step,
+      manager,
+    );
+
+    const user_approval_step_id = (user_approval_step as any)._id._value;
+
+    await handleApprovalStep({
+      a_w_s,
+      total,
+      user_id,
+      user_approval_step_id,
+      manager,
+      dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+      writeDocumentApprover: this._writeDocumentApprover,
+      getApprover: this.getApprover.bind(this),
+    });
   }
 
   private async saveSelectedVendor(
@@ -343,12 +378,7 @@ export class CreateCommandHandler
         },
       );
 
-      if (!pr_item) {
-        throw new ManageDomainException(
-          'errors.not_found',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      assertOrThrow(pr_item, 'errors.not_found', HttpStatus.NOT_FOUND);
 
       const itemDto: CustomPurchaseOrderItemDto = {
         purchase_request_item_id: item.purchase_request_item_id,
@@ -369,5 +399,61 @@ export class CreateCommandHandler
         item.selected_vendor,
       );
     }
+  }
+
+  private async getApprover(
+    sum_total: number,
+    manager: EntityManager,
+  ): Promise<BudgetApprovalRuleOrmEntity[]> {
+    const budgetApprovalRule = await manager
+      .getRepository(BudgetApprovalRuleOrmEntity)
+      .createQueryBuilder('rule')
+      .where(':sum_total BETWEEN rule.min_amount AND rule.max_amount', {
+        sum_total,
+      })
+      .getMany();
+
+    if (budgetApprovalRule.length > 0) {
+      return budgetApprovalRule;
+    } else {
+      throw new ManageDomainException(
+        'errors.set_budget_approver_rule',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  private async calculateTotal(
+    query: CreateCommand,
+    manager: EntityManager,
+  ): Promise<number> {
+    const purchaseRequestItems = query.dto.items;
+    const purchaseRequestItemIds = purchaseRequestItems.map(
+      (item) => item.purchase_request_item_id,
+    );
+
+    // Batch fetch all needed PR items
+    const prItems = await manager.find(PurchaseRequestItemOrmEntity, {
+      where: { id: In(purchaseRequestItemIds) },
+    });
+
+    // Build a Map for quick lookup by ID
+    const prItemMap = new Map(prItems.map((prItem) => [prItem.id, prItem]));
+
+    // Optionally: Check for missing items up front
+    const missingIds = purchaseRequestItemIds.filter(
+      (id) => !prItemMap.has(id),
+    );
+    if (missingIds.length > 0) {
+      throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND);
+    }
+
+    // Calculate total
+    const total = purchaseRequestItems.reduce((sum, item) => {
+      const prItem = prItemMap.get(item.purchase_request_item_id)!;
+      return sum + (prItem.quantity ?? 0) * item.price;
+    }, 0);
+
+    return total;
   }
 }

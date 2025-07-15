@@ -57,6 +57,7 @@ export class ReadDepartmentUserRepository
       .createQueryBuilder(DepartmentUserOrmEntity, 'department_users')
       .leftJoin('department_users.departments', 'departments')
       .leftJoin('department_users.users', 'users')
+      .leftJoin('department_users.line_manager', 'line_manager')
       .leftJoin('users.user_signatures', 'user_signatures')
       .leftJoin('users.userHasPermissions', 'user_has_permissions')
       .leftJoin('user_has_permissions.permission', 'permissions')
@@ -83,6 +84,10 @@ export class ReadDepartmentUserRepository
         'role_permissions.name',
         'user_signatures.id',
         'user_signatures.signature_file',
+        'line_manager.id',
+        'line_manager.username',
+        'line_manager.email',
+        'line_manager.tel',
       ]);
 
     if (departmentId && departmentId != null) {

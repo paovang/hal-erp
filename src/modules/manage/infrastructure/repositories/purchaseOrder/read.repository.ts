@@ -13,7 +13,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { PurchaseOrderDataAccessMapper } from '../../mappers/purchase-order.mapper';
 import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import {
-  selectApprovalWorkflowSteps,
+  // selectApprovalWorkflowSteps,
   selectApprover,
   selectApproverUserSignatures,
   selectBudgetItemDetails,
@@ -49,7 +49,7 @@ import {
   selectUserSignatures,
   selectVendorBankAccounts,
   // selectVendors,
-  selectWorkflowStepsDepartment,
+  // selectWorkflowStepsDepartment,
 } from '@src/common/constants/select-field';
 import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purchase-order-id.vo';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
@@ -92,7 +92,11 @@ export class ReadPurchaseOrderRepository
     };
   }
 
-  private createBaseQuery(manager: EntityManager, departmentId?: number) {
+  private createBaseQuery(
+    manager: EntityManager,
+    departmentId?: number,
+    user_id?: number,
+  ) {
     const selectFields = [
       ...selectPurchaseOrderItems,
       ...selectPurchaseOrderSelectedVendors,
@@ -133,8 +137,8 @@ export class ReadPurchaseOrderRepository
       ...selectApproverUserSignatures,
       ...selectStatus,
 
-      ...selectApprovalWorkflowSteps,
-      ...selectWorkflowStepsDepartment,
+      // ...selectApprovalWorkflowSteps,
+      // ...selectWorkflowStepsDepartment,
     ];
 
     const query = manager
@@ -189,26 +193,20 @@ export class ReadPurchaseOrderRepository
       .leftJoin('user_approval_steps.approver', 'approver')
       .innerJoin('user_approval_steps.status', 'status')
       .leftJoin('approver.user_signatures', 'approver_user_signatures')
-      .innerJoin(
-        'user_approval_steps.approval_workflow_steps',
-        'approval_workflow_steps',
-      )
-      .innerJoin(
-        'approval_workflow_steps.departments',
-        'workflow_steps_department',
-      )
-
+      .leftJoin('user_approval_steps.document_approvers', 'document_approver')
       // add select
       .addSelect(selectFields);
 
     if (departmentId !== undefined && departmentId !== null) {
-      query
-        .andWhere('approval_workflow_steps.department_id = :departmentId', {
-          departmentId,
-        })
-        .andWhere('po_documents.department_id = :departmentId', {
-          departmentId,
-        });
+      query.andWhere('document_approver.user_id = :user_id', {
+        user_id,
+      });
+      // query.andWhere('po_documents.department_id = :departmentId', {
+      //   departmentId,
+      // });
+      // .andWhere('approval_workflow_steps.department_id = :departmentId', {
+      //   departmentId,
+      // })
     }
 
     return query;
