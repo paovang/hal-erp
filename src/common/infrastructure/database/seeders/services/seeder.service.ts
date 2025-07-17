@@ -9,6 +9,7 @@ import { PermissionGroupSeeder } from '../permission-group.seeder';
 import { RoleSeeder } from '../role.seeder';
 import { ProvinceSeeder } from '../province.seeder';
 import { UserSeeder } from '../user.seeder';
+import { VatSeeder } from '../vat.seeder';
 
 @Injectable()
 export class SeederService {
@@ -22,6 +23,7 @@ export class SeederService {
     @Inject() private _roleSeederSeeder: RoleSeeder,
     @Inject() private _provinceSeeder: ProvinceSeeder,
     @Inject() private _userSeeder: UserSeeder,
+    @Inject() private _vatSeeder: VatSeeder,
   ) {}
 
   async seed() {
@@ -35,6 +37,7 @@ export class SeederService {
           await this._roleSeederSeeder.seed(manager);
           await this._provinceSeeder.seed(manager);
           await this._userSeeder.seed(manager);
+          await this._vatSeeder.seed(manager);
         },
       );
     } catch (error) {

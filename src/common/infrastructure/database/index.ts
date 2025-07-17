@@ -12,6 +12,7 @@ import { DepartmentOrmEntity } from './typeorm/department.orm';
 import { DocumentStatusOrmEntity } from './typeorm/document-statuse.orm';
 import { DocumentTypeOrmEntity } from './typeorm/document-type.orm';
 import { DocumentOrmEntity } from './typeorm/document.orm';
+import { ExchangeRateOrmEntity } from './typeorm/exchange-rate.orm';
 import { UserHasPermissionOrmEntity } from './typeorm/model-has-permission.orm';
 import { PermissionGroupOrmEntity } from './typeorm/permission-group.orm';
 import { PermissionOrmEntity } from './typeorm/permission.orm';
@@ -29,6 +30,7 @@ import { UserApprovalStepOrmEntity } from './typeorm/user-approval-step.orm';
 import { UserApprovalOrmEntity } from './typeorm/user-approval.orm';
 import { UserSignatureOrmEntity } from './typeorm/user-signature.orm';
 import { UserOrmEntity } from './typeorm/user.orm';
+import { VatOrmEntity } from './typeorm/vat.orm';
 import { VendorOrmEntity } from './typeorm/vendor.orm';
 import { VendorBankAccountOrmEntity } from './typeorm/vendor_bank_account.orm';
 
@@ -66,4 +68,6 @@ export const models = [
   DocumentStatusOrmEntity,
   UserApprovalOrmEntity,
   UserApprovalStepOrmEntity,
+  VatOrmEntity,
+  ExchangeRateOrmEntity,
 ];

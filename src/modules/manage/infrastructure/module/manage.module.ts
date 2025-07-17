@@ -29,6 +29,7 @@ import { PurchaseRequestController } from '../../controllers/purchase-request.co
 import { PurchaseOrderController } from '../../controllers/purchase-order.controller';
 import { UserApprovalController } from '../../controllers/user-approval.controller';
 import { UserApprovalStepController } from '../../controllers/user-approval-step.controller';
+import { VatController } from '../../controllers/vat.controller';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { UserApprovalStepController } from '../../controllers/user-approval-step
     PurchaseOrderController,
     UserApprovalController,
     UserApprovalStepController,
+    VatController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
