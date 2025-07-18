@@ -60,5 +60,4 @@ export const AllRegisterProviders: Provider[] = [
   ...PurchaseOrderSelectedVendorProvider,
   ...VatProvider,
   ...DocumentApproverProvider,
-  ...VatProvider,
 ];
