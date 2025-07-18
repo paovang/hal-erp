@@ -33,7 +33,10 @@ import {
   // selectWorkflowStepsDepartment,
 } from '@src/common/constants/select-field';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
-import { EnumPrOrPo } from '@src/modules/manage/application/constants/status-key.const';
+import {
+  EligiblePersons,
+  EnumPrOrPo,
+} from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadPurchaseRequestRepository
@@ -51,11 +54,13 @@ export class ReadPurchaseRequestRepository
     manager: EntityManager,
     departmentId?: number,
     user_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<PurchaseRequestEntity>> {
     const queryBuilder = await this.createBaseQuery(
       manager,
       departmentId,
       user_id,
+      roles,
     );
     query.sort_by = 'purchase_requests.id';
 
@@ -64,6 +69,7 @@ export class ReadPurchaseRequestRepository
       departmentId,
       EnumPrOrPo.PR,
       user_id,
+      roles,
     );
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -82,6 +88,7 @@ export class ReadPurchaseRequestRepository
     manager: EntityManager,
     departmentId?: number,
     user_id?: number,
+    roles?: string[],
   ) {
     const selectFields = [
       ...selectUnits,
@@ -126,20 +133,24 @@ export class ReadPurchaseRequestRepository
       .leftJoin('user_approval_steps.document_approvers', 'document_approver')
       .addSelect(selectFields);
 
-    if (departmentId !== undefined && departmentId !== null) {
-      query.andWhere('document_approver.user_id = :user_id', {
-        user_id,
-      });
-      // .andWhere('documents.department_id = :departmentId', {
-      //   departmentId,
-      // });
-    }
-
-    // if (user_id) {
+    // if (departmentId !== undefined && departmentId !== null) {
     //   query.andWhere('document_approver.user_id = :user_id', {
     //     user_id,
     //   });
+    //   // .andWhere('documents.department_id = :departmentId', {
+    //   //   departmentId,
+    //   // });
     // }
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      query.andWhere('document_approver.user_id = :user_id', {
+        user_id,
+      });
+    }
 
     return query;
   }

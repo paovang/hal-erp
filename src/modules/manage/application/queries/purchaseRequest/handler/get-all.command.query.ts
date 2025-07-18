@@ -8,7 +8,6 @@ import { IReadPurchaseRequestRepository } from '@src/modules/manage/domain/ports
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
-import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler
@@ -35,30 +34,31 @@ export class GetAllQueryHandler
     );
 
     const departmentId = departmentUser?.department_id ?? null;
-    let min = 0;
-    let max = 0;
+    const roles = user?.roles?.map((r: any) => r.name) ?? [];
+    console.log('roles', roles);
+    // let min = 0;
+    // let max = 0;
 
-    if (departmentId) {
-      const budgetApprovalRule = await query.manager.findOne(
-        BudgetApprovalRuleOrmEntity,
-        {
-          where: { department_id: departmentId, approver_id: user_id },
-        },
-      );
+    // if (departmentId) {
+    //   const budgetApprovalRule = await query.manager.findOne(
+    //     BudgetApprovalRuleOrmEntity,
+    //     {
+    //       where: { department_id: departmentId, approver_id: user_id },
+    //     },
+    //   );
 
-      if (budgetApprovalRule) {
-        min = budgetApprovalRule?.min_amount ?? 0;
-        max = budgetApprovalRule?.max_amount ?? 0;
-      }
-    }
+    //   if (budgetApprovalRule) {
+    //     min = budgetApprovalRule?.min_amount ?? 0;
+    //     max = budgetApprovalRule?.max_amount ?? 0;
+    //   }
+    // }
 
     const data = await this._readRepo.findAll(
       query.dto,
       query.manager,
       departmentId!,
       user_id,
-      min,
-      max,
+      roles,
     );
 
     if (!data) {
