@@ -72,4 +72,6 @@ export const models = [
   VatOrmEntity,
   ExchangeRateOrmEntity,
   DocumentApproverOrmEntity,
+  VatOrmEntity,
+  ExchangeRateOrmEntity,
 ];
