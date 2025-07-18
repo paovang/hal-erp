@@ -27,8 +27,8 @@ import { DocumentStatusProvider } from './documentStatus';
 import { PurchaseOrderProvider } from './purchaseOrder';
 import { PurchaseOrderItemProvider } from './purchaseOrderItem';
 import { PurchaseOrderSelectedVendorProvider } from './purchaseOrderSelectedVendor';
+import { VatProvider } from './vat';
 import { DocumentApproverProvider } from './documentApprover';
-
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
   ...DocumentTypeProvider,
@@ -58,5 +58,6 @@ export const AllRegisterProviders: Provider[] = [
   ...PurchaseOrderProvider,
   ...PurchaseOrderItemProvider,
   ...PurchaseOrderSelectedVendorProvider,
+  ...VatProvider,
   ...DocumentApproverProvider,
 ];
