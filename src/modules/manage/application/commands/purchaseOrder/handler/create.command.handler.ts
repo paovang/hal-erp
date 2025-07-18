@@ -70,7 +70,7 @@ interface CustomUserApprovalDto extends CreateUserApprovalDto {
 
 interface CustomApprovalDto extends ApprovalDto {
   user_approval_id: number;
-  approval_workflow_step_id: number;
+  step_number: number;
 }
 
 @CommandHandler(CreateCommand)
@@ -249,7 +249,7 @@ export class CreateCommandHandler
 
     const user_approval_entity = this._dataUserApprovalMapper.toEntity(
       merge,
-      aw_id,
+      // aw_id,
     );
 
     const user_approval = await this._writeUserApproval.create(
@@ -261,8 +261,9 @@ export class CreateCommandHandler
 
     const pendingDto: CustomApprovalDto = {
       user_approval_id: ua_id,
-      approval_workflow_step_id: a_w_s!.id,
+      // approval_workflow_step_id: a_w_s!.id,
       statusId: STATUS_KEY.PENDING,
+      step_number: a_w_s?.step_number ?? 1,
       remark: null,
     };
     const aw_step =

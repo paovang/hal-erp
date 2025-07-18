@@ -5,6 +5,7 @@ export async function countStatusAmounts(
   manager: EntityManager,
   departmentId?: number,
   type?: EnumPrOrPo,
+  user_id?: number,
 ): Promise<{ id: number; status: string; amount: number }[]> {
   const query = manager
     .createQueryBuilder('user_approvals', 'ua')
@@ -15,15 +16,14 @@ export async function countStatusAmounts(
     .innerJoin('ua.user_approval_steps', 'uas')
     .innerJoin('ua.documents', 'doc')
     .leftJoin('doc.departments', 'departments')
-    .leftJoin('uas.approval_workflow_steps', 'approval_workflow_steps');
+    .leftJoin('uas.document_approvers', 'document_approver');
 
   // เงื่อนไข department เหมือนเดิม
   if (departmentId !== undefined && departmentId !== null) {
-    query
-      .andWhere('approval_workflow_steps.department_id = :departmentId', {
-        departmentId,
-      })
-      .andWhere('doc.department_id = :departmentId', { departmentId });
+    // query.andWhere('doc.department_id = :departmentId', { departmentId });
+    query.andWhere('document_approver.user_id = :user_id', {
+      user_id,
+    });
   }
 
   // เงื่อนไข type

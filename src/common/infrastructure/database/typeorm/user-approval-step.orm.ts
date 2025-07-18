@@ -6,14 +6,15 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserApprovalOrmEntity } from './user-approval.orm';
-import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 import { UserOrmEntity } from './user.orm';
 import { DocumentStatusOrmEntity } from './document-statuse.orm';
+import { DocumentApproverOrmEntity } from './document-approver.orm';
 
 @Entity('user_approval_steps')
 export class UserApprovalStepOrmEntity {
@@ -35,18 +36,22 @@ export class UserApprovalStepOrmEntity {
   user_approvals: Relation<UserApprovalOrmEntity>;
 
   @Index()
-  @Column({ nullable: true })
-  approval_workflow_step_id?: number;
-  @ManyToOne(
-    () => ApprovalWorkflowStepOrmEntity,
-    (approval_workflow_steps) => approval_workflow_steps.user_approval_steps,
-    {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
-  )
-  @JoinColumn({ name: 'approval_workflow_step_id' })
-  approval_workflow_steps: Relation<ApprovalWorkflowStepOrmEntity>;
+  @Column({ type: 'integer', nullable: true })
+  step_number?: number;
+
+  // @Index()
+  // @Column({ nullable: true })
+  // approval_workflow_step_id?: number;
+  // @ManyToOne(
+  //   () => ApprovalWorkflowStepOrmEntity,
+  //   (approval_workflow_steps) => approval_workflow_steps.user_approval_steps,
+  //   {
+  //     onDelete: 'CASCADE',
+  //     onUpdate: 'CASCADE',
+  //   },
+  // )
+  // @JoinColumn({ name: 'approval_workflow_step_id' })
+  // approval_workflow_steps: Relation<ApprovalWorkflowStepOrmEntity>;
 
   @Index()
   @Column({ nullable: true })
@@ -89,4 +94,10 @@ export class UserApprovalStepOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  @OneToMany(
+    () => DocumentApproverOrmEntity,
+    (document_approvers) => document_approvers.user_approval_steps,
+  )
+  document_approvers: Relation<DocumentApproverOrmEntity[]>;
 }

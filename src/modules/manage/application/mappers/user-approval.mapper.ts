@@ -23,18 +23,11 @@ export class UserApprovalDataMapper {
     private readonly documentStatusDataMapper: DocumentStatusDataMapper,
   ) {}
 
-  toEntity(
-    dto: CustomUserApprovalDto,
-    approval_workflow_id?: number,
-  ): UserApprovalEntity {
+  toEntity(dto: CustomUserApprovalDto): UserApprovalEntity {
     const builder = UserApprovalEntity.builder();
 
     if (dto.documentId) {
       builder.setDocumentId(dto.documentId);
-    }
-
-    if (approval_workflow_id) {
-      builder.setApprovalWorkflowId(approval_workflow_id);
     }
 
     if (dto.status) {
@@ -57,7 +50,6 @@ export class UserApprovalDataMapper {
     const response = new UserApprovalResponse();
     response.id = Number(entity.getId().value);
     response.document_id = Number(entity.document_id);
-    response.approval_workflow_id = Number(entity.approval_workflow_id);
     response.status_id = entity.status_id;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

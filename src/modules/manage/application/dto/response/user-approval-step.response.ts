@@ -11,7 +11,7 @@ export class UserApprovalStepResponse {
   user_approval_id: number;
 
   @ApiProperty()
-  approval_workflow_step_id: number;
+  step_number: number;
 
   @ApiProperty()
   approver_id: number;

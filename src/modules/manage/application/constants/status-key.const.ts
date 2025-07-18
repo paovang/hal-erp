@@ -24,3 +24,18 @@ export enum EnumPrOrPo {
   PO = 'po',
   PR = 'pr',
 }
+
+export enum EnumWorkflowStep {
+  DEPARTMENT = 'department',
+  SPECIFIC_USER = 'specific_user',
+  DEPARTMENT_HEAD = 'department_head',
+  LINE_MANAGER = 'line_manager',
+  CONDITION = 'condition',
+}
+
+export enum EnumStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+  WATING = 'wating',
+}

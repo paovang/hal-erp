@@ -241,7 +241,6 @@ export const selectVendorBankAccounts = [
 export const selectUserApprovals = [
   'user_approvals.id',
   'user_approvals.document_id',
-  'user_approvals.approval_workflow_id',
   'user_approvals.status_id',
   'user_approvals.created_at',
   'user_approvals.updated_at',
@@ -259,7 +258,7 @@ export const selectDocumentStatuses = [
 export const selectUserApprovalSteps = [
   'user_approval_steps.id',
   'user_approval_steps.user_approval_id',
-  'user_approval_steps.approval_workflow_step_id',
+  'user_approval_steps.step_number',
   'user_approval_steps.approver_id',
   'user_approval_steps.approved_at',
   'user_approval_steps.status_id',

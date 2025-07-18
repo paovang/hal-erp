@@ -8,6 +8,7 @@ import {
   LENGTH_DOCUMENT_CODE,
   LENGTH_PURCHASE_REQUEST_CODE,
   PR_FILE_NAME_FOLDER,
+  WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_REPOSITORY,
   WRITE_PURCHASE_REQUEST_ITEM_REPOSITORY,
   WRITE_PURCHASE_REQUEST_REPOSITORY,
@@ -25,7 +26,7 @@ import {
 } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 import path from 'path';
@@ -51,16 +52,25 @@ import { UserApprovalStepDataMapper } from '../../../mappers/user-approval-step.
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
 import { STATUS_KEY } from '../../../constants/status-key.const';
 import { CreateUserApprovalDto } from '../../../dto/create/userApproval/create.dto';
-import { deleteFile } from '@src/common/utils/file.utils';
+import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
+import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
+import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
+import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
 
 interface CustomApprovalDto extends ApprovalDto {
   user_approval_id: number;
-  approval_workflow_step_id: number;
+  // approval_workflow_step_id: number;
+  step_number: number;
 }
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
   status: number;
 }
+
+// interface CustomDocumentApprover {
+//   user_approval_step_id: number;
+//   user_id: number;
+// }
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -87,6 +97,10 @@ export class CreateCommandHandler
     @Inject(WRITE_USER_APPROVAL_STEP_REPOSITORY)
     private readonly _writeUserApprovalStep: IWriteUserApprovalStepRepository,
     private readonly _dataUserApprovalMapperStep: UserApprovalStepDataMapper,
+    // document approver
+    @Inject(WRITE_DOCUMENT_APPROVER_REPOSITORY)
+    private readonly _writeDocumentApprover: IWriteDocumentApproverRepository,
+    private readonly _dataDocumentApproverMapper: DocumentApproverDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -234,6 +248,12 @@ export class CreateCommandHandler
           await this._writeItem.create(pr_item, manager);
         }
 
+        const purchaseRequestItems = query.dto.purchase_request_items;
+
+        const total = purchaseRequestItems.reduce((total, item) => {
+          return total + item.quantity * item.price;
+        }, 0);
+
         const approval_workflow = await findOneOrFail(
           manager,
           ApprovalWorkflowOrmEntity,
@@ -257,10 +277,8 @@ export class CreateCommandHandler
           status: STATUS_KEY.PENDING,
         };
 
-        const user_approval_entity = this._dataUserApprovalMapper.toEntity(
-          merge,
-          aw_id,
-        );
+        const user_approval_entity =
+          this._dataUserApprovalMapper.toEntity(merge);
 
         const user_approval = await this._writeUserApproval.create(
           user_approval_entity,
@@ -271,33 +289,54 @@ export class CreateCommandHandler
 
         const pendingDto: CustomApprovalDto = {
           user_approval_id: ua_id,
-          approval_workflow_step_id: a_w_s!.id,
+          step_number: a_w_s?.step_number ?? 1,
           statusId: STATUS_KEY.PENDING,
           remark: null,
-          // type: 'pr',
         };
         const aw_step =
           this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);
-        await this._writeUserApprovalStep.create(aw_step, manager);
+        const user_approval_step = await this._writeUserApprovalStep.create(
+          aw_step,
+          manager,
+        );
 
-        // await this.deleteFileInFolder(query, baseFolder);
+        const user_approval_step_id = (user_approval_step as any)._id._value;
+
+        await handleApprovalStep({
+          a_w_s,
+          total,
+          user_id,
+          user_approval_step_id,
+          manager,
+          dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+          writeDocumentApprover: this._writeDocumentApprover,
+          getApprover: this.getApprover.bind(this),
+        });
 
         return pr;
       },
     );
   }
 
-  private async deleteFileInFolder(
-    query: CreateCommand,
-    baseFolder: string,
-  ): Promise<any> {
-    for (const file of query.dto.purchase_request_items) {
-      const filePath = file.file_name;
-      if (filePath) {
-        const Path = baseFolder + filePath;
+  private async getApprover(
+    sum_total: number,
+    manager: EntityManager,
+  ): Promise<BudgetApprovalRuleOrmEntity[]> {
+    const budgetApprovalRule = await manager
+      .getRepository(BudgetApprovalRuleOrmEntity)
+      .createQueryBuilder('rule')
+      .where(':sum_total BETWEEN rule.min_amount AND rule.max_amount', {
+        sum_total,
+      })
+      .getMany();
 
-        await deleteFile(Path);
-      }
+    if (budgetApprovalRule.length > 0) {
+      return budgetApprovalRule;
+    } else {
+      throw new ManageDomainException(
+        'errors.set_budget_approver_rule',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

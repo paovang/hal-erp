@@ -9,6 +9,7 @@ import { CurrencyOrmEntity } from './typeorm/currency.orm';
 import { DepartmentApproverOrmEntity } from './typeorm/department-approver.orm';
 import { DepartmentUserOrmEntity } from './typeorm/department-user.orm';
 import { DepartmentOrmEntity } from './typeorm/department.orm';
+import { DocumentApproverOrmEntity } from './typeorm/document-approver.orm';
 import { DocumentStatusOrmEntity } from './typeorm/document-statuse.orm';
 import { DocumentTypeOrmEntity } from './typeorm/document-type.orm';
 import { DocumentOrmEntity } from './typeorm/document.orm';
@@ -70,4 +71,5 @@ export const models = [
   UserApprovalStepOrmEntity,
   VatOrmEntity,
   ExchangeRateOrmEntity,
+  DocumentApproverOrmEntity,
 ];
