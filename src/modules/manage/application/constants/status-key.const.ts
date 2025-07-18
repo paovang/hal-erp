@@ -2,21 +2,21 @@
 export const VAT_RATE = 10;
 
 export const STATUS_KEY = {
-  PENDING: 1,
+  CANCELLED: 4,
   APPROVED: 2,
   REJECTED: 3,
-  CANCELLED: 4,
+  PENDING: 1,
 };
 
 export enum EnumType {
-  VENDOR = 'vendor',
   BUDGET_ITEM_DETAIL = 'budget_item_detail',
+  VENDOR = 'vendor',
 }
 
 // purchase order item
 export enum SelectStatus {
-  TRUE = 'true',
   FALSE = 'false',
+  TRUE = 'true',
 }
 
 // pr or po
@@ -26,16 +26,23 @@ export enum EnumPrOrPo {
 }
 
 export enum EnumWorkflowStep {
-  DEPARTMENT = 'department',
-  SPECIFIC_USER = 'specific_user',
   DEPARTMENT_HEAD = 'department_head',
+  SPECIFIC_USER = 'specific_user',
   LINE_MANAGER = 'line_manager',
+  DEPARTMENT = 'department',
   CONDITION = 'condition',
 }
 
 export enum EnumStatus {
-  PENDING = 'pending',
   APPROVED = 'approved',
   REJECTED = 'rejected',
+  PENDING = 'pending',
   WATING = 'wating',
+}
+
+export enum EligiblePersons {
+  DEPARTMENT_HEAD = 'department_head',
+  LINE_MANAGER = 'line_manager',
+  SUPER_ADMIN = 'super-admin',
+  ADMIN = 'admin',
 }
