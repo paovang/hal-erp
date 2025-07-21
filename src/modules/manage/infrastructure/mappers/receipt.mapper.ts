@@ -1,0 +1,77 @@
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { ReceiptEntity } from '../../domain/entities/receipt.entity';
+import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
+import moment from 'moment-timezone';
+import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { ReceiptId } from '../../domain/value-objects/receitp-id.vo';
+import { Injectable } from '@nestjs/common';
+import { ReceiptItemDataAccessMapper } from './receipt-item.mapper';
+import { DocumentDataAccessMapper } from './document.mapper';
+import { UserApprovalDataAccessMapper } from './user-approval.mapper';
+
+@Injectable()
+export class ReceiptDataAccessMapper {
+  constructor(
+    private readonly receiptItemMapper: ReceiptItemDataAccessMapper,
+    private readonly documentMapper: DocumentDataAccessMapper,
+    private readonly userApprovalMapper: UserApprovalDataAccessMapper,
+  ) {}
+  toOrmEntity(
+    receiptEntity: ReceiptEntity,
+    method: OrmEntityMethod,
+  ): ReceiptOrmEntity {
+    const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
+    const id = receiptEntity.getId();
+
+    const mediaOrmEntity = new ReceiptOrmEntity();
+    if (id) {
+      mediaOrmEntity.id = id.value;
+    }
+    mediaOrmEntity.receipt_number = receiptEntity.receipt_number;
+    mediaOrmEntity.document_id = receiptEntity.document_id;
+    mediaOrmEntity.purchase_order_id = receiptEntity.purchase_order_id;
+    mediaOrmEntity.receipt_date = receiptEntity.receipt_date ?? new Date(now);
+    mediaOrmEntity.remark = receiptEntity.remark;
+    if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.received_by = receiptEntity.received_by;
+      mediaOrmEntity.created_at = receiptEntity.createdAt ?? new Date(now);
+    }
+    mediaOrmEntity.updated_at = new Date(now);
+
+    return mediaOrmEntity;
+  }
+
+  toEntity(ormData: ReceiptOrmEntity): ReceiptEntity {
+    const builder = ReceiptEntity.builder()
+      .setReceiptId(new ReceiptId(ormData.id))
+      .setReceiptNumber(ormData.receipt_number)
+      .setReceiptNumber(ormData.receipt_number)
+      .setDocumentId(ormData.document_id ?? 0)
+      .setPurchaseOrderId(ormData.purchase_order_id ?? 0)
+      .setReceiptDate(ormData.receipt_date)
+      .setReceivedBy(ormData.received_by ?? 0)
+      .setRemark(ormData.remark)
+      .setCreatedAt(ormData.created_at)
+      .setUpdatedAt(ormData.updated_at);
+
+    if (ormData.documents) {
+      builder.setDocument(this.documentMapper.toEntity(ormData.documents));
+      if (ormData.documents.user_approvals) {
+        builder.setUserApproval(
+          this.userApprovalMapper.toEntity(ormData.documents.user_approvals),
+        );
+      }
+    }
+
+    if (ormData.receipt_items) {
+      builder.setItems(
+        ormData.receipt_items.map((item) =>
+          this.receiptItemMapper.toEntity(item),
+        ),
+      );
+    }
+
+    return builder.build();
+  }
+}

@@ -379,3 +379,31 @@ export const selectPoPositions = [
   'po_positions.created_at',
   'po_positions.updated_at',
 ];
+
+// receipt item
+export const selectReceiptItems = [
+  'receipt_items.id',
+  'receipt_items.receipt_id',
+  'receipt_items.purchase_order_item_id',
+  'receipt_items.quantity',
+  'receipt_items.price',
+  'receipt_items.total',
+  'receipt_items.currency_id',
+  'receipt_items.payment_currency_id',
+  'receipt_items.exchange_rate',
+  'receipt_items.payment_total',
+  'receipt_items.payment_type',
+  'receipt_items.remark',
+  'receipt_items.created_at',
+  'receipt_items.updated_at',
+];
+
+// receipt by
+export const selectReceiptBy = [
+  'receipt_by.id',
+  'receipt_by.username',
+  'receipt_by.email',
+  'receipt_by.tel',
+  'receipt_by.created_at',
+  'receipt_by.updated_at',
+];

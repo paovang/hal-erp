@@ -48,7 +48,7 @@
   "invalid_type": "Invalid type",
   "forbidden_resource": "You do not have permission to access this resource.",
   "expired_date_must_not_be_in_past": "The expired date must not be in the past.",
-  "cannot_update": "Cannot be edited because this has already been approved.",
+  "cannot_update": "Cannot be edited or deleted because this has already been approved.",
   "cannot_delete": "Cannot be deleted because this has already been approved.",
   "already_approved": "This has already been approved.",
   "duplicate_vendor_id_in_selected_vendor": "Duplicate vendor id in selected vendor"

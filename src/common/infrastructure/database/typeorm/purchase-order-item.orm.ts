@@ -16,6 +16,7 @@ import { PurchaseRequestItemOrmEntity } from './purchase-request-item.orm';
 import { BudgetItemDetailOrmEntity } from './budget-item-detail.orm';
 import { SelectStatus } from '@src/modules/manage/application/constants/status-key.const';
 import { PurchaseOrderSelectedVendorOrmEntity } from './purchase-order-selected-vendor.orm';
+import { ReceiptItemOrmEntity } from './receipt.item.orm';
 
 @Entity('purchase_order_items')
 export class PurchaseOrderItemOrmEntity {
@@ -111,4 +112,10 @@ export class PurchaseOrderItemOrmEntity {
   purchase_order_selected_vendors: Relation<
     PurchaseOrderSelectedVendorOrmEntity[]
   >;
+
+  @OneToMany(
+    () => ReceiptItemOrmEntity,
+    (receipt_items) => receipt_items.purchase_order_items,
+  )
+  receipt_items: Relation<ReceiptItemOrmEntity[]>;
 }

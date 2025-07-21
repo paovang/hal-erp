@@ -7,7 +7,6 @@ import { READ_PURCHASE_ORDER_REPOSITORY } from '../../../constants/inject-key.co
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { IReadPurchaseOrderRepository } from '@src/modules/manage/domain/ports/output/purchase-order-repository.interface';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
-import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler
@@ -23,22 +22,14 @@ export class GetAllQueryHandler
     query: GetAllQuery,
   ): Promise<ResponseResult<PurchaseOrderEntity>> {
     const user = this._userContextService.getAuthUser()?.user;
-
     const user_id = user?.id;
-
-    const departmentUser = await query.manager.findOne(
-      DepartmentUserOrmEntity,
-      {
-        where: { user_id: user_id },
-      },
-    );
-
-    const departmentId = departmentUser?.department_id ?? null;
+    const roles = user?.roles?.map((r: any) => r.name) ?? [];
 
     const data = await this._readRepo.findAll(
       query.dto,
       query.manager,
-      departmentId!,
+      user_id,
+      roles,
     );
 
     if (!data) {

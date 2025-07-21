@@ -1,0 +1,112 @@
+import { Entity } from '@src/common/domain/entities/entity';
+import { ReceiptId } from '../value-objects/receitp-id.vo';
+import { BadRequestException } from '@nestjs/common';
+import { ReceiptBuilder } from '../builders/receipt.builder';
+import { ReceiptItemEntity } from './receipt-item.entity';
+import { DocumentEntity } from './document.entity';
+import { UserApprovalEntity } from './user-approval.entity';
+
+export class ReceiptEntity extends Entity<ReceiptId> {
+  private readonly _receipt_number: string;
+  private readonly _purchase_order_id: number;
+  private readonly _document_id: number;
+  private readonly _receipt_date: Date | null;
+  private readonly _received_by: number;
+  private readonly _remark: string;
+  private readonly _createdAt: Date;
+  private readonly _updatedAt: Date | null;
+  private readonly _deletedAt: Date | null;
+  private readonly _item: ReceiptItemEntity[] | null;
+  private readonly _document: DocumentEntity | null;
+  private readonly _user_approval: UserApprovalEntity | null;
+
+  private constructor(builder: ReceiptBuilder) {
+    super();
+    this.setId(builder.receiptId);
+    this._receipt_number = builder.receipt_number;
+    this._purchase_order_id = builder.purchase_order_id;
+    this._document_id = builder.document_id;
+    this._receipt_date = builder.receipt_date;
+    this._received_by = builder.received_by;
+    this._remark = builder.remark;
+    this._createdAt = builder.createdAt;
+    this._updatedAt = builder.updatedAt ?? null;
+    this._deletedAt = builder.deletedAt ?? null;
+    this._item = builder.item ?? null;
+    this._document = builder.document ?? null;
+    this._user_approval = builder.user_approval ?? null;
+  }
+
+  get receipt_number(): string {
+    return this._receipt_number;
+  }
+
+  get purchase_order_id(): number {
+    return this._purchase_order_id;
+  }
+
+  get document_id(): number {
+    return this._document_id;
+  }
+
+  get receipt_date(): Date | null {
+    return this._receipt_date;
+  }
+
+  get received_by(): number {
+    return this._received_by;
+  }
+
+  get remark(): string {
+    return this._remark;
+  }
+
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+
+  get updatedAt(): Date | null {
+    return this._updatedAt;
+  }
+
+  get deletedAt(): Date | null {
+    return this._deletedAt;
+  }
+
+  get item(): ReceiptItemEntity[] | null {
+    return this._item;
+  }
+
+  get document(): DocumentEntity | null {
+    return this._document;
+  }
+
+  get user_approval(): UserApprovalEntity | null {
+    return this._user_approval;
+  }
+
+  public static builder(): ReceiptBuilder {
+    return new ReceiptBuilder();
+  }
+
+  static create(builder: ReceiptBuilder): ReceiptEntity {
+    return new ReceiptEntity(builder);
+  }
+
+  static getEntityName() {
+    return 'ReceiptEntity';
+  }
+
+  async validateExistingIdForUpdate() {
+    if (!this.getId()) {
+      console.log('phoudvang');
+      throw new BadRequestException(
+        'users.user_is_not_in_correct_state_for_initialization',
+      );
+    }
+  }
+
+  async initializeUpdateSetId(receiptId: ReceiptId) {
+    this.setId(receiptId);
+  }
+}

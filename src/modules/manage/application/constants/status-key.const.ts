@@ -19,10 +19,17 @@ export enum SelectStatus {
   TRUE = 'true',
 }
 
+// payment type
+export enum EnumPaymentType {
+  CASH = 'cash',
+  TRANSFER = 'transfer',
+}
+
 // pr or po
 export enum EnumPrOrPo {
-  PO = 'po',
-  PR = 'pr',
+  PO = 'po', // purchase order
+  PR = 'pr', // purchase request
+  R = 'r', // receipt
 }
 
 export enum EnumWorkflowStep {

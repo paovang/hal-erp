@@ -21,6 +21,7 @@ import { UserApprovalStepOrmEntity } from './user-approval-step.orm';
 import { DepartmentOrmEntity } from './department.orm';
 import { DocumentApproverOrmEntity } from './document-approver.orm';
 import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
+import { ReceiptOrmEntity } from './receipt.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -132,4 +133,7 @@ export class UserOrmEntity {
     (approval_workflow_steps) => approval_workflow_steps.users,
   )
   approval_workflow_steps: Relation<ApprovalWorkflowStepOrmEntity[]>;
+
+  @OneToMany(() => ReceiptOrmEntity, (receipts) => receipts.users)
+  receipts: Relation<ReceiptOrmEntity[]>;
 }

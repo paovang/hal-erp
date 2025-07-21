@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { VendorBankAccountOrmEntity } from './vendor_bank_account.orm';
 import { ExchangeRateOrmEntity } from './exchange-rate.orm';
+import { ReceiptItemOrmEntity } from './receipt.item.orm';
 
 @Entity('currencies')
 export class CurrencyOrmEntity {
@@ -51,4 +52,16 @@ export class CurrencyOrmEntity {
     (exchage_rate) => exchage_rate.to_currency,
   )
   exchange_rate_to: Relation<ExchangeRateOrmEntity[]>;
+
+  @OneToMany(
+    () => ReceiptItemOrmEntity,
+    (receipt_items) => receipt_items.currency,
+  )
+  receipt_items: Relation<ReceiptItemOrmEntity[]>;
+
+  @OneToMany(
+    () => ReceiptItemOrmEntity,
+    (receipt_items) => receipt_items.payment_currency,
+  )
+  receipt_item_payment: Relation<ReceiptItemOrmEntity[]>;
 }

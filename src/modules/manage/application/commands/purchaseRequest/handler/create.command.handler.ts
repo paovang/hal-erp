@@ -212,42 +212,6 @@ export class CreateCommandHandler
 
         const pr_id = (pr as any)._id._value;
 
-        // for (const item of query.dto.purchase_request_items) {
-        //   await findOneOrFail(query.manager, UnitOrmEntity, {
-        //     id: item.unit_id,
-        //   });
-
-        //   let fileKey = null;
-        //   if (item.file_name) {
-        //     const mockFile = await createMockMulterFile(
-        //       baseFolder,
-        //       item.file_name,
-        //     );
-        //     const optimizedImage =
-        //       await this._optimizeService.optimizeImage(mockFile);
-        //     const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
-        //       optimizedImage,
-        //       PR_FILE_NAME_FOLDER,
-        //     );
-        //     fileKey = s3ImageResponse.fileKey;
-        //   }
-
-        //   processedItems = {
-        //     ...item,
-        //     file_name: fileKey,
-        //   };
-
-        //   sum_total = item.quantity * item.price;
-
-        //   const pr_item = this._dataItemMapper.toEntity(
-        //     processedItems,
-        //     pr_id,
-        //     sum_total,
-        //   );
-
-        //   await this._writeItem.create(pr_item, manager);
-        // }
-
         await this.insertItem(
           query,
           manager,

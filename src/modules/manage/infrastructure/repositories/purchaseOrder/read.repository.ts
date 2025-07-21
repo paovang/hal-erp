@@ -53,7 +53,10 @@ import {
 } from '@src/common/constants/select-field';
 import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purchase-order-id.vo';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
-import { EnumPrOrPo } from '@src/modules/manage/application/constants/status-key.const';
+import {
+  EligiblePersons,
+  EnumPrOrPo,
+} from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadPurchaseOrderRepository
@@ -69,15 +72,17 @@ export class ReadPurchaseOrderRepository
   async findAll(
     query: PurchaseOrderQueryDto,
     manager: EntityManager,
-    departmentId?: number,
+    user_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<PurchaseOrderEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager, departmentId);
+    const queryBuilder = await this.createBaseQuery(manager, roles, user_id);
     query.sort_by = 'purchase_orders.id';
 
     const status = await countStatusAmounts(
       manager,
-      departmentId,
       EnumPrOrPo.PO,
+      user_id,
+      roles,
     );
 
     const data = await this._paginationService.paginate(
@@ -94,13 +99,12 @@ export class ReadPurchaseOrderRepository
 
   private createBaseQuery(
     manager: EntityManager,
-    departmentId?: number,
+    roles?: string[],
     user_id?: number,
   ) {
     const selectFields = [
       ...selectPurchaseOrderItems,
       ...selectPurchaseOrderSelectedVendors,
-      // ...selectQuotes,
       ...selectPurchaseRequests,
       ...selectDocuments,
       ...selectDocumentTypes,
@@ -115,9 +119,6 @@ export class ReadPurchaseOrderRepository
       ...selectRequestItemUnits,
       ...selectBudgetItemDetails,
       ...selectProvinces,
-      // ...selectVendors,
-      // ...selectQuotesVendorBankAccounts,
-      // ...selectCurrencies,
       ...selectSelectedVendors,
       ...selectCurrency,
       ...selectVendorBankAccounts,
@@ -136,9 +137,6 @@ export class ReadPurchaseOrderRepository
       ...selectApprover,
       ...selectApproverUserSignatures,
       ...selectStatus,
-
-      // ...selectApprovalWorkflowSteps,
-      // ...selectWorkflowStepsDepartment,
     ];
 
     const query = manager
@@ -148,7 +146,6 @@ export class ReadPurchaseOrderRepository
         'purchase_order_items.purchase_order_selected_vendors',
         'purchase_order_selected_vendors',
       )
-      // .innerJoin('purchase_order_items.purchase_order_item_quotes', 'quotes')
       .innerJoin('purchase_orders.purchase_requests', 'purchase_requests')
       .innerJoin(
         'purchase_requests.purchase_request_items',
@@ -171,10 +168,6 @@ export class ReadPurchaseOrderRepository
         'budget_item_details',
       )
       .leftJoin('budget_item_details.provinces', 'provinces')
-      // join with vendor
-      // .innerJoin('quotes.vendors', 'vendors')
-      // .leftJoin('vendors.vendor_bank_accounts', 'quotes_vendor_bank_accounts')
-      // .leftJoin('quotes_vendor_bank_accounts.currencies', 'currencies')
       .innerJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
       .leftJoin('selected_vendors.vendor_bank_accounts', 'vendor_bank_accounts')
       .leftJoin('vendor_bank_accounts.currencies', 'currency')
@@ -193,20 +186,22 @@ export class ReadPurchaseOrderRepository
       .leftJoin('user_approval_steps.approver', 'approver')
       .innerJoin('user_approval_steps.status', 'status')
       .leftJoin('approver.user_signatures', 'approver_user_signatures')
-      .leftJoin('user_approval_steps.document_approvers', 'document_approver')
+      .innerJoin(
+        'user_approval_steps.document_approvers',
+        'document_approver',
+        'document_approver.user_approval_step_id = user_approval_steps.id',
+      )
       // add select
       .addSelect(selectFields);
 
-    if (departmentId !== undefined && departmentId !== null) {
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
       query.andWhere('document_approver.user_id = :user_id', {
         user_id,
       });
-      // query.andWhere('po_documents.department_id = :departmentId', {
-      //   departmentId,
-      // });
-      // .andWhere('approval_workflow_steps.department_id = :departmentId', {
-      //   departmentId,
-      // })
     }
 
     return query;
@@ -237,77 +232,4 @@ export class ReadPurchaseOrderRepository
 
     return this._dataAccessMapper.toEntity(item);
   }
-
-  // private joinBaseRelations(qb: SelectQueryBuilder<any>) {
-  //   return (
-  //     qb
-  //       .innerJoin(
-  //         'purchase_orders.purchase_order_items',
-  //         'purchase_order_items',
-  //       )
-  //       .innerJoin(
-  //         'purchase_orders.purchase_order_selected_vendors',
-  //         'purchase_order_selected_vendors',
-  //       )
-  //       .innerJoin('purchase_order_items.purchase_order_item_quotes', 'quotes')
-  //       .innerJoin('purchase_orders.purchase_requests', 'purchase_requests')
-  //       .innerJoin(
-  //         'purchase_requests.purchase_request_items',
-  //         'purchase_request_items',
-  //       )
-  //       .innerJoin('purchase_requests.documents', 'documents')
-  //       .innerJoin('documents.departments', 'departments')
-  //       .innerJoin('documents.users', 'users')
-  //       .innerJoin('documents.document_types', 'document_types')
-  //       .innerJoin('users.user_signatures', 'user_signatures')
-  //       .innerJoin('users.department_users', 'department_users')
-  //       .innerJoin('department_users.positions', 'positions')
-
-  //       .innerJoin('purchase_request_items.units', 'units')
-  //       // purchase_order_items join with purchase request
-  //       .innerJoin(
-  //         'purchase_order_items.purchase_request_items',
-  //         'request_items',
-  //       )
-  //       .innerJoin('request_items.units', 'request_item_unit')
-  //       .leftJoin(
-  //         'purchase_order_items.budget_item_details',
-  //         'budget_item_details',
-  //       )
-  //       .leftJoin('budget_item_details.provinces', 'provinces')
-  //       // join with vendor
-  //       .innerJoin('quotes.vendors', 'vendors')
-  //       .leftJoin('vendors.vendor_bank_accounts', 'quotes_vendor_bank_accounts')
-  //       .leftJoin('quotes_vendor_bank_accounts.currencies', 'currencies')
-  //       .leftJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
-  //       .leftJoin(
-  //         'selected_vendors.vendor_bank_accounts',
-  //         'vendor_bank_accounts',
-  //       )
-  //       .leftJoin('vendor_bank_accounts.currencies', 'currency')
-
-  //       .innerJoin('purchase_orders.documents', 'po_documents')
-  //       .innerJoin('po_documents.departments', 'po_departments')
-  //       .innerJoin('po_documents.users', 'po_users')
-  //       .innerJoin('po_documents.document_types', 'po_document_types')
-  //       .innerJoin('po_users.user_signatures', 'po_user_signatures')
-  //       .innerJoin('po_users.department_users', 'po_department_users')
-  //       .innerJoin('po_department_users.positions', 'po_positions')
-
-  //       .innerJoin('po_documents.user_approvals', 'user_approvals')
-  //       .innerJoin('user_approvals.document_statuses', 'document_statuses')
-  //       .leftJoin('user_approvals.user_approval_steps', 'user_approval_steps')
-  //       .leftJoin('user_approval_steps.approver', 'approver')
-  //       .leftJoin('user_approval_steps.status', 'status')
-  //       .leftJoin('approver.user_signatures', 'approver_user_signatures')
-  //       .leftJoin(
-  //         'user_approval_steps.approval_workflow_steps',
-  //         'approval_workflow_steps',
-  //       )
-  //       .leftJoin(
-  //         'approval_workflow_steps.departments',
-  //         'workflow_steps_department',
-  //       )
-  //   );
-  // }
 }

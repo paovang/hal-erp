@@ -66,7 +66,6 @@ export class ReadPurchaseRequestRepository
 
     const status = await countStatusAmounts(
       manager,
-      departmentId,
       EnumPrOrPo.PR,
       user_id,
       roles,
@@ -106,8 +105,6 @@ export class ReadPurchaseRequestRepository
       ...selectApprover,
       ...selectApproverUserSignatures,
       ...selectStatus,
-      // ...selectApprovalWorkflowSteps,
-      // ...selectWorkflowStepsDepartment,
     ];
 
     const query = manager
@@ -130,17 +127,12 @@ export class ReadPurchaseRequestRepository
       .leftJoin('user_approval_steps.approver', 'approver')
       .leftJoin('user_approval_steps.status', 'status')
       .leftJoin('approver.user_signatures', 'approver_user_signatures')
-      .leftJoin('user_approval_steps.document_approvers', 'document_approver')
+      .innerJoin(
+        'user_approval_steps.document_approvers',
+        'document_approver',
+        'document_approver.user_approval_step_id = user_approval_steps.id',
+      )
       .addSelect(selectFields);
-
-    // if (departmentId !== undefined && departmentId !== null) {
-    //   query.andWhere('document_approver.user_id = :user_id', {
-    //     user_id,
-    //   });
-    //   // .andWhere('documents.department_id = :departmentId', {
-    //   //   departmentId,
-    //   // });
-    // }
 
     if (
       roles &&

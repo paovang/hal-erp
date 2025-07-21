@@ -8,7 +8,8 @@ export interface IReadPurchaseOrderRepository {
   findAll(
     query: PurchaseOrderQueryDto,
     manager: EntityManager,
-    departmentId?: number,
+    user_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<PurchaseOrderEntity>>;
 
   findOne(

@@ -24,6 +24,8 @@ import { PurchaseOrderSelectedVendorOrmEntity } from './typeorm/purchase-order-s
 import { PurchaseOrderOrmEntity } from './typeorm/purchase-order.orm';
 import { PurchaseRequestItemOrmEntity } from './typeorm/purchase-request-item.orm';
 import { PurchaseRequestOrmEntity } from './typeorm/purchase-request.orm';
+import { ReceiptItemOrmEntity } from './typeorm/receipt.item.orm';
+import { ReceiptOrmEntity } from './typeorm/receipt.orm';
 import { RoleOrmEntity } from './typeorm/role.orm';
 import { SeederLogOrmEntity } from './typeorm/seeder-log.orm';
 import { UnitOrmEntity } from './typeorm/unit.orm';
@@ -72,4 +74,6 @@ export const models = [
   VatOrmEntity,
   ExchangeRateOrmEntity,
   DocumentApproverOrmEntity,
+  ReceiptOrmEntity,
+  ReceiptItemOrmEntity,
 ];

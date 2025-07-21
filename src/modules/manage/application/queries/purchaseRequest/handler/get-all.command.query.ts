@@ -36,22 +36,6 @@ export class GetAllQueryHandler
     const departmentId = departmentUser?.department_id ?? null;
     const roles = user?.roles?.map((r: any) => r.name) ?? [];
     console.log('roles', roles);
-    // let min = 0;
-    // let max = 0;
-
-    // if (departmentId) {
-    //   const budgetApprovalRule = await query.manager.findOne(
-    //     BudgetApprovalRuleOrmEntity,
-    //     {
-    //       where: { department_id: departmentId, approver_id: user_id },
-    //     },
-    //   );
-
-    //   if (budgetApprovalRule) {
-    //     min = budgetApprovalRule?.min_amount ?? 0;
-    //     max = budgetApprovalRule?.max_amount ?? 0;
-    //   }
-    // }
 
     const data = await this._readRepo.findAll(
       query.dto,

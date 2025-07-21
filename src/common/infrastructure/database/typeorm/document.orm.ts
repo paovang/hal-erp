@@ -17,6 +17,7 @@ import { PurchaseRequestOrmEntity } from './purchase-request.orm';
 import { DocumentTypeOrmEntity } from './document-type.orm';
 import { UserApprovalOrmEntity } from './user-approval.orm';
 import { PurchaseOrderOrmEntity } from './purchase-order.orm';
+import { ReceiptOrmEntity } from './receipt.orm';
 
 @Entity('documents')
 export class DocumentOrmEntity {
@@ -105,4 +106,7 @@ export class DocumentOrmEntity {
     (user_approvals) => user_approvals.documents,
   )
   user_approvals: Relation<UserApprovalOrmEntity>;
+
+  @OneToOne(() => ReceiptOrmEntity, (receipts) => receipts.documents)
+  receipts: Relation<ReceiptOrmEntity>;
 }

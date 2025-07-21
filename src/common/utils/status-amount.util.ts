@@ -6,7 +6,6 @@ import { EntityManager } from 'typeorm';
 
 export async function countStatusAmounts(
   manager: EntityManager,
-  departmentId?: number,
   type?: EnumPrOrPo,
   user_id?: number,
   roles?: string[],
@@ -20,15 +19,11 @@ export async function countStatusAmounts(
     .innerJoin('ua.user_approval_steps', 'uas')
     .innerJoin('ua.documents', 'doc')
     .leftJoin('doc.departments', 'departments')
-    .leftJoin('uas.document_approvers', 'document_approver');
-
-  // เงื่อนไข department เหมือนเดิม
-  // if (departmentId !== undefined && departmentId !== null) {
-  //   // query.andWhere('doc.department_id = :departmentId', { departmentId });
-  //   query.andWhere('document_approver.user_id = :user_id', {
-  //     user_id,
-  //   });
-  // }
+    .innerJoin(
+      'uas.document_approvers',
+      'document_approver',
+      'document_approver.user_approval_step_id = uas.id',
+    );
 
   // เงื่อนไข type
   if (type === EnumPrOrPo.PO) {
@@ -46,6 +41,18 @@ export async function countStatusAmounts(
   } else if (type === EnumPrOrPo.PR) {
     // Join เฉพาะ PR
     query.innerJoin('purchase_requests', 'pr', 'doc.id = pr.document_id');
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      query.andWhere('document_approver.user_id = :user_id', {
+        user_id,
+      });
+    }
+  } else if (type === EnumPrOrPo.R) {
+    // Join เฉพาะ R
+    query.innerJoin('receipts', 'r', 'doc.id = r.document_id');
     if (
       roles &&
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
