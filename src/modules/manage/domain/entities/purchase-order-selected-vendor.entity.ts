@@ -8,6 +8,7 @@ import { VendorBankAccountEntity } from './vendor-bank-account.entity';
 export class PurchaseOrderSelectedVendorEntity extends Entity<PurchaseOrderSelectedVendorId> {
   private readonly _purchase_order_item_id: number;
   private readonly _vendor_id: number;
+  private readonly _vendor_bank_account_id: number;
   private readonly _filename: string;
   private readonly _reason: string;
   private readonly _selected: boolean;
@@ -15,13 +16,14 @@ export class PurchaseOrderSelectedVendorEntity extends Entity<PurchaseOrderSelec
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _vendor: VendorEntity | null;
-  private readonly _vendor_bank_account: VendorBankAccountEntity[] | null;
+  private readonly _vendor_bank_account: VendorBankAccountEntity | null;
 
   private constructor(builder: PurchaseOrderSelectedVendorBuilder) {
     super();
     this.setId(builder.purchaseOrderSelectedVendorId);
     this._purchase_order_item_id = builder.purchase_order_item_id;
     this._vendor_id = builder.vendor_id;
+    this._vendor_bank_account_id = builder.vendor_bank_account_id;
     this._filename = builder.filename;
     this._reason = builder.reason;
     this._selected = builder.selected;
@@ -34,6 +36,10 @@ export class PurchaseOrderSelectedVendorEntity extends Entity<PurchaseOrderSelec
 
   get purchase_order_item_id(): number {
     return this._purchase_order_item_id;
+  }
+
+  get vendor_bank_account_id(): number {
+    return this._vendor_bank_account_id;
   }
 
   get vendor_id(): number {
@@ -68,7 +74,7 @@ export class PurchaseOrderSelectedVendorEntity extends Entity<PurchaseOrderSelec
     return this._vendor;
   }
 
-  get vendor_bank_account(): VendorBankAccountEntity[] | null {
+  get vendor_bank_account(): VendorBankAccountEntity | null {
     return this._vendor_bank_account;
   }
 

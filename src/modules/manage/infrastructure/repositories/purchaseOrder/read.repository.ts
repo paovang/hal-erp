@@ -169,7 +169,11 @@ export class ReadPurchaseOrderRepository
       )
       .leftJoin('budget_item_details.provinces', 'provinces')
       .innerJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
-      .leftJoin('selected_vendors.vendor_bank_accounts', 'vendor_bank_accounts')
+      // .leftJoin('selected_vendors.vendor_bank_accounts', 'vendor_bank_accounts')
+      .leftJoin(
+        'purchase_order_selected_vendors.vendor_bank_account',
+        'vendor_bank_accounts',
+      )
       .leftJoin('vendor_bank_accounts.currencies', 'currency')
 
       .innerJoin('purchase_orders.documents', 'po_documents')

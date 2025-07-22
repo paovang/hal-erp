@@ -13,6 +13,9 @@ export class PurchaseOrderSelectedVendorResponse {
   vendor_id: number;
 
   @ApiProperty()
+  vendor_bank_account_id: number;
+
+  @ApiProperty()
   filename: string;
 
   @ApiProperty()
@@ -34,5 +37,5 @@ export class PurchaseOrderSelectedVendorResponse {
   vendor: VendorResponse;
 
   @ApiProperty()
-  vendor_bank_account: VendorBankAccountResponse[];
+  vendor_bank_account: VendorBankAccountResponse | null;
 }

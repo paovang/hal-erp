@@ -54,6 +54,8 @@ import { ManageDomainException } from '@src/modules/manage/domain/exceptions/man
 import { ReceiptItemOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.item.orm';
 import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
 import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
+import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
+import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -410,7 +412,7 @@ export class CreateCommandHandler
     receipt_id: number,
   ): Promise<void> {
     for (const item of query.dto.receipt_items) {
-      await this.checkCurrency(item.currency_id, manager);
+      // await this.checkCurrency(item.currency_id, manager);
       await this.checkCurrency(item.payment_currency_id, manager);
       const amount = await this.getVat(manager);
 
@@ -429,9 +431,38 @@ export class CreateCommandHandler
         HttpStatus.NOT_FOUND,
       );
 
+      const order_item_select_vendor = await manager.findOne(
+        PurchaseOrderSelectedVendorOrmEntity,
+        {
+          where: {
+            purchase_order_item_id: item.purchase_order_item_id,
+          },
+        },
+      );
+      assertOrThrow(
+        order_item_select_vendor,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+      );
+
+      const vendor_bank_account = await manager.findOne(
+        VendorBankAccountOrmEntity,
+        {
+          where: {
+            id: order_item_select_vendor?.vendor_bank_account_id,
+          },
+        },
+      );
+
+      assertOrThrow(
+        vendor_bank_account,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+      );
+
       const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
         where: {
-          from_currency_id: item.currency_id,
+          from_currency_id: vendor_bank_account?.currency_id,
           to_currency_id: item.payment_currency_id,
           is_active: true,
         },
@@ -466,19 +497,19 @@ export class CreateCommandHandler
       }
 
       if (currency.code === 'USD' && payment_currency.code === 'LAK') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
         payment_total = sum_total / rate;
+      } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
+        payment_total = sum_total * rate;
       } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
         payment_total = sum_total * rate;
       } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
-        payment_total = sum_total * rate;
+        payment_total = sum_total / rate;
       } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
         payment_total = sum_total * rate;
+      } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
+        payment_total = sum_total / rate;
       } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
         payment_total = sum_total * rate;
       } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
@@ -491,7 +522,7 @@ export class CreateCommandHandler
         quantity: quantity,
         price: price,
         total: get_total,
-        currency_id: item.currency_id,
+        currency_id: vendor_bank_account?.currency_id ?? 0,
         payment_currency_id: item.payment_currency_id,
         exchange_rate: rate,
         vat: vat,

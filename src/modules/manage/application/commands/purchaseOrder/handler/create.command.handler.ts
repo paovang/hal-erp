@@ -61,6 +61,7 @@ import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/por
 import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
 import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 import { assertOrThrow } from '@src/common/utils/assert.util';
+import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -330,6 +331,23 @@ export class CreateCommandHandler
 
     for (const vendor of selected_vendor) {
       let fileKey = null;
+
+      if (vendor.vendor_bank_account_id) {
+        const check_vendor_bank_account = await manager.findOne(
+          VendorBankAccountOrmEntity,
+          {
+            where: {
+              id: vendor.vendor_bank_account_id,
+              vendor_id: vendor.vendor_id,
+            },
+          },
+        );
+        assertOrThrow(
+          check_vendor_bank_account,
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+        );
+      }
 
       await findOneOrFail(manager, VendorOrmEntity, {
         id: vendor.vendor_id,

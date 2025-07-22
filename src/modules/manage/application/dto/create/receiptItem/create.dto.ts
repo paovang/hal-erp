@@ -15,10 +15,10 @@ export class CreateReceiptItemDto {
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly purchase_order_item_id: number;
 
-  @ApiProperty()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
-  readonly currency_id: number;
+  // @ApiProperty()
+  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  // @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  // readonly currency_id: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })

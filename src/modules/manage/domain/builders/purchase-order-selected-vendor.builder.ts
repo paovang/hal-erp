@@ -7,6 +7,7 @@ export class PurchaseOrderSelectedVendorBuilder {
   purchaseOrderSelectedVendorId: PurchaseOrderSelectedVendorId;
   purchase_order_item_id: number;
   vendor_id: number;
+  vendor_bank_account_id: number;
   filename: string;
   reason: string;
   selected: boolean;
@@ -14,7 +15,7 @@ export class PurchaseOrderSelectedVendorBuilder {
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   vendor: VendorEntity | null;
-  vendor_bank_account: VendorBankAccountEntity[] | null;
+  vendor_bank_account: VendorBankAccountEntity | null;
 
   setPurchaseOrderSelectedVendorId(value: PurchaseOrderSelectedVendorId): this {
     this.purchaseOrderSelectedVendorId = value;
@@ -28,6 +29,11 @@ export class PurchaseOrderSelectedVendorBuilder {
 
   setVendorId(vendor_id: number): this {
     this.vendor_id = vendor_id;
+    return this;
+  }
+
+  setVendorBankAccountId(vendor_bank_account_id: number): this {
+    this.vendor_bank_account_id = vendor_bank_account_id;
     return this;
   }
 
@@ -67,7 +73,7 @@ export class PurchaseOrderSelectedVendorBuilder {
   }
 
   setVendorBankAccount(
-    vendor_bank_account: VendorBankAccountEntity[] | null,
+    vendor_bank_account: VendorBankAccountEntity | null,
   ): this {
     this.vendor_bank_account = vendor_bank_account;
     return this;

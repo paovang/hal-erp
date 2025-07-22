@@ -30,6 +30,7 @@ export class PurchaseOrderSelectedVendorDataAccessMapper {
     }
 
     mediaOrmEntity.purchase_order_item_id = svEntity.purchase_order_item_id;
+    mediaOrmEntity.vendor_bank_account_id = svEntity.vendor_bank_account_id;
     mediaOrmEntity.vendor_id = svEntity.vendor_id;
     mediaOrmEntity.filename = svEntity.filename;
     mediaOrmEntity.reason = svEntity.reason;
@@ -67,12 +68,10 @@ export class PurchaseOrderSelectedVendorDataAccessMapper {
       builder.setVendor(this._vendor.toEntity(ormData.vendors));
     }
 
-    if (ormData.vendors?.vendor_bank_accounts) {
-      const vendorBankAccounts = ormData.vendors.vendor_bank_accounts.map(
-        (vendorBankAccount) =>
-          this._vendorBankAccount.toEntity(vendorBankAccount),
+    if (ormData.vendor_bank_account) {
+      builder.setVendorBankAccount(
+        this._vendorBankAccount.toEntity(ormData.vendor_bank_account),
       );
-      builder.setVendorBankAccount(vendorBankAccounts);
     }
 
     return builder.build();

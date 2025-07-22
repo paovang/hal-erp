@@ -32,6 +32,10 @@ export class PurchaseOrderSelectedVendorDataMapper {
       builder.setVendorId(dto.vendor_id);
     }
 
+    if (dto.vendor_bank_account_id) {
+      builder.setVendorBankAccountId(dto.vendor_bank_account_id);
+    }
+
     if (dto.filename) {
       builder.setFilename(dto.filename);
     }
@@ -58,6 +62,7 @@ export class PurchaseOrderSelectedVendorDataMapper {
     response.id = entity.getId().value;
     response.purchase_order_item_id = Number(entity.purchase_order_item_id);
     response.vendor_id = Number(entity.vendor_id);
+    response.vendor_bank_account_id = Number(entity.vendor_bank_account_id);
     response.filename = entity.filename;
     response.filename_url = file;
     response.reason = entity.reason;
@@ -72,10 +77,8 @@ export class PurchaseOrderSelectedVendorDataMapper {
     response.vendor = this._vendor.toResponse(entity.vendor!);
 
     response.vendor_bank_account = entity.vendor_bank_account
-      ? entity.vendor_bank_account.map((account) =>
-          this._vendorBankAccount.toResponse(account),
-        )
-      : [];
+      ? this._vendorBankAccount.toResponse(entity.vendor_bank_account)
+      : null;
 
     return response;
   }
