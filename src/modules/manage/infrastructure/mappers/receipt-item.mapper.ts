@@ -38,6 +38,7 @@ export class ReceiptItemDataAccessMapper {
     mediaOrmEntity.payment_type = receiptEntity.payment_type;
     mediaOrmEntity.remark = receiptEntity.remark;
     if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.vat = receiptEntity.vat;
       mediaOrmEntity.created_at = receiptEntity.createdAt ?? new Date(now);
     }
     mediaOrmEntity.updated_at = new Date(now);
@@ -56,6 +57,7 @@ export class ReceiptItemDataAccessMapper {
       .setCurrencyId(ormData.currency_id ?? 0)
       .setPaymentCurrencyId(ormData.payment_currency_id ?? 0)
       .setExchangeRate(ormData.exchange_rate ?? 0)
+      .setVat(ormData.vat ?? 0)
       .setPaymentTotal(ormData.payment_total ?? 0)
       .setPaymentType(ormData.payment_type)
       .setRemark(ormData.remark ?? '')

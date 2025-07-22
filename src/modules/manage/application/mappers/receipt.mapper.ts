@@ -77,6 +77,15 @@ export class ReceiptDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
 
+    response.currency_totals = entity.currencyTotals?.length
+      ? entity.currencyTotals.map((total) => ({
+          id: +total.id,
+          code: total.code || '',
+          name: total.name || null,
+          amount: +total.amount || 0,
+        }))
+      : [];
+
     response.document = entity.document
       ? this.documentMapper.toResponse(entity.document)
       : null;

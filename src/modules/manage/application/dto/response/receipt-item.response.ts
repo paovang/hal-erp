@@ -33,6 +33,9 @@ export class ReceiptItemResponse {
   payment_total: number;
 
   @ApiProperty()
+  vat: number;
+
+  @ApiProperty()
   payment_type: string;
 
   @ApiProperty()

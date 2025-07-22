@@ -12,6 +12,7 @@ export class ReceiptItemBuilder {
   total: number;
   currency_id: number;
   exchange_rate: number;
+  vat: number;
   payment_currency_id: number;
   payment_total: number;
   payment_type: EnumPaymentType;
@@ -79,6 +80,11 @@ export class ReceiptItemBuilder {
 
   setExchangeRate(exchange_rate: number): this {
     this.exchange_rate = exchange_rate;
+    return this;
+  }
+
+  setVat(vat: number): this {
+    this.vat = vat;
     return this;
   }
 

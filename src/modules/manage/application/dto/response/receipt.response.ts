@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ReceiptItemResponse } from './receipt-item.response';
 import { DocumentResponse } from './document.response';
 import { UserApprovalResponse } from './user-approval.response';
+import { CurrencyTotal } from '../../commands/receipt/interface/receipt.interface';
 
 export class ReceiptResponse {
   @ApiProperty()
@@ -30,6 +31,9 @@ export class ReceiptResponse {
 
   @ApiProperty()
   updated_at: string;
+
+  @ApiProperty()
+  currency_totals: CurrencyTotal[] | null;
 
   @ApiProperty()
   receipt_item: ReceiptItemResponse[] | null;

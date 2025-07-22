@@ -1,5 +1,6 @@
 import { ApprovalWorkflowStepOrmEntity } from './typeorm/approval-workflow-step.orm';
 import { ApprovalWorkflowOrmEntity } from './typeorm/approval-workflow.orm';
+import { BankOrmEntity } from './typeorm/bank.orm';
 import { BudgetAccountOrmEntity } from './typeorm/budget-account.orm';
 import { BudgetApprovalRuleOrmEntity } from './typeorm/budget-approval-rule.orm';
 import { BudgetItemDetailOrmEntity } from './typeorm/budget-item-detail.orm';
@@ -76,4 +77,5 @@ export const models = [
   DocumentApproverOrmEntity,
   ReceiptOrmEntity,
   ReceiptItemOrmEntity,
+  BankOrmEntity,
 ];

@@ -5,3 +5,10 @@ export interface ReceiptInterface {
   received_by?: number;
   remark?: string;
 }
+
+export interface CurrencyTotal {
+  id: number;
+  code: string;
+  name?: string | null;
+  amount: number;
+}

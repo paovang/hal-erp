@@ -6,12 +6,15 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { VendorOrmEntity } from './vendor.orm';
 import { CurrencyOrmEntity } from './currency.orm';
+import { BankOrmEntity } from './bank.orm';
+import { PurchaseOrderSelectedVendorOrmEntity } from './purchase-order-selected-vendor.orm';
 
 @Entity('vendor_bank_accounts')
 export class VendorBankAccountOrmEntity {
@@ -38,9 +41,21 @@ export class VendorBankAccountOrmEntity {
   @JoinColumn({ name: 'currency_id' })
   currencies: Relation<CurrencyOrmEntity>;
 
+  // ເອົາອອກ
   @Index()
   @Column({ type: 'varchar', length: 255, nullable: true })
   bank_name: string;
+  // end
+
+  @Index()
+  @Column({ nullable: true })
+  bank_id?: number;
+  @ManyToOne(() => BankOrmEntity, (banks) => banks.vendor_bank_accounts, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'bank_id' })
+  banks: Relation<BankOrmEntity>;
 
   @Index()
   @Column({ type: 'varchar', length: 255, nullable: true })
@@ -64,4 +79,10 @@ export class VendorBankAccountOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  @OneToMany(
+    () => PurchaseOrderSelectedVendorOrmEntity,
+    (selected_vendors) => selected_vendors.vendor_bank_account,
+  )
+  selected_vendors: Relation<PurchaseOrderSelectedVendorOrmEntity[]>;
 }

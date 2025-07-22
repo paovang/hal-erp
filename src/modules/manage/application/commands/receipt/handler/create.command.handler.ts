@@ -2,7 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '../create.command';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ReceiptEntity } from '@src/modules/manage/domain/entities/receipt.entity';
-import { HttpStatus, Inject } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import {
   LENGTH_DOCUMENT_CODE,
   LENGTH_RECEIPT_CODE,
@@ -37,6 +37,7 @@ import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/t
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import {
   EnumPaymentType,
+  SelectStatus,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
 import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
@@ -52,6 +53,7 @@ import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { ReceiptItemOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.item.orm';
 import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
+import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -70,6 +72,7 @@ interface ReceiptInterItemInterface {
   currency_id: number;
   payment_currency_id: number;
   exchange_rate: number;
+  vat: number;
   payment_total: number;
   payment_type: EnumPaymentType;
   remark: string;
@@ -409,6 +412,7 @@ export class CreateCommandHandler
     for (const item of query.dto.receipt_items) {
       await this.checkCurrency(item.currency_id, manager);
       await this.checkCurrency(item.payment_currency_id, manager);
+      const amount = await this.getVat(manager);
 
       const purchase_order_item = await manager.findOne(
         PurchaseOrderItemOrmEntity,
@@ -445,29 +449,40 @@ export class CreateCommandHandler
       );
 
       let payment_total = 0;
+      let vat = 0;
+      let sum_total = 0;
       const quantity = purchase_order_item?.quantity ?? 0;
       const price = purchase_order_item?.price ?? 0;
       const get_total = purchase_order_item?.total ?? 0;
       const rate = exchange_rate?.rate ?? 0;
 
+      if (purchase_order_item?.is_vat === SelectStatus.TRUE) {
+        vat = amount ?? 0;
+        const vat_total = get_total * (vat / 100);
+        sum_total = get_total + vat_total;
+      } else {
+        vat = 0;
+        sum_total = get_total;
+      }
+
       if (currency.code === 'USD' && payment_currency.code === 'LAK') {
-        payment_total = get_total * rate;
+        payment_total = sum_total * rate;
       } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
-        payment_total = get_total / rate;
+        payment_total = sum_total / rate;
       } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
-        payment_total = get_total * rate;
+        payment_total = sum_total * rate;
       } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
-        payment_total = get_total * rate;
+        payment_total = sum_total * rate;
       } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
-        payment_total = get_total / rate;
+        payment_total = sum_total / rate;
       } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
-        payment_total = get_total / rate;
+        payment_total = sum_total / rate;
       } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
-        payment_total = get_total * rate;
+        payment_total = sum_total * rate;
       } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
-        payment_total = get_total * rate;
+        payment_total = sum_total * rate;
       } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
-        payment_total = get_total * rate;
+        payment_total = sum_total * rate;
       }
 
       const interface_item: ReceiptInterItemInterface = {
@@ -479,6 +494,7 @@ export class CreateCommandHandler
         currency_id: item.currency_id,
         payment_currency_id: item.payment_currency_id,
         exchange_rate: rate,
+        vat: vat,
         payment_total: payment_total,
         payment_type: item.payment_type,
         remark: item.remark,
@@ -487,5 +503,14 @@ export class CreateCommandHandler
       const itemEntity = this._dataItemMapper.toEntity(interface_item);
       await this._writeItem.create(itemEntity, manager);
     }
+  }
+
+  private async getVat(manager: EntityManager): Promise<number> {
+    const vat = await manager.createQueryBuilder(VatOrmEntity, 'vat').getOne();
+    if (!vat) {
+      throw new HttpException('errors.not_found', HttpStatus.NOT_FOUND);
+    }
+    const { amount } = vat;
+    return amount;
   }
 }

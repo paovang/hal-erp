@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common';
 import { ReceiptItemDataAccessMapper } from './receipt-item.mapper';
 import { DocumentDataAccessMapper } from './document.mapper';
 import { UserApprovalDataAccessMapper } from './user-approval.mapper';
+import { CurrencyTotal } from '../../application/commands/receipt/interface/receipt.interface';
 
 @Injectable()
 export class ReceiptDataAccessMapper {
@@ -70,8 +71,44 @@ export class ReceiptDataAccessMapper {
           this.receiptItemMapper.toEntity(item),
         ),
       );
+      // Calculate currency totals for this specific receipt
+      const currencyTotals = this.calculateCurrencyTotalsFromItems(
+        ormData.receipt_items,
+      );
+      builder.setCurrencyTotals(currencyTotals);
     }
 
     return builder.build();
+  }
+
+  private calculateCurrencyTotalsFromItems(
+    receiptItems: any[],
+  ): CurrencyTotal[] {
+    const currencyMap = new Map<number, CurrencyTotal>();
+
+    receiptItems.forEach((item) => {
+      // Handle different possible data structures
+      const paymentCurrency = item.payment_currency || item.currencies;
+      const currencyId = paymentCurrency?.id;
+      const currencyCode = paymentCurrency?.code;
+      const currencyName = paymentCurrency?.name;
+      const paymentTotal = parseFloat(item.payment_total) || 0;
+
+      if (currencyId && paymentTotal > 0) {
+        if (currencyMap.has(currencyId)) {
+          const existing = currencyMap.get(currencyId)!;
+          existing.amount += paymentTotal;
+        } else {
+          currencyMap.set(currencyId, {
+            id: currencyId,
+            code: currencyCode || '',
+            name: currencyName,
+            amount: paymentTotal,
+          });
+        }
+      }
+    });
+
+    return Array.from(currencyMap.values());
   }
 }

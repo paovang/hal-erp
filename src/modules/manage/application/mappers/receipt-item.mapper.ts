@@ -16,6 +16,7 @@ interface ReceiptItemInterface {
   currency_id?: number;
   payment_currency_id: number;
   exchange_rate: number;
+  vat?: number;
   payment_total: number;
   payment_type: EnumPaymentType;
   remark: string;
@@ -67,6 +68,10 @@ export class ReceiptItemDataMapper {
       builder.setPaymentTotal(dto.payment_total);
     }
 
+    if (dto.vat) {
+      builder.setVat(dto.vat);
+    }
+
     if (dto.payment_type) {
       builder.setPaymentType(dto.payment_type);
     }
@@ -90,6 +95,7 @@ export class ReceiptItemDataMapper {
     response.currency_id = Number(entity.currency_id);
     response.payment_currency_id = Number(entity.payment_currency_id);
     response.exchange_rate = entity.exchange_rate;
+    response.vat = entity.vat;
     response.payment_total = entity.payment_total;
     response.payment_type = entity.payment_type;
     response.remark = entity.remark;

@@ -81,6 +81,9 @@ export class ReceiptItemOrmEntity {
   exchange_rate?: number;
 
   @Column({ type: 'double precision', nullable: true })
+  vat?: number;
+
+  @Column({ type: 'double precision', nullable: true })
   payment_total?: number;
 
   @Index()

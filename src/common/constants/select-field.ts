@@ -391,6 +391,7 @@ export const selectReceiptItems = [
   'receipt_items.currency_id',
   'receipt_items.payment_currency_id',
   'receipt_items.exchange_rate',
+  'receipt_items.vat',
   'receipt_items.payment_total',
   'receipt_items.payment_type',
   'receipt_items.remark',

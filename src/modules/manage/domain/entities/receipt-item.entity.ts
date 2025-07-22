@@ -13,6 +13,7 @@ export class ReceiptItemEntity extends Entity<ReceiptItemId> {
   private readonly _total: number;
   private readonly _currency_id: number;
   private readonly _exchange_rate: number;
+  private readonly _vat: number;
   private readonly _payment_currency_id: number;
   private readonly _payment_total: number;
   private readonly _payment_type: EnumPaymentType;
@@ -34,6 +35,7 @@ export class ReceiptItemEntity extends Entity<ReceiptItemId> {
     this._currency_id = builder.currency_id;
     this._payment_currency_id = builder.payment_currency_id;
     this._exchange_rate = builder.exchange_rate;
+    this._vat = builder.vat;
     this._payment_total = builder.payment_total;
     this._payment_type = builder.payment_type;
     this._remark = builder.remark;
@@ -70,6 +72,10 @@ export class ReceiptItemEntity extends Entity<ReceiptItemId> {
 
   get exchange_rate(): number {
     return this._exchange_rate;
+  }
+
+  get vat(): number {
+    return this._vat;
   }
 
   get payment_currency_id(): number {

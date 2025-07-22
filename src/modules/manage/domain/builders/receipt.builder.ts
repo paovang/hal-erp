@@ -1,3 +1,4 @@
+import { CurrencyTotal } from '../../application/commands/receipt/interface/receipt.interface';
 import { DocumentEntity } from '../entities/document.entity';
 import { ReceiptItemEntity } from '../entities/receipt-item.entity';
 import { ReceiptEntity } from '../entities/receipt.entity';
@@ -18,6 +19,7 @@ export class ReceiptBuilder {
   item: ReceiptItemEntity[] | null;
   document: DocumentEntity | null;
   user_approval: UserApprovalEntity | null;
+  currency_totals?: CurrencyTotal[] | null;
 
   setReceiptId(value: ReceiptId): this {
     this.receiptId = value;
@@ -66,6 +68,11 @@ export class ReceiptBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setCurrencyTotals(currency_totals: CurrencyTotal[] | null): this {
+    this.currency_totals = currency_totals;
     return this;
   }
 

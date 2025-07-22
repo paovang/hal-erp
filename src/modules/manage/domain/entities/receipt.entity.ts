@@ -5,6 +5,7 @@ import { ReceiptBuilder } from '../builders/receipt.builder';
 import { ReceiptItemEntity } from './receipt-item.entity';
 import { DocumentEntity } from './document.entity';
 import { UserApprovalEntity } from './user-approval.entity';
+import { CurrencyTotal } from '../../application/commands/receipt/interface/receipt.interface';
 
 export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _receipt_number: string;
@@ -19,6 +20,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _item: ReceiptItemEntity[] | null;
   private readonly _document: DocumentEntity | null;
   private readonly _user_approval: UserApprovalEntity | null;
+  private readonly _currency_totals?: CurrencyTotal[] | null;
 
   private constructor(builder: ReceiptBuilder) {
     super();
@@ -35,6 +37,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
     this._item = builder.item ?? null;
     this._document = builder.document ?? null;
     this._user_approval = builder.user_approval ?? null;
+    this._currency_totals = builder.currency_totals ?? null;
   }
 
   get receipt_number(): string {
@@ -71,6 +74,10 @@ export class ReceiptEntity extends Entity<ReceiptId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get currencyTotals(): CurrencyTotal[] | null {
+    return this._currency_totals ?? null;
   }
 
   get item(): ReceiptItemEntity[] | null {
