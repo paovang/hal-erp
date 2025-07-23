@@ -12,7 +12,6 @@ import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 import { DepartmentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/department-approver.orm';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
-import { UserHasPermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/model-has-permission.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -79,13 +78,6 @@ export class DeleteCommandHandler
     await checkRelationOrThrow(
       query.manager,
       DepartmentUserOrmEntity,
-      { user_id: query.id },
-      'errors.already_in_use',
-    );
-
-    await checkRelationOrThrow(
-      query.manager,
-      UserHasPermissionOrmEntity,
       { user_id: query.id },
       'errors.already_in_use',
     );
