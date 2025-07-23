@@ -8,12 +8,11 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   Relation,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { CurrencyOrmEntity } from './currency.orm';
 
-@Unique(['from_currency_id', 'to_currency_id'])
+// @Unique(['from_currency_id', 'to_currency_id'])
 @Entity('exchange_rates')
 export class ExchangeRateOrmEntity {
   @PrimaryGeneratedColumn('increment', { type: 'bigint' })
