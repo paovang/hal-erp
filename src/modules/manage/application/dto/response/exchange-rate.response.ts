@@ -1,15 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DocumentTypeResponse } from './document-type.response';
+import { CurrencyResponse } from './currency.response';
 
 export class ExchangeRateResponse {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  document_type_id: number;
+  from_currency_id: number;
+  @ApiProperty()
+  to_currency_id: number;
 
   @ApiProperty()
-  name: string;
+  rate: number;
+  @ApiProperty()
+  is_active: boolean;
 
   @ApiProperty()
   created_at: string;
@@ -18,5 +22,7 @@ export class ExchangeRateResponse {
   updated_at: string;
 
   @ApiProperty()
-  document_type: DocumentTypeResponse | null;
+  from_currency: CurrencyResponse | null;
+  @ApiProperty()
+  to_currency: CurrencyResponse | null;
 }

@@ -51,5 +51,6 @@
   "cannot_update": "Cannot be edited because this has already been approved.",
   "cannot_delete": "Cannot be deleted because this has already been approved.",
   "already_approved": "This has already been approved.",
-  "duplicate_vendor_id_in_selected_vendor": "Duplicate vendor id in selected vendor"
+  "duplicate_vendor_id_in_selected_vendor": "Duplicate vendor id in selected vendor",
+  "exchange_rate_already_exists": "This exchange rate already exists"
 }

@@ -20,12 +20,12 @@ export class CreateExchangeRateType {
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
-  readonly from_currency: number;
+  readonly from_currency_id: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
-  readonly to_currency: number;
+  readonly to_currency_id: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })

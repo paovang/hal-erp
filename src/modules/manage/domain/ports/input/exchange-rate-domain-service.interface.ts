@@ -1,9 +1,9 @@
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { EntityManager } from 'typeorm';
-import { CreateVatDto } from '@src/modules/manage/application/dto/create/vat/create.dto';
-import { UpdateVatDto } from '@src/modules/manage/application/dto/create/vat/update.dto';
 import { ExchangeRateQueryDto } from '@src/modules/manage/application/dto/query/exchange-rate-query.dto';
 import { ExchangeRateEntity } from '../../entities/exchange-rate.entity';
+import { CreateExchangeRateDto } from '@src/modules/manage/application/dto/create/exchange-rates/create.dto';
+import { UpdateExchangeRateDto } from '@src/modules/manage/application/dto/create/exchange-rates/update.dto';
 
 export interface IExchangeRateServiceInterface {
   getAll(
@@ -17,13 +17,13 @@ export interface IExchangeRateServiceInterface {
   ): Promise<ResponseResult<ExchangeRateEntity>>;
 
   create(
-    dto: CreateVatDto,
+    dto: CreateExchangeRateDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<ExchangeRateEntity>>;
 
   update(
     id: number,
-    dto: UpdateVatDto,
+    dto: UpdateExchangeRateDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<ExchangeRateEntity>>;
 

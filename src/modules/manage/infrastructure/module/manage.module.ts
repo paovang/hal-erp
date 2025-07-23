@@ -30,6 +30,7 @@ import { PurchaseOrderController } from '../../controllers/purchase-order.contro
 import { UserApprovalController } from '../../controllers/user-approval.controller';
 import { UserApprovalStepController } from '../../controllers/user-approval-step.controller';
 import { VatController } from '../../controllers/vat.controller';
+import { ExchangeRateController } from '../../controllers/exchange-rate.controller';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { VatController } from '../../controllers/vat.controller';
     UserApprovalController,
     UserApprovalStepController,
     VatController,
+    ExchangeRateController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

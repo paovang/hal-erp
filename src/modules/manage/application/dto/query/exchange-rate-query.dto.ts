@@ -10,4 +10,11 @@ export class ExchangeRateQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  from_currency_id?: string;
+  @ApiProperty()
+  @IsOptional()
+  to_currency_id?: string;
 }

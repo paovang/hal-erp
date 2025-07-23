@@ -1,10 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
+// import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { EntityManager, Repository } from 'typeorm';
 import {
-  FilterOptions,
-  IPaginationService,
+  // FilterOptions,
+  // IPaginationService,
   ResponseResult,
 } from '@common/infrastructure/pagination/pagination.interface';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
@@ -21,35 +21,36 @@ export class ReadVatRepository implements IReadVatRepository {
     @InjectRepository(VatOrmEntity)
     private readonly _orm: Repository<VatOrmEntity>,
     private readonly _dataAccessMapper: VatDataAccessMapper,
-    @Inject(PAGINATION_SERVICE)
-    private readonly _paginationService: IPaginationService,
+    // @Inject(PAGINATION_SERVICE)
+    // private readonly _paginationService: IPaginationService,
   ) {}
   async findAll(
     query: VatQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<VatEntity>> {
     const queryBuilder = this.createBaseQuery(manager);
-    query.sort_by = 'vats.id';
-    const data = await this._paginationService.paginate(
-      queryBuilder,
-      query,
-      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
-      this.getFilterOptions(),
-    );
-    return data;
+
+    // Get the first item without pagination
+    const item = await queryBuilder.getOne();
+
+    if (!item) {
+      throw new Error('VAT item not found');
+    }
+
+    return this._dataAccessMapper.toEntity(item);
   }
 
   private createBaseQuery(manager: EntityManager) {
     return manager.createQueryBuilder(VatOrmEntity, 'vats');
   }
 
-  private getFilterOptions(): FilterOptions {
-    return {
-      searchColumns: ['vats.name'],
-      dateColumn: '',
-      filterByColumns: [],
-    };
-  }
+  // private getFilterOptions(): FilterOptions {
+  //   return {
+  //     searchColumns: ['vats.name'],
+  //     dateColumn: '',
+  //     filterByColumns: [],
+  //   };
+  // }
 
   async findOne(
     id: VatId,

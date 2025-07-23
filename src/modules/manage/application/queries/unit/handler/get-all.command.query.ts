@@ -20,7 +20,7 @@ export class GetAllQueryHandler
     const data = await this._readRepo.findAll(query.dto, query.manager);
 
     if (!data) {
-      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+      throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND);
     }
 
     return data;
