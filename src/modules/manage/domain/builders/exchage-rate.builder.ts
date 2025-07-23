@@ -1,27 +1,30 @@
+import { CurrencyEntity } from '../entities/currency.entity';
 import { ExchangeRateEntity } from '../entities/exchange-rate.entity';
 import { ExchangeRateId } from '../value-objects/exchange-rate-id.vo';
 
 export class ExchangeRateBuilder {
   exchangeRateId: ExchangeRateId;
-  from_currency: number;
-  to_currency: number;
+  from_currency_id: number;
+  to_currency_id: number;
   rate: number;
   is_active: boolean;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  from_currency: CurrencyEntity | null;
+  to_currency: CurrencyEntity | null;
 
   setExchangeRateId(value: ExchangeRateId): this {
     this.exchangeRateId = value;
     return this;
   }
 
-  setFromCurrency(from_currency: number): this {
-    this.from_currency = from_currency;
+  setFromCurrencyId(from_currency_id: number): this {
+    this.from_currency_id = from_currency_id;
     return this;
   }
-  setToCurrency(to_currency: number): this {
-    this.to_currency = to_currency;
+  setToCurrencyId(to_currency_id: number): this {
+    this.to_currency_id = to_currency_id;
     return this;
   }
   setRate(rate: number): this {
@@ -45,6 +48,14 @@ export class ExchangeRateBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+  setFromCurrency(from_currency: CurrencyEntity | null): this {
+    this.from_currency = from_currency;
+    return this;
+  }
+  setToCurrency(to_currency: CurrencyEntity | null): this {
+    this.to_currency = to_currency;
     return this;
   }
 

@@ -33,8 +33,6 @@ export class VatController {
     @Query() dto: VatQueryDto,
   ): Promise<ResponseResult<VatResponse>> {
     const result = await this._vatService.getAll(dto);
-    console.log('tou', result);
-
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,

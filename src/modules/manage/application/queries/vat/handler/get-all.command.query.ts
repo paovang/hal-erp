@@ -20,7 +20,7 @@ export class GetAllVatQueryHandler
     const data = await this._readRepo.findAll(query.dto, query.manager);
     if (!data) {
       throw new manageDomainException.ManageDomainException(
-        'error.not_found',
+        'errors.not_found',
         HttpStatus.NOT_FOUND,
       );
     }
