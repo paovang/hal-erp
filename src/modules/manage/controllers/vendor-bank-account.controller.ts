@@ -43,11 +43,12 @@ export class VendorBankAccountController {
     );
   }
 
-  @Get('')
+  @Get('vendor/:id')
   async getAll(
+    @Param('id') id: number,
     @Query() dto: VendorBankAccountQueryDto,
   ): Promise<ResponseResult<VendorBankAccountResponse>> {
-    const result = await this._vendorBankAccountService.getAll(dto);
+    const result = await this._vendorBankAccountService.getAll(id, dto);
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,

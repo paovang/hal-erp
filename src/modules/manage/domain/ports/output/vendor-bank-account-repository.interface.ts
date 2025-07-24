@@ -25,6 +25,7 @@ export interface IWriteVendorBankAccountRepository {
 
 export interface IReadVendorBankAccountRepository {
   findAll(
+    id: number,
     query: VendorBankAccountQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<VendorBankAccountEntity>>;
