@@ -19,7 +19,11 @@ export class GetAllQueryHandler
   async execute(
     query: GetAllQuery,
   ): Promise<ResponseResult<VendorBankAccountEntity>> {
-    const data = await this._readRepo.findAll(query.dto, query.manager);
+    const data = await this._readRepo.findAll(
+      query.id,
+      query.dto,
+      query.manager,
+    );
 
     if (!data) {
       throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
