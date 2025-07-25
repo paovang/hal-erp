@@ -32,6 +32,7 @@ import { UserApprovalStepController } from '../../controllers/user-approval-step
 import { VatController } from '../../controllers/vat.controller';
 import { ReceiptController } from '../../controllers/receipt.controller';
 import { ExchangeRateController } from '../../controllers/exchange-rate.controller';
+import { BankController } from '../../controllers/bank.controller';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { ExchangeRateController } from '../../controllers/exchange-rate.controll
     VatController,
     ReceiptController,
     ExchangeRateController,
+    BankController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

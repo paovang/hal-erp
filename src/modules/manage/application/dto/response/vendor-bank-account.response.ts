@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CurrencyResponse } from './currency.response';
 import { VendorResponse } from './vendor.response';
+import { BankResponse } from './bank.response';
 
 export class VendorBankAccountResponse {
   @ApiProperty()
@@ -13,7 +14,7 @@ export class VendorBankAccountResponse {
   currency_id: number;
 
   @ApiProperty()
-  bank_name: string;
+  bank_id: number;
 
   @ApiProperty()
   account_name: string;
@@ -35,4 +36,7 @@ export class VendorBankAccountResponse {
 
   @ApiProperty()
   currency: CurrencyResponse | null;
+
+  @ApiProperty()
+  bank: BankResponse | null;
 }

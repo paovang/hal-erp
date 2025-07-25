@@ -33,12 +33,14 @@ export class UpdateExchangeRateCommandHandler
         HttpStatus.BAD_REQUEST,
       );
     }
+    // Check for duplicate (excluding current record)
     await _checkColumnExchangeRateDuplicate(
       ExchangeRateOrmEntity,
       'from_to' as any,
       { from: query.dto.from_currency_id, to: query.dto.to_currency_id },
       query.manager,
       'errors.exchange_rate_already_exists',
+      query.id, // Exclude current record from duplicate check
     );
 
     const entity = this._dataMapper.toEntity(query.dto);

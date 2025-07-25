@@ -40,11 +40,6 @@ export class VendorBankAccountOrmEntity {
   )
   @JoinColumn({ name: 'currency_id' })
   currencies: Relation<CurrencyOrmEntity>;
-
-  // ເອົາອອກ
-  @Index()
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  bank_name: string;
   // end
 
   @Index()

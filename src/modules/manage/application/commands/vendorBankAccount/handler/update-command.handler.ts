@@ -12,6 +12,7 @@ import { VendorBankAccountId } from '@src/modules/manage/domain/value-objects/ve
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
 import { VendorOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor.orm';
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
+import { BankOrmEntity } from '@src/common/infrastructure/database/typeorm/bank.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -39,6 +40,10 @@ export class UpdateCommandHandler
 
     await findOneOrFail(query.manager, CurrencyOrmEntity, {
       id: query.dto.currency_id,
+    });
+
+    await findOneOrFail(query.manager, BankOrmEntity, {
+      id: query.dto.bank_id,
     });
 
     // Map to entity
