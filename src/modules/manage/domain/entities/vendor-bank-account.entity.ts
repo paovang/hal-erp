@@ -4,11 +4,12 @@ import { VendorBankAccountBuilder } from '../builders/vendor-bank-account.builde
 import { BadRequestException } from '@nestjs/common';
 import { VendorEntity } from './vendor.entity';
 import { CurrencyEntity } from './currency.entity';
+import { BankEntity } from './bank.entity';
 
 export class VendorBankAccountEntity extends Entity<VendorBankAccountId> {
   private readonly _vendorID: number;
   private readonly _currencyID: number;
-  private readonly _bankName: string;
+  private readonly _bankId: number;
   private readonly _accountName: string;
   private readonly _accountNumber: string;
   private readonly _is_selected: boolean;
@@ -17,13 +18,14 @@ export class VendorBankAccountEntity extends Entity<VendorBankAccountId> {
   private readonly _deletedAt: Date | null;
   private readonly _vendor: VendorEntity;
   private readonly _currency: CurrencyEntity;
+  private readonly _bank: BankEntity;
 
   private constructor(builder: VendorBankAccountBuilder) {
     super();
     this.setId(builder.vendorBankAccountId);
     this._vendorID = builder.vendor_id;
     this._currencyID = builder.currency_id;
-    this._bankName = builder.bank_name;
+    this._bankId = builder.bank_id;
     this._accountName = builder.account_name;
     this._accountNumber = builder.account_number;
     this._is_selected = builder.is_selected;
@@ -32,6 +34,7 @@ export class VendorBankAccountEntity extends Entity<VendorBankAccountId> {
     this._deletedAt = builder.deletedAt ?? null;
     this._vendor = builder.vendor;
     this._currency = builder.currency;
+    this._bank = builder.bank;
   }
 
   get vendorID(): number {
@@ -42,8 +45,8 @@ export class VendorBankAccountEntity extends Entity<VendorBankAccountId> {
     return this._currencyID;
   }
 
-  get bankName(): string {
-    return this._bankName;
+  get bankId(): number {
+    return this._bankId;
   }
 
   get accountName(): string {
@@ -76,6 +79,9 @@ export class VendorBankAccountEntity extends Entity<VendorBankAccountId> {
 
   get currency(): CurrencyEntity {
     return this._currency;
+  }
+  get bank(): BankEntity {
+    return this._bank;
   }
 
   public static builder(): VendorBankAccountBuilder {

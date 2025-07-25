@@ -7,10 +7,14 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { BudgetItemDetailDataMapper } from './budget-item-detail.mapper';
 import { CreateBudgetItemDto } from '../dto/create/BudgetItem/create.dto';
 import { UpdateBudgetItemDto } from '../dto/create/BudgetItem/update.dto';
+import { BudgetAccountDataMapper } from './budget-account.mapper';
 
 @Injectable()
 export class BudgetItemDataMapper {
-  constructor(private readonly details: BudgetItemDetailDataMapper) {}
+  constructor(
+    private readonly details: BudgetItemDetailDataMapper,
+    private readonly budgetAccount: BudgetAccountDataMapper,
+  ) {}
   /** Mapper Dto To Entity */
   toEntity(dto: CreateBudgetItemDto | UpdateBudgetItemDto): BudgetItemEntity {
     const builder = BudgetItemEntity.builder();
@@ -41,6 +45,10 @@ export class BudgetItemDataMapper {
       .format(DateFormat.DATETIME_READABLE_FORMAT);
 
     response.count_details = entity.count_details;
+
+    response.budget_account = entity.budgetAccount
+      ? this.budgetAccount.toResponse(entity.budgetAccount)
+      : null;
 
     response.budget_item_details = entity.details
       ? entity.details.map((detail) => this.details.toResponse(detail))

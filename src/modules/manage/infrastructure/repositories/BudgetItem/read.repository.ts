@@ -63,11 +63,27 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'bid',
       )
       .leftJoin('budget_item_details.provinces', 'provinces')
+      .innerJoin('budget_items.budget_accounts', 'budget_accounts')
+      .leftJoin('budget_accounts.departments', 'departments')
       .addSelect([
         'provinces.id',
         'provinces.name',
         'provinces.created_at',
         'provinces.updated_at',
+        'budget_accounts.id',
+        'budget_accounts.name',
+        'budget_accounts.code',
+        'budget_accounts.fiscal_year',
+        'budget_accounts.allocated_amount',
+        'budget_accounts.department_id',
+        'budget_accounts.created_at',
+        'budget_accounts.updated_at',
+        'departments.id',
+        'departments.name',
+        'departments.code',
+        'departments.department_head_id',
+        'departments.created_at',
+        'departments.updated_at',
       ]);
   }
   private getFilterOptions(): FilterOptions {

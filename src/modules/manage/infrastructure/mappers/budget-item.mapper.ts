@@ -8,6 +8,7 @@ import { BudgetItemId } from '../../domain/value-objects/budget-item-id.vo';
 import { Injectable } from '@nestjs/common';
 import { BudgetItemDetailDataAccessMapper } from './budget-item-detail.mapper';
 import { BudgetItemDetailEntity } from '../../domain/entities/budget-item-detail.entity';
+import { BudgetAccountDataAccessMapper } from './budget-account.mapper';
 
 // interface BudgetItemOrmEntityWithCount extends BudgetItemOrmEntity {
 //   details_count?: number | null;
@@ -19,7 +20,10 @@ import { BudgetItemDetailEntity } from '../../domain/entities/budget-item-detail
 
 @Injectable()
 export class BudgetItemDataAccessMapper {
-  constructor(private readonly details: BudgetItemDetailDataAccessMapper) {}
+  constructor(
+    private readonly details: BudgetItemDetailDataAccessMapper,
+    private readonly budgetAccount: BudgetAccountDataAccessMapper,
+  ) {}
   toOrmEntity(
     budgetItemEntity: BudgetItemEntity,
     method: OrmEntityMethod,
@@ -54,6 +58,11 @@ export class BudgetItemDataAccessMapper {
       .setCreatedAt(row.created_at)
       .setUpdatedAt(row.updated_at)
       .setCountDetails(row.details_count ?? 0);
+    if (row.budget_accounts) {
+      builder.setBudgetAccount(
+        this.budgetAccount.toEntity(row.budget_accounts),
+      );
+    }
 
     if (Array.isArray(row.budget_item_details)) {
       const transformedDetails: BudgetItemDetailEntity[] = [];

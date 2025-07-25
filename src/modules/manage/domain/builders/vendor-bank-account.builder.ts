@@ -1,3 +1,4 @@
+import { BankEntity } from '../entities/bank.entity';
 import { CurrencyEntity } from '../entities/currency.entity';
 import { VendorBankAccountEntity } from '../entities/vendor-bank-account.entity';
 import { VendorEntity } from '../entities/vendor.entity';
@@ -7,7 +8,7 @@ export class VendorBankAccountBuilder {
   vendorBankAccountId: VendorBankAccountId;
   vendor_id: number;
   currency_id: number;
-  bank_name: string;
+  bank_id: number;
   account_name: string;
   account_number: string;
   is_selected: boolean;
@@ -16,6 +17,7 @@ export class VendorBankAccountBuilder {
   deletedAt!: Date | null;
   vendor: VendorEntity;
   currency: CurrencyEntity;
+  bank: BankEntity;
 
   setVendorBankAccountId(value: VendorBankAccountId): this {
     this.vendorBankAccountId = value;
@@ -32,8 +34,8 @@ export class VendorBankAccountBuilder {
     return this;
   }
 
-  setBankName(bank_name: string): this {
-    this.bank_name = bank_name;
+  setBankId(bank_id: number): this {
+    this.bank_id = bank_id;
     return this;
   }
 
@@ -74,6 +76,10 @@ export class VendorBankAccountBuilder {
 
   setCurrency(currency: CurrencyEntity): this {
     this.currency = currency;
+    return this;
+  }
+  setBank(bank: BankEntity): this {
+    this.bank = bank;
     return this;
   }
 

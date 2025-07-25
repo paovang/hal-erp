@@ -1,3 +1,4 @@
+import { BudgetAccountEntity } from '../entities/budget-account.entity';
 import { BudgetItemDetailEntity } from '../entities/budget-item-detail.entity';
 import { BudgetItemEntity } from '../entities/budget-item.entity';
 import { BudgetItemId } from '../value-objects/budget-item-id.vo';
@@ -12,6 +13,7 @@ export class BudgetItemBuilder {
   deletedAt!: Date | null;
   details: BudgetItemDetailEntity[] | null;
   count_details: number | null;
+  budgetAccount: BudgetAccountEntity | null;
 
   setBudgetItemId(value: BudgetItemId): this {
     this.budgetItemId = value;
@@ -45,6 +47,11 @@ export class BudgetItemBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setBudgetAccount(budgetAccount: BudgetAccountEntity | null): this {
+    this.budgetAccount = budgetAccount;
     return this;
   }
 

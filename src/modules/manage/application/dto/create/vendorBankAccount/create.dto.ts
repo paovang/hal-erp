@@ -15,8 +15,8 @@ export class CreateVendorBankAccountDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
-  readonly bank_name: string;
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  readonly bank_id: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })

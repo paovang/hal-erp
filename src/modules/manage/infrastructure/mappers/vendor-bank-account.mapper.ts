@@ -8,12 +8,14 @@ import { Injectable } from '@nestjs/common';
 import { VendorDataAccessMapper } from './vendor.mapper';
 import { CurrencyDataAccessMapper } from './currency.mapper';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { BankDataAccessMapper } from './bank.mapper';
 
 @Injectable()
 export class VendorBankAccountDataAccessMapper {
   constructor(
     private readonly vendorMapper: VendorDataAccessMapper,
     private readonly currencyMapper: CurrencyDataAccessMapper,
+    private readonly bankMapper: BankDataAccessMapper,
   ) {}
   toOrmEntity(
     vendorBankAccountEntity: VendorBankAccountEntity,
@@ -31,7 +33,7 @@ export class VendorBankAccountDataAccessMapper {
     mediaOrmEntity.currency_id = vendorBankAccountEntity.currencyID;
     mediaOrmEntity.account_name = vendorBankAccountEntity.accountName;
     mediaOrmEntity.account_number = vendorBankAccountEntity.accountNumber;
-    mediaOrmEntity.bank_name = vendorBankAccountEntity.bankName;
+    mediaOrmEntity.bank_id = vendorBankAccountEntity.bankId;
     mediaOrmEntity.is_selected = vendorBankAccountEntity.isSelected;
 
     if (method === OrmEntityMethod.CREATE) {
@@ -51,7 +53,7 @@ export class VendorBankAccountDataAccessMapper {
       .setCurrencyId(ormData.currency_id ?? 0)
       .setAccountName(ormData.account_name)
       .setAccountNumber(ormData.account_number)
-      .setBankName(ormData.bank_name)
+      .setBankId(ormData.bank_id ?? 0)
       .setIsSelected(ormData.is_selected)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
@@ -61,6 +63,9 @@ export class VendorBankAccountDataAccessMapper {
     }
     if (ormData.currencies) {
       builder.setCurrency(this.currencyMapper.toEntity(ormData.currencies));
+    }
+    if (ormData.banks) {
+      builder.setBank(this.bankMapper.toEntity(ormData.banks));
     }
 
     return builder.build();

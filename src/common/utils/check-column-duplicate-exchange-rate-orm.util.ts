@@ -10,7 +10,7 @@ export async function _checkColumnExchangeRateDuplicate<T>(
   errorMessage = '',
   excludeId?: number,
 ): Promise<void> {
-  let where: any;
+  let where: any = {};
 
   if (field === 'from_to') {
     // ✅ กรณีพิเศษ: ตรวจ composite key

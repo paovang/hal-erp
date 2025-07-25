@@ -52,5 +52,7 @@
   "cannot_delete": "ບໍ່ສາມາດລຶບໄດ້ ເພາະວ່າໃບນີ້ຖືກອະນຸມັດແລ້ວ.",
   "already_approved": "ບໍ່ສາມາດອະນຸມັດໄດ້ ເພາະວ່າໃບນີ້ຖືກອະນຸມັດແລ້ວ.",
   "duplicate_vendor_id_in_selected_vendor": "ບໍ່ສາມາດເລືອກຜູູ້ສະໝອງຊໍ້າກັນໄດ້ ເພາະວ່າຜູູ້ສະໝອງນີ້ມີການເລືອກແລ້ວ.",
-  "exchange_rate_already_exists": "ອັດຕາແລກປ່ຽນນີ້ມີຢູ່ແລ້ວ"
+  "exchange_rate_already_exists": "ອັດຕາແລກປ່ຽນນີ້ມີຢູ່ແລ້ວ",
+  "short_name_already_exists": "ຊື່ຫຍໍ້ມີແລ້ວ",
+  "set_budget_approver_rule": "ກະລຸນາຕັ້ງກົດໃນການອະນຸມັດເງິນງກ່ອນ"
 }

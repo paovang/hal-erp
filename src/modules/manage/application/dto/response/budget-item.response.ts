@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BudgetItemDetailResponse } from './budget-item-detail.response';
+import { BudgetAccountResponse } from './budget-account.response';
 
 export class BudgetItemResponse {
   @ApiProperty()
@@ -25,6 +26,9 @@ export class BudgetItemResponse {
 
   @ApiProperty()
   count_details: number | null;
+
+  @ApiProperty()
+  budget_account: BudgetAccountResponse | null;
 
   @ApiProperty()
   budget_item_details: BudgetItemDetailResponse[] | null;

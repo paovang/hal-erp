@@ -48,6 +48,7 @@ export class ReadVendorBankAccountRepository
       .createQueryBuilder(VendorBankAccountOrmEntity, 'vendor_bank_accounts')
       .leftJoinAndSelect('vendor_bank_accounts.vendors', 'vendors')
       .leftJoinAndSelect('vendor_bank_accounts.currencies', 'currencies')
+      .leftJoinAndSelect('vendor_bank_accounts.banks', 'banks')
       .where('vendors.id = :id', { id });
   }
 
@@ -61,6 +62,9 @@ export class ReadVendorBankAccountRepository
         'vendors.contact_info',
         'currencies.name',
         'currencies.code',
+
+        'banks.name',
+        'banks.short_name',
       ],
       dateColumn: '',
       filterByColumns: [],

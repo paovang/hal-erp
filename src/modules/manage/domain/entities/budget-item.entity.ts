@@ -2,6 +2,7 @@ import { Entity } from '@src/common/domain/entities/entity';
 import { BudgetItemBuilder } from '../builders/budget-item.builder';
 import { BudgetItemId } from '../value-objects/budget-item-id.vo';
 import { BudgetItemDetailEntity } from './budget-item-detail.entity';
+import { BudgetAccountEntity } from './budget-account.entity';
 
 export class BudgetItemEntity extends Entity<BudgetItemId> {
   private readonly _name: string;
@@ -12,6 +13,7 @@ export class BudgetItemEntity extends Entity<BudgetItemId> {
   private readonly _deletedAt: Date | null;
   private readonly _details: BudgetItemDetailEntity[] | null;
   private readonly _count_details: number | null;
+  private readonly _budget_account: BudgetAccountEntity | null;
 
   private constructor(builder: BudgetItemBuilder) {
     super();
@@ -24,6 +26,7 @@ export class BudgetItemEntity extends Entity<BudgetItemId> {
     this._deletedAt = builder.deletedAt ?? null;
     this._details = builder.details ?? null;
     this._count_details = builder.count_details ?? null;
+    this._budget_account = builder.budgetAccount ?? null;
   }
 
   get budgetAccountId(): number {
@@ -47,6 +50,10 @@ export class BudgetItemEntity extends Entity<BudgetItemId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get budgetAccount(): BudgetAccountEntity | null {
+    return this._budget_account;
   }
 
   get count_details(): number | null {
