@@ -6,6 +6,7 @@ import { ReceiptItemEntity } from './receipt-item.entity';
 import { DocumentEntity } from './document.entity';
 import { UserApprovalEntity } from './user-approval.entity';
 import { CurrencyTotal } from '../../application/commands/receipt/interface/receipt.interface';
+import { DocumentAttachmentEntity } from './document-attachment.entity';
 
 export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _receipt_number: string;
@@ -22,6 +23,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _document: DocumentEntity | null;
   private readonly _user_approval: UserApprovalEntity | null;
   private readonly _currency_totals?: CurrencyTotal[] | null;
+  private readonly _document_attachments?: DocumentAttachmentEntity[] | null;
 
   private constructor(builder: ReceiptBuilder) {
     super();
@@ -40,6 +42,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
     this._user_approval = builder.user_approval ?? null;
     this._currency_totals = builder.currency_totals ?? null;
     this._slip = builder.slip ?? null;
+    this._document_attachments = builder.document_attachments ?? null;
   }
 
   get receipt_number(): string {
@@ -66,10 +69,6 @@ export class ReceiptEntity extends Entity<ReceiptId> {
     return this._remark;
   }
 
-  get slip(): string | null {
-    return this._slip;
-  }
-
   get createdAt(): Date {
     return this._createdAt;
   }
@@ -92,6 +91,10 @@ export class ReceiptEntity extends Entity<ReceiptId> {
 
   get document(): DocumentEntity | null {
     return this._document;
+  }
+
+  get document_attachments(): DocumentAttachmentEntity[] | null {
+    return this._document_attachments ?? null;
   }
 
   get user_approval(): UserApprovalEntity | null {

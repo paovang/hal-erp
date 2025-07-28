@@ -8,6 +8,7 @@ import { ReceiptItemDataMapper } from './receipt-item.mapper';
 import { DocumentDataMapper } from './document.mapper';
 import { UserApprovalDataMapper } from './user-approval.mapper';
 import { ReceiptInterface } from '../commands/receipt/interface/receipt.interface';
+import { DocumentAttachmentDataMapper } from './document-attachment.mapper';
 
 // interface ReceiptInterface {
 //   receipt_number?: string;
@@ -31,6 +32,7 @@ export class ReceiptDataMapper {
     private readonly _receiptItemMapper: ReceiptItemDataMapper,
     private readonly documentMapper: DocumentDataMapper,
     private readonly userApprovalMapper: UserApprovalDataMapper,
+    private readonly documentAttachmentMapper: DocumentAttachmentDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(dto: ReceiptInterface): ReceiptEntity {
@@ -97,6 +99,12 @@ export class ReceiptDataMapper {
 
     response.user_approval = entity.user_approval
       ? this.userApprovalMapper.toResponse(entity.user_approval)
+      : null;
+
+    response.document_attachment = entity.document_attachments
+      ? entity.document_attachments.map((attachment) =>
+          this.documentAttachmentMapper.toResponse(attachment),
+        )
       : null;
 
     response.receipt_item =

@@ -33,6 +33,7 @@ import { ReceiptProvider } from './receipt';
 import { ReceiptItemProvider } from './receiptItem';
 import { ExchangeRateProvider } from './exchange-rates';
 import { BankProvider } from './banks';
+import { DocumentAttachmentProvider } from './documentAttachment';
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
   ...DocumentTypeProvider,
@@ -68,4 +69,5 @@ export const AllRegisterProviders: Provider[] = [
   ...ReceiptItemProvider,
   ...ExchangeRateProvider,
   ...BankProvider,
+  ...DocumentAttachmentProvider,
 ];

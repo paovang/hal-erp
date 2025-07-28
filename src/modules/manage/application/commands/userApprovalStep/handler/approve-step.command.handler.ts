@@ -4,10 +4,9 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { UserApprovalStepEntity } from '@src/modules/manage/domain/entities/user-approval-step.entity';
 import { HttpStatus, Inject } from '@nestjs/common';
 import {
-  // SLIP_FOLDER,
+  FILE_FOLDER,
   WRITE_DOCUMENT_APPROVER_REPOSITORY,
-  // WRITE_DOCUMENT_ATTACHMENT_REPOSITORY,
-  // WRITE_RECEIPT_REPOSITORY,
+  WRITE_DOCUMENT_ATTACHMENT_REPOSITORY,
   WRITE_USER_APPROVAL_REPOSITORY,
   WRITE_USER_APPROVAL_STEP_REPOSITORY,
 } from '../../../constants/inject-key.const';
@@ -40,17 +39,16 @@ import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
 import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
 import { UserApprovalStepId } from '@src/modules/manage/domain/value-objects/user-approval-step-id.vo';
-// import { IWriteReceiptRepository } from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
-// import { ReceiptDataMapper } from '../../../mappers/receipt.mapper';
 import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
 import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
 import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
 import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
 import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
-// import path from 'path';
-// import { createMockMulterFile } from '@src/common/utils/services/file-utils.service';
-// import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
-// import { IWriteDocumentAttachmentRepository } from '@src/modules/manage/domain/ports/output/document-attachment.interface';
+import path from 'path';
+import { createMockMulterFile } from '@src/common/utils/services/file-utils.service';
+import { IWriteDocumentAttachmentRepository } from '@src/modules/manage/domain/ports/output/document-attachment.interface';
+import { DocumentAttachmentDataMapper } from '../../../mappers/document-attachment.mapper';
+import { DocumentAttachmentInterface } from '../interface/document-attachment.interface';
 
 interface CustomApprovalDto extends Omit<ApprovalDto, 'type' | 'files'> {
   user_approval_id: number;
@@ -81,9 +79,9 @@ export class ApproveStepCommandHandler
     @Inject(WRITE_DOCUMENT_APPROVER_REPOSITORY)
     private readonly _writeDocumentApprover: IWriteDocumentApproverRepository,
     private readonly _dataDocumentApproverMapper: DocumentApproverDataMapper,
-    // @Inject(WRITE_DOCUMENT_ATTACHMENT_REPOSITORY)
-    // private readonly _writeDocumentAttachment: IWriteDocumentAttachmentRepository,
-    // private readonly _dataDocumentAttachmentMapper: DocumentAttachmentDataMapper,
+    @Inject(WRITE_DOCUMENT_ATTACHMENT_REPOSITORY)
+    private readonly _writeDocumentAttachment: IWriteDocumentAttachmentRepository,
+    private readonly _dataDocumentAttachmentMapper: DocumentAttachmentDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -129,11 +127,11 @@ export class ApproveStepCommandHandler
           );
         }
 
-        // if (step.requires_file_upload === true) {
-        //   const document_id = step.user_approvals.document_id;
-        //   await this.uploadFile(query, manager, document_id!);
-        // }
-        console.log('user', user_id);
+        if (step.requires_file_upload === true) {
+          const document_id = step.user_approvals.document_id;
+          await this.uploadFile(query, manager, document_id!, user_id);
+        }
+
         const documentApprover = await manager.findOne(
           DocumentApproverOrmEntity,
           {
@@ -360,54 +358,54 @@ export class ApproveStepCommandHandler
     }
   }
 
-  // private async uploadFile(
-  //   query: ApproveStepCommand,
-  //   manager: EntityManager,
-  //   document_id: number,
-  // ): Promise<void> {
-  //   if (!query.dto.files) {
-  //     throw new ManageDomainException(
-  //       'errors.file_name_required',
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
+  private async uploadFile(
+    query: ApproveStepCommand,
+    manager: EntityManager,
+    document_id: number,
+    user_id: number,
+  ): Promise<void> {
+    if (!query.dto.files) {
+      throw new ManageDomainException(
+        'errors.file_name_required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-  //   for (const file of query.dto.files) {
-  //     if (!file.file_name) {
-  //       throw new ManageDomainException(
-  //         'errors.file_name_required',
-  //         HttpStatus.BAD_REQUEST,
-  //       );
-  //     }
-  //     const fileKey: string | null = null;
+    for (const file of query.dto.files) {
+      if (!file.file_name) {
+        throw new ManageDomainException(
+          'errors.file_name_required',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      let fileKey: string | null = null;
 
-  //     const baseFolder = path.join(
-  //       __dirname,
-  //       '../../../../../../../assets/uploads/',
-  //     );
+      const baseFolder = path.join(
+        __dirname,
+        '../../../../../../../assets/uploads/',
+      );
 
-  //     const mockFile = await createMockMulterFile(baseFolder, file.file_name);
-  //     const optimizedImage =
-  //       await this._optimizeService.optimizeImage(mockFile);
-  //     const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
-  //       optimizedImage,
-  //       SLIP_FOLDER,
-  //     );
+      const mockFile = await createMockMulterFile(baseFolder, file.file_name);
+      const optimizedImage =
+        await this._optimizeService.optimizeImage(mockFile);
+      const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+        optimizedImage,
+        FILE_FOLDER,
+      );
 
-  //     // fileKey = s3ImageResponse.fileKey;
+      fileKey = s3ImageResponse.fileKey;
 
-  //     // // const set_data: ReceiptInterface = { slip: fileKey };
+      const set_data: DocumentAttachmentInterface = {
+        document_id: document_id,
+        file_name: fileKey,
+        created_by: user_id,
+      };
 
-  //     // // Update slip in the step
-  //     // const receiptEntity = this._dataReceiptMapper.toEntity(set_data);
-  //     // await receiptEntity.initializeUpdateSetId(new ReceiptId(find_receipt.id));
-  //     // await receiptEntity.validateExistingIdForUpdate();
+      // Update slip in the step
+      const receiptEntity =
+        this._dataDocumentAttachmentMapper.toEntity(set_data);
 
-  //     // await findOneOrFail(query.manager, ReceiptOrmEntity, {
-  //     //   id: receiptEntity.getId().value,
-  //     // });
-
-  //     // await this._writeReceipt.update(receiptEntity, manager);
-  //   }
-  // }
+      await this._writeDocumentAttachment.create(receiptEntity, manager);
+    }
+  }
 }

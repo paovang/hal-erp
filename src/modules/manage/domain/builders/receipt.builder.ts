@@ -1,4 +1,5 @@
 import { CurrencyTotal } from '../../application/commands/receipt/interface/receipt.interface';
+import { DocumentAttachmentEntity } from '../entities/document-attachment.entity';
 import { DocumentEntity } from '../entities/document.entity';
 import { ReceiptItemEntity } from '../entities/receipt-item.entity';
 import { ReceiptEntity } from '../entities/receipt.entity';
@@ -21,6 +22,7 @@ export class ReceiptBuilder {
   document: DocumentEntity | null;
   user_approval: UserApprovalEntity | null;
   currency_totals?: CurrencyTotal[] | null;
+  document_attachments?: DocumentAttachmentEntity[] | null;
 
   setReceiptId(value: ReceiptId): this {
     this.receiptId = value;
@@ -57,8 +59,10 @@ export class ReceiptBuilder {
     return this;
   }
 
-  setSlip(slip: string | null): this {
-    this.slip = slip;
+  setDocumentAttachments(
+    document_attachments: DocumentAttachmentEntity[] | null,
+  ): this {
+    this.document_attachments = document_attachments;
     return this;
   }
 

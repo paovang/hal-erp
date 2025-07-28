@@ -19,10 +19,12 @@ import {
 import {
   selectApprover,
   selectApproverUserSignatures,
+  selectCreatedBy,
   selectCurrencies,
   selectCurrency,
   selectDepartments,
   selectDepartmentUsers,
+  selectDocumentAttachments,
   selectDocuments,
   selectDocumentStatuses,
   selectDocumentTypes,
@@ -96,6 +98,8 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectReceiptBy,
       ...selectCurrencies,
       ...selectCurrency,
+      ...selectDocumentAttachments,
+      ...selectCreatedBy,
     ];
 
     const query = manager
@@ -122,6 +126,8 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .leftJoin('user_approval_steps.approver', 'approver')
       .leftJoin('user_approval_steps.status', 'status')
       .leftJoin('approver.user_signatures', 'approver_user_signatures')
+      .leftJoin('documents.document_attachments', 'document_attachments')
+      .leftJoin('document_attachments.users', 'created_by')
       .addSelect(selectFields);
 
     if (

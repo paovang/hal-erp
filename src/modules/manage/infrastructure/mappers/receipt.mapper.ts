@@ -10,6 +10,7 @@ import { ReceiptItemDataAccessMapper } from './receipt-item.mapper';
 import { DocumentDataAccessMapper } from './document.mapper';
 import { UserApprovalDataAccessMapper } from './user-approval.mapper';
 import { CurrencyTotal } from '../../application/commands/receipt/interface/receipt.interface';
+import { DocumentAttachmentDataAccessMapper } from './document-attachment.mapper';
 
 @Injectable()
 export class ReceiptDataAccessMapper {
@@ -17,6 +18,7 @@ export class ReceiptDataAccessMapper {
     private readonly receiptItemMapper: ReceiptItemDataAccessMapper,
     private readonly documentMapper: DocumentDataAccessMapper,
     private readonly userApprovalMapper: UserApprovalDataAccessMapper,
+    private readonly documentAttachmentMapper: DocumentAttachmentDataAccessMapper,
   ) {}
   toOrmEntity(
     receiptEntity: ReceiptEntity,
@@ -61,6 +63,13 @@ export class ReceiptDataAccessMapper {
       if (ormData.documents.user_approvals) {
         builder.setUserApproval(
           this.userApprovalMapper.toEntity(ormData.documents.user_approvals),
+        );
+      }
+      if (ormData.documents.document_attachments) {
+        builder.setDocumentAttachments(
+          ormData.documents.document_attachments.map((attachment) =>
+            this.documentAttachmentMapper.toEntity(attachment),
+          ),
         );
       }
     }

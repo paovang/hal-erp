@@ -409,3 +409,23 @@ export const selectReceiptBy = [
   'receipt_by.created_at',
   'receipt_by.updated_at',
 ];
+
+// created by
+export const selectCreatedBy = [
+  'created_by.id',
+  'created_by.username',
+  'created_by.email',
+  'created_by.tel',
+  'created_by.created_at',
+  'created_by.updated_at',
+];
+
+// select document attachments
+export const selectDocumentAttachments = [
+  'document_attachments.id',
+  'document_attachments.document_id',
+  'document_attachments.file_name',
+  'document_attachments.created_by',
+  'document_attachments.created_at',
+  'document_attachments.updated_at',
+];

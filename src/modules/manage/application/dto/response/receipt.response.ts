@@ -3,6 +3,7 @@ import { ReceiptItemResponse } from './receipt-item.response';
 import { DocumentResponse } from './document.response';
 import { UserApprovalResponse } from './user-approval.response';
 import { CurrencyTotal } from '../../commands/receipt/interface/receipt.interface';
+import { DocumentAttachmentResponse } from './document-attachment.response';
 
 export class ReceiptResponse {
   @ApiProperty()
@@ -40,6 +41,9 @@ export class ReceiptResponse {
 
   @ApiProperty()
   document: DocumentResponse | null;
+
+  @ApiProperty()
+  document_attachment: DocumentAttachmentResponse[] | null;
 
   @ApiProperty()
   user_approval: UserApprovalResponse | null;
