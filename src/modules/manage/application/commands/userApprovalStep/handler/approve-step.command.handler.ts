@@ -7,6 +7,8 @@ import {
   FILE_FOLDER,
   WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_ATTACHMENT_REPOSITORY,
+  WRITE_PURCHASE_ORDER_ITEM_REPOSITORY,
+  WRITE_RECEIPT_REPOSITORY,
   WRITE_USER_APPROVAL_REPOSITORY,
   WRITE_USER_APPROVAL_STEP_REPOSITORY,
 } from '../../../constants/inject-key.const';
@@ -49,8 +51,18 @@ import { createMockMulterFile } from '@src/common/utils/services/file-utils.serv
 import { IWriteDocumentAttachmentRepository } from '@src/modules/manage/domain/ports/output/document-attachment.interface';
 import { DocumentAttachmentDataMapper } from '../../../mappers/document-attachment.mapper';
 import { DocumentAttachmentInterface } from '../interface/document-attachment.interface';
+import { IWriteReceiptRepository } from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
+import { ReceiptDataMapper } from '../../../mappers/receipt.mapper';
+import { ReceiptInterface } from '../../receipt/interface/receipt.interface';
+import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
+import { IWritePurchaseOrderItemRepository } from '@src/modules/manage/domain/ports/output/purchase-order-item-repository.interface';
+import { PurchaseOrderItemDataMapper } from '../../../mappers/purchase-order-item.mapper';
+import { PurchaseOrderItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-item.orm';
+import { BudgetItemDetailOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item-detail.orm';
+import { PurchaseOrderItemId } from '@src/modules/manage/domain/value-objects/purchase-order-item-id.vo';
 
-interface CustomApprovalDto extends Omit<ApprovalDto, 'type' | 'files'> {
+interface CustomApprovalDto
+  extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
   user_approval_id: number;
   approval_workflow_step_id: number;
   statusId: number;
@@ -79,9 +91,18 @@ export class ApproveStepCommandHandler
     @Inject(WRITE_DOCUMENT_APPROVER_REPOSITORY)
     private readonly _writeDocumentApprover: IWriteDocumentApproverRepository,
     private readonly _dataDocumentApproverMapper: DocumentApproverDataMapper,
+
     @Inject(WRITE_DOCUMENT_ATTACHMENT_REPOSITORY)
     private readonly _writeDocumentAttachment: IWriteDocumentAttachmentRepository,
     private readonly _dataDocumentAttachmentMapper: DocumentAttachmentDataMapper,
+
+    @Inject(WRITE_RECEIPT_REPOSITORY)
+    private readonly _writeReceipt: IWriteReceiptRepository,
+    private readonly _dataReceiptMapper: ReceiptDataMapper,
+
+    @Inject(WRITE_PURCHASE_ORDER_ITEM_REPOSITORY)
+    private readonly _writePoItem: IWritePurchaseOrderItemRepository,
+    private readonly _dataPoItemMapper: PurchaseOrderItemDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -100,6 +121,7 @@ export class ApproveStepCommandHandler
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user?.id;
+        const roles = user?.roles?.map((r: any) => r.name) ?? [];
 
         if (isNaN(query.stepId)) {
           throw new ManageDomainException(
@@ -224,7 +246,6 @@ export class ApproveStepCommandHandler
           );
 
           const user_approval_step_id = (userApprovalStep as any)._id._value;
-
           let total = 0;
           if (query.dto.type === EnumPrOrPo.PR) {
             const pr = await manager.findOne(PurchaseRequestOrmEntity, {
@@ -254,6 +275,38 @@ export class ApproveStepCommandHandler
               );
             }
 
+            if (
+              roles.includes('budget-admin') ||
+              roles.includes('budget-user')
+            ) {
+              await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                id: query.dto.purchase_order_items.id,
+              });
+
+              await findOneOrFail(manager, BudgetItemDetailOrmEntity, {
+                id: query.dto.purchase_order_items.budget_item_detail_id,
+              });
+
+              const itemId = query.dto.purchase_order_items.id;
+
+              const POEntity = this._dataPoItemMapper.toEntityForUpdate(
+                query.dto.purchase_order_items,
+              );
+
+              // Set and validate ID
+              await POEntity.initializeUpdateSetId(
+                new PurchaseOrderItemId(itemId),
+              );
+              await POEntity.validateExistingIdForUpdate();
+
+              // Final existence check for ID before update
+              await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                id: POEntity.getId().value,
+              });
+
+              await this._writePoItem.update(POEntity, manager);
+            }
+
             total = po.purchase_order_items.reduce(
               (sum, item) => sum + (item.total || 0),
               0,
@@ -263,6 +316,7 @@ export class ApproveStepCommandHandler
               where: { document_id: step.user_approvals.document_id },
               relations: ['receipt_items'],
             });
+
             if (!receipt) {
               throw new ManageDomainException(
                 'errors.not_found',
@@ -270,9 +324,28 @@ export class ApproveStepCommandHandler
               );
             }
 
+            if (
+              roles.includes('finance-admin') ||
+              roles.includes('finance-user')
+            ) {
+              if (!query.dto.account_code) {
+                throw new ManageDomainException(
+                  'errors.account_code_required',
+                  HttpStatus.BAD_REQUEST,
+                );
+              }
+
+              await this.registerFinance(query, manager, receipt.id);
+            }
+
             total = receipt.receipt_items.reduce(
               (sum, item) => sum + (item.total || 0),
               0,
+            );
+          } else {
+            throw new ManageDomainException(
+              'errors.not_found',
+              HttpStatus.NOT_FOUND,
             );
           }
 
@@ -407,5 +480,28 @@ export class ApproveStepCommandHandler
 
       await this._writeDocumentAttachment.create(receiptEntity, manager);
     }
+  }
+
+  private async registerFinance(
+    query: ApproveStepCommand,
+    manager: EntityManager,
+    receiptId?: number,
+  ): Promise<void> {
+    const code: ReceiptInterface = {
+      account_code: query.dto.account_code,
+    };
+
+    const receiptEntity = this._dataReceiptMapper.toEntity(code);
+
+    // Set and validate ID
+    await receiptEntity.initializeUpdateSetId(new ReceiptId(receiptId ?? 0));
+    await receiptEntity.validateExistingIdForUpdate();
+
+    // Final existence check for ID before update
+    await findOneOrFail(manager, ReceiptOrmEntity, {
+      id: receiptEntity.getId().value,
+    });
+
+    await this._writeReceipt.update(receiptEntity, manager);
   }
 }

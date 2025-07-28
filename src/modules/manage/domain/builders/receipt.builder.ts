@@ -14,7 +14,7 @@ export class ReceiptBuilder {
   receipt_date: Date | null;
   received_by: number;
   remark: string;
-  slip: string | null;
+  account_code: string | null;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -41,6 +41,11 @@ export class ReceiptBuilder {
 
   setDocumentId(document_id: number): this {
     this.document_id = document_id;
+    return this;
+  }
+
+  setAccountCode(account_code: string | null): this {
+    this.account_code = account_code;
     return this;
   }
 

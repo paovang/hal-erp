@@ -57,7 +57,8 @@ import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
 import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
 
-interface CustomApprovalDto extends Omit<ApprovalDto, 'type' | 'files'> {
+interface CustomApprovalDto
+  extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
   user_approval_id: number;
   requires_file_upload: boolean;
   step_number: number;

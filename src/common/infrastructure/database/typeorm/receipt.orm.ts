@@ -66,6 +66,10 @@ export class ReceiptOrmEntity {
   @Column({ type: 'text', nullable: true })
   remark: string;
 
+  @Index()
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  account_code?: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

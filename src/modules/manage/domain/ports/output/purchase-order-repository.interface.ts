@@ -25,9 +25,9 @@ export interface IWritePurchaseOrderRepository {
   ): Promise<ResponseResult<PurchaseOrderEntity>>;
 
   // update(
-  //   entity: PurchaseRequestItemEntity,
+  //   entity: PurchaseOrderEntity,
   //   manager: EntityManager,
-  // ): Promise<ResponseResult<PurchaseRequestItemEntity>>;
+  // ): Promise<ResponseResult<PurchaseOrderEntity>>;
 
   delete(id: PurchaseOrderId, manager: EntityManager): Promise<void>;
 }

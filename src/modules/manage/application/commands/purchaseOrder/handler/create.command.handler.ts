@@ -76,7 +76,8 @@ interface CustomUserApprovalDto extends CreateUserApprovalDto {
   status: number;
 }
 
-interface CustomApprovalDto extends Omit<ApprovalDto, 'type' | 'files'> {
+interface CustomApprovalDto
+  extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
   user_approval_id: number;
   step_number: number;
   requires_file_upload: boolean;

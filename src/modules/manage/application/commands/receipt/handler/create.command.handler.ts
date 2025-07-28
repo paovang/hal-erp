@@ -80,7 +80,8 @@ interface ReceiptInterItemInterface {
   remark: string;
 }
 
-interface CustomApprovalDto extends Omit<ApprovalDto, 'type' | 'files'> {
+interface CustomApprovalDto
+  extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
   user_approval_id: number;
   requires_file_upload: boolean;
   step_number: number;

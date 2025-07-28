@@ -4,6 +4,7 @@ export interface ReceiptInterface {
   document_id?: number;
   received_by?: number;
   remark?: string;
+  account_code?: string;
 }
 
 export interface CurrencyTotal {

@@ -25,36 +25,41 @@ export class PurchaseOrderItemDataMapper {
   ) {}
 
   toEntity(
-    dto: CustomPurchaseOrderItemDto,
+    dto?: CustomPurchaseOrderItemDto,
     po_id?: number,
+    budget_item_detail_id?: number,
   ): PurchaseOrderItemEntity {
     const builder = PurchaseOrderItemEntity.builder();
     if (po_id) {
       builder.setPurchaseOrderId(po_id);
     }
 
-    if (dto.purchase_request_item_id) {
+    if (dto?.purchase_request_item_id) {
       builder.setPurchaseRequestItemId(dto.purchase_request_item_id);
     }
 
-    if (dto.remark) {
+    if (dto?.remark) {
       builder.setRemark(dto.remark);
     }
 
-    if (dto.quantity) {
+    if (dto?.quantity) {
       builder.setQuantity(dto.quantity);
     }
 
-    if (dto.price) {
+    if (dto?.price) {
       builder.setPrice(dto.price);
     }
 
-    if (dto.total) {
+    if (dto?.total) {
       builder.setTotal(dto.total);
     }
 
-    if (dto.is_vat) {
+    if (dto?.is_vat) {
       builder.setIsVat(dto.is_vat);
+    }
+
+    if (budget_item_detail_id) {
+      builder.setBudgetItemDetailId(budget_item_detail_id);
     }
 
     return builder.build();

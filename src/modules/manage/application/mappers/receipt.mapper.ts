@@ -23,7 +23,7 @@ export class UpdateReceiptDto implements ReceiptInterface {
   document_id?: number;
   received_by?: number;
   remark?: string;
-  slip?: string;
+  account_code?: string;
 }
 
 @Injectable()
@@ -58,9 +58,9 @@ export class ReceiptDataMapper {
       builder.setRemark(dto.remark);
     }
 
-    // if (dto.slip) {
-    //   builder.setSlip(dto.slip);
-    // }
+    if (dto.account_code) {
+      builder.setAccountCode(dto.account_code);
+    }
 
     return builder.build();
   }

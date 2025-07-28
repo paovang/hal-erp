@@ -15,7 +15,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _receipt_date: Date | null;
   private readonly _received_by: number;
   private readonly _remark: string;
-  private readonly _slip: string | null;
+  private readonly _account_code: string | null;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -41,7 +41,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
     this._document = builder.document ?? null;
     this._user_approval = builder.user_approval ?? null;
     this._currency_totals = builder.currency_totals ?? null;
-    this._slip = builder.slip ?? null;
+    this._account_code = builder.account_code ?? null;
     this._document_attachments = builder.document_attachments ?? null;
   }
 
@@ -63,6 +63,10 @@ export class ReceiptEntity extends Entity<ReceiptId> {
 
   get received_by(): number {
     return this._received_by;
+  }
+
+  get account_code(): string | null {
+    return this._account_code;
   }
 
   get remark(): string {

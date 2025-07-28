@@ -36,6 +36,9 @@ export class ReceiptDataAccessMapper {
     mediaOrmEntity.purchase_order_id = receiptEntity.purchase_order_id;
     mediaOrmEntity.receipt_date = receiptEntity.receipt_date ?? new Date(now);
     mediaOrmEntity.remark = receiptEntity.remark;
+    if (method === OrmEntityMethod.UPDATE) {
+      mediaOrmEntity.account_code = receiptEntity.account_code ?? '';
+    }
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.received_by = receiptEntity.received_by;
       mediaOrmEntity.created_at = receiptEntity.createdAt ?? new Date(now);
