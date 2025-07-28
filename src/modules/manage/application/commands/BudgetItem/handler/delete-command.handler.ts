@@ -69,12 +69,5 @@ export class DeleteCommandHandler
     await findOneOrFail(query.manager, BudgetItemDetailOrmEntity, {
       budget_item_id: query.id,
     });
-
-    // await checkRelationOrThrow(
-    //   query.manager,
-    //   BudgetItemDetailOrmEntity,
-    //   { budget_item_id: query.id },
-    //   'errors.already_in_use',
-    // );
   }
 }

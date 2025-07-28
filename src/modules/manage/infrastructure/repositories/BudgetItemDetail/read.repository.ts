@@ -65,7 +65,7 @@ export class ReadBudgetItemDetailRepository
     return {
       searchColumns: ['budget_item_details.name', 'provinces.name'],
       dateColumn: '',
-      filterByColumns: [],
+      filterByColumns: ['provinces.name'],
     };
   }
 

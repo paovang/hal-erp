@@ -17,6 +17,8 @@ import { BudgetItemDetailId } from '@src/modules/manage/domain/value-objects/bud
 import { IWriteBudgetItemRepository } from '@src/modules/manage/domain/ports/output/budget-item-repository.interace';
 import { BudgetItemDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/budget-item.mapper';
 import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item.orm';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
+import { PurchaseOrderItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-item.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -45,6 +47,8 @@ export class DeleteCommandHandler
           );
         }
 
+        await this.checkDataBeforeDelete(query);
+
         const data = await findOneOrFail(manager, BudgetItemDetailOrmEntity, {
           id: query.id,
         });
@@ -67,6 +71,15 @@ export class DeleteCommandHandler
           manager,
         );
       },
+    );
+  }
+
+  private async checkDataBeforeDelete(query: DeleteCommand): Promise<void> {
+    await checkRelationOrThrow(
+      query.manager,
+      PurchaseOrderItemOrmEntity,
+      { budget_item_detail_id: query.id },
+      'errors.already_in_use',
     );
   }
 }
