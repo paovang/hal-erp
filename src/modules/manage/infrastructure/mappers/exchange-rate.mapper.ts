@@ -18,7 +18,6 @@ export class ExchangeRateDataAccessMapper {
   ): ExchangeRateOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = exchangeRateEntity.getId();
-
     const exchangeRateOrmEntity = new ExchangeRateOrmEntity();
 
     if (id) {

@@ -12,6 +12,8 @@ import { ExchangeRateDataMapper } from '../../../mappers/exchange-rate.mapper';
 import { IWriteExchangeRateRepository } from '@src/modules/manage/domain/ports/output/exchange-rate-repository.interface';
 import { ExchangeRateOrmEntity } from '@src/common/infrastructure/database/typeorm/exchange-rate.orm';
 import { _checkColumnExchangeRateDuplicate } from '@src/common/utils/check-column-duplicate-exchange-rate-orm.util';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
 
 @CommandHandler(CreateExchangeRateCommand)
 export class CreateExchangeRateCommandHandler
@@ -37,6 +39,9 @@ export class CreateExchangeRateCommandHandler
         let lastCreated: ResponseResult<ExchangeRateEntity> | null = null;
 
         for (const item of command.dto.exchange_rate) {
+          await this.checkCurrency(command, item.from_currency_id);
+          await this.checkCurrency(command, item.to_currency_id);
+
           await _checkColumnExchangeRateDuplicate(
             ExchangeRateOrmEntity,
             'from_to' as any,
@@ -52,5 +57,14 @@ export class CreateExchangeRateCommandHandler
         return lastCreated;
       },
     );
+  }
+
+  private async checkCurrency(
+    command: CreateExchangeRateCommand,
+    currency_id: number,
+  ): Promise<void> {
+    await findOneOrFail(command.manager, CurrencyOrmEntity, {
+      id: currency_id,
+    });
   }
 }

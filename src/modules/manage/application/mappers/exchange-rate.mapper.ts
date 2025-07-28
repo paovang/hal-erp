@@ -27,7 +27,7 @@ export class ExchangeRateDataMapper {
     if (dto.rate) {
       builder.setRate(dto.rate);
     }
-    if (dto.is_active) {
+    if (dto.is_active === false || dto.is_active === true) {
       builder.setIsActive(dto.is_active);
     }
 
