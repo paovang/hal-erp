@@ -12,6 +12,7 @@ export class UserApprovalStepBuilder {
   approved_at: Date | null;
   status_id: number;
   remark: string;
+  requires_file_upload: boolean;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -51,6 +52,11 @@ export class UserApprovalStepBuilder {
 
   setRemark(remark: string): this {
     this.remark = remark;
+    return this;
+  }
+
+  setRequiresFileUpload(requires_file_upload: boolean): this {
+    this.requires_file_upload = requires_file_upload;
     return this;
   }
 

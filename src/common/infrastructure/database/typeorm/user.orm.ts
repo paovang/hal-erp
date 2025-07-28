@@ -22,6 +22,7 @@ import { DepartmentOrmEntity } from './department.orm';
 import { DocumentApproverOrmEntity } from './document-approver.orm';
 import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 import { ReceiptOrmEntity } from './receipt.orm';
+import { DocumentAttachmentOrmEntity } from './document-attachment.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -136,4 +137,10 @@ export class UserOrmEntity {
 
   @OneToMany(() => ReceiptOrmEntity, (receipts) => receipts.users)
   receipts: Relation<ReceiptOrmEntity[]>;
+
+  @OneToMany(
+    () => DocumentAttachmentOrmEntity,
+    (document_attachments) => document_attachments.users,
+  )
+  document_attachments: Relation<DocumentAttachmentOrmEntity[]>;
 }

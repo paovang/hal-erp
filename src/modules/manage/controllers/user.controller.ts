@@ -42,8 +42,6 @@ import { multerStorage } from '@src/common/utils/multer.utils';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Permissions } from '@src/common/decorators/permission.decorator';
-import { PermissionName } from '@src/common/enums/permission.enum';
 
 @Controller('users')
 export class UserController {
@@ -101,7 +99,7 @@ export class UserController {
     };
   }
 
-  @Permissions(PermissionName.READ_USER)
+  // @Permissions(PermissionName.READ_USER)
   @Get('')
   async getAll(
     @Query() dto: UserQueryDto,

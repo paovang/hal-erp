@@ -75,6 +75,14 @@ export class ApprovalWorkflowStepOrmEntity {
   @JoinColumn({ name: 'user_id' })
   users: Relation<UserOrmEntity>;
 
+  @Index()
+  @Column({
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  requires_file_upload: boolean;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

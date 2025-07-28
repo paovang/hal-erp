@@ -83,6 +83,7 @@ export const USER_PROFILE_IMAGE_FOLDER = 'department_signature';
 export const USER_SIGNATURE_IMAGE_FOLDER = 'user_signature';
 export const PR_FILE_NAME_FOLDER = 'pr_file_name';
 export const PO_FILE_NAME_FOLDER = 'po_file_name';
+export const SLIP_FOLDER = 'slip';
 export const IMAGE_FOLDER = process.env.IMAGE_FOLDER || 'assets/uploads';
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
@@ -332,3 +333,14 @@ export const BANK_APPLICATION_SERVICE = Symbol('BANK_APPLICATION_SERVICE');
 export const WRITE_BANK_REPOSITORY = Symbol('WRITE_BANK_REPOSITORY');
 export const READ_BANK_REPOSITORY = Symbol('READ_BANK_REPOSITORY');
 export const BANK_IMAGE_FOLDER = 'BANK_IMAGE_REPOSITORY';
+
+// document attachment
+export const DOCUMENT_ATTACHMENT_APPLICATION_SERVICE = Symbol(
+  'DOCUMENT_ATTACHMENT_APPLICATION_SERVICE',
+);
+export const WRITE_DOCUMENT_ATTACHMENT_REPOSITORY = Symbol(
+  'WRITE_DOCUMENT_ATTACHMENT_REPOSITORY',
+);
+export const READ_DOCUMENT_ATTACHMENT_REPOSITORY = Symbol(
+  'READ_DOCUMENT_ATTACHMENT_REPOSITORY',
+);

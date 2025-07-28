@@ -6,6 +6,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
@@ -18,6 +19,7 @@ import { DocumentTypeOrmEntity } from './document-type.orm';
 import { UserApprovalOrmEntity } from './user-approval.orm';
 import { PurchaseOrderOrmEntity } from './purchase-order.orm';
 import { ReceiptOrmEntity } from './receipt.orm';
+import { DocumentAttachmentOrmEntity } from './document-attachment.orm';
 
 @Entity('documents')
 export class DocumentOrmEntity {
@@ -109,4 +111,10 @@ export class DocumentOrmEntity {
 
   @OneToOne(() => ReceiptOrmEntity, (receipts) => receipts.documents)
   receipts: Relation<ReceiptOrmEntity>;
+
+  @OneToMany(
+    () => DocumentAttachmentOrmEntity,
+    (document_attachments) => document_attachments.documents,
+  )
+  document_attachments: Relation<DocumentAttachmentOrmEntity[]>;
 }

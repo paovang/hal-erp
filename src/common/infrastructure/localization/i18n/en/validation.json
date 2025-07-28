@@ -17,5 +17,6 @@
   "MUST_BE_YEAR_FORMAT": "{property} must be a 4-digit year (e.g. 2025).",
   "IS_DATE": "{property} must be a valid date.",
   "IS_ENUM_TYPE": "{property} must be either 'vendor' or 'budget_item_detail'.",
-  "INVALID_ENUM": "{property} Invalid enum value."
+  "INVALID_ENUM": "{property} Invalid enum value.",
+  "IS_ENUM": "Must be a valid {property} value."
 }

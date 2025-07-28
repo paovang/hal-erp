@@ -23,6 +23,24 @@ export class WriteReceiptRepository implements IWriteReceiptRepository {
     );
   }
 
+  async update(
+    entity: ReceiptEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ReceiptEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
+
+    try {
+      await manager.update(ReceiptOrmEntity, entity.getId().value, OrmEntity);
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async delete(id: ReceiptId, manager: EntityManager): Promise<void> {
     try {
       await manager.softDelete(ReceiptOrmEntity, id.value);

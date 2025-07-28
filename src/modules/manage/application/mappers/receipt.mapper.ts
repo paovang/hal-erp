@@ -17,11 +17,12 @@ import { ReceiptInterface } from '../commands/receipt/interface/receipt.interfac
 //   remark?: string;
 // }
 export class UpdateReceiptDto implements ReceiptInterface {
+  receipt_number?: string;
   purchase_order_id?: number;
   document_id?: number;
-  receipt_number?: string;
   received_by?: number;
   remark?: string;
+  slip?: string;
 }
 
 @Injectable()
@@ -54,6 +55,10 @@ export class ReceiptDataMapper {
     if (dto.remark) {
       builder.setRemark(dto.remark);
     }
+
+    // if (dto.slip) {
+    //   builder.setSlip(dto.slip);
+    // }
 
     return builder.build();
   }

@@ -54,5 +54,6 @@
   "duplicate_vendor_id_in_selected_vendor": "Duplicate vendor id in selected vendor",
   "exchange_rate_already_exists": "This exchange rate already exists",
   "short_name_already_exists": "Short name already exists",
-  "set_budget_approver_rule": "Please set budget approver rule"
+  "set_budget_approver_rule": "Please set budget approver rule",
+  "file_name_required": "Please upload a file"
 }

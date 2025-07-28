@@ -39,19 +39,13 @@ export class UserApprovalStepOrmEntity {
   @Column({ type: 'integer', nullable: true })
   step_number?: number;
 
-  // @Index()
-  // @Column({ nullable: true })
-  // approval_workflow_step_id?: number;
-  // @ManyToOne(
-  //   () => ApprovalWorkflowStepOrmEntity,
-  //   (approval_workflow_steps) => approval_workflow_steps.user_approval_steps,
-  //   {
-  //     onDelete: 'CASCADE',
-  //     onUpdate: 'CASCADE',
-  //   },
-  // )
-  // @JoinColumn({ name: 'approval_workflow_step_id' })
-  // approval_workflow_steps: Relation<ApprovalWorkflowStepOrmEntity>;
+  @Index()
+  @Column({
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  requires_file_upload: boolean;
 
   @Index()
   @Column({ nullable: true })

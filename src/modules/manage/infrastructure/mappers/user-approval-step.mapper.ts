@@ -37,6 +37,8 @@ export class UserApprovalStepDataAccessMapper {
     mediaOrmEntity.status_id = userApprovalStepEntity.status_id;
     mediaOrmEntity.user_approval_id = userApprovalStepEntity.user_approval_id;
     mediaOrmEntity.step_number = userApprovalStepEntity.step_number;
+    mediaOrmEntity.requires_file_upload =
+      userApprovalStepEntity.requires_file_upload;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at =
         userApprovalStepEntity.createdAt ?? new Date(now);
@@ -55,6 +57,7 @@ export class UserApprovalStepDataAccessMapper {
       .setApprovedAt(ormData.approved_at ?? null)
       .setStatusId(ormData.status_id ?? 0)
       .setRemark(ormData.remark ?? '')
+      .setRequiresFileUpload(ormData.requires_file_upload)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 

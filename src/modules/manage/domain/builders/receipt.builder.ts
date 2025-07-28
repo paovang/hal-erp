@@ -13,6 +13,7 @@ export class ReceiptBuilder {
   receipt_date: Date | null;
   received_by: number;
   remark: string;
+  slip: string | null;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -53,6 +54,11 @@ export class ReceiptBuilder {
 
   setRemark(remark: string): this {
     this.remark = remark;
+    return this;
+  }
+
+  setSlip(slip: string | null): this {
+    this.slip = slip;
     return this;
   }
 

@@ -17,7 +17,6 @@ import { DataSource } from 'typeorm';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { IWriteBudgetItemDetailRepository } from '@src/modules/manage/domain/ports/output/budget-item-detail-repository.interface';
 import { BudgetItemDetailId } from '@src/modules/manage/domain/value-objects/budget-item-detail-rule-id.vo';
-import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -70,11 +69,12 @@ export class DeleteCommandHandler
     await findOneOrFail(query.manager, BudgetItemDetailOrmEntity, {
       budget_item_id: query.id,
     });
-    await checkRelationOrThrow(
-      query.manager,
-      BudgetItemDetailOrmEntity,
-      { budget_item_id: query.id },
-      'errors.already_in_use',
-    );
+
+    // await checkRelationOrThrow(
+    //   query.manager,
+    //   BudgetItemDetailOrmEntity,
+    //   { budget_item_id: query.id },
+    //   'errors.already_in_use',
+    // );
   }
 }

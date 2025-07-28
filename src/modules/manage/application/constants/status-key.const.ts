@@ -13,7 +13,6 @@ export enum EnumType {
   VENDOR = 'vendor',
 }
 
-// purchase order item
 export enum SelectStatus {
   FALSE = 'false',
   TRUE = 'true',

@@ -1,6 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
+import { EnumPrOrPo } from '../../../constants/status-key.const';
+import { Type } from 'class-transformer';
+import { CreateDocumentAttachmentDto } from '../documentSttachment/create.dto';
 
 export class ApprovalDto {
   @ApiProperty()
@@ -13,8 +24,15 @@ export class ApprovalDto {
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
   readonly remark?: string | null;
 
-  // @ApiProperty()
-  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  // @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
-  // readonly type: string;
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsEnum(EnumPrOrPo, { message: i18nValidationMessage('validation.IS_ENUM') })
+  readonly type: EnumPrOrPo;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ValidateNested({ each: true })
+  @Type(() => CreateDocumentAttachmentDto)
+  readonly files: CreateDocumentAttachmentDto[];
 }

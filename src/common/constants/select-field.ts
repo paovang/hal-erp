@@ -263,6 +263,7 @@ export const selectUserApprovalSteps = [
   'user_approval_steps.approved_at',
   'user_approval_steps.status_id',
   'user_approval_steps.remark',
+  'user_approval_steps.requires_file_upload',
   'user_approval_steps.created_at',
   'user_approval_steps.updated_at',
 ];

@@ -26,6 +26,9 @@ export class UserApprovalStepResponse {
   remark: string;
 
   @ApiProperty()
+  requires_file_upload: boolean;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()

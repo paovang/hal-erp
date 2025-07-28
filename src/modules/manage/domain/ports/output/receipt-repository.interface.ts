@@ -10,10 +10,10 @@ export interface IWriteReceiptRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<ReceiptEntity>>;
 
-  // update(
-  //   entity: ReceiptEntity,
-  //   manager: EntityManager,
-  // ): Promise<ResponseResult<ReceiptEntity>>;
+  update(
+    entity: ReceiptEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ReceiptEntity>>;
 
   delete(id: ReceiptId, manager: EntityManager): Promise<void>;
 }

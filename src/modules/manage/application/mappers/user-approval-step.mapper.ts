@@ -13,6 +13,7 @@ interface CustomApprovalDto {
   user_approval_id: number;
   step_number: number;
   statusId: number;
+  requires_file_upload: boolean;
 }
 
 @Injectable()
@@ -51,6 +52,7 @@ export class UserApprovalStepDataMapper {
     const builder = UserApprovalStepEntity.builder();
     builder.setUserApprovalId(dto.user_approval_id);
     builder.setStepNumber(dto.step_number);
+    builder.setRequiresFileUpload(dto.requires_file_upload);
     builder.setStatusId(dto.statusId);
     return builder.build();
   }
@@ -69,6 +71,7 @@ export class UserApprovalStepDataMapper {
       : null;
     response.status_id = Number(entity.status_id);
     response.remark = entity.remark;
+    response.requires_file_upload = entity.requires_file_upload;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);

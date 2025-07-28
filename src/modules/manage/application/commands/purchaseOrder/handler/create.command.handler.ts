@@ -76,9 +76,10 @@ interface CustomUserApprovalDto extends CreateUserApprovalDto {
   status: number;
 }
 
-interface CustomApprovalDto extends ApprovalDto {
+interface CustomApprovalDto extends Omit<ApprovalDto, 'type' | 'files'> {
   user_approval_id: number;
   step_number: number;
+  requires_file_upload: boolean;
 }
 
 @CommandHandler(CreateCommand)
@@ -285,6 +286,7 @@ export class CreateCommandHandler
       statusId: STATUS_KEY.PENDING,
       step_number: a_w_s?.step_number ?? 1,
       remark: null,
+      requires_file_upload: a_w_s!.requires_file_upload,
     };
     const aw_step =
       this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);

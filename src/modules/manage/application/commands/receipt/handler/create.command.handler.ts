@@ -80,9 +80,9 @@ interface ReceiptInterItemInterface {
   remark: string;
 }
 
-interface CustomApprovalDto extends ApprovalDto {
+interface CustomApprovalDto extends Omit<ApprovalDto, 'type' | 'files'> {
   user_approval_id: number;
-  // approval_workflow_step_id: number;
+  requires_file_upload: boolean;
   step_number: number;
 }
 
@@ -327,6 +327,7 @@ export class CreateCommandHandler
       user_approval_id: ua_id,
       step_number: a_w_s?.step_number ?? 1,
       statusId: STATUS_KEY.PENDING,
+      requires_file_upload: a_w_s!.requires_file_upload!,
       remark: null,
     };
     const aw_step =

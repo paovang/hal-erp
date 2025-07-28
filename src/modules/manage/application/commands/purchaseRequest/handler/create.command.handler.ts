@@ -57,9 +57,9 @@ import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
 import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
 
-interface CustomApprovalDto extends ApprovalDto {
+interface CustomApprovalDto extends Omit<ApprovalDto, 'type' | 'files'> {
   user_approval_id: number;
-  // approval_workflow_step_id: number;
+  requires_file_upload: boolean;
   step_number: number;
 }
 
@@ -265,6 +265,7 @@ export class CreateCommandHandler
           step_number: a_w_s?.step_number ?? 1,
           statusId: STATUS_KEY.PENDING,
           remark: null,
+          requires_file_upload: a_w_s!.requires_file_upload, // assert that it is not null or undefined
         };
         const aw_step =
           this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);

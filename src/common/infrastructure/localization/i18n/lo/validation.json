@@ -17,5 +17,6 @@
   "MUST_BE_YEAR_FORMAT": "{property} ປີງົບປະມານຕ້ອງເປັນ 4 ຕົວເລກ (ເຊັ່ນ 2025).",
   "IS_DATE": "{property} ຕ້ອງເປັນວັນທີ.",
   "IS_ENUM_TYPE": "{property} ຕ້ອງເປັນ 'vendor' ຫຼື 'budget_item_detail'.",
-  "INVALID_ENUM": "{property} ປະເພດຊຳລະບໍ່ມີໃນລະບົບ."
+  "INVALID_ENUM": "{property} ປະເພດຊຳລະບໍ່ມີໃນລະບົບ.",
+  "IS_ENUM": "ຕ້ອງເປັນຄ່າ {property} ທີ່ຖືກຕ້ອງ."
 }
