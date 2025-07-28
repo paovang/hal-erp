@@ -36,7 +36,6 @@ export class WriteExchangeRateRepository
       entity,
       OrmEntityMethod.UPDATE,
     );
-
     try {
       await manager.update(
         ExchangeRateOrmEntity,

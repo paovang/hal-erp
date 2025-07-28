@@ -68,7 +68,7 @@ export class ExchangeRateEntity extends Entity<ExchangeRateId> {
   }
 
   static getEntityAmount() {
-    return 'vat';
+    return 'exchange-rates';
   }
 
   async validateExistingIdForUpdate() {
