@@ -73,9 +73,14 @@ export class DocumentDataAccessMapper {
       builder.setRequester(this.requesterMapper.toEntity(ormData.users));
     }
 
-    const position = ormData.users?.department_users?.[0]?.positions;
-    if (position) {
-      builder.setPosition(this.positionMapper.toEntity(position));
+    const positions = ormData.users?.department_users?.map(
+      (departmentUser) => departmentUser.positions,
+    );
+    if (positions) {
+      const positionEntities = positions.map((position) =>
+        this.positionMapper.toEntity(position),
+      );
+      builder.setPosition(positionEntities);
     }
 
     return builder.build();

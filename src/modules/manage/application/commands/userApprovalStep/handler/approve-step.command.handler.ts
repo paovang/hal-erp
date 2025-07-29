@@ -5,8 +5,10 @@ import { UserApprovalStepEntity } from '@src/modules/manage/domain/entities/user
 import { HttpStatus, Inject } from '@nestjs/common';
 import {
   FILE_FOLDER,
+  LENGTH_DOCUMENT_TRANSACTION_CODE,
   WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_ATTACHMENT_REPOSITORY,
+  WRITE_DOCUMENT_TRANSACTION_REPOSITORY,
   WRITE_PURCHASE_ORDER_ITEM_REPOSITORY,
   WRITE_RECEIPT_REPOSITORY,
   WRITE_USER_APPROVAL_REPOSITORY,
@@ -17,7 +19,11 @@ import { UserApprovalStepDataMapper } from '../../../mappers/user-approval-step.
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
-import { EnumPrOrPo, STATUS_KEY } from '../../../constants/status-key.const';
+import {
+  EnumDocumentTransactionType,
+  EnumPrOrPo,
+  STATUS_KEY,
+} from '../../../constants/status-key.const';
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { UserApprovalDataMapper } from '../../../mappers/user-approval.mapper';
@@ -60,6 +66,13 @@ import { PurchaseOrderItemDataMapper } from '../../../mappers/purchase-order-ite
 import { PurchaseOrderItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-item.orm';
 import { BudgetItemDetailOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item-detail.orm';
 import { PurchaseOrderItemId } from '@src/modules/manage/domain/value-objects/purchase-order-item-id.vo';
+import { IWriteDocumentTransactionRepository } from '@src/modules/manage/domain/ports/output/document-transaction-repository.interface';
+import {
+  DocumentTransactionDataMapper,
+  DocumentTransactionInterface,
+} from '../../../mappers/document-transaction.mapper';
+import { CodeGeneratorUtil } from '@src/common/utils/code-generator.util';
+import { DocumentTransactionOrmEntity } from '@src/common/infrastructure/database/typeorm/document-transaction.orm';
 
 interface CustomApprovalDto
   extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
@@ -103,6 +116,11 @@ export class ApproveStepCommandHandler
     @Inject(WRITE_PURCHASE_ORDER_ITEM_REPOSITORY)
     private readonly _writePoItem: IWritePurchaseOrderItemRepository,
     private readonly _dataPoItemMapper: PurchaseOrderItemDataMapper,
+
+    @Inject(WRITE_DOCUMENT_TRANSACTION_REPOSITORY)
+    private readonly _writeTransaction: IWriteDocumentTransactionRepository,
+    private readonly _dataTransactionMapper: DocumentTransactionDataMapper,
+
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -111,6 +129,7 @@ export class ApproveStepCommandHandler
     private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
+    private readonly _codeGeneratorUtil: CodeGeneratorUtil,
   ) {}
 
   async execute(
@@ -314,7 +333,10 @@ export class ApproveStepCommandHandler
           } else if (query.dto.type === EnumPrOrPo.R) {
             const receipt = await manager.findOne(ReceiptOrmEntity, {
               where: { document_id: step.user_approvals.document_id },
-              relations: ['receipt_items'],
+              relations: [
+                'receipt_items',
+                'receipt_items.purchase_order_items',
+              ],
             });
 
             if (!receipt) {
@@ -325,17 +347,21 @@ export class ApproveStepCommandHandler
             }
 
             if (
-              roles.includes('finance-admin') ||
-              roles.includes('finance-user')
+              roles.includes('account-admin') ||
+              roles.includes('account-user')
             ) {
-              if (!query.dto.account_code) {
-                throw new ManageDomainException(
-                  'errors.account_code_required',
-                  HttpStatus.BAD_REQUEST,
-                );
-              }
+              if (!receipt.account_code) {
+                if (!query.dto.account_code) {
+                  throw new ManageDomainException(
+                    'errors.account_code_required',
+                    HttpStatus.BAD_REQUEST,
+                  );
+                }
 
-              await this.registerFinance(query, manager, receipt.id);
+                await this.registerAccount(query, manager, receipt.id);
+              } else {
+                await this.insertDataInTransaction(manager, receipt);
+              }
             }
 
             total = receipt.receipt_items.reduce(
@@ -482,7 +508,7 @@ export class ApproveStepCommandHandler
     }
   }
 
-  private async registerFinance(
+  private async registerAccount(
     query: ApproveStepCommand,
     manager: EntityManager,
     receiptId?: number,
@@ -503,5 +529,77 @@ export class ApproveStepCommandHandler
     });
 
     await this._writeReceipt.update(receiptEntity, manager);
+  }
+
+  private async generateDocumentTransactionNumber(
+    manager: EntityManager,
+  ): Promise<string> {
+    return await this._codeGeneratorUtil.generateUniqueCode(
+      LENGTH_DOCUMENT_TRANSACTION_CODE,
+      async (generatedCode: string) => {
+        try {
+          await findOneOrFail(manager, DocumentTransactionOrmEntity, {
+            transaction_number: generatedCode,
+          });
+          return false;
+        } catch {
+          return true;
+        }
+      },
+      'TN',
+    );
+  }
+
+  private async insertDataInTransaction(
+    manager: EntityManager,
+    receipt: ReceiptOrmEntity,
+  ): Promise<void> {
+    for (const item of receipt.receipt_items) {
+      const poItem = item.purchase_order_items;
+
+      // Ensure purchase order item exists
+      if (!poItem || !poItem.budget_item_detail_id) {
+        throw new ManageDomainException(
+          `errors.invalid_budget_item`,
+          HttpStatus.BAD_REQUEST,
+          { property: 'budget_item_detail_id' },
+        );
+      }
+
+      // Find budget item detail
+      const find_budget_item_detail = await manager.findOne(
+        BudgetItemDetailOrmEntity,
+        {
+          where: {
+            id: poItem.budget_item_detail_id,
+          },
+        },
+      );
+
+      if (!find_budget_item_detail) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      // Generate transaction number
+      const transactionNumber =
+        await this.generateDocumentTransactionNumber(manager);
+
+      // Prepare transaction data
+      const transactionData: DocumentTransactionInterface = {
+        document_id: receipt.document_id!,
+        budget_item_detail_id: poItem.budget_item_detail_id,
+        transaction_number: transactionNumber,
+        amount: find_budget_item_detail.allocated_amount ?? 0,
+        transaction_type: EnumDocumentTransactionType.COMMIT,
+      };
+
+      // Map and save transaction entity
+      const transactionEntity =
+        this._dataTransactionMapper.toEntity(transactionData);
+      await this._writeTransaction.create(transactionEntity, manager);
+    }
   }
 }

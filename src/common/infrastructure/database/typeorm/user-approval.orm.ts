@@ -31,20 +31,6 @@ export class UserApprovalOrmEntity {
   @JoinColumn({ name: 'document_id' })
   documents: Relation<DocumentOrmEntity>;
 
-  // @Index()
-  // @Column({ nullable: true })
-  // approval_workflow_id?: number;
-  // @ManyToOne(
-  //   () => ApprovalWorkflowOrmEntity,
-  //   (approval_workflows) => approval_workflows.user_approvals,
-  //   {
-  //     onDelete: 'CASCADE',
-  //     onUpdate: 'CASCADE',
-  //   },
-  // )
-  // @JoinColumn({ name: 'approval_workflow_id' })
-  // approval_workflows: Relation<ApprovalWorkflowOrmEntity>;
-
   @Index()
   @Column({ nullable: true })
   status_id?: number;

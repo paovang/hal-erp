@@ -20,6 +20,7 @@ import { UserApprovalOrmEntity } from './user-approval.orm';
 import { PurchaseOrderOrmEntity } from './purchase-order.orm';
 import { ReceiptOrmEntity } from './receipt.orm';
 import { DocumentAttachmentOrmEntity } from './document-attachment.orm';
+import { DocumentTransactionOrmEntity } from './document-transaction.orm';
 
 @Entity('documents')
 export class DocumentOrmEntity {
@@ -117,4 +118,10 @@ export class DocumentOrmEntity {
     (document_attachments) => document_attachments.documents,
   )
   document_attachments: Relation<DocumentAttachmentOrmEntity[]>;
+
+  @OneToMany(
+    () => DocumentTransactionOrmEntity,
+    (document_transactions) => document_transactions.documents,
+  )
+  document_transactions: Relation<DocumentTransactionOrmEntity[]>;
 }

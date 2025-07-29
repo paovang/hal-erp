@@ -56,5 +56,6 @@
   "short_name_already_exists": "ຊື່ຫຍໍ້ມີແລ້ວ.",
   "set_budget_approver_rule": "ກະລຸນາຕັ້ງກົດໃນການອະນຸມັດເງິນງກ່ອນ.",
   "file_name_required": "ກະລຸນາອັບໂຫລດໄຟລ໌ກ່ອນ.",
-  "account_code_required": "ກະລຸນາລົງບັນຊີກ່ອນ."
+  "account_code_required": "ກະລຸນາລົງບັນຊີກ່ອນ.",
+  "invalid_budget_item": "{property} ບໍ່ພົບງົບປະມານນີ້."
 }

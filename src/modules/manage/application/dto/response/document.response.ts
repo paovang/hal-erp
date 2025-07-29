@@ -48,5 +48,5 @@ export class DocumentResponse {
   requester: UserResponse | null;
 
   @ApiProperty()
-  position: PositionResponse | null;
+  position: PositionResponse[] | null;
 }

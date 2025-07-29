@@ -19,7 +19,7 @@ export class DocumentBuilder {
   deletedAt!: Date | null;
   department: DepartmentEntity;
   requester: UserEntity;
-  position: PositionEntity;
+  position: PositionEntity[];
   documentType: DocumentTypeEntity;
 
   setDocumentId(value: DocumentId): this {
@@ -57,7 +57,7 @@ export class DocumentBuilder {
     return this;
   }
 
-  setPosition(position: PositionEntity): this {
+  setPosition(position: PositionEntity[]): this {
     this.position = position;
     return this;
   }

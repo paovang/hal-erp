@@ -56,5 +56,6 @@
   "short_name_already_exists": "Short name already exists",
   "set_budget_approver_rule": "Please set budget approver rule",
   "file_name_required": "Please upload a file",
-  "account_code_required": "Account code is required"
+  "account_code_required": "Account code is required",
+  "invalid_budget_item": "{property} Invalid budget item detail"
 }

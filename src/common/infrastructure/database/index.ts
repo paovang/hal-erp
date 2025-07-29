@@ -13,6 +13,7 @@ import { DepartmentOrmEntity } from './typeorm/department.orm';
 import { DocumentApproverOrmEntity } from './typeorm/document-approver.orm';
 import { DocumentAttachmentOrmEntity } from './typeorm/document-attachment.orm';
 import { DocumentStatusOrmEntity } from './typeorm/document-statuse.orm';
+import { DocumentTransactionOrmEntity } from './typeorm/document-transaction.orm';
 import { DocumentTypeOrmEntity } from './typeorm/document-type.orm';
 import { DocumentOrmEntity } from './typeorm/document.orm';
 import { ExchangeRateOrmEntity } from './typeorm/exchange-rate.orm';
@@ -80,4 +81,5 @@ export const models = [
   ReceiptItemOrmEntity,
   BankOrmEntity,
   DocumentAttachmentOrmEntity,
+  DocumentTransactionOrmEntity,
 ];

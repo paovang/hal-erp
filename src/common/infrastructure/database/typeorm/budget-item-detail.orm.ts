@@ -14,6 +14,7 @@ import {
 import { BudgetItemOrmEntity } from './budget-item.orm';
 import { ProvinceOrmEntity } from './province.orm';
 import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
+import { DocumentTransactionOrmEntity } from './document-transaction.orm';
 
 @Entity('budget_item_details')
 export class BudgetItemDetailOrmEntity {
@@ -71,4 +72,10 @@ export class BudgetItemDetailOrmEntity {
     (purchase_order_items) => purchase_order_items.budget_item_details,
   )
   purchase_order_items: Relation<PurchaseOrderItemOrmEntity[]>;
+
+  @OneToMany(
+    () => DocumentTransactionOrmEntity,
+    (document_transactions) => document_transactions.budget_item_details,
+  )
+  document_transactions: Relation<DocumentTransactionOrmEntity[]>;
 }

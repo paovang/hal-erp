@@ -19,7 +19,7 @@ export class DocumentEntity extends Entity<DocumentId> {
   private readonly _deletedAt: Date | null;
   private readonly _department: DepartmentEntity | null;
   private readonly _requester: UserEntity | null;
-  private readonly _position: PositionEntity | null;
+  private readonly _position: PositionEntity[] | null;
   private readonly _documentType: DocumentTypeEntity | null;
 
   private constructor(builder: DocumentBuilder) {
@@ -65,7 +65,7 @@ export class DocumentEntity extends Entity<DocumentId> {
     return this._requester_id;
   }
 
-  get position(): PositionEntity | null {
+  get position(): PositionEntity[] | null {
     return this._position;
   }
 

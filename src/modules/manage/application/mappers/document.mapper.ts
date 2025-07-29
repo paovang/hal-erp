@@ -92,7 +92,9 @@ export class DocumentDataMapper {
       : null;
 
     response.position = entity.position
-      ? this.positionDataMapper.toResponse(entity.position)
+      ? entity.position.map((position) =>
+          this.positionDataMapper.toResponse(position),
+        )
       : null;
 
     return response;

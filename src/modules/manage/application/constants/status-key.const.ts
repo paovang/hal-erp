@@ -52,3 +52,9 @@ export enum EligiblePersons {
   SUPER_ADMIN = 'super-admin',
   ADMIN = 'admin',
 }
+
+// document transaction
+export enum EnumDocumentTransactionType {
+  COMMIT = 'commit',
+  RELEASE = 'release',
+}
