@@ -7,6 +7,13 @@ import { DocumentId } from '@src/modules/manage/domain/value-objects/document-id
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/document.orm';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
+import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
+import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
+import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
+import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
+import { DocumentAttachmentOrmEntity } from '@src/common/infrastructure/database/typeorm/document-attachment.orm';
+import { DocumentTransactionOrmEntity } from '@src/common/infrastructure/database/typeorm/document-transaction.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -28,6 +35,7 @@ export class DeleteCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
 
@@ -36,11 +44,58 @@ export class DeleteCommandHandler
       id: query.id,
     });
 
-    // await checkRelationOrThrow(
-    //   query.manager,
-    //   ApprovalWorkflowOrmEntity,
-    //   { document_type_id: query.id },
-    //   'errors.already_in_use',
-    // );
+    await checkRelationOrThrow(
+      query.manager,
+      PurchaseOrderOrmEntity,
+      { document_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'purchase order',
+    );
+
+    await checkRelationOrThrow(
+      query.manager,
+      PurchaseRequestOrmEntity,
+      { document_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'purchase request',
+    );
+
+    await checkRelationOrThrow(
+      query.manager,
+      ReceiptOrmEntity,
+      { document_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'receipt',
+    );
+
+    await checkRelationOrThrow(
+      query.manager,
+      UserApprovalOrmEntity,
+      { document_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'user approval',
+    );
+
+    await checkRelationOrThrow(
+      query.manager,
+      DocumentAttachmentOrmEntity,
+      { document_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'document attachment',
+    );
+
+    await checkRelationOrThrow(
+      query.manager,
+      DocumentTransactionOrmEntity,
+      { document_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'document transaction',
+    );
   }
 }

@@ -32,6 +32,7 @@ export class UpdateExchangeRateCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
     // Check for duplicate (excluding current record)

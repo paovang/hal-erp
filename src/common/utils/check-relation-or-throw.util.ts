@@ -8,10 +8,14 @@ export async function checkRelationOrThrow(
   where: Record<string, any>,
   errorMessageKey: string, // e.g. 'errors.budget_item_exist'
   statusCode: HttpStatus = HttpStatus.BAD_REQUEST,
+  property?: string,
 ): Promise<void> {
   const count = await manager.count(entity, { where });
 
   if (count > 0) {
-    throw new ManageDomainException(errorMessageKey, statusCode);
+    const entityName = typeof entity === 'function' ? entity.name : 'Entity';
+    throw new ManageDomainException(errorMessageKey, statusCode, {
+      property: property ?? entityName,
+    });
   }
 }

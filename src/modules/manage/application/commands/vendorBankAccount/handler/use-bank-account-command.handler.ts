@@ -28,7 +28,6 @@ export class UseBankAccountCommandHandler
   ): Promise<ResponseResult<VendorBankAccountEntity>> {
     // Map to entity
     const entity = this._dataMapper.toEntityForUseBankAccount(query.dto);
-    console.log('object', entity);
 
     // Set and validate ID
     await entity.initializeUpdateSetId(new VendorBankAccountId(query.id));

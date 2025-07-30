@@ -35,6 +35,8 @@ import { assertOrThrow } from '@src/common/utils/assert.util';
 import { DocumentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/document-approver.orm';
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
 import { DocumentApproverId } from '@src/modules/manage/domain/value-objects/document-approver-id.vo';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
+import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -101,8 +103,18 @@ export class DeleteCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
+
+    await checkRelationOrThrow(
+      query.manager,
+      PurchaseOrderOrmEntity,
+      { purchase_request_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'purchase order',
+    );
   }
 
   private async deleteItem(query: DeleteCommand, pr_id: number): Promise<void> {
@@ -188,7 +200,12 @@ export class DeleteCommandHandler
     });
 
     for (const approver of document_approver) {
-      assertOrThrow(approver, 'errors.not_found', HttpStatus.NOT_FOUND);
+      assertOrThrow(
+        approver,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'approver',
+      );
       await this._writeDocumentApprover.delete(
         new DocumentApproverId(approver.id),
         manager,

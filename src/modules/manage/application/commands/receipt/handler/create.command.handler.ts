@@ -2,7 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '../create.command';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ReceiptEntity } from '@src/modules/manage/domain/entities/receipt.entity';
-import { HttpException, HttpStatus, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import {
   LENGTH_DOCUMENT_CODE,
   LENGTH_RECEIPT_CODE,
@@ -431,6 +431,7 @@ export class CreateCommandHandler
         purchase_order_item,
         'errors.not_found',
         HttpStatus.NOT_FOUND,
+        'purchase order item',
       );
 
       const order_item_select_vendor = await manager.findOne(
@@ -445,6 +446,7 @@ export class CreateCommandHandler
         order_item_select_vendor,
         'errors.not_found',
         HttpStatus.NOT_FOUND,
+        'purchase order selected vendor',
       );
 
       const vendor_bank_account = await manager.findOne(
@@ -460,6 +462,7 @@ export class CreateCommandHandler
         vendor_bank_account,
         'errors.not_found',
         HttpStatus.NOT_FOUND,
+        'vendor bank account',
       );
 
       const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
@@ -470,7 +473,12 @@ export class CreateCommandHandler
         },
       });
 
-      assertOrThrow(exchange_rate, 'errors.not_found', HttpStatus.NOT_FOUND);
+      assertOrThrow(
+        exchange_rate,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'exchange rate',
+      );
 
       const currency = await this.getCurrency(
         exchange_rate!.from_currency_id,
@@ -541,7 +549,13 @@ export class CreateCommandHandler
   private async getVat(manager: EntityManager): Promise<number> {
     const vat = await manager.createQueryBuilder(VatOrmEntity, 'vat').getOne();
     if (!vat) {
-      throw new HttpException('errors.not_found', HttpStatus.NOT_FOUND);
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        {
+          property: 'vat',
+        },
+      );
     }
     const { amount } = vat;
     return amount;

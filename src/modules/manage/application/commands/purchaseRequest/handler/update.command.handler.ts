@@ -140,6 +140,7 @@ export class UpdateCommandHandler
         throw new ManageDomainException(
           'errors.not_found',
           HttpStatus.NOT_FOUND,
+          { property: 'purchase request item' },
         );
       }
 
@@ -213,6 +214,7 @@ export class UpdateCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
 

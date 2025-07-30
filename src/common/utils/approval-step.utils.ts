@@ -40,7 +40,9 @@ export async function handleApprovalStep({
   getApprover,
 }: ApprovalStepHandlerParams) {
   if (!a_w_s) {
-    throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND);
+    throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND, {
+      property: 'approval workflow step',
+    });
   }
 
   switch (a_w_s.type) {
@@ -77,15 +79,30 @@ export async function handleApprovalStep({
         where: { user_id },
       });
 
-      assertOrThrow(department_user, 'errors.not_found', HttpStatus.NOT_FOUND);
+      assertOrThrow(
+        department_user,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'user',
+      );
 
       const department = await manager.findOne(DepartmentOrmEntity, {
         where: { id: department_user?.department_id },
       });
 
-      assertOrThrow(department, 'errors.not_found', HttpStatus.NOT_FOUND);
+      assertOrThrow(
+        department,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'department',
+      );
       const department_head = department?.department_head_id;
-      assertOrThrow(department_head, 'errors.not_found', HttpStatus.NOT_FOUND);
+      assertOrThrow(
+        department_head,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'department_head',
+      );
 
       const d_approver: CustomDocumentApprover = {
         user_approval_step_id,
@@ -134,12 +151,14 @@ export async function handleApprovalStep({
         user_line_manager,
         'errors.not_found',
         HttpStatus.NOT_FOUND,
+        'user line manager',
       );
 
       if (user_line_manager?.line_manager_id === null) {
         throw new ManageDomainException(
           'errors.not_found_line_manager',
           HttpStatus.NOT_FOUND,
+          { property: 'line manager' },
         );
       }
 
@@ -155,6 +174,12 @@ export async function handleApprovalStep({
       break;
     }
     default:
-      throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND);
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        {
+          property: 'workflow step',
+        },
+      );
   }
 }

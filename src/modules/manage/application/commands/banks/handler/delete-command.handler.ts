@@ -27,6 +27,7 @@ export class DeleteBankCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
     await findOneOrFail(query.manager, BankOrmEntity, {
@@ -38,6 +39,8 @@ export class DeleteBankCommandHandler
       VendorBankAccountOrmEntity,
       { bank_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'vendor bank account',
     );
   }
 }

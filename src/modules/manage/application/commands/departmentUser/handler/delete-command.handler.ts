@@ -18,6 +18,8 @@ import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/us
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
+import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/document.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -45,6 +47,7 @@ export class DeleteCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
 
@@ -53,7 +56,6 @@ export class DeleteCommandHandler
       id: userId,
     });
 
-    const deletedUserId = (user as any).id.value;
     const email = (user as any).email?.value || user.email;
     const tel = (user as any).tel?.value || user.tel;
     const timestamp = Date.now();
@@ -77,8 +79,17 @@ export class DeleteCommandHandler
 
         // Find and delete department_user by user_id
         const deptUser = await findOneOrFail(manager, DepartmentUserOrmEntity, {
-          user_id: deletedUserId,
+          user_id: userId,
         });
+
+        await checkRelationOrThrow(
+          query.manager,
+          DocumentOrmEntity,
+          { department_id: deptUser.id, requester_id: deptUser.user_id },
+          'errors.already_in_use',
+          HttpStatus.BAD_REQUEST,
+          'document',
+        );
 
         await this._writeDeptUser.delete(
           new DepartmentUserId(deptUser.id),
