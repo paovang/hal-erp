@@ -34,7 +34,9 @@ export class UpdateCommandHandler
     const departmentUser =
       this._userContextService.getAuthUser()?.departmentUser;
     if (!departmentUser) {
-      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND, {
+        property: 'user',
+      });
     }
 
     await _checkColumnDuplicate(
@@ -53,6 +55,7 @@ export class UpdateCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
 

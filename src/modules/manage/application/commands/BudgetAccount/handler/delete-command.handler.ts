@@ -32,6 +32,7 @@ export class DeleteCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
 
@@ -45,6 +46,8 @@ export class DeleteCommandHandler
       BudgetItemOrmEntity,
       { budget_account_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'budget item',
     );
   }
 }

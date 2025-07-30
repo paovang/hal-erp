@@ -71,6 +71,7 @@ export class UpdateCommandHandler
           throw new ManageDomainException(
             'errors.must_be_number',
             HttpStatus.BAD_REQUEST,
+            { property: `${query.id}` },
           );
         }
         const receipt = await findOneOrFail(query.manager, ReceiptOrmEntity, {
@@ -155,7 +156,12 @@ export class UpdateCommandHandler
         },
       });
 
-      assertOrThrow(find_currency, 'errors.not_found', HttpStatus.NOT_FOUND);
+      assertOrThrow(
+        find_currency,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'currency',
+      );
 
       const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
         where: {
@@ -165,7 +171,12 @@ export class UpdateCommandHandler
         },
       });
 
-      assertOrThrow(exchange_rate, 'errors.not_found', HttpStatus.NOT_FOUND);
+      assertOrThrow(
+        exchange_rate,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'exchange rate',
+      );
 
       const currency = await this.getCurrency(
         exchange_rate!.from_currency_id,

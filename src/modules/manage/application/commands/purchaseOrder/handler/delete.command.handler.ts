@@ -39,6 +39,8 @@ import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/por
 import { DocumentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/document-approver.orm';
 import { DocumentApproverId } from '@src/modules/manage/domain/value-objects/document-approver-id.vo';
 import { assertOrThrow } from '@src/common/utils/assert.util';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
+import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -102,6 +104,15 @@ export class DeleteCommandHandler
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    await checkRelationOrThrow(
+      query.manager,
+      ReceiptOrmEntity,
+      { purchase_order_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'receipt',
+    );
   }
 
   private async deleteItem(

@@ -32,6 +32,7 @@ export class DeleteCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
     /** Check Exits Department Id */
@@ -44,6 +45,8 @@ export class DeleteCommandHandler
       DepartmentUserOrmEntity,
       { department_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'department user',
     );
 
     await checkRelationOrThrow(
@@ -51,6 +54,8 @@ export class DeleteCommandHandler
       DepartmentApproverOrmEntity,
       { department_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'department approver',
     );
 
     await checkRelationOrThrow(
@@ -58,6 +63,8 @@ export class DeleteCommandHandler
       BudgetAccountOrmEntity,
       { department_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'budget account',
     );
 
     await checkRelationOrThrow(
@@ -65,6 +72,8 @@ export class DeleteCommandHandler
       BudgetApprovalRuleOrmEntity,
       { department_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'budget approval rule',
     );
   }
 }

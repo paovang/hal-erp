@@ -37,6 +37,7 @@ export class CreateCommandHandler
         throw new ManageDomainException(
           'errors.step_number_exist',
           HttpStatus.BAD_REQUEST,
+          { property: `${query.dto.step_number}` },
         );
       }
     }
@@ -50,6 +51,7 @@ export class CreateCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
     await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {

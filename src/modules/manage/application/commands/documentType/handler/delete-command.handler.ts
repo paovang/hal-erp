@@ -46,6 +46,8 @@ export class DeleteCommandHandler
       ApprovalWorkflowOrmEntity,
       { document_type_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'approval workflow',
     );
   }
 }

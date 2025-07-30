@@ -154,7 +154,12 @@ export class CreateCommandHandler
           },
         });
 
-        assertOrThrow(pr, 'errors.not_found', HttpStatus.NOT_FOUND);
+        assertOrThrow(
+          pr,
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+          'purchase request',
+        );
 
         const checkDocumentApproval = await manager.findOne(
           UserApprovalOrmEntity,
@@ -170,6 +175,7 @@ export class CreateCommandHandler
           checkDocumentApproval,
           'errors.not_found',
           HttpStatus.NOT_FOUND,
+          'document approval',
         );
 
         const department_id = (department as any).department_id;
@@ -349,6 +355,7 @@ export class CreateCommandHandler
           check_vendor_bank_account,
           'errors.not_found',
           HttpStatus.NOT_FOUND,
+          'Vendor bank account',
         );
       }
 
@@ -399,7 +406,12 @@ export class CreateCommandHandler
         },
       );
 
-      assertOrThrow(pr_item, 'errors.not_found', HttpStatus.NOT_FOUND);
+      assertOrThrow(
+        pr_item,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'purchase request item',
+      );
 
       const itemDto: CustomPurchaseOrderItemDto = {
         purchase_request_item_id: item.purchase_request_item_id,
@@ -466,7 +478,13 @@ export class CreateCommandHandler
       (id) => !prItemMap.has(id),
     );
     if (missingIds.length > 0) {
-      throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND);
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        {
+          property: 'purchase request item id',
+        },
+      );
     }
 
     // Calculate total

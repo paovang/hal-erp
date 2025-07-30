@@ -9,6 +9,7 @@ import { VendorId } from '@src/modules/manage/domain/value-objects/vendor-id.vo'
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
+import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -42,6 +43,17 @@ export class DeleteCommandHandler
       VendorBankAccountOrmEntity,
       { vendor_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'vendor bank account',
+    );
+
+    await checkRelationOrThrow(
+      query.manager,
+      PurchaseOrderSelectedVendorOrmEntity,
+      { vendor_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'purchase order selected vendor',
     );
   }
 }

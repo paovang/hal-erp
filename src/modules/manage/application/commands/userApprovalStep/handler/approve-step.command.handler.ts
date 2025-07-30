@@ -146,6 +146,7 @@ export class ApproveStepCommandHandler
           throw new ManageDomainException(
             'errors.must_be_number',
             HttpStatus.BAD_REQUEST,
+            { property: `${query.stepId}` },
           );
         }
 
@@ -158,6 +159,7 @@ export class ApproveStepCommandHandler
           throw new ManageDomainException(
             'errors.not_found',
             HttpStatus.NOT_FOUND,
+            { property: 'user approval step' },
           );
         }
 
@@ -184,6 +186,7 @@ export class ApproveStepCommandHandler
           throw new ManageDomainException(
             'errors.not_found',
             HttpStatus.NOT_FOUND,
+            { property: 'document approver' },
           );
         }
 
@@ -212,6 +215,7 @@ export class ApproveStepCommandHandler
           throw new ManageDomainException(
             'errors.not_found',
             HttpStatus.NOT_FOUND,
+            { property: 'document' },
           );
         }
 
@@ -226,6 +230,7 @@ export class ApproveStepCommandHandler
           throw new ManageDomainException(
             'errors.not_found',
             HttpStatus.NOT_FOUND,
+            { property: 'approval workflow' },
           );
         }
 
@@ -275,6 +280,7 @@ export class ApproveStepCommandHandler
               throw new ManageDomainException(
                 'errors.not_found',
                 HttpStatus.NOT_FOUND,
+                { property: 'purchase request' },
               );
             }
 
@@ -291,6 +297,7 @@ export class ApproveStepCommandHandler
               throw new ManageDomainException(
                 'errors.not_found',
                 HttpStatus.NOT_FOUND,
+                { property: 'purchase order' },
               );
             }
 
@@ -343,6 +350,7 @@ export class ApproveStepCommandHandler
               throw new ManageDomainException(
                 'errors.not_found',
                 HttpStatus.NOT_FOUND,
+                { property: 'receipt' },
               );
             }
 
@@ -372,6 +380,7 @@ export class ApproveStepCommandHandler
             throw new ManageDomainException(
               'errors.not_found',
               HttpStatus.NOT_FOUND,
+              { property: 'type' },
             );
           }
 
@@ -580,6 +589,7 @@ export class ApproveStepCommandHandler
         throw new ManageDomainException(
           'errors.not_found',
           HttpStatus.NOT_FOUND,
+          { property: 'budget_item_detail_id' },
         );
       }
 

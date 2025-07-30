@@ -134,7 +134,6 @@ export class UpdateCommandHandler
             mergeData,
             query.id,
           );
-          console.log('object 4', userSignatureEntity);
           await userSignatureEntity.initializeUpdateSetId(
             new UserSignatureId(UserSignature.id),
           );
@@ -145,7 +144,6 @@ export class UpdateCommandHandler
 
           await this._writeUserSignature.update(userSignatureEntity, manager);
         }
-        console.log('object 5');
 
         return result;
       },
@@ -157,6 +155,7 @@ export class UpdateCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
 

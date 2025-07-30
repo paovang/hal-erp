@@ -42,6 +42,8 @@ export class DeleteCommandHandler
       DepartmentUserOrmEntity,
       { position_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'department user',
     );
   }
 }

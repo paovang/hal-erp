@@ -58,6 +58,7 @@ export class DeleteCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
 
@@ -66,6 +67,8 @@ export class DeleteCommandHandler
       BudgetApprovalRuleOrmEntity,
       { approver_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'budget approval rule',
     );
 
     await checkRelationOrThrow(
@@ -73,6 +76,8 @@ export class DeleteCommandHandler
       DepartmentApproverOrmEntity,
       { user_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'department approver',
     );
 
     await checkRelationOrThrow(
@@ -80,6 +85,8 @@ export class DeleteCommandHandler
       DepartmentUserOrmEntity,
       { user_id: query.id },
       'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'department user',
     );
   }
 }

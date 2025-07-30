@@ -17,6 +17,8 @@ import { DataSource } from 'typeorm';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { IWriteBudgetItemDetailRepository } from '@src/modules/manage/domain/ports/output/budget-item-detail-repository.interface';
 import { BudgetItemDetailId } from '@src/modules/manage/domain/value-objects/budget-item-detail-rule-id.vo';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
+import { PurchaseOrderItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-item.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -59,6 +61,7 @@ export class DeleteCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
 
@@ -66,8 +69,23 @@ export class DeleteCommandHandler
       id: query.id,
     });
 
-    await findOneOrFail(query.manager, BudgetItemDetailOrmEntity, {
-      budget_item_id: query.id,
-    });
+    const detail = await findOneOrFail(
+      query.manager,
+      BudgetItemDetailOrmEntity,
+      {
+        budget_item_id: query.id,
+      },
+    );
+
+    const detail_id = (detail as any).id;
+
+    await checkRelationOrThrow(
+      query.manager,
+      PurchaseOrderItemOrmEntity,
+      { budget_item_detail_id: detail_id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'purchase order item',
+    );
   }
 }
