@@ -1,6 +1,12 @@
 import { PartialType } from '@nestjs/swagger';
-import { CreateDepartmentApproverDto } from './create.dto';
+import {
+  CreateDepartmentApproverByUserDto,
+  CreateDepartmentApproverDto,
+} from './create.dto';
 
 export class UpdateDepartmentApproverDto extends PartialType(
   CreateDepartmentApproverDto,
+) {}
+export class UpdateDepartmentApproverDtoByUser extends PartialType(
+  CreateDepartmentApproverByUserDto,
 ) {}

@@ -13,6 +13,7 @@ import {
 import { DepartmentUserQueryDto } from '@src/modules/manage/application/dto/query/department-user-query.dto';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';
+import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 
 @Injectable()
 export class ReadDepartmentUserRepository
@@ -145,5 +146,17 @@ export class ReadDepartmentUserRepository
       .getOneOrFail();
 
     return this._dataAccessMapper.toEntity(item);
+  }
+  async findAllByDepartment(
+    department_id: DepartmentId,
+    manager: EntityManager,
+  ): Promise<DepartmentUserEntity[]> {
+    const items = await this.createBaseQuery(manager)
+      .where('department_users.department_id = :department_id', {
+        department_id: department_id.value,
+      })
+      .getMany();
+
+    return items.map((item) => this._dataAccessMapper.toEntity(item));
   }
 }

@@ -21,6 +21,11 @@ export interface IDepartmentUserServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<DepartmentUserEntity>>;
 
+  getAllByDepartment(
+    department_id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>>;
+
   update(
     id: number,
     dto: UpdateDepartmentUserDto,

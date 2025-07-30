@@ -95,6 +95,18 @@ export class DepartmentUserController {
       result,
     );
   }
+  @Get('by/department/:department_id')
+  async getAllByDepartment(
+    @Param('department_id') department_id: number,
+  ): Promise<ResponseResult<DepartmentUserResponse>> {
+    const result =
+      await this._departmentUserService.getAllByDepartment(department_id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
 
   /** Update */
   @Put(':id')
