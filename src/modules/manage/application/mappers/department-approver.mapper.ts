@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDepartmentApproverDto } from '../dto/create/departmentApprover/create.dto';
+import {
+  CreateDepartmentApproverByUserDto,
+  CreateDepartmentApproverDto,
+} from '../dto/create/departmentApprover/create.dto';
 import { DepartmentApproverEntity } from '../../domain/entities/department-approver.entity';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
@@ -17,7 +20,10 @@ export class DepartmentApproverDataMapper {
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
-    dto: CreateDepartmentApproverDto | UpdateDepartmentApproverDto,
+    dto:
+      | CreateDepartmentApproverDto
+      | UpdateDepartmentApproverDto
+      | CreateDepartmentApproverByUserDto,
     departmentId?: number,
   ): DepartmentApproverEntity {
     const builder = DepartmentApproverEntity.builder();

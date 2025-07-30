@@ -6,6 +6,7 @@ import {
   Inject,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { BUDGET_ITEM_DETAIL_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
@@ -17,6 +18,7 @@ import { BudgetItemDetailResponse } from '../application/dto/response/budget-ite
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { CreateBudgetItemDetailDto } from '../application/dto/create/BudgetItemDetail/create.dto';
 import { BudgetItemDetailQueryDto } from '../application/dto/query/budget-item-detail.dto';
+import { UpdateBudgetItemDetailDto } from '../application/dto/create/BudgetItemDetail/update.dto';
 
 @Controller('budget-item-details')
 export class BudgetItemDetailController {
@@ -34,6 +36,18 @@ export class BudgetItemDetailController {
     @Body() dto: CreateBudgetItemDetailDto,
   ): Promise<ResponseResult<BudgetItemDetailResponse>> {
     const result = await this._budgetItemDetailService.create(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+  @Put('/:id')
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateBudgetItemDetailDto,
+  ): Promise<ResponseResult<BudgetItemDetailResponse>> {
+    const result = await this._budgetItemDetailService.update(id, dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

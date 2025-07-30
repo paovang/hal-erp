@@ -12,13 +12,19 @@ import {
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { DEPARTMENT_APPROVER_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
-import { CreateDepartmentApproverDto } from '../application/dto/create/departmentApprover/create.dto';
+import {
+  CreateDepartmentApproverByUserDto,
+  CreateDepartmentApproverDto,
+} from '../application/dto/create/departmentApprover/create.dto';
 import { IDepartmentApproverServiceInterface } from '../domain/ports/input/department-approver-domian-service.interface';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { DepartmentApproverDataMapper } from '../application/mappers/department-approver.mapper';
 import { DepartmentApproverResponse } from '../application/dto/response/department-approver.response';
 import { DepartmentApproverQueryDto } from '../application/dto/query/department-approver.dto';
-import { UpdateDepartmentApproverDto } from '../application/dto/create/departmentApprover/update.dto';
+import {
+  UpdateDepartmentApproverByUserDto,
+  UpdateDepartmentApproverDto,
+} from '../application/dto/create/departmentApprover/update.dto';
 
 @Controller('department-approvers')
 export class DepartmentApproverController {
@@ -36,6 +42,17 @@ export class DepartmentApproverController {
     @Body() dto: CreateDepartmentApproverDto,
   ): Promise<ResponseResult<DepartmentApproverResponse>> {
     const result = await this._departmentApproverService.create(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+  @Post('/by/user')
+  async createByUser(
+    @Body() dto: CreateDepartmentApproverByUserDto,
+  ): Promise<ResponseResult<DepartmentApproverResponse>> {
+    const result = await this._departmentApproverService.createByUser(dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
@@ -73,6 +90,18 @@ export class DepartmentApproverController {
     @Body() dto: UpdateDepartmentApproverDto,
   ): Promise<ResponseResult<DepartmentApproverResponse>> {
     const result = await this._departmentApproverService.update(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+  @Put('/by/user/:id')
+  async updateByUser(
+    @Param('id') id: number,
+    @Body() dto: UpdateDepartmentApproverByUserDto,
+  ): Promise<ResponseResult<DepartmentApproverResponse>> {
+    const result = await this._departmentApproverService.updateByUser(id, dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
