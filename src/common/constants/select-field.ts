@@ -99,6 +99,18 @@ export const selectDepartments = [
   'departments.updated_at',
 ];
 
+// select budget account
+export const selectBudgetAccounts = [
+  'budget_accounts.id',
+  'budget_accounts.code',
+  'budget_accounts.name',
+  'budget_accounts.fiscal_year',
+  'budget_accounts.allocated_amount',
+  'budget_accounts.department_id',
+  'budget_accounts.created_at',
+  'budget_accounts.updated_at',
+];
+
 // select department users
 export const selectDepartmentUsers = [
   'department_users.id',
@@ -166,6 +178,16 @@ export const selectBudgetItemDetails = [
   'budget_item_details.description',
   'budget_item_details.created_at',
   'budget_item_details.updated_at',
+];
+
+// select budget items
+export const selectBudgetItems = [
+  'budget_items.id',
+  'budget_items.budget_account_id',
+  'budget_items.name',
+  'budget_items.allocated_amount',
+  'budget_items.created_at',
+  'budget_items.updated_at',
 ];
 
 // select provinces

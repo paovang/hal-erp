@@ -13,6 +13,7 @@ import { DeleteCommand } from '../commands/BudgetAccount/delete.command';
 import { CreateBudgetAccountDto } from '../dto/create/BudgetAccount/create.dto';
 import { BudgetAccountQueryDto } from '../dto/query/budget-account.dto';
 import { UpdateBudgetAccountDto } from '../dto/create/BudgetAccount/update.dto';
+import { GetReportQuery } from '../queries/BudgetAccount/report.query';
 
 @Injectable()
 export class BudgetAccountService implements IBudgetAccountServiceInterface {
@@ -63,6 +64,16 @@ export class BudgetAccountService implements IBudgetAccountServiceInterface {
   async delete(id: number, manager?: EntityManager): Promise<void> {
     return await this._commandBus.execute(
       new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getReportBudgetAccounts(
+    id: number,
+    dto: BudgetAccountQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<BudgetAccountEntity>> {
+    return await this._queryBus.execute(
+      new GetReportQuery(id, dto, manager ?? this._readEntityManager),
     );
   }
 }

@@ -17,4 +17,7 @@ export class BudgetAccountQueryDto extends PaginationDto {
   @Type(() => Number)
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   fiscal_year?: number;
+
+  @IsOptional()
+  type?: string;
 }

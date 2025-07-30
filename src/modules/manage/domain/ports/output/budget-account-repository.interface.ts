@@ -3,6 +3,7 @@ import { EntityManager } from 'typeorm';
 import { BudgetAccountEntity } from '../../entities/budget-account.entity';
 import { BudgetAccountQueryDto } from '@src/modules/manage/application/dto/query/budget-account.dto';
 import { BudgetAccountId } from '../../value-objects/budget-account-id.vo';
+import { DepartmentId } from '../../value-objects/department-id.vo';
 
 export interface IReadBudgetAccountRepository {
   findAll(
@@ -13,6 +14,12 @@ export interface IReadBudgetAccountRepository {
 
   findOne(
     id: BudgetAccountId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<BudgetAccountEntity>>;
+
+  report(
+    id: DepartmentId,
+    dto: BudgetAccountQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetAccountEntity>>;
 }

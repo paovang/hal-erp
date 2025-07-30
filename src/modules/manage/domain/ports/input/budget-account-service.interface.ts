@@ -28,4 +28,10 @@ export interface IBudgetAccountServiceInterface {
   ): Promise<ResponseResult<BudgetAccountEntity>>;
 
   delete(id: number, manager?: EntityManager): Promise<void>;
+
+  getReportBudgetAccounts(
+    id: number,
+    dto: BudgetAccountQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<BudgetAccountEntity>>;
 }

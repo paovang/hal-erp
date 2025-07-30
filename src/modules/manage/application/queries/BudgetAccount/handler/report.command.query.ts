@@ -1,18 +1,18 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { GetOneQuery } from '../get-one.query';
+import { GetReportQuery } from '../report.query';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
-import { BudgetAccountId } from '@src/modules/manage/domain/value-objects/budget-account-id.vo';
-import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { BudgetAccountEntity } from '@src/modules/manage/domain/entities/budget-account.entity';
-import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-account.orm';
-import { IReadBudgetAccountRepository } from '@src/modules/manage/domain/ports/output/budget-account-repository.interface';
 import { READ_BUDGET_ACCOUNT_REPOSITORY } from '../../../constants/inject-key.const';
 import { HttpStatus, Inject } from '@nestjs/common';
+import { IReadBudgetAccountRepository } from '@src/modules/manage/domain/ports/output/budget-account-repository.interface';
+import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-account.orm';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
-@QueryHandler(GetOneQuery)
-export class GetOneQueryHandler
-  implements IQueryHandler<GetOneQuery, ResponseResult<BudgetAccountEntity>>
+@QueryHandler(GetReportQuery)
+export class GetReportQueryHandler
+  implements IQueryHandler<GetReportQuery, ResponseResult<BudgetAccountEntity>>
 {
   constructor(
     @Inject(READ_BUDGET_ACCOUNT_REPOSITORY)
@@ -20,20 +20,26 @@ export class GetOneQueryHandler
   ) {}
 
   async execute(
-    query: GetOneQuery,
+    query: GetReportQuery,
   ): Promise<ResponseResult<BudgetAccountEntity>> {
     await this.checkData(query);
-    await findOneOrFail(query.manager, BudgetAccountOrmEntity, {
-      id: query.id,
-    });
+    await findOneOrFail(
+      query.manager,
+      BudgetAccountOrmEntity,
+      {
+        id: query.id,
+      },
+      `id ${query.id}`,
+    );
 
-    return await this._readRepo.findOne(
-      new BudgetAccountId(query.id),
+    return await this._readRepo.report(
+      new DepartmentId(query.id),
+      query.dto,
       query.manager,
     );
   }
 
-  private async checkData(query: GetOneQuery): Promise<void> {
+  private async checkData(query: GetReportQuery): Promise<void> {
     if (isNaN(query.id)) {
       throw new ManageDomainException(
         'errors.must_be_number',

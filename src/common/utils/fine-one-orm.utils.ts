@@ -6,10 +6,13 @@ export async function findOneOrFail<T extends ObjectLiteral>(
   manager: EntityManager,
   entityClass: EntityTarget<T>,
   where: Partial<T>,
+  property?: string,
 ): Promise<T> {
   const entity = await manager.findOne(entityClass, { where });
   if (!entity) {
-    throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND);
+    throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND, {
+      property: property ?? 'data',
+    });
   }
 
   return entity;

@@ -12,6 +12,13 @@ import { EntityManager } from 'typeorm';
 import { BudgetAccountEntity } from '@src/modules/manage/domain/entities/budget-account.entity';
 import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-account.orm';
 import { BudgetAccountId } from '@src/modules/manage/domain/value-objects/budget-account-id.vo';
+import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
+import {
+  selectBudgetAccounts,
+  selectBudgetItemDetails,
+  selectBudgetItems,
+  selectDepartments,
+} from '@src/common/constants/select-field';
 
 @Injectable()
 export class ReadBudgetAccountRepository
@@ -66,5 +73,44 @@ export class ReadBudgetAccountRepository
       .getOneOrFail();
 
     return this._dataAccessMapper.toEntity(item);
+  }
+
+  async report(
+    id: DepartmentId,
+    dto: BudgetAccountQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<BudgetAccountEntity>> {
+    const queryBuilder = await this.createReportQuery(manager, id);
+    const data = await this._paginationService.paginate(
+      queryBuilder,
+      dto,
+      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+      this.getReportFilterOptions(),
+    );
+    return data;
+  }
+
+  private createReportQuery(manager: EntityManager, id: DepartmentId) {
+    const selectFields = [
+      ...selectDepartments,
+      ...selectBudgetAccounts,
+      ...selectBudgetItemDetails,
+      ...selectBudgetItems,
+    ];
+    return manager
+      .createQueryBuilder(BudgetAccountOrmEntity, 'budget_accounts')
+      .leftJoin('budget_accounts.departments', 'departments')
+      .leftJoin('budget_accounts.budget_items', 'budget_items')
+      .leftJoin('budget_items.budget_item_details', 'budget_item_details')
+      .where('departments.id = :id', { id: id.value })
+      .addSelect(selectFields);
+  }
+
+  private getReportFilterOptions(): FilterOptions {
+    return {
+      searchColumns: ['budget_accounts.name', 'budget_accounts.code'],
+      dateColumn: '',
+      filterByColumns: [],
+    };
   }
 }
