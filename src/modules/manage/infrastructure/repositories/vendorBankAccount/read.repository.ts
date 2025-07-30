@@ -55,11 +55,11 @@ export class ReadVendorBankAccountRepository
   private getFilterOptions(): FilterOptions {
     return {
       searchColumns: [
-        'vendor_bank_accounts.bank_name',
         'vendor_bank_accounts.account_name',
         'vendor_bank_accounts.account_number',
         'vendors.name',
         'vendors.contact_info',
+
         'currencies.name',
         'currencies.code',
 

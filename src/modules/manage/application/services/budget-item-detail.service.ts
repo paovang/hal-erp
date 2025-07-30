@@ -11,6 +11,8 @@ import { GetOneQuery } from '../queries/BudgetItemDetail/get-one.query';
 import { DeleteCommand } from '../commands/BudgetItemDetail/delete.command';
 import { CreateBudgetItemDetailDto } from '../dto/create/BudgetItemDetail/create.dto';
 import { BudgetItemDetailQueryDto } from '../dto/query/budget-item-detail.dto';
+import { UpdateBudgetItemDetailDto } from '../dto/create/BudgetItemDetail/update.dto';
+import { UpdateBudgetItemDetailCommand } from '../commands/BudgetItemDetail/update.command';
 
 @Injectable()
 export class BudgetItemDetailService
@@ -30,6 +32,19 @@ export class BudgetItemDetailService
   ): Promise<ResponseResult<BudgetItemDetailEntity>> {
     return await this._commandBus.execute(
       new CreateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+  async update(
+    id: number,
+    dto: UpdateBudgetItemDetailDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<BudgetItemDetailEntity>> {
+    return await this._commandBus.execute(
+      new UpdateBudgetItemDetailCommand(
+        id,
+        dto,
+        manager ?? this._readEntityManager,
+      ),
     );
   }
 

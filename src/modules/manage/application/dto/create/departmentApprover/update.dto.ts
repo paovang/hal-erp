@@ -7,6 +7,6 @@ import {
 export class UpdateDepartmentApproverDto extends PartialType(
   CreateDepartmentApproverDto,
 ) {}
-export class UpdateDepartmentApproverDtoByUser extends PartialType(
+export class UpdateDepartmentApproverByUserDto extends PartialType(
   CreateDepartmentApproverByUserDto,
 ) {}

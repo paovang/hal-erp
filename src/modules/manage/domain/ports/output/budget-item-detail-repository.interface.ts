@@ -23,10 +23,10 @@ export interface IWriteBudgetItemDetailRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetItemDetailEntity>>;
 
-  //   update(
-  //     entity: BudgetItemDetailEntity,
-  //     manager: EntityManager,
-  //   ): Promise<ResponseResult<BudgetItemDetailEntity>>;
+  update(
+    entity: BudgetItemDetailEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<BudgetItemDetailEntity>>;
 
   delete(id: BudgetItemDetailId, manager: EntityManager): Promise<void>;
 }

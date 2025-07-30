@@ -26,8 +26,39 @@ export class WriteDepartmentApproverRepository
       ),
     );
   }
+  async createByUser(
+    entity: DepartmentApproverEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentApproverEntity>> {
+    return this._dataAccessMapper.toEntity(
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
+    );
+  }
 
   async update(
+    entity: DepartmentApproverEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentApproverEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
+
+    try {
+      await manager.update(
+        DepartmentApproverOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+  async updateByUser(
     entity: DepartmentApproverEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentApproverEntity>> {

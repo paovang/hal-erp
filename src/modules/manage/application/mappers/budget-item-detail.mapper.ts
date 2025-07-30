@@ -6,6 +6,7 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { ProvinceDataMapper } from './province.mapper';
 import { CreateBudgetItemDetailDto } from '../dto/create/BudgetItemDetail/create.dto';
+import { UpdateBudgetItemDetailDto } from '../dto/create/BudgetItemDetail/update.dto';
 
 @Injectable()
 export class BudgetItemDetailDataMapper {
@@ -13,7 +14,7 @@ export class BudgetItemDetailDataMapper {
 
   /** Mapper Dto To Entity */
   toEntity(
-    dto: CreateBudgetItemDetailDto,
+    dto: CreateBudgetItemDetailDto | UpdateBudgetItemDetailDto,
     budget_item_id?: number,
   ): BudgetItemDetailEntity {
     const builder = BudgetItemDetailEntity.builder();
