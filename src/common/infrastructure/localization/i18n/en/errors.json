@@ -59,5 +59,7 @@
   "account_code_required": "Account code is required",
   "invalid_budget_item": "{property} Invalid budget item detail",
   "is_required": "{property} is required",
-  "document_type_already_exists": "Document type already exists"
+  "document_type_already_exists": "Document type already exists",
+  "missing_step_number": "Step numbers must be consecutive. Missing step {property} in the sequence.",
+  "invalid_step_number": "The step number must start from {property}."
 }

@@ -10,7 +10,7 @@ import { ApprovalWorkflowStepId } from '@src/modules/manage/domain/value-objects
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { Not } from 'typeorm';
+import { EntityManager, Not } from 'typeorm';
 import { EnumWorkflowStep } from '../../../constants/status-key.const';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
@@ -42,6 +42,8 @@ export class UpdateCommandHandler
     const steps = await query.manager.find(ApprovalWorkflowStepOrmEntity, {
       where: { approval_workflow_id: approval_id, id: Not(query.id) },
     });
+
+    await this.checkStep(query.manager, approval_id, query);
 
     for (const step of steps) {
       if (step.step_number === query.dto.step_number) {
@@ -113,6 +115,37 @@ export class UpdateCommandHandler
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
         { property: `${query.id}` },
+      );
+    }
+  }
+
+  private async checkStep(
+    manager: EntityManager,
+    workflow_id: number,
+    query: UpdateCommand,
+  ): Promise<void> {
+    // ✅ Get current max step_number in DB for this workflow
+    const existingMaxStepNumber = await manager
+      .getRepository(ApprovalWorkflowStepOrmEntity)
+      .createQueryBuilder('step')
+      .select('MAX(step.step_number)', 'max')
+      .where('step.approval_workflow_id = :workflowId', {
+        workflowId: workflow_id,
+      })
+      .getRawOne();
+
+    const maxStepNumber = existingMaxStepNumber?.max
+      ? Number(existingMaxStepNumber.max)
+      : 0;
+
+    // ✅ Ensure new step(s) start with max + 1
+    if (query.dto.step_number !== maxStepNumber) {
+      throw new ManageDomainException(
+        'errors.invalid_step_number',
+        HttpStatus.BAD_REQUEST,
+        {
+          property: `${maxStepNumber}`,
+        },
       );
     }
   }

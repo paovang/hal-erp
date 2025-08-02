@@ -59,5 +59,7 @@
   "account_code_required": "ກະລຸນາລົງບັນຊີກ່ອນ.",
   "invalid_budget_item": "{property} ບໍ່ພົບງົບປະມານນີ້.",
   "is_required": "ກະລຸນາປ້ອນຂໍ້ມູນ {property} ກ່ອນ.",
-  "document_type_already_exists": "ປະເພດເອກະສານນີ້ມີການຕັ້ງຄ່າຢູ່ແລ້ວ."
+  "document_type_already_exists": "ປະເພດເອກະສານນີ້ມີການຕັ້ງຄ່າຢູ່ແລ້ວ.",
+  "missing_step_number": "ລໍາດັບຂອງຂັ້ນຕອນຕ້ອງເປັນຕາມລໍາດັບ. ຂັ້ນຕອນບາງອັນຫາຍໄປ.",
+  "invalid_step_number": "ຂັ້ນຕອນທໍາອິດຕ້ອງເລີ່ມຈາກ {property}."
 }

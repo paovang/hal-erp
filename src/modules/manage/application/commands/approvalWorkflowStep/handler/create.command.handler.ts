@@ -13,6 +13,7 @@ import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { EnumWorkflowStep } from '../../../constants/status-key.const';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import { EntityManager } from 'typeorm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -35,6 +36,8 @@ export class CreateCommandHandler
     const steps = await query.manager.find(ApprovalWorkflowStepOrmEntity, {
       where: { approval_workflow_id: query.id },
     });
+
+    await this.checkStep(query.manager, query.id, query);
 
     for (const step of steps) {
       if (step.step_number === query.dto.step_number) {
@@ -103,5 +106,36 @@ export class CreateCommandHandler
     await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {
       id: query.id,
     });
+  }
+
+  private async checkStep(
+    manager: EntityManager,
+    workflow_id: number,
+    query: CreateCommand,
+  ): Promise<void> {
+    // ✅ Get current max step_number in DB for this workflow
+    const existingMaxStepNumber = await manager
+      .getRepository(ApprovalWorkflowStepOrmEntity)
+      .createQueryBuilder('step')
+      .select('MAX(step.step_number)', 'max')
+      .where('step.approval_workflow_id = :workflowId', {
+        workflowId: workflow_id,
+      })
+      .getRawOne();
+
+    const maxStepNumber = existingMaxStepNumber?.max
+      ? Number(existingMaxStepNumber.max)
+      : 0;
+
+    // ✅ Ensure new step(s) start with max + 1
+    if (query.dto.step_number !== maxStepNumber + 1) {
+      throw new ManageDomainException(
+        'errors.invalid_step_number',
+        HttpStatus.BAD_REQUEST,
+        {
+          property: `${maxStepNumber + 1}`,
+        },
+      );
+    }
   }
 }
