@@ -11,6 +11,8 @@ import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/t
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
+import { EnumWorkflowStep } from '../../../constants/status-key.const';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -26,6 +28,8 @@ export class CreateCommandHandler
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<ApprovalWorkflowStepEntity>> {
+    let mergeData: any = null;
+
     await this.checkData(query);
 
     const steps = await query.manager.find(ApprovalWorkflowStepOrmEntity, {
@@ -42,7 +46,49 @@ export class CreateCommandHandler
       }
     }
 
-    const step = this._dataMapperStep.toEntity(query.dto, query.id);
+    if (query.dto.type === EnumWorkflowStep.DEPARTMENT) {
+      if (!query.dto.departmentId) {
+        throw new ManageDomainException(
+          'errors.is_required',
+          HttpStatus.BAD_REQUEST,
+          { property: 'departmentId' },
+        );
+      }
+      await findOneOrFail(query.manager, DepartmentOrmEntity, {
+        id: query.dto.departmentId,
+      });
+
+      mergeData = {
+        ...query.dto,
+        department_id: query.dto.departmentId,
+        userId: null,
+      };
+    } else if (query.dto.type === EnumWorkflowStep.SPECIFIC_USER) {
+      if (!query.dto.userId) {
+        throw new ManageDomainException(
+          'errors.is_required',
+          HttpStatus.BAD_REQUEST,
+          { property: 'userId' },
+        );
+      }
+      await findOneOrFail(query.manager, UserOrmEntity, {
+        id: query.dto.userId,
+      });
+
+      mergeData = {
+        ...query.dto,
+        departmentId: null,
+        userId: query.dto.userId,
+      };
+    } else {
+      mergeData = {
+        ...query.dto,
+        department_id: null,
+        userId: null,
+      };
+    }
+
+    const step = this._dataMapperStep.toEntity(mergeData, query.id);
     return await this._writeStep.create(step, query.manager);
   }
 
@@ -56,10 +102,6 @@ export class CreateCommandHandler
     }
     await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {
       id: query.id,
-    });
-
-    await findOneOrFail(query.manager, DepartmentOrmEntity, {
-      id: query.dto.departmentId,
     });
   }
 }

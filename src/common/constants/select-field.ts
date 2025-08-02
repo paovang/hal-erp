@@ -322,6 +322,9 @@ export const selectApprovalWorkflowSteps = [
   'approval_workflow_steps.step_name',
   'approval_workflow_steps.step_number',
   'approval_workflow_steps.department_id',
+  'approval_workflow_steps.user_id',
+  'approval_workflow_steps.type',
+  'approval_workflow_steps.requires_file_upload',
   'approval_workflow_steps.created_at',
   'approval_workflow_steps.updated_at',
 ];

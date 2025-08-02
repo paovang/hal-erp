@@ -14,7 +14,6 @@ import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/type
 import { BudgetAccountId } from '@src/modules/manage/domain/value-objects/budget-account-id.vo';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 import {
-  selectBudgetAccounts,
   selectBudgetItemDetails,
   selectBudgetItems,
   selectDepartments,
@@ -77,13 +76,14 @@ export class ReadBudgetAccountRepository
 
   async report(
     id: DepartmentId,
-    dto: BudgetAccountQueryDto,
+    query: BudgetAccountQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetAccountEntity>> {
     const queryBuilder = await this.createReportQuery(manager, id);
+    query.sort_by = 'budget_accounts.id';
     const data = await this._paginationService.paginate(
       queryBuilder,
-      dto,
+      query,
       this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
       this.getReportFilterOptions(),
     );
@@ -93,24 +93,41 @@ export class ReadBudgetAccountRepository
   private createReportQuery(manager: EntityManager, id: DepartmentId) {
     const selectFields = [
       ...selectDepartments,
-      ...selectBudgetAccounts,
-      ...selectBudgetItemDetails,
       ...selectBudgetItems,
+      ...selectBudgetItemDetails,
+      // Add SUM for ADD
+      'SUM(CASE WHEN detail_transactions.transaction_type = \'add\' THEN detail_transactions.amount ELSE 0 END) AS "sumAdd"',
+      // Add SUM for SPEND
+      'SUM(CASE WHEN detail_transactions.transaction_type = \'spend\' THEN detail_transactions.amount ELSE 0 END) AS "sumSpend"',
     ];
-    return manager
+    const queryBuilder = manager
       .createQueryBuilder(BudgetAccountOrmEntity, 'budget_accounts')
       .leftJoin('budget_accounts.departments', 'departments')
       .leftJoin('budget_accounts.budget_items', 'budget_items')
       .leftJoin('budget_items.budget_item_details', 'budget_item_details')
+      .leftJoin('budget_item_details.provinces', 'provinces')
+      .leftJoin(
+        'budget_item_details.detail_transactions',
+        'detail_transactions',
+      )
       .where('departments.id = :id', { id: id.value })
-      .addSelect(selectFields);
+      .addSelect(selectFields)
+      .groupBy('budget_accounts.id')
+      .addGroupBy('departments.id')
+      .addGroupBy('departments.name')
+      .addGroupBy('budget_items.id')
+      .addGroupBy('budget_items.name')
+      .addGroupBy('budget_item_details.id')
+      .addGroupBy('budget_item_details.name');
+
+    return queryBuilder;
   }
 
   private getReportFilterOptions(): FilterOptions {
     return {
       searchColumns: ['budget_accounts.name', 'budget_accounts.code'],
       dateColumn: '',
-      filterByColumns: [],
+      filterByColumns: ['budget_accounts.type'],
     };
   }
 }

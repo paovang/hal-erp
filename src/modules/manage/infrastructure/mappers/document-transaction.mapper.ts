@@ -22,7 +22,7 @@ export class DocumentTransactionDataAccessMapper {
     mediaOrmEntity.transaction_number =
       documentTransactionEntity.transaction_number;
     mediaOrmEntity.document_id = documentTransactionEntity.document_id;
-    mediaOrmEntity.budget_item_detail_id =
+    mediaOrmEntity.budget_item_id =
       documentTransactionEntity.budget_item_detail_id;
     mediaOrmEntity.amount = documentTransactionEntity.amount;
     mediaOrmEntity.transaction_type =
@@ -43,7 +43,7 @@ export class DocumentTransactionDataAccessMapper {
       .setDocumentTransactionId(new DocumentTransactionId(ormData.id))
       .setTransactionNumber(ormData.transaction_number ?? '')
       .setDocumentId(ormData.document_id ?? 0)
-      .setBudgetItemDetailId(ormData.budget_item_detail_id ?? 0)
+      .setBudgetItemDetailId(ormData.budget_item_id ?? 0)
       .setAmount(ormData.amount ?? 0)
       .setTransactionType(
         ormData.transaction_type ?? EnumDocumentTransactionType.COMMIT,

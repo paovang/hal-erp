@@ -25,6 +25,7 @@ export class ApprovalWorkflowDataMapper {
       builder.setName(dto.name);
     }
 
+    console.log('object', dto.documentTypeId);
     if (dto.documentTypeId) {
       builder.setDocumentTypeId(dto.documentTypeId);
     }

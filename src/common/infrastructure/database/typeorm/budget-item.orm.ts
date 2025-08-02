@@ -12,7 +12,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { BudgetAccountOrmEntity } from './budget-account.orm';
-import { BudgetItemDetailOrmEntity } from './budget-item-detail.orm';
+import { DocumentTransactionOrmEntity } from './document-transaction.orm';
+import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
 
 @Entity('budget_items')
 export class BudgetItemOrmEntity {
@@ -41,6 +42,9 @@ export class BudgetItemOrmEntity {
   @Column({ type: 'double precision', nullable: true })
   allocated_amount?: number;
 
+  @Column({ type: 'text', nullable: true })
+  description?: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
@@ -53,8 +57,14 @@ export class BudgetItemOrmEntity {
   deleted_at: Date | null;
 
   @OneToMany(
-    () => BudgetItemDetailOrmEntity,
-    (budget_item_details) => budget_item_details.budget_items,
+    () => DocumentTransactionOrmEntity,
+    (document_transactions) => document_transactions.budget_items,
   )
-  budget_item_details: Relation<BudgetItemDetailOrmEntity[]>;
+  document_transactions: Relation<DocumentTransactionOrmEntity[]>;
+
+  @OneToMany(
+    () => PurchaseOrderItemOrmEntity,
+    (purchase_order_item) => purchase_order_item.budget_item,
+  )
+  purchase_order_item: Relation<PurchaseOrderItemOrmEntity[]>;
 }

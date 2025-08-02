@@ -16,7 +16,6 @@ import {
   // selectApprovalWorkflowSteps,
   selectApprover,
   selectApproverUserSignatures,
-  selectBudgetItemDetails,
   // selectCurrencies,
   selectCurrency,
   selectDepartments,
@@ -32,7 +31,6 @@ import {
   selectPositions,
   selectPoUsers,
   selectPoUserSignatures,
-  selectProvinces,
   selectPurchaseOrderItems,
   selectPurchaseOrderSelectedVendors,
   selectPurchaseRequestItems,
@@ -117,8 +115,8 @@ export class ReadPurchaseOrderRepository
       ...selectUnits,
       ...selectRequestItems,
       ...selectRequestItemUnits,
-      ...selectBudgetItemDetails,
-      ...selectProvinces,
+      // ...selectBudgetItemDetails,
+      // ...selectProvinces,
       ...selectSelectedVendors,
       ...selectCurrency,
       ...selectVendorBankAccounts,
@@ -163,11 +161,11 @@ export class ReadPurchaseOrderRepository
       // purchase_order_items join with purchase request
       .innerJoin('purchase_order_items.purchase_request_items', 'request_items')
       .innerJoin('request_items.units', 'request_item_unit')
-      .leftJoin(
-        'purchase_order_items.budget_item_details',
-        'budget_item_details',
-      )
-      .leftJoin('budget_item_details.provinces', 'provinces')
+      // .leftJoin(
+      //   'purchase_order_items.budget_item_details',
+      //   'budget_item_details',
+      // )
+      // .leftJoin('budget_item_details.provinces', 'provinces')
       .innerJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
       // .leftJoin('selected_vendors.vendor_bank_accounts', 'vendor_bank_accounts')
       .leftJoin(

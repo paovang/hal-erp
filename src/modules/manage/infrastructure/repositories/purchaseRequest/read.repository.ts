@@ -49,6 +49,16 @@ export class ReadPurchaseRequestRepository
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
   ) {}
+
+  /**
+   * Find all
+   * @param query
+   * @param manager
+   * @param departmentId
+   * @param user_id
+   * @param roles
+   * @returns
+   */
   async findAll(
     query: PurchaseRequestQueryDto,
     manager: EntityManager,
@@ -56,6 +66,7 @@ export class ReadPurchaseRequestRepository
     user_id?: number,
     roles?: string[],
   ): Promise<ResponseResult<PurchaseRequestEntity>> {
+    const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(
       manager,
       departmentId,
@@ -63,6 +74,9 @@ export class ReadPurchaseRequestRepository
       roles,
     );
     query.sort_by = 'purchase_requests.id';
+
+    // Date filtering (single date)
+    this.applyDateFilter(queryBuilder, filterOptions.dateColumn, query.date);
 
     const status = await countStatusAmounts(
       manager,
@@ -74,7 +88,7 @@ export class ReadPurchaseRequestRepository
       queryBuilder,
       query,
       this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
-      this.getFilterOptions(),
+      filterOptions,
     );
 
     return {
@@ -83,6 +97,14 @@ export class ReadPurchaseRequestRepository
     };
   }
 
+  /**
+   * Create base query
+   * @param manager
+   * @param departmentId
+   * @param user_id
+   * @param roles
+   * @returns
+   */
   private createBaseQuery(
     manager: EntityManager,
     departmentId?: number,
@@ -147,10 +169,13 @@ export class ReadPurchaseRequestRepository
     return query;
   }
 
+  /**
+   * Get filter options
+   */
   private getFilterOptions(): FilterOptions {
     return {
       searchColumns: ['purchase_requests.pr_number', 'documents.title'],
-      dateColumn: '',
+      dateColumn: 'purchase_requests.requested_date',
       filterByColumns: [
         'documents.document_type_id',
         'user_approvals.status_id',
@@ -158,6 +183,28 @@ export class ReadPurchaseRequestRepository
     };
   }
 
+  /**
+   * ==> Applies date filter to the query builder if dateColumn and date are provided.
+   */
+  private applyDateFilter(
+    queryBuilder: any, // Replace 'any' with your actual QueryBuilder type
+    dateColumn: string | undefined,
+    date?: string,
+  ) {
+    if (dateColumn && date) {
+      queryBuilder.andWhere(`${dateColumn} BETWEEN :dateStart AND :dateEnd`, {
+        dateStart: `${date} 00:00:00`,
+        dateEnd: `${date} 23:59:59`,
+      });
+    }
+  }
+
+  /**
+   * Find one
+   * @param id
+   * @param manager
+   * @returns
+   */
   async findOne(
     id: PurchaseRequestId,
     manager: EntityManager,

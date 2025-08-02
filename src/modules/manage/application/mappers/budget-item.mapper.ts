@@ -27,6 +27,14 @@ export class BudgetItemDataMapper {
       builder.setBudgetAccountId(dto.budget_accountId);
     }
 
+    if (dto.allocated_amount) {
+      builder.setAllocatedAmount(dto.allocated_amount);
+    }
+
+    if (dto.description) {
+      builder.setDescription(dto.description);
+    }
+
     return builder.build();
   }
 
@@ -37,6 +45,7 @@ export class BudgetItemDataMapper {
     response.name = entity.name;
     response.budget_account_id = entity.budgetAccountId;
     response.allocated_amount = entity.allocatedAmount;
+    response.description = entity.description;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
@@ -44,14 +53,8 @@ export class BudgetItemDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
 
-    response.count_details = entity.count_details;
-
     response.budget_account = entity.budgetAccount
       ? this.budgetAccount.toResponse(entity.budgetAccount)
-      : null;
-
-    response.budget_item_details = entity.details
-      ? entity.details.map((detail) => this.details.toResponse(detail))
       : null;
 
     return response;

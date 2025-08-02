@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { DepartmentOrmEntity } from './department.orm';
 import { BudgetItemOrmEntity } from './budget-item.orm';
+import { EnumBudgetType } from '@src/modules/manage/application/constants/status-key.const';
 
 @Entity('budget_accounts')
 export class BudgetAccountOrmEntity {
@@ -49,6 +50,10 @@ export class BudgetAccountOrmEntity {
   @JoinColumn({ name: 'department_id' })
   departments: Relation<DepartmentOrmEntity>;
 
+  @Index()
+  @Column({ type: 'enum', enum: EnumBudgetType, nullable: true })
+  type?: EnumBudgetType;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
@@ -65,10 +70,4 @@ export class BudgetAccountOrmEntity {
     (budget_items) => budget_items.budget_accounts,
   )
   budget_items: Relation<BudgetItemOrmEntity[]>;
-
-  // @OneToMany(
-  //   () => SubBudgetAccountOrmEntity,
-  //   (sub_budget_accounts) => sub_budget_accounts.budget_accounts,
-  // )
-  // sub_budget_accounts: Relation<SubBudgetAccountOrmEntity[]>;
 }

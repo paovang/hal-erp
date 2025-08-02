@@ -34,7 +34,7 @@ export class GetReportQueryHandler
 
     return await this._readRepo.report(
       new DepartmentId(query.id),
-      query.dto,
+      query.query,
       query.manager,
     );
   }

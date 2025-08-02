@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DepartmentResponse } from './department.response';
+import { EnumWorkflowStep } from '../../constants/status-key.const';
+import { UserResponse } from './user.response';
 
 export class ApprovalWorkflowStepResponse {
   @ApiProperty()
@@ -15,7 +17,16 @@ export class ApprovalWorkflowStepResponse {
   step_number: number;
 
   @ApiProperty()
-  department_id: number;
+  department_id: number | null;
+
+  @ApiProperty()
+  user_id: number | null;
+
+  @ApiProperty()
+  type: EnumWorkflowStep;
+
+  @ApiProperty()
+  requires_file: boolean;
 
   @ApiProperty()
   created_at: string;
@@ -25,4 +36,7 @@ export class ApprovalWorkflowStepResponse {
 
   @ApiProperty()
   department: DepartmentResponse | null;
+
+  @ApiProperty()
+  user: UserResponse | null;
 }

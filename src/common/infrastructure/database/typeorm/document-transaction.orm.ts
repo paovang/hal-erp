@@ -11,8 +11,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { DocumentOrmEntity } from './document.orm';
-import { BudgetItemDetailOrmEntity } from './budget-item-detail.orm';
 import { EnumDocumentTransactionType } from '@src/modules/manage/application/constants/status-key.const';
+import { BudgetItemOrmEntity } from './budget-item.orm';
 
 @Entity('document_transactions')
 export class DocumentTransactionOrmEntity {
@@ -39,17 +39,17 @@ export class DocumentTransactionOrmEntity {
 
   @Index()
   @Column({ nullable: true })
-  budget_item_detail_id?: number;
+  budget_item_id?: number;
   @ManyToOne(
-    () => BudgetItemDetailOrmEntity,
-    (budget_item_details) => budget_item_details.purchase_order_items,
+    () => BudgetItemOrmEntity,
+    (budget_items) => budget_items.document_transactions,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   )
-  @JoinColumn({ name: 'budget_item_detail_id' })
-  budget_item_details: Relation<BudgetItemDetailOrmEntity>;
+  @JoinColumn({ name: 'budget_item_id' })
+  budget_items: Relation<BudgetItemOrmEntity>;
 
   @Column({ type: 'double precision', nullable: true })
   amount?: number;

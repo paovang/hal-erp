@@ -13,10 +13,10 @@ import {
 } from 'typeorm';
 import { PurchaseOrderOrmEntity } from './purchase-order.orm';
 import { PurchaseRequestItemOrmEntity } from './purchase-request-item.orm';
-import { BudgetItemDetailOrmEntity } from './budget-item-detail.orm';
 import { SelectStatus } from '@src/modules/manage/application/constants/status-key.const';
 import { PurchaseOrderSelectedVendorOrmEntity } from './purchase-order-selected-vendor.orm';
 import { ReceiptItemOrmEntity } from './receipt.item.orm';
+import { BudgetItemOrmEntity } from './budget-item.orm';
 
 @Entity('purchase_order_items')
 export class PurchaseOrderItemOrmEntity {
@@ -53,17 +53,17 @@ export class PurchaseOrderItemOrmEntity {
 
   @Index()
   @Column({ nullable: true })
-  budget_item_detail_id?: number;
+  budget_item_id?: number;
   @ManyToOne(
-    () => BudgetItemDetailOrmEntity,
-    (budget_item_details) => budget_item_details.purchase_order_items,
+    () => BudgetItemOrmEntity,
+    (budget_item) => budget_item.purchase_order_item,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   )
-  @JoinColumn({ name: 'budget_item_detail_id' })
-  budget_item_details: Relation<BudgetItemDetailOrmEntity>;
+  @JoinColumn({ name: 'budget_item_id' })
+  budget_item: Relation<BudgetItemOrmEntity>;
 
   @Index()
   @Column({ type: 'integer', nullable: true })
@@ -88,10 +88,6 @@ export class PurchaseOrderItemOrmEntity {
     default: SelectStatus.TRUE,
   })
   is_vat?: SelectStatus;
-
-  // @Index()
-  // @Column({ type: 'double precision', nullable: true })
-  // vat?: number;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

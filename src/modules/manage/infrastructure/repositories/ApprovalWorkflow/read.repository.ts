@@ -12,6 +12,12 @@ import { IReadApprovalWorkflowRepository } from '@src/modules/manage/domain/port
 import { EntityManager } from 'typeorm';
 import { ApprovalWorkflowDataAccessMapper } from '../../mappers/approval-workflow.mapper';
 import { ApprovalWorkflowId } from '@src/modules/manage/domain/value-objects/approval-workflow-id.vo';
+import {
+  selectApprovalWorkflowSteps,
+  selectDepartments,
+  selectDocumentTypes,
+  selectUsers,
+} from '@src/common/constants/select-field';
 
 @Injectable()
 export class ReadApprovalWorkflowRepository
@@ -40,6 +46,12 @@ export class ReadApprovalWorkflowRepository
   }
 
   private createBaseQuery(manager: EntityManager) {
+    const selectFields = [
+      ...selectApprovalWorkflowSteps,
+      ...selectDocumentTypes,
+      ...selectDepartments,
+      ...selectUsers,
+    ];
     return manager
       .createQueryBuilder(ApprovalWorkflowOrmEntity, 'approval_workflows')
       .leftJoin('approval_workflows.document_types', 'document_types')
@@ -47,20 +59,9 @@ export class ReadApprovalWorkflowRepository
         'approval_workflows.approval_workflow_steps',
         'approval_workflow_steps',
       )
-      .addSelect([
-        'document_types.id',
-        'document_types.name',
-        'document_types.code',
-        'document_types.created_at',
-        'document_types.updated_at',
-        'approval_workflow_steps.id',
-        'approval_workflow_steps.approval_workflow_id',
-        'approval_workflow_steps.step_name',
-        'approval_workflow_steps.step_number',
-        'approval_workflow_steps.department_id',
-        'approval_workflow_steps.created_at',
-        'approval_workflow_steps.updated_at',
-      ]);
+      .leftJoin('approval_workflow_steps.departments', 'departments')
+      .leftJoin('approval_workflow_steps.users', 'users')
+      .addSelect(selectFields);
   }
 
   private getFilterOptions(): FilterOptions {

@@ -36,7 +36,7 @@ export class PurchaseOrderItemDataAccessMapper {
     mediaOrmEntity.purchase_request_item_id =
       poItemEntity.purchase_request_item_id;
     if (method === OrmEntityMethod.UPDATE) {
-      mediaOrmEntity.budget_item_detail_id = poItemEntity.budget_item_detail_id;
+      mediaOrmEntity.budget_item_id = poItemEntity.budget_item_detail_id;
     }
     mediaOrmEntity.remark = poItemEntity.remark;
     mediaOrmEntity.quantity = poItemEntity.quantity;
@@ -64,7 +64,7 @@ export class PurchaseOrderItemDataAccessMapper {
       .setPurchaseOrderItemId(new PurchaseOrderItemId(ormData.id))
       .setPurchaseOrderId(ormData.purchase_order_id ?? 0)
       .setPurchaseRequestItemId(ormData.purchase_request_item_id ?? 0)
-      .setBudgetItemDetailId(ormData.budget_item_detail_id ?? 0)
+      // .setBudgetItemDetailId(ormData.budget_item_detail_id ?? 0)
       .setRemark(ormData.remark ?? '')
       .setQuantity(ormData.quantity ?? 0)
       .setPrice(ormData.price ?? 0)
@@ -77,11 +77,11 @@ export class PurchaseOrderItemDataAccessMapper {
       .setVatTotal(vatAmount)
       .setTotalWithVat(totalWithVat);
 
-    if (ormData.budget_item_details) {
-      builder.setBudgetItemDetail(
-        this._budgetItemDetail.toEntity(ormData.budget_item_details),
-      );
-    }
+    // if (ormData.budget_item) {
+    //   builder.setBudgetItemDetail(
+    //     this._budgetItemDetail.toEntity(ormData.budget_item_details),
+    //   );
+    // }
 
     if (ormData.purchase_order_selected_vendors) {
       builder.setSelectedVendor(

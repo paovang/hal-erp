@@ -2,6 +2,7 @@ import { Entity } from '@src/common/domain/entities/entity';
 import { BudgetAccountBuilder } from '../builders/budget-account.builder';
 import { BudgetAccountId } from '../value-objects/budget-account-id.vo';
 import { DepartmentEntity } from './department.entity';
+import { EnumBudgetType } from '../../application/constants/status-key.const';
 
 export class BudgetAccountEntity extends Entity<BudgetAccountId> {
   private readonly _code: string;
@@ -9,6 +10,7 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
   private readonly _departmentId: number;
   private readonly _fiscal_year: number;
   private readonly _allocated_amount: number;
+  private readonly _type: EnumBudgetType;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -22,6 +24,7 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
     this._departmentId = builder.departmentId;
     this._fiscal_year = builder.fiscal_year;
     this._allocated_amount = builder.allocated_amount;
+    this._type = builder.type;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -46,6 +49,10 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
 
   get allocated_amount(): number {
     return this._allocated_amount;
+  }
+
+  get type(): EnumBudgetType {
+    return this._type;
   }
 
   get createdAt(): Date {

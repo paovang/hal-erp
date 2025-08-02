@@ -58,3 +58,15 @@ export enum EnumDocumentTransactionType {
   COMMIT = 'commit',
   RELEASE = 'release',
 }
+
+// budget item detail type
+export enum EnumBudgetItemDetailType {
+  ADD = 'add',
+  SPEND = 'spend',
+}
+
+// budget type
+export enum EnumBudgetType {
+  EXPENDITURE = 'expenditure',
+  ADVANCE = 'advance',
+}

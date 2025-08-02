@@ -3,7 +3,7 @@ import { ApprovalWorkflowOrmEntity } from './typeorm/approval-workflow.orm';
 import { BankOrmEntity } from './typeorm/bank.orm';
 import { BudgetAccountOrmEntity } from './typeorm/budget-account.orm';
 import { BudgetApprovalRuleOrmEntity } from './typeorm/budget-approval-rule.orm';
-import { BudgetItemDetailOrmEntity } from './typeorm/budget-item-detail.orm';
+// import { BudgetItemDetailOrmEntity } from './typeorm/budget-item-detail.orm';
 import { BudgetItemOrmEntity } from './typeorm/budget-item.orm';
 import { CategoryOrmEntity } from './typeorm/category.orm';
 import { CurrencyOrmEntity } from './typeorm/currency.orm';
@@ -62,7 +62,7 @@ export const models = [
   BudgetAccountOrmEntity,
   BudgetItemOrmEntity,
   ProvinceOrmEntity,
-  BudgetItemDetailOrmEntity,
+  // BudgetItemDetailOrmEntity,
   UserHasPermissionOrmEntity,
   DocumentOrmEntity,
   PurchaseRequestOrmEntity,

@@ -69,11 +69,11 @@ export class BudgetAccountService implements IBudgetAccountServiceInterface {
 
   async getReportBudgetAccounts(
     id: number,
-    dto: BudgetAccountQueryDto,
+    query: BudgetAccountQueryDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<BudgetAccountEntity>> {
     return await this._queryBus.execute(
-      new GetReportQuery(id, dto, manager ?? this._readEntityManager),
+      new GetReportQuery(id, query, manager ?? this._readEntityManager),
     );
   }
 }

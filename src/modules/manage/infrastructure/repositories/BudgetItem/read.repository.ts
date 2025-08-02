@@ -47,29 +47,10 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'budget_items.allocated_amount',
         'budget_items.created_at',
         'budget_items.updated_at',
-        'budget_item_details.id',
-        'budget_item_details.budget_item_id',
-        'budget_item_details.province_id',
-        'budget_item_details.name',
-        'budget_item_details.allocated_amount',
-        'budget_item_details.description',
-        'budget_item_details.created_at',
-        'budget_item_details.updated_at',
       ])
-      .leftJoin('budget_items.budget_item_details', 'budget_item_details')
-      .loadRelationCountAndMap(
-        'budget_items.details_count',
-        'budget_items.budget_item_details',
-        'bid',
-      )
-      .leftJoin('budget_item_details.provinces', 'provinces')
       .innerJoin('budget_items.budget_accounts', 'budget_accounts')
       .leftJoin('budget_accounts.departments', 'departments')
       .addSelect([
-        'provinces.id',
-        'provinces.name',
-        'provinces.created_at',
-        'provinces.updated_at',
         'budget_accounts.id',
         'budget_accounts.name',
         'budget_accounts.code',

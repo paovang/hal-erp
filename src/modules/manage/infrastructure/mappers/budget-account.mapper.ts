@@ -7,6 +7,7 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import moment from 'moment-timezone';
 import { BudgetAccountId } from '../../domain/value-objects/budget-account-id.vo';
 import { DepartmentDataAccessMapper } from './department.mapper';
+import { EnumBudgetType } from '../../application/constants/status-key.const';
 
 @Injectable()
 export class BudgetAccountDataAccessMapper {
@@ -28,6 +29,7 @@ export class BudgetAccountDataAccessMapper {
     mediaOrmEntity.fiscal_year = budgetAccountEntity.fiscal_year;
     mediaOrmEntity.allocated_amount = budgetAccountEntity.allocated_amount;
     mediaOrmEntity.department_id = budgetAccountEntity.departmentId;
+    mediaOrmEntity.type = budgetAccountEntity.type;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at =
         budgetAccountEntity.createdAt ?? new Date(now);
@@ -44,6 +46,7 @@ export class BudgetAccountDataAccessMapper {
       .setName(ormData.name ?? '')
       .setFiscalYear(ormData.fiscal_year ?? 0)
       .setAllocatedAmount(ormData.allocated_amount ?? 0)
+      .setType(ormData.type ?? EnumBudgetType.EXPENDITURE)
       .setDepartmentId(ormData.department_id ?? 0)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
@@ -51,6 +54,14 @@ export class BudgetAccountDataAccessMapper {
     if (ormData.departments) {
       build.setDepartment(this.departmentMapper.toEntity(ormData.departments));
     }
+
+    // Add these lines
+    // if ('sumAdd' in ormData) {
+    //   build.setSumAdd(Number(ormData.sumAdd) || 0);
+    // }
+    // if ('sumSpend' in ormData) {
+    //   build.setSumSpend(Number(ormData.sumSpend) || 0);
+    // }
 
     return build.build();
   }

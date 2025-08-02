@@ -7,16 +7,7 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { BudgetItemId } from '../../domain/value-objects/budget-item-id.vo';
 import { Injectable } from '@nestjs/common';
 import { BudgetItemDetailDataAccessMapper } from './budget-item-detail.mapper';
-import { BudgetItemDetailEntity } from '../../domain/entities/budget-item-detail.entity';
 import { BudgetAccountDataAccessMapper } from './budget-account.mapper';
-
-// interface BudgetItemOrmEntityWithCount extends BudgetItemOrmEntity {
-//   details_count?: number | null;
-// }
-
-// type BudgetItemOrmEntityWithCount = BudgetItemOrmEntity & {
-//   details_count?: number | null;
-// };
 
 @Injectable()
 export class BudgetItemDataAccessMapper {
@@ -37,6 +28,7 @@ export class BudgetItemDataAccessMapper {
     }
     mediaOrmEntity.budget_account_id = budgetItemEntity.budgetAccountId;
     mediaOrmEntity.allocated_amount = budgetItemEntity.allocatedAmount;
+    mediaOrmEntity.description = budgetItemEntity.description ?? '';
     mediaOrmEntity.name = budgetItemEntity.name;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = budgetItemEntity.createdAt ?? new Date(now);
@@ -46,33 +38,31 @@ export class BudgetItemDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  // toEntity(ormData: BudgetItemOrmEntityWithCount): BudgetItemEntity {
-  toEntity(row: any): BudgetItemEntity {
-    console.log('object', row.details_count);
-
+  toEntity(row: BudgetItemOrmEntity): BudgetItemEntity {
     const builder = BudgetItemEntity.builder()
       .setBudgetItemId(new BudgetItemId(row.id))
       .setName(row.name ?? '')
       .setBudgetAccountId(row.budget_account_id ?? 0)
       .setAllocatedAmount(row.allocated_amount ?? 0)
+      .setDescription(row.description ?? '')
       .setCreatedAt(row.created_at)
-      .setUpdatedAt(row.updated_at)
-      .setCountDetails(row.details_count ?? 0);
+      .setUpdatedAt(row.updated_at);
+
     if (row.budget_accounts) {
       builder.setBudgetAccount(
         this.budgetAccount.toEntity(row.budget_accounts),
       );
     }
 
-    if (Array.isArray(row.budget_item_details)) {
-      const transformedDetails: BudgetItemDetailEntity[] = [];
+    // if (Array.isArray(row.budget_item_details)) {
+    //   const transformedDetails: BudgetItemDetailEntity[] = [];
 
-      for (const detail of row.budget_item_details) {
-        transformedDetails.push(this.details.toEntity(detail));
-      }
+    //   for (const detail of row.budget_item_details) {
+    //     transformedDetails.push(this.details.toEntity(detail));
+    //   }
 
-      builder.setDetails(transformedDetails);
-    }
+    //   builder.setDetails(transformedDetails);
+    // }
 
     return builder.build();
   }

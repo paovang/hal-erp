@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BudgetItemDetailResponse } from './budget-item-detail.response';
 import { BudgetAccountResponse } from './budget-account.response';
 
 export class BudgetItemResponse {
@@ -16,6 +15,9 @@ export class BudgetItemResponse {
   allocated_amount: number;
 
   @ApiProperty()
+  description: string | null;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()
@@ -25,11 +27,5 @@ export class BudgetItemResponse {
   deleted_at: string | null;
 
   @ApiProperty()
-  count_details: number | null;
-
-  @ApiProperty()
   budget_account: BudgetAccountResponse | null;
-
-  @ApiProperty()
-  budget_item_details: BudgetItemDetailResponse[] | null;
 }

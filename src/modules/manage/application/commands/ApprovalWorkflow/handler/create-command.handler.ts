@@ -19,6 +19,9 @@ import { IWriteApprovalWorkflowStepRepository } from '@src/modules/manage/domain
 import { ApprovalWorkflowStepDataMapper } from '../../../mappers/approval-workflow-step.mapper';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { EnumWorkflowStep } from '../../../constants/status-key.const';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -48,15 +51,25 @@ export class CreateCommandHandler
       id: query.dto.documentTypeId,
     });
 
-    for (const step of query.dto.steps) {
-      await findOneOrFail(query.manager, DepartmentOrmEntity, {
-        id: step.departmentId,
-      });
+    const documentType = await query.manager.findOne(
+      ApprovalWorkflowOrmEntity,
+      {
+        where: { document_type_id: query.dto.documentTypeId },
+      },
+    );
+
+    if (documentType) {
+      throw new ManageDomainException(
+        'errors.document_type_already_exists',
+        HttpStatus.BAD_REQUEST,
+        { property: 'documentTypeId' },
+      );
     }
 
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        let mergeData: any = null;
         const mapToEntity = this._dataMapper.toEntity(query.dto);
 
         const result = await this._write.create(mapToEntity, manager);
@@ -69,11 +82,52 @@ export class CreateCommandHandler
             seen.add(step.step_number);
           }
 
-          const mapToEntityDetail = this._dataMapperStep.toEntity(
-            step,
+          if (step.type === EnumWorkflowStep.DEPARTMENT) {
+            if (!step.departmentId) {
+              throw new ManageDomainException(
+                'errors.is_required',
+                HttpStatus.BAD_REQUEST,
+                { property: 'departmentId' },
+              );
+            }
+            await findOneOrFail(manager, DepartmentOrmEntity, {
+              id: step.departmentId,
+            });
+
+            mergeData = {
+              ...step,
+              department_id: step.departmentId,
+              userId: null,
+            };
+          } else if (step.type === EnumWorkflowStep.SPECIFIC_USER) {
+            if (!step.userId) {
+              throw new ManageDomainException(
+                'errors.is_required',
+                HttpStatus.BAD_REQUEST,
+                { property: 'userId' },
+              );
+            }
+            await findOneOrFail(manager, UserOrmEntity, {
+              id: step.userId,
+            });
+
+            mergeData = {
+              ...step,
+              department_id: null,
+              userId: step.userId,
+            };
+          } else {
+            mergeData = {
+              ...step,
+              department_id: null,
+              userId: null,
+            };
+          }
+          const stepEntity = this._dataMapperStep.toEntity(
+            mergeData,
             workflow_id,
           );
-          await this._writeStep.create(mapToEntityDetail, manager);
+          await this._writeStep.create(stepEntity, manager);
         }
 
         if (duplicates.size > 0) {

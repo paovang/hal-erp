@@ -12,6 +12,10 @@ import { EntityManager } from 'typeorm';
 import { ApprovalWorkflowStepDataAccessMapper } from '../../mappers/approval-workflow-step.mapper';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { ApprovalWorkflowStepId } from '@src/modules/manage/domain/value-objects/approval-workflow-step-id.vo';
+import {
+  selectDepartments,
+  selectUsers,
+} from '@src/common/constants/select-field';
 
 @Injectable()
 export class ReadApprovalWorkflowStepRepository
@@ -40,13 +44,15 @@ export class ReadApprovalWorkflowStepRepository
   }
 
   private createBaseQuery(manager: EntityManager, id?: number) {
+    const selectFields = [...selectDepartments, ...selectUsers];
     const qb = manager
       .createQueryBuilder(
         ApprovalWorkflowStepOrmEntity,
         'approval_workflow_steps',
       )
       .leftJoin('approval_workflow_steps.departments', 'departments')
-      .addSelect(['departments.id', 'departments.name', 'departments.code']);
+      .leftJoin('approval_workflow_steps.users', 'users')
+      .addSelect(selectFields);
 
     if (id) {
       qb.where('approval_workflow_steps.approval_workflow_id = :id', { id });

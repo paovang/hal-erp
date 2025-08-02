@@ -1,5 +1,4 @@
 import { BudgetAccountEntity } from '../entities/budget-account.entity';
-import { BudgetItemDetailEntity } from '../entities/budget-item-detail.entity';
 import { BudgetItemEntity } from '../entities/budget-item.entity';
 import { BudgetItemId } from '../value-objects/budget-item-id.vo';
 
@@ -8,10 +7,11 @@ export class BudgetItemBuilder {
   name: string;
   budgetAccountId: number;
   allocated_amount: number;
+  description: string | null;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
-  details: BudgetItemDetailEntity[] | null;
+  // details: BudgetItemDetailEntity[] | null;
   count_details: number | null;
   budgetAccount: BudgetAccountEntity | null;
 
@@ -32,6 +32,11 @@ export class BudgetItemBuilder {
 
   setAllocatedAmount(allocated_amount: number): this {
     this.allocated_amount = allocated_amount;
+    return this;
+  }
+
+  setDescription(description: string | null): this {
+    this.description = description;
     return this;
   }
 
@@ -57,11 +62,6 @@ export class BudgetItemBuilder {
 
   setCountDetails(count_details: number | null): this {
     this.count_details = count_details;
-    return this;
-  }
-
-  setDetails(details: BudgetItemDetailEntity[] | null): this {
-    this.details = details;
     return this;
   }
 

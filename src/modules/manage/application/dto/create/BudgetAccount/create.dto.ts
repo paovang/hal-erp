@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -8,6 +9,7 @@ import {
   Min,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
+import { EnumBudgetType } from '../../../constants/status-key.const';
 
 const currentYear = new Date().getFullYear();
 
@@ -37,6 +39,13 @@ export class CreateBudgetAccountDto {
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly departmentId: number;
+
+  @ApiProperty({ enum: EnumBudgetType, example: EnumBudgetType.EXPENDITURE })
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsEnum(EnumBudgetType, {
+    message: i18nValidationMessage('validation.IS_ENUM'),
+  })
+  readonly type: EnumBudgetType;
 
   // test commit
 }

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DepartmentResponse } from './department.response';
+import { EnumBudgetType } from '../../constants/status-key.const';
 
 export class BudgetAccountResponse {
   @ApiProperty()
@@ -19,6 +20,9 @@ export class BudgetAccountResponse {
 
   @ApiProperty()
   allocated_amount: number;
+
+  @ApiProperty()
+  type: EnumBudgetType;
 
   @ApiProperty()
   created_at: string;

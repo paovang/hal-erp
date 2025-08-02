@@ -24,4 +24,11 @@ export class PurchaseRequestQueryDto extends PaginationDto {
   })
   @IsOptional()
   status_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by date',
+  })
+  @IsOptional()
+  date?: string;
 }

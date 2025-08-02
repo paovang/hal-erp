@@ -23,9 +23,9 @@ export class BudgetItemDetailDataAccessMapper {
     if (id) {
       mediaOrmEntity.id = id.value;
     }
-    mediaOrmEntity.budget_item_id = budgetItemDetailEntity.budgetItemId;
+    // mediaOrmEntity.budget_item_id = budgetItemDetailEntity.budgetItemId;
     mediaOrmEntity.name = budgetItemDetailEntity.name;
-    mediaOrmEntity.province_id = budgetItemDetailEntity.provinceId;
+    // mediaOrmEntity.province_id = budgetItemDetailEntity.provinceId;
     mediaOrmEntity.description = budgetItemDetailEntity.description;
     mediaOrmEntity.allocated_amount = budgetItemDetailEntity.allocatedAmount;
     if (method === OrmEntityMethod.CREATE) {
@@ -41,16 +41,16 @@ export class BudgetItemDetailDataAccessMapper {
     const builder = BudgetItemDetailEntity.builder()
       .setBudgetItemDetailId(new BudgetItemDetailId(ormData.id))
       .setName(ormData.name ?? '')
-      .setBudgetItemId(ormData.budget_item_id ?? 0)
-      .setProvinceId(ormData.province_id ?? 0)
+      // .setBudgetItemId(ormData.budget_item_id ?? 0)
+      // .setProvinceId(ormData.province_id ?? 0)
       .setDescription(ormData.description ?? '')
       .setAllocatedAmount(ormData.allocated_amount ?? 0)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 
-    if (ormData.provinces) {
-      builder.setProvince(this.province.toEntity(ormData.provinces));
-    }
+    // if (ormData.provinces) {
+    //   builder.setProvince(this.province.toEntity(ormData.provinces));
+    // }
 
     return builder.build();
   }

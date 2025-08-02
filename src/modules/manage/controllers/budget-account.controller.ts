@@ -43,6 +43,23 @@ export class BudgetAccountController {
     );
   }
 
+  @Get('report-budget-items/:id')
+  async getReportBudgetItems(
+    @Param('id') id: number,
+    @Query() query: BudgetAccountQueryDto,
+  ): Promise<ResponseResult<BudgetAccountResponse>> {
+    console.log('object');
+    const result = await this._budgetAccountService.getReportBudgetAccounts(
+      id,
+      query,
+    );
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
   @Get('')
   async getAll(
     @Query() dto: BudgetAccountQueryDto,
@@ -83,21 +100,5 @@ export class BudgetAccountController {
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._budgetAccountService.delete(id);
-  }
-
-  @Get('report-budget-items/:id')
-  async getReportBudgetItems(
-    @Param('id') id: number,
-    @Query() dto: BudgetAccountQueryDto,
-  ): Promise<ResponseResult<BudgetAccountResponse>> {
-    const result = await this._budgetAccountService.getReportBudgetAccounts(
-      id,
-      dto,
-    );
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
   }
 }

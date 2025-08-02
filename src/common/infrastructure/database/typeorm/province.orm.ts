@@ -4,12 +4,9 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  OneToMany,
   PrimaryGeneratedColumn,
-  Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { BudgetItemDetailOrmEntity } from './budget-item-detail.orm';
 
 @Entity('provinces')
 export class ProvinceOrmEntity {
@@ -30,10 +27,4 @@ export class ProvinceOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
-
-  @OneToMany(
-    () => BudgetItemDetailOrmEntity,
-    (budget_item_details) => budget_item_details.provinces,
-  )
-  budget_item_details: Relation<BudgetItemDetailOrmEntity[]>;
 }

@@ -31,7 +31,7 @@ export interface IBudgetAccountServiceInterface {
 
   getReportBudgetAccounts(
     id: number,
-    dto: BudgetAccountQueryDto,
+    query: BudgetAccountQueryDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<BudgetAccountEntity>>;
 }

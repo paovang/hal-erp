@@ -11,6 +11,9 @@ import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { Not } from 'typeorm';
+import { EnumWorkflowStep } from '../../../constants/status-key.const';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -24,6 +27,8 @@ export class UpdateCommandHandler
   ) {}
 
   async execute(query: UpdateCommand): Promise<any> {
+    let mergeData: any = null;
+
     await this.checkData(query);
 
     const data = await findOneOrFail(
@@ -48,7 +53,49 @@ export class UpdateCommandHandler
       }
     }
 
-    const entity = this._dataMapper.toEntity(query.dto);
+    if (query.dto.type === EnumWorkflowStep.DEPARTMENT) {
+      if (!query.dto.departmentId) {
+        throw new ManageDomainException(
+          'errors.is_required',
+          HttpStatus.BAD_REQUEST,
+          { property: 'departmentId' },
+        );
+      }
+      await findOneOrFail(query.manager, DepartmentOrmEntity, {
+        id: query.dto.departmentId,
+      });
+
+      mergeData = {
+        ...query.dto,
+        department_id: query.dto.departmentId,
+        userId: null,
+      };
+    } else if (query.dto.type === EnumWorkflowStep.SPECIFIC_USER) {
+      if (!query.dto.userId) {
+        throw new ManageDomainException(
+          'errors.is_required',
+          HttpStatus.BAD_REQUEST,
+          { property: 'userId' },
+        );
+      }
+      await findOneOrFail(query.manager, UserOrmEntity, {
+        id: query.dto.userId,
+      });
+
+      mergeData = {
+        ...query.dto,
+        departmentId: null,
+        userId: query.dto.userId,
+      };
+    } else {
+      mergeData = {
+        ...query.dto,
+        department_id: null,
+        userId: null,
+      };
+    }
+
+    const entity = this._dataMapper.toEntity(mergeData);
     await entity.initializeUpdateSetId(new ApprovalWorkflowStepId(query.id));
     await entity.validateExistingIdForUpdate();
 

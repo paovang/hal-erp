@@ -1,5 +1,7 @@
+import { EnumWorkflowStep } from '../../application/constants/status-key.const';
 import { ApprovalWorkflowStepEntity } from '../entities/approval-workflow-step.entity';
 import { DepartmentEntity } from '../entities/department.entity';
+import { UserEntity } from '../entities/user.entity';
 import { ApprovalWorkflowStepId } from '../value-objects/approval-workflow-step-id.vo';
 
 export class ApprovalWorkflowStepBuilder {
@@ -8,10 +10,14 @@ export class ApprovalWorkflowStepBuilder {
   step_name: string;
   step_number: number;
   department_id: number;
+  user_id: number;
+  type: EnumWorkflowStep;
+  requires_file: boolean;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   department: DepartmentEntity | null;
+  user: UserEntity | null;
 
   setApprovalWorkflowStepId(value: ApprovalWorkflowStepId): this {
     this.approvalWorkflowStepId = value;
@@ -38,6 +44,21 @@ export class ApprovalWorkflowStepBuilder {
     return this;
   }
 
+  setUserId(user_id: number): this {
+    this.user_id = user_id;
+    return this;
+  }
+
+  setType(type: EnumWorkflowStep): this {
+    this.type = type;
+    return this;
+  }
+
+  setRequiresFile(requires_file: boolean): this {
+    this.requires_file = requires_file;
+    return this;
+  }
+
   setCreatedAt(createdAt: Date): this {
     this.createdAt = createdAt;
     return this;
@@ -55,6 +76,11 @@ export class ApprovalWorkflowStepBuilder {
 
   setDepartment(department: DepartmentEntity | null): this {
     this.department = department;
+    return this;
+  }
+
+  setUser(user: UserEntity | null): this {
+    this.user = user;
     return this;
   }
 

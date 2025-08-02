@@ -73,6 +73,7 @@ import {
 } from '../../../mappers/document-transaction.mapper';
 import { CodeGeneratorUtil } from '@src/common/utils/code-generator.util';
 import { DocumentTransactionOrmEntity } from '@src/common/infrastructure/database/typeorm/document-transaction.orm';
+import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item.orm';
 
 interface CustomApprovalDto
   extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
@@ -567,7 +568,7 @@ export class ApproveStepCommandHandler
       const poItem = item.purchase_order_items;
 
       // Ensure purchase order item exists
-      if (!poItem || !poItem.budget_item_detail_id) {
+      if (!poItem || !poItem.budget_item_id) {
         throw new ManageDomainException(
           `errors.invalid_budget_item`,
           HttpStatus.BAD_REQUEST,
@@ -576,16 +577,13 @@ export class ApproveStepCommandHandler
       }
 
       // Find budget item detail
-      const find_budget_item_detail = await manager.findOne(
-        BudgetItemDetailOrmEntity,
-        {
-          where: {
-            id: poItem.budget_item_detail_id,
-          },
+      const find_budget_item = await manager.findOne(BudgetItemOrmEntity, {
+        where: {
+          id: poItem.budget_item_id,
         },
-      );
+      });
 
-      if (!find_budget_item_detail) {
+      if (!find_budget_item) {
         throw new ManageDomainException(
           'errors.not_found',
           HttpStatus.NOT_FOUND,
@@ -600,9 +598,9 @@ export class ApproveStepCommandHandler
       // Prepare transaction data
       const transactionData: DocumentTransactionInterface = {
         document_id: receipt.document_id!,
-        budget_item_detail_id: poItem.budget_item_detail_id,
+        budget_item_detail_id: find_budget_item.id,
         transaction_number: transactionNumber,
-        amount: find_budget_item_detail.allocated_amount ?? 0,
+        amount: find_budget_item.allocated_amount ?? 0,
         transaction_type: EnumDocumentTransactionType.COMMIT,
       };
 

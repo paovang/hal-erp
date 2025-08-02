@@ -7,10 +7,14 @@ import { ApprovalWorkflowStepResponse } from '../dto/response/approval-workflow-
 import { CreateApprovalWorkflowStepDto } from '../dto/create/approvalWorkflowStep/create.dto';
 import { DepartmentDataMapper } from './department.mapper';
 import { UpdateApprovalWorkflowStepDto } from '../dto/create/approvalWorkflowStep/update.dto';
+import { UserDataMapper } from './user.mapper';
 
 @Injectable()
 export class ApprovalWorkflowStepDataMapper {
-  constructor(private readonly _departmentDataMapper: DepartmentDataMapper) {}
+  constructor(
+    private readonly _departmentDataMapper: DepartmentDataMapper,
+    private readonly _user: UserDataMapper,
+  ) {}
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateApprovalWorkflowStepDto | UpdateApprovalWorkflowStepDto,
@@ -34,6 +38,18 @@ export class ApprovalWorkflowStepDataMapper {
       builder.setApprovalWorkflowId(workflow_id);
     }
 
+    if (dto.userId) {
+      builder.setUserId(dto.userId);
+    }
+
+    if (dto.type) {
+      builder.setType(dto.type);
+    }
+
+    if (dto.requires_file) {
+      builder.setRequiresFile(dto.requires_file);
+    }
+
     return builder.build();
   }
 
@@ -44,7 +60,10 @@ export class ApprovalWorkflowStepDataMapper {
     response.approval_workflow_id = entity.approval_workflow_id;
     response.step_name = entity.step_name;
     response.step_number = entity.step_number;
-    response.department_id = Number(entity.department_id);
+    response.department_id = Number(entity.department_id) || null;
+    response.user_id = Number(entity.user_id) || null;
+    response.type = entity.type;
+    response.requires_file = entity.requires_file;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
@@ -55,6 +74,8 @@ export class ApprovalWorkflowStepDataMapper {
     response.department = entity.department
       ? this._departmentDataMapper.toResponse(entity.department)
       : null;
+
+    response.user = entity.user ? this._user.toResponse(entity.user) : null;
 
     return response;
   }
