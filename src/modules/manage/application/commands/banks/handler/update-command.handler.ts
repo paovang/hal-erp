@@ -58,15 +58,19 @@ export class UpdateBankCommandHandler
       'errors.short_name_already_exists',
       query.id,
     );
-    const optimizedLogo = await this._optimizeService.optimizeImage(query.logo);
+    const optimizedLogo = query.logo
+      ? await this._optimizeService.optimizeImage(query.logo)
+      : '';
 
-    const bankLogo = await this._amazonS3ServiceKey.uploadFile(
-      optimizedLogo,
-      BANK_IMAGE_FOLDER,
-    );
+    const bankLogo = optimizedLogo
+      ? await this._amazonS3ServiceKey.uploadFile(
+          optimizedLogo,
+          BANK_IMAGE_FOLDER,
+        )
+      : '';
     const bankData = {
       ...query.dto,
-      logo: bankLogo.fileKey,
+      logo: bankLogo ? bankLogo.fileKey : '',
     };
 
     const entity = this._dataMapper.toEntity(bankData);

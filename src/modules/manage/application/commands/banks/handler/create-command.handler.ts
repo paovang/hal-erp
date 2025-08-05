@@ -55,15 +55,19 @@ export class CreateBankCommandHandler
       query.manager,
       'errors.short_name_already_exists',
     );
-    const optimizedLogo = await this._optimizeService.optimizeImage(query.logo);
+    const optimizedLogo = query.logo
+      ? await this._optimizeService.optimizeImage(query.logo)
+      : '';
 
-    const bankLogo = await this._amazonS3ServiceKey.uploadFile(
-      optimizedLogo,
-      BANK_IMAGE_FOLDER,
-    );
+    const bankLogo = optimizedLogo
+      ? await this._amazonS3ServiceKey.uploadFile(
+          optimizedLogo,
+          BANK_IMAGE_FOLDER,
+        )
+      : '';
     const bankData = {
       ...query.dto,
-      logo: bankLogo.fileKey,
+      logo: bankLogo ? bankLogo.fileKey : ' ',
     };
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
