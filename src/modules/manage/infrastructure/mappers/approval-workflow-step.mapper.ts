@@ -38,6 +38,7 @@ export class ApprovalWorkflowStepDataAccessMapper {
     mediaOrmEntity.type = approvalWorkflowStepEntity.type;
     mediaOrmEntity.requires_file_upload =
       approvalWorkflowStepEntity.requires_file;
+    mediaOrmEntity.is_otp = approvalWorkflowStepEntity.is_otp;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at =
         approvalWorkflowStepEntity.createdAt ?? new Date(now);
@@ -57,6 +58,7 @@ export class ApprovalWorkflowStepDataAccessMapper {
       .setUserId(ormData.user_id ?? 0)
       .setType(ormData.type ?? EnumWorkflowStep.DEPARTMENT)
       .setRequiresFile(ormData.requires_file_upload)
+      .setIsOtp(ormData.is_otp)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 

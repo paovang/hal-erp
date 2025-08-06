@@ -83,6 +83,14 @@ export class ApprovalWorkflowStepOrmEntity {
   })
   requires_file_upload: boolean;
 
+  @Index()
+  @Column({
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  is_otp: boolean;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

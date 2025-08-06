@@ -29,6 +29,9 @@ export class ApprovalWorkflowStepResponse {
   requires_file: boolean;
 
   @ApiProperty()
+  is_otp: boolean;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()

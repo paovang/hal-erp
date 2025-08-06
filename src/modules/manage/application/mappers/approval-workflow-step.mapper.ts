@@ -21,7 +21,6 @@ export class ApprovalWorkflowStepDataMapper {
     workflow_id?: number,
   ): ApprovalWorkflowStepEntity {
     const builder = ApprovalWorkflowStepEntity.builder();
-
     if (dto.step_name) {
       builder.setStepName(dto.step_name);
     }
@@ -49,6 +48,9 @@ export class ApprovalWorkflowStepDataMapper {
     if (dto.requires_file !== undefined && dto.requires_file !== null) {
       builder.setRequiresFile(dto.requires_file);
     }
+    if (dto.is_otp !== undefined && dto.is_otp !== null) {
+      builder.setIsOtp(dto.is_otp);
+    }
 
     return builder.build();
   }
@@ -64,6 +66,7 @@ export class ApprovalWorkflowStepDataMapper {
     response.user_id = Number(entity.user_id) || null;
     response.type = entity.type;
     response.requires_file = entity.requires_file;
+    response.is_otp = entity.is_otp;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);

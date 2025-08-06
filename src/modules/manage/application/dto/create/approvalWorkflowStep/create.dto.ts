@@ -42,4 +42,9 @@ export class CreateApprovalWorkflowStepDto {
   @IsOptional()
   @IsBoolean({ message: i18nValidationMessage('validation.IS_BOOLEAN') })
   readonly requires_file?: boolean;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean({ message: i18nValidationMessage('validation.IS_BOOLEAN') })
+  readonly is_otp?: boolean;
 }
