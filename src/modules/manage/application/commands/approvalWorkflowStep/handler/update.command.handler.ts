@@ -43,7 +43,7 @@ export class UpdateCommandHandler
       where: { approval_workflow_id: approval_id, id: Not(query.id) },
     });
 
-    await this.checkStep(query.manager, approval_id, query);
+    // await this.checkStep(query.manager, approval_id, query);
 
     for (const step of steps) {
       if (step.step_number === query.dto.step_number) {
@@ -132,13 +132,15 @@ export class UpdateCommandHandler
       .where('step.approval_workflow_id = :workflowId', {
         workflowId: workflow_id,
       })
+      .andWhere('step.id != :id', { id: query.id })
       .getRawOne();
+
+    console.log('object', existingMaxStepNumber);
 
     const maxStepNumber = existingMaxStepNumber?.max
       ? Number(existingMaxStepNumber.max)
       : 0;
 
-    // ✅ Ensure new step(s) start with max + 1
     if (query.dto.step_number !== maxStepNumber) {
       throw new ManageDomainException(
         'errors.invalid_step_number',

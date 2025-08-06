@@ -46,7 +46,7 @@ export class ApprovalWorkflowStepDataMapper {
       builder.setType(dto.type);
     }
 
-    if (dto.requires_file) {
+    if (dto.requires_file !== undefined && dto.requires_file !== null) {
       builder.setRequiresFile(dto.requires_file);
     }
 

@@ -28,8 +28,12 @@ export class LoginCommandHandler
       ],
     });
 
+    // Step 3: Extract permissions and role names
     const permissions =
-      fullUser?.userHasPermissions?.map((uhp) => uhp.permission) ?? [];
+      fullUser?.userHasPermissions?.map((uhp) => uhp.permission?.name) ?? [];
+
+    const roleNames = fullUser?.roles?.map((role) => role.name) ?? [];
+
     const { userHasPermissions, ...userWithoutPermissions } = fullUser ?? {};
 
     return {
@@ -37,6 +41,7 @@ export class LoginCommandHandler
       user: {
         ...userWithoutPermissions,
         permission: permissions,
+        roles: roleNames,
       },
     };
   }
