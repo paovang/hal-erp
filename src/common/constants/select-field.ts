@@ -108,8 +108,18 @@ export const selectBudgetAccounts = [
   'budget_accounts.fiscal_year',
   'budget_accounts.allocated_amount',
   'budget_accounts.department_id',
+  'budget_accounts.type',
   'budget_accounts.created_at',
   'budget_accounts.updated_at',
+];
+
+// increase_budget_files
+export const selectIncreaseBudgetFiles = [
+  'increase_budget_files.id',
+  'increase_budget_files.increase_budget_id',
+  'increase_budget_files.file_name',
+  'increase_budget_files.created_at',
+  'increase_budget_files.updated_at',
 ];
 
 // select department users

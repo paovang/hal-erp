@@ -4,11 +4,12 @@ import { IncreaseBudgetDetailResponse } from '../dto/response/increase-budget-de
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { CreateIncreaseBudgetDetailDto } from '../dto/create/increaseBudgetDetail/create.dto';
 
 @Injectable()
 export class IncreaseBudgetDetailDataMapper {
   /** Mapper Dto To Entity */
-  toEntity(dto: any): IncreaseBudgetDetailEntity {
+  toEntity(dto: CreateIncreaseBudgetDetailDto): IncreaseBudgetDetailEntity {
     const builder = IncreaseBudgetDetailEntity.builder();
 
     if (dto.budget_item_id) {

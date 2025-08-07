@@ -34,6 +34,7 @@ import { ReceiptController } from '../../controllers/receipt.controller';
 import { ExchangeRateController } from '../../controllers/exchange-rate.controller';
 import { BankController } from '../../controllers/bank.controller';
 import { DocumentStatusController } from '../../controllers/document-status.controller';
+import { IncreaseBudgetController } from '../../controllers/increase-budget.controller';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { DocumentStatusController } from '../../controllers/document-status.cont
     ExchangeRateController,
     BankController,
     DocumentStatusController,
+    IncreaseBudgetController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
