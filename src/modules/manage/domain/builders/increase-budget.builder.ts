@@ -1,4 +1,5 @@
 import { BudgetAccountEntity } from '../entities/budget-account.entity';
+import { IncreaseBudgetFileEntity } from '../entities/increase-budget-file.entity';
 import { IncreaseBudgetEntity } from '../entities/increase-budget.entity';
 import { UserEntity } from '../entities/user.entity';
 import { IncreaseBudgetId } from '../value-objects/increase-budget-id.vo';
@@ -14,6 +15,7 @@ export class IncreaseBudgetBuilder {
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   budget_account: BudgetAccountEntity | null;
+  increase_budget_file: IncreaseBudgetFileEntity[] | null;
   created_by_user: UserEntity | null;
 
   setIncreaseBudgetId(value: IncreaseBudgetId): this {
@@ -63,6 +65,13 @@ export class IncreaseBudgetBuilder {
 
   setBudgetAccount(budget_account: BudgetAccountEntity | null): this {
     this.budget_account = budget_account;
+    return this;
+  }
+
+  setIncreaseBudgetFile(
+    increase_budget_file: IncreaseBudgetFileEntity[] | null,
+  ): this {
+    this.increase_budget_file = increase_budget_file;
     return this;
   }
 

@@ -5,8 +5,18 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import moment from 'moment-timezone';
 import { IncreaseBudgetId } from '../../domain/value-objects/increase-budget-id.vo';
+import { Injectable } from '@nestjs/common';
+import { BudgetAccountDataAccessMapper } from './budget-account.mapper';
+import { IncreaseBudgetFileDataAccessMapper } from './increase-budget-file.mapper';
+import { UserDataAccessMapper } from './user.mapper';
 
+@Injectable()
 export class IncreaseBudgetDataAccessMapper {
+  constructor(
+    private readonly _budget_account: BudgetAccountDataAccessMapper,
+    private readonly _budget_file: IncreaseBudgetFileDataAccessMapper,
+    private readonly _create_by: UserDataAccessMapper,
+  ) {}
   toOrmEntity(
     entity: IncreaseBudgetEntity,
     method: OrmEntityMethod,
@@ -33,7 +43,7 @@ export class IncreaseBudgetDataAccessMapper {
   }
 
   toEntity(ormData: IncreaseBudgetOrmEntity): IncreaseBudgetEntity {
-    return IncreaseBudgetEntity.builder()
+    const builder = IncreaseBudgetEntity.builder()
       .setIncreaseBudgetId(new IncreaseBudgetId(ormData.id))
       .setBudgetAccountId(ormData.budget_account_id ?? 0)
       .setAllocatedAmount(ormData.allocated_amount ?? 0)
@@ -41,7 +51,25 @@ export class IncreaseBudgetDataAccessMapper {
       .setImportDate(ormData.import_date ?? null)
       .setCreatedBy(ormData.created_by ?? 0)
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at)
-      .build();
+      .setUpdatedAt(ormData.updated_at);
+
+    if (ormData.budget_account) {
+      builder.setBudgetAccount(
+        this._budget_account.toEntity(ormData.budget_account),
+      );
+    }
+
+    if (ormData.users) {
+      builder.setCreatedByUser(this._create_by.toEntity(ormData.users));
+    }
+
+    if (ormData.increase_budget_files) {
+      const increaseBudgetFiles = ormData.increase_budget_files.map((file) =>
+        this._budget_file.toEntity(file),
+      );
+      builder.setIncreaseBudgetFile(increaseBudgetFiles);
+    }
+
+    return builder.build();
   }
 }

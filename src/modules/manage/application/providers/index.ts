@@ -35,6 +35,9 @@ import { ExchangeRateProvider } from './exchange-rates';
 import { BankProvider } from './banks';
 import { DocumentAttachmentProvider } from './documentAttachment';
 import { DocumentTransactionProvider } from './documentTransaction';
+import { IncreaseBudgetProvider } from './increaseBudget';
+import { IncreaseBudgetDetailProvider } from './increaseBudgetDetail';
+import { IncreaseBudgetFileProvider } from './increaseBudgetFile';
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
   ...DocumentTypeProvider,
@@ -72,4 +75,7 @@ export const AllRegisterProviders: Provider[] = [
   ...BankProvider,
   ...DocumentAttachmentProvider,
   ...DocumentTransactionProvider,
+  ...IncreaseBudgetProvider,
+  ...IncreaseBudgetDetailProvider,
+  ...IncreaseBudgetFileProvider,
 ];

@@ -3,6 +3,7 @@ import { IncreaseBudgetId } from '../value-objects/increase-budget-id.vo';
 import { IncreaseBudgetBuilder } from '../builders/increase-budget.builder';
 import { UserEntity } from './user.entity';
 import { BudgetAccountEntity } from './budget-account.entity';
+import { IncreaseBudgetFileEntity } from './increase-budget-file.entity';
 
 export class IncreaseBudgetEntity extends Entity<IncreaseBudgetId> {
   private readonly _budget_account_id: number;
@@ -14,6 +15,7 @@ export class IncreaseBudgetEntity extends Entity<IncreaseBudgetId> {
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _budget_account: BudgetAccountEntity | null;
+  private readonly _increase_budget_file: IncreaseBudgetFileEntity[] | null;
   private readonly _created_by_user: UserEntity | null;
 
   private constructor(builder: IncreaseBudgetBuilder) {
@@ -29,6 +31,7 @@ export class IncreaseBudgetEntity extends Entity<IncreaseBudgetId> {
     this._deletedAt = builder.deletedAt ?? null;
     this._budget_account = builder.budget_account ?? null;
     this._created_by_user = builder.created_by_user ?? null;
+    this._increase_budget_file = builder.increase_budget_file ?? null;
   }
 
   get budget_account_id(): number {
@@ -65,6 +68,10 @@ export class IncreaseBudgetEntity extends Entity<IncreaseBudgetId> {
 
   get budget_account(): BudgetAccountEntity | null {
     return this._budget_account;
+  }
+
+  get increase_budget_file(): IncreaseBudgetFileEntity[] | null {
+    return this._increase_budget_file;
   }
 
   get created_by_user(): UserEntity | null {

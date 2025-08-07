@@ -4,19 +4,23 @@ import { IncreaseBudgetFileResponse } from '../dto/response/increase-budget-file
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { CreateIncreaseBudgetDto } from '../dto/create/increaseBudget/create.dto';
 
 @Injectable()
 export class IncreaseBudgetFileDataMapper {
   /** Mapper Dto To Entity */
-  toEntity(dto: any): IncreaseBudgetFileEntity {
+  toEntity(
+    dto: CreateIncreaseBudgetDto,
+    increase_budget_id?: number,
+  ): IncreaseBudgetFileEntity {
     const builder = IncreaseBudgetFileEntity.builder();
 
     if (dto.file_name) {
       builder.setFileName(dto.file_name);
     }
 
-    if (dto.increase_budget_id) {
-      builder.setIncreaseBudgetId(dto.increase_budget_id);
+    if (increase_budget_id) {
+      builder.setIncreaseBudgetId(increase_budget_id);
     }
 
     return builder.build();
@@ -28,7 +32,7 @@ export class IncreaseBudgetFileDataMapper {
       ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${entity.file_name}`
       : '';
     const response = new IncreaseBudgetFileResponse();
-    response.id = entity.getId().value;
+    response.id = Number(entity.getId().value);
     response.Increase_budget_id = entity.increase_budget_id;
     response.file_name = entity.file_name;
     response.file_name_url = file;
