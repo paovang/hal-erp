@@ -1,8 +1,9 @@
-// import { EntityManager } from 'typeorm';
-// import { IncreaseBudgetEntity } from '../../entities/increase-budget.entity';
-// import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
+import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
+import { CreateIncreaseBudgetDto } from '@src/modules/manage/application/dto/create/increaseBudgetFile/create.dto';
+import { EntityManager } from 'typeorm';
+import { IncreaseBudgetEntity } from '../../entities/increase-budget.entity';
 
-export interface IIncreaseBudgetInterface {
+export interface IIncreaseBudgetServiceInterface {
   //   getAll(
   //     dto: PositionQueryDto,
   //     manager?: EntityManager,
@@ -11,10 +12,10 @@ export interface IIncreaseBudgetInterface {
   //     id: number,
   //     manager?: EntityManager,
   //   ): Promise<ResponseResult<PositionEntity>>;
-  //   create(
-  //     dto: CreatePositionDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<IncreaseBudgetEntity>>;
+  create(
+    dto: CreateIncreaseBudgetDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetEntity>>;
   //   update(
   //     id: number,
   //     dto: UpdatePositionDto,

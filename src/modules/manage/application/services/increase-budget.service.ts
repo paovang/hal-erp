@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { IIncreaseBudgetInterface } from '../../domain/ports/input/increase-budget-domain.interface';
+import { IIncreaseBudgetServiceInterface } from '../../domain/ports/input/increase-budget-domain.interface';
+import { CreateIncreaseBudgetDto } from '../dto/create/increaseBudgetFile/create.dto';
+import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
+import { IncreaseBudgetEntity } from '../../domain/entities/increase-budget.entity';
+import { CreateCommand } from '../commands/increasebudget/create.command';
 
 @Injectable()
-export class IncreaseBudgetService implements IIncreaseBudgetInterface {
+export class IncreaseBudgetService implements IIncreaseBudgetServiceInterface {
   constructor(
     private readonly _queryBus: QueryBus,
     private readonly _commandBus: CommandBus,
@@ -31,14 +35,14 @@ export class IncreaseBudgetService implements IIncreaseBudgetInterface {
   //     );
   //   }
 
-  //   async create(
-  //     dto: CreatePositionDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<PositionEntity>> {
-  //     return await this._commandBus.execute(
-  //       new CreateCommand(dto, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async create(
+    dto: CreateIncreaseBudgetDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetEntity>> {
+    return await this._commandBus.execute(
+      new CreateCommand(dto, manager ?? this._readEntityManager),
+    );
+  }
 
   //   async update(
   //     id: number,

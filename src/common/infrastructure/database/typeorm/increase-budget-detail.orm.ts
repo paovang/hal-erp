@@ -19,7 +19,7 @@ export class IncreaseBudgetDetailOrmEntity {
 
   @Index()
   @Column({ nullable: true })
-  increase_budget_id?: number;
+  budget_item_id?: number;
   @ManyToOne(
     () => BudgetItemOrmEntity,
     (budget_item) => budget_item.increase_budget_detail,
@@ -28,7 +28,7 @@ export class IncreaseBudgetDetailOrmEntity {
       onUpdate: 'CASCADE',
     },
   )
-  @JoinColumn({ name: 'increase_budget_id' })
+  @JoinColumn({ name: 'budget_item_id' })
   budget_item: Relation<BudgetItemOrmEntity>;
 
   @Index()
