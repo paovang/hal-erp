@@ -13,6 +13,7 @@ export class ApprovalWorkflowStepEntity extends Entity<ApprovalWorkflowStepId> {
   private readonly _user_id: number;
   private readonly _type: EnumWorkflowStep;
   private readonly _requires_file: boolean;
+  private readonly _is_otp: boolean;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -30,6 +31,7 @@ export class ApprovalWorkflowStepEntity extends Entity<ApprovalWorkflowStepId> {
     this._user_id = builder.user_id;
     this._type = builder.type;
     this._requires_file = builder.requires_file;
+    this._is_otp = builder.is_otp;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._department = builder.department ?? null;
@@ -62,6 +64,10 @@ export class ApprovalWorkflowStepEntity extends Entity<ApprovalWorkflowStepId> {
 
   get requires_file(): boolean {
     return this._requires_file;
+  }
+
+  get is_otp(): boolean {
+    return this._is_otp;
   }
 
   get createdAt(): Date {

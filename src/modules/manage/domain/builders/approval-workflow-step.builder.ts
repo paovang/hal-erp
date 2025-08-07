@@ -13,6 +13,7 @@ export class ApprovalWorkflowStepBuilder {
   user_id: number;
   type: EnumWorkflowStep;
   requires_file: boolean;
+  is_otp: boolean;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -56,6 +57,11 @@ export class ApprovalWorkflowStepBuilder {
 
   setRequiresFile(requires_file: boolean): this {
     this.requires_file = requires_file;
+    return this;
+  }
+
+  setIsOtp(is_otp: boolean): this {
+    this.is_otp = is_otp;
     return this;
   }
 
