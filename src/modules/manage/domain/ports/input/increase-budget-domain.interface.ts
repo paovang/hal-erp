@@ -1,6 +1,6 @@
-import { EntityManager } from 'typeorm';
-import { IncreaseBudgetEntity } from '../../entities/increase-budget.entity';
-import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
+// import { EntityManager } from 'typeorm';
+// import { IncreaseBudgetEntity } from '../../entities/increase-budget.entity';
+// import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 
 export interface IIncreaseBudgetInterface {
   //   getAll(
