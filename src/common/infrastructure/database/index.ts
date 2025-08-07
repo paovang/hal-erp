@@ -3,7 +3,6 @@ import { ApprovalWorkflowOrmEntity } from './typeorm/approval-workflow.orm';
 import { BankOrmEntity } from './typeorm/bank.orm';
 import { BudgetAccountOrmEntity } from './typeorm/budget-account.orm';
 import { BudgetApprovalRuleOrmEntity } from './typeorm/budget-approval-rule.orm';
-// import { BudgetItemDetailOrmEntity } from './typeorm/budget-item-detail.orm';
 import { BudgetItemOrmEntity } from './typeorm/budget-item.orm';
 import { CategoryOrmEntity } from './typeorm/category.orm';
 import { CurrencyOrmEntity } from './typeorm/currency.orm';
@@ -19,7 +18,6 @@ import { DocumentOrmEntity } from './typeorm/document.orm';
 import { ExchangeRateOrmEntity } from './typeorm/exchange-rate.orm';
 import { IncreaseBudgetDetailOrmEntity } from './typeorm/increase-budget-detail.orm';
 import { IncreaseBudgetFileOrmEntity } from './typeorm/increase-budget-file.orm';
-import { IncreaseBudgetOrmEntity } from './typeorm/Increase-budget.orm';
 import { UserHasPermissionOrmEntity } from './typeorm/model-has-permission.orm';
 import { PermissionGroupOrmEntity } from './typeorm/permission-group.orm';
 import { PermissionOrmEntity } from './typeorm/permission.orm';
@@ -43,6 +41,7 @@ import { UserOrmEntity } from './typeorm/user.orm';
 import { VatOrmEntity } from './typeorm/vat.orm';
 import { VendorOrmEntity } from './typeorm/vendor.orm';
 import { VendorBankAccountOrmEntity } from './typeorm/vendor_bank_account.orm';
+import { IncreaseBudgetOrmEntity } from './typeorm/increase-budget.orm';
 
 export const models = [
   DepartmentOrmEntity,
