@@ -14,7 +14,7 @@ import {
 import { DepartmentOrmEntity } from './department.orm';
 import { BudgetItemOrmEntity } from './budget-item.orm';
 import { EnumBudgetType } from '@src/modules/manage/application/constants/status-key.const';
-import { IncreaseBudgetOrmEntity } from './Increase-budget.orm';
+import { IncreaseBudgetOrmEntity } from './increase-budget.orm';
 
 @Entity('budget_accounts')
 export class BudgetAccountOrmEntity {

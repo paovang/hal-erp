@@ -1,3 +1,4 @@
+import { IncreaseBudgetOrmEntity } from './increase-budget.orm';
 import {
   Column,
   CreateDateColumn,
@@ -10,7 +11,6 @@ import {
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { IncreaseBudgetOrmEntity } from './Increase-budget.orm';
 
 @Entity('increase_budget_files')
 export class IncreaseBudgetFileOrmEntity {
@@ -22,14 +22,14 @@ export class IncreaseBudgetFileOrmEntity {
   increase_budget_id?: number;
   @ManyToOne(
     () => IncreaseBudgetOrmEntity,
-    (increase_budget) => increase_budget.increase_budget_files,
+    (increase_budgets) => increase_budgets.increase_budget_files,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   )
   @JoinColumn({ name: 'increase_budget_id' })
-  increase_budget: Relation<IncreaseBudgetOrmEntity>;
+  increase_budgets: Relation<IncreaseBudgetOrmEntity>;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   file_name?: string;

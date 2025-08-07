@@ -67,7 +67,7 @@ export class IncreaseBudgetOrmEntity {
 
   @OneToMany(
     () => IncreaseBudgetFileOrmEntity,
-    (increase_budget_files) => increase_budget_files.increase_budget,
+    (increase_budget_files) => increase_budget_files.increase_budgets,
   )
   increase_budget_files: Relation<IncreaseBudgetFileOrmEntity[]>;
 }
