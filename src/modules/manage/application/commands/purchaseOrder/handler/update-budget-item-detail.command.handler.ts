@@ -21,8 +21,8 @@ import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purcha
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
 import { PurchaseOrderItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-item.orm';
-import { BudgetItemDetailOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item-detail.orm';
 import { UpdatePurchaseOrderBudgetItemDto } from '../../../dto/create/purchaseOrderItem/update.dto';
+import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item.orm';
 
 @CommandHandler(UpdateBudgetItemDetailCommand)
 export class UpdateBudgetItemDetailCommandHandler
@@ -79,14 +79,13 @@ export class UpdateBudgetItemDetailCommandHandler
       id: query.dto.purchase_order_items.id,
     });
 
-    await findOneOrFail(manager, BudgetItemDetailOrmEntity, {
-      id: query.dto.purchase_order_items.budget_item_detail_id,
+    await findOneOrFail(manager, BudgetItemOrmEntity, {
+      id: query.dto.purchase_order_items.budget_item_id,
     });
 
     const itemDto = new UpdatePurchaseOrderBudgetItemDto();
     itemDto.id = query.dto.purchase_order_items.id;
-    itemDto.budget_item_detail_id =
-      query.dto.purchase_order_items.budget_item_detail_id;
+    itemDto.budget_item_id = query.dto.purchase_order_items.budget_item_id;
 
     const entity = this._dataItemMapper.toEntityForUpdate(itemDto);
     // Save or process entity as needed

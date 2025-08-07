@@ -34,7 +34,7 @@ export class BankDataAccessMapper {
       .setBankId(new BankId(ormData.id))
       .setShortName(ormData.short_name ?? '')
       .setName(ormData.name ?? '')
-      .setLogo(ormData.logo ?? 0)
+      .setLogo(ormData.logo ?? '')
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 

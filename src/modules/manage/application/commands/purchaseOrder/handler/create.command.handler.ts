@@ -173,9 +173,9 @@ export class CreateCommandHandler
 
         assertOrThrow(
           checkDocumentApproval,
-          'errors.not_found',
-          HttpStatus.NOT_FOUND,
-          'document approval',
+          'errors.pr_not_approved',
+          HttpStatus.BAD_REQUEST,
+          'user approval',
         );
 
         const department_id = (department as any).department_id;
