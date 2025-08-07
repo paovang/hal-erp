@@ -32,7 +32,7 @@
     "@aws-sdk/client-cloudfront": "^3.817.0",
     "@aws-sdk/client-s3": "^3.817.0",
     "@aws-sdk/s3-request-presigner": "^3.817.0",
-    "@core-system/auth": "^0.0.19",
+    "@core-system/auth": "^0.0.21",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^10.0.0",

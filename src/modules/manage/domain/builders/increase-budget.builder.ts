@@ -16,7 +16,7 @@ export class IncreaseBudgetBuilder {
   budget_account: BudgetAccountEntity | null;
   created_by_user: UserEntity | null;
 
-  setIncreaseBudgetIdId(value: IncreaseBudgetId): this {
+  setIncreaseBudgetId(value: IncreaseBudgetId): this {
     this.increaseBudgetId = value;
     return this;
   }
