@@ -1,5 +1,4 @@
-import { BudgetItemDetailEntity } from '../entities/budget-item-detail.entity';
-// import { PurchaseOrderItemQuoteEntity } from '../entities/purchase-order-item-quote.entity';
+import { BudgetItemEntity } from '../entities/budget-item.entity';
 import { PurchaseOrderItemEntity } from '../entities/purchase-order-item.entity';
 import { PurchaseOrderSelectedVendorEntity } from '../entities/purchase-order-selected-vendor.entity';
 import { PurchaseOrderItemId } from '../value-objects/purchase-order-item-id.vo';
@@ -8,7 +7,7 @@ export class PurchaseOrderItemBuilder {
   purchaseOrderItemId: PurchaseOrderItemId;
   purchase_order_id: number;
   purchase_request_item_id: number;
-  budget_item_detail_id: number;
+  budget_item_id: number;
   remark: string;
   quantity: number;
   price: number;
@@ -20,7 +19,7 @@ export class PurchaseOrderItemBuilder {
   vat_total: number | 0;
   total_with_vat: number | 0;
   // quote: PurchaseOrderItemQuoteEntity[] | null;
-  budgetItemDetail: BudgetItemDetailEntity | null;
+  budgetItem: BudgetItemEntity | null;
   selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
 
   setPurchaseOrderItemId(value: PurchaseOrderItemId): this {
@@ -38,8 +37,8 @@ export class PurchaseOrderItemBuilder {
     return this;
   }
 
-  setBudgetItemDetailId(budget_item_detail_id: number): this {
-    this.budget_item_detail_id = budget_item_detail_id;
+  setBudgetItemId(budget_item_id: number): this {
+    this.budget_item_id = budget_item_id;
     return this;
   }
 
@@ -105,8 +104,8 @@ export class PurchaseOrderItemBuilder {
     return this;
   }
 
-  setBudgetItemDetail(budgetItemDetail: BudgetItemDetailEntity | null): this {
-    this.budgetItemDetail = budgetItemDetail;
+  setBudgetItem(budgetItem: BudgetItemEntity | null): this {
+    this.budgetItem = budgetItem;
     return this;
   }
 

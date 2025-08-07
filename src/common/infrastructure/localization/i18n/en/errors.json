@@ -61,5 +61,6 @@
   "is_required": "{property} is required",
   "document_type_already_exists": "Document type already exists",
   "missing_step_number": "Step numbers must be consecutive. Missing step {property} in the sequence.",
-  "invalid_step_number": "The step number must start from {property}."
+  "invalid_step_number": "The step number must start from {property}.",
+  "pr_not_approved": "PR not approved"
 }

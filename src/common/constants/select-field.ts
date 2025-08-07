@@ -3,7 +3,7 @@ export const selectPurchaseOrderItems = [
   'purchase_order_items.id',
   'purchase_order_items.purchase_order_id',
   'purchase_order_items.purchase_request_item_id',
-  'purchase_order_items.budget_item_detail_id',
+  'purchase_order_items.budget_item_id',
   'purchase_order_items.remark',
   'purchase_order_items.price',
   'purchase_order_items.quantity',
@@ -18,6 +18,7 @@ export const selectPurchaseOrderSelectedVendors = [
   'purchase_order_selected_vendors.id',
   'purchase_order_selected_vendors.purchase_order_item_id',
   'purchase_order_selected_vendors.vendor_id',
+  'purchase_order_selected_vendors.vendor_bank_account_id',
   'purchase_order_selected_vendors.filename',
   'purchase_order_selected_vendors.reason',
   'purchase_order_selected_vendors.is_selected',
@@ -207,19 +208,6 @@ export const selectVendors = [
   'vendors.updated_at',
 ];
 
-// quotes_vendor_bank_accounts
-export const selectQuotesVendorBankAccounts = [
-  'quotes_vendor_bank_accounts.id',
-  'quotes_vendor_bank_accounts.vendor_id',
-  'quotes_vendor_bank_accounts.currency_id',
-  'quotes_vendor_bank_accounts.bank_name',
-  'quotes_vendor_bank_accounts.account_name',
-  'quotes_vendor_bank_accounts.account_number',
-  'quotes_vendor_bank_accounts.is_selected',
-  'quotes_vendor_bank_accounts.created_at',
-  'quotes_vendor_bank_accounts.updated_at',
-];
-
 // currencies
 export const selectCurrencies = [
   'currencies.id',
@@ -251,12 +239,22 @@ export const selectVendorBankAccounts = [
   'vendor_bank_accounts.id',
   'vendor_bank_accounts.vendor_id',
   'vendor_bank_accounts.currency_id',
-  'vendor_bank_accounts.bank_name',
+  'vendor_bank_accounts.bank_id',
   'vendor_bank_accounts.account_name',
   'vendor_bank_accounts.account_number',
   'vendor_bank_accounts.is_selected',
   'vendor_bank_accounts.created_at',
   'vendor_bank_accounts.updated_at',
+];
+
+// banks
+export const selectBanks = [
+  'bank.id',
+  'bank.name',
+  'bank.short_name',
+  'bank.logo',
+  'bank.created_at',
+  'bank.updated_at',
 ];
 
 // user_approvals

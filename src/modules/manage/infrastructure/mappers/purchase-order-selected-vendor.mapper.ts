@@ -54,6 +54,7 @@ export class PurchaseOrderSelectedVendorDataAccessMapper {
       )
       .setPurchaseOrderItemId(ormData.purchase_order_item_id ?? 0)
       .setVendorId(ormData.vendor_id ?? 0)
+      .setVendorBankAccountId(ormData.vendor_bank_account_id ?? 0)
       .setFilename(ormData.filename ?? '')
       .setReason(ormData.reason ?? '')
       .setSelected(

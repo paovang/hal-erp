@@ -14,6 +14,7 @@ import {
 import { DepartmentOrmEntity } from './department.orm';
 import { BudgetItemOrmEntity } from './budget-item.orm';
 import { EnumBudgetType } from '@src/modules/manage/application/constants/status-key.const';
+import { IncreaseBudgetOrmEntity } from './Increase-budget.orm';
 
 @Entity('budget_accounts')
 export class BudgetAccountOrmEntity {
@@ -70,4 +71,10 @@ export class BudgetAccountOrmEntity {
     (budget_items) => budget_items.budget_accounts,
   )
   budget_items: Relation<BudgetItemOrmEntity[]>;
+
+  @OneToMany(
+    () => IncreaseBudgetOrmEntity,
+    (increase_budgets) => increase_budgets.budget_account,
+  )
+  increase_budgets: Relation<IncreaseBudgetOrmEntity[]>;
 }

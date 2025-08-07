@@ -64,7 +64,6 @@ import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.v
 import { IWritePurchaseOrderItemRepository } from '@src/modules/manage/domain/ports/output/purchase-order-item-repository.interface';
 import { PurchaseOrderItemDataMapper } from '../../../mappers/purchase-order-item.mapper';
 import { PurchaseOrderItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-item.orm';
-import { BudgetItemDetailOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item-detail.orm';
 import { PurchaseOrderItemId } from '@src/modules/manage/domain/value-objects/purchase-order-item-id.vo';
 import { IWriteDocumentTransactionRepository } from '@src/modules/manage/domain/ports/output/document-transaction-repository.interface';
 import {
@@ -310,8 +309,8 @@ export class ApproveStepCommandHandler
                 id: query.dto.purchase_order_items.id,
               });
 
-              await findOneOrFail(manager, BudgetItemDetailOrmEntity, {
-                id: query.dto.purchase_order_items.budget_item_detail_id,
+              await findOneOrFail(manager, BudgetItemOrmEntity, {
+                id: query.dto.purchase_order_items.budget_item_id,
               });
 
               const itemId = query.dto.purchase_order_items.id;

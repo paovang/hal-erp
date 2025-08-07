@@ -11,10 +11,10 @@ export class BankResponse {
   name: string;
 
   @ApiProperty()
-  logo: any;
+  logo?: any | null;
 
   @ApiProperty()
-  logoUrl: any;
+  logoUrl?: any | null;
 
   @ApiProperty()
   created_at: string;

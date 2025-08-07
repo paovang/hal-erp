@@ -23,6 +23,7 @@ import { DocumentApproverOrmEntity } from './document-approver.orm';
 import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 import { ReceiptOrmEntity } from './receipt.orm';
 import { DocumentAttachmentOrmEntity } from './document-attachment.orm';
+import { IncreaseBudgetOrmEntity } from './Increase-budget.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -143,4 +144,10 @@ export class UserOrmEntity {
     (document_attachments) => document_attachments.users,
   )
   document_attachments: Relation<DocumentAttachmentOrmEntity[]>;
+
+  @OneToMany(
+    () => IncreaseBudgetOrmEntity,
+    (increase_budgets) => increase_budgets.users,
+  )
+  increase_budgets: Relation<IncreaseBudgetOrmEntity[]>;
 }

@@ -2,14 +2,13 @@ import { Entity } from '@src/common/domain/entities/entity';
 import { PurchaseOrderItemId } from '../value-objects/purchase-order-item-id.vo';
 import { BadRequestException } from '@nestjs/common';
 import { PurchaseOrderItemBuilder } from '../builders/purchase-order-item.builder';
-// import { PurchaseOrderItemQuoteEntity } from './purchase-order-item-quote.entity';
-import { BudgetItemDetailEntity } from './budget-item-detail.entity';
 import { PurchaseOrderSelectedVendorEntity } from './purchase-order-selected-vendor.entity';
+import { BudgetItemEntity } from './budget-item.entity';
 
 export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   private readonly _purchase_order_id: number;
   private readonly _purchase_request_item_id: number;
-  private readonly _budget_item_detail_id: number;
+  private readonly _budget_item_id: number;
   private readonly _remark: string;
   private readonly _quantity: number;
   private readonly _price: number;
@@ -21,7 +20,7 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   private readonly _vat_total: number | 0;
   private readonly _total_with_vat: number | 0;
   // private readonly _quote: PurchaseOrderItemQuoteEntity[] | null;
-  private readonly _budgetItemDetail: BudgetItemDetailEntity | null;
+  private readonly _budgetItem: BudgetItemEntity | null;
   private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
 
   private constructor(builder: PurchaseOrderItemBuilder) {
@@ -29,7 +28,7 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     this.setId(builder.purchaseOrderItemId);
     this._purchase_order_id = builder.purchase_order_id;
     this._purchase_request_item_id = builder.purchase_request_item_id;
-    this._budget_item_detail_id = builder.budget_item_detail_id;
+    this._budget_item_id = builder.budget_item_id;
     this._remark = builder.remark;
     this._quantity = builder.quantity;
     this._price = builder.price;
@@ -40,7 +39,7 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     this._deletedAt = builder.deletedAt ?? null;
     this._vat_total = builder.vat_total;
     this._total_with_vat = builder.total_with_vat;
-    this._budgetItemDetail = builder.budgetItemDetail ?? null;
+    this._budgetItem = builder.budgetItem ?? null;
     this._selectedVendor = builder.selectedVendor ?? null;
   }
 
@@ -52,8 +51,8 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     return this._purchase_request_item_id;
   }
 
-  get budget_item_detail_id(): number {
-    return this._budget_item_detail_id;
+  get budget_item_id(): number {
+    return this._budget_item_id;
   }
 
   get remark(): string {
@@ -96,8 +95,8 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     return this._total_with_vat;
   }
 
-  get budgetItemDetail(): BudgetItemDetailEntity | null {
-    return this._budgetItemDetail;
+  get budgetItem(): BudgetItemEntity | null {
+    return this._budgetItem;
   }
 
   // get quote(): PurchaseOrderItemQuoteEntity[] | null {

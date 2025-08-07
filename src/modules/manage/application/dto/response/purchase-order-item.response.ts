@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BudgetItemDetailResponse } from './budget-item-detail.response';
 import { PurchaseOrderSelectedVendorResponse } from './purchase-order-selected-vendor.response';
+import { BudgetItemResponse } from './budget-item.response';
 
 export class PurchaseOrderItemResponse {
   @ApiProperty()
@@ -13,7 +13,7 @@ export class PurchaseOrderItemResponse {
   purchase_request_item_id: number;
 
   @ApiProperty()
-  budget_item_detail_id: number;
+  budget_item_id: number;
 
   @ApiProperty()
   remark: string;
@@ -46,7 +46,7 @@ export class PurchaseOrderItemResponse {
   deleted_at: string | null;
 
   @ApiProperty()
-  budget_item_detail: BudgetItemDetailResponse | null;
+  budget_item: BudgetItemResponse | null;
 
   @ApiProperty()
   selected_vendor: PurchaseOrderSelectedVendorResponse[] | null;

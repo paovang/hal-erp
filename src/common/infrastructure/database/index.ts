@@ -17,6 +17,9 @@ import { DocumentTransactionOrmEntity } from './typeorm/document-transaction.orm
 import { DocumentTypeOrmEntity } from './typeorm/document-type.orm';
 import { DocumentOrmEntity } from './typeorm/document.orm';
 import { ExchangeRateOrmEntity } from './typeorm/exchange-rate.orm';
+import { IncreaseBudgetDetailOrmEntity } from './typeorm/increase-budget-detail.orm';
+import { IncreaseBudgetFileOrmEntity } from './typeorm/increase-budget-file.orm';
+import { IncreaseBudgetOrmEntity } from './typeorm/Increase-budget.orm';
 import { UserHasPermissionOrmEntity } from './typeorm/model-has-permission.orm';
 import { PermissionGroupOrmEntity } from './typeorm/permission-group.orm';
 import { PermissionOrmEntity } from './typeorm/permission.orm';
@@ -62,7 +65,9 @@ export const models = [
   BudgetAccountOrmEntity,
   BudgetItemOrmEntity,
   ProvinceOrmEntity,
-  // BudgetItemDetailOrmEntity,
+  IncreaseBudgetOrmEntity,
+  IncreaseBudgetFileOrmEntity,
+  IncreaseBudgetDetailOrmEntity,
   UserHasPermissionOrmEntity,
   DocumentOrmEntity,
   PurchaseRequestOrmEntity,

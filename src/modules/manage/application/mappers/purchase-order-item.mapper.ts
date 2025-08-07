@@ -4,9 +4,9 @@ import { PurchaseOrderItemResponse } from '../dto/response/purchase-order-item.r
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
-import { BudgetItemDetailDataMapper } from './budget-item-detail.mapper';
 import { PurchaseOrderSelectedVendorDataMapper } from './purchase-order-selected-vendor.mapper';
 import { UpdatePurchaseOrderBudgetItemDto } from '../dto/create/purchaseOrderItem/update.dto';
+import { BudgetItemDataMapper } from './budget-item.mapper';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -20,14 +20,14 @@ interface CustomPurchaseOrderItemDto {
 @Injectable()
 export class PurchaseOrderItemDataMapper {
   constructor(
-    private readonly _budgetItemDetail: BudgetItemDetailDataMapper,
+    private readonly _budgetItem: BudgetItemDataMapper,
     private readonly selectedVendorMapper: PurchaseOrderSelectedVendorDataMapper,
   ) {}
 
   toEntity(
     dto?: CustomPurchaseOrderItemDto,
     po_id?: number,
-    budget_item_detail_id?: number,
+    budget_item_id?: number,
   ): PurchaseOrderItemEntity {
     const builder = PurchaseOrderItemEntity.builder();
     if (po_id) {
@@ -58,8 +58,8 @@ export class PurchaseOrderItemDataMapper {
       builder.setIsVat(dto.is_vat);
     }
 
-    if (budget_item_detail_id) {
-      builder.setBudgetItemDetailId(budget_item_detail_id);
+    if (budget_item_id) {
+      builder.setBudgetItemId(budget_item_id);
     }
 
     return builder.build();
@@ -70,8 +70,8 @@ export class PurchaseOrderItemDataMapper {
   ): PurchaseOrderItemEntity {
     const builder = PurchaseOrderItemEntity.builder();
 
-    if (dto.budget_item_detail_id) {
-      builder.setBudgetItemDetailId(dto.budget_item_detail_id);
+    if (dto.budget_item_id) {
+      builder.setBudgetItemId(dto.budget_item_id);
     }
 
     return builder.build();
@@ -83,7 +83,7 @@ export class PurchaseOrderItemDataMapper {
     response.id = entity.getId().value;
     response.purchase_order_id = Number(entity.purchase_order_id);
     response.purchase_request_item_id = Number(entity.purchase_request_item_id);
-    response.budget_item_detail_id = Number(entity.budget_item_detail_id);
+    response.budget_item_id = Number(entity.budget_item_id);
     response.remark = entity.remark;
     response.quantity = entity.quantity;
     response.price = entity.price;
@@ -98,8 +98,8 @@ export class PurchaseOrderItemDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
 
-    response.budget_item_detail = entity.budgetItemDetail
-      ? this._budgetItemDetail.toResponse(entity.budgetItemDetail)
+    response.budget_item = entity.budgetItem
+      ? this._budgetItem.toResponse(entity.budgetItem)
       : null;
 
     response.selected_vendor = entity.selectedVendor
