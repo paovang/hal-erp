@@ -30,9 +30,14 @@ export class GetOneQueryHandler
       );
     }
 
-    await findOneOrFail(query.manager, IncreaseBudgetOrmEntity, {
-      id: query.id,
-    });
+    await findOneOrFail(
+      query.manager,
+      IncreaseBudgetOrmEntity,
+      {
+        id: query.id,
+      },
+      'increase budget',
+    );
 
     return await this._readRepo.findOne(
       new IncreaseBudgetId(query.id),

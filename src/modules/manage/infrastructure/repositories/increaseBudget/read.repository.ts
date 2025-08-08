@@ -14,7 +14,9 @@ import { IncreaseBudgetQueryDto } from '@src/modules/manage/application/dto/quer
 import { IncreaseBudgetEntity } from '@src/modules/manage/domain/entities/increase-budget.entity';
 import {
   selectBudgetAccounts,
+  selectBudgetItems,
   selectDepartments,
+  selectIncreaseBudgetDetails,
   selectIncreaseBudgetFiles,
   selectUsers,
 } from '@src/common/constants/select-field';
@@ -58,6 +60,8 @@ export class ReadIncreaseBudgetRepository
       ...selectDepartments,
       ...selectIncreaseBudgetFiles,
       ...selectUsers,
+      ...selectIncreaseBudgetDetails,
+      ...selectBudgetItems,
     ];
 
     const queryBuilder = manager
@@ -69,6 +73,8 @@ export class ReadIncreaseBudgetRepository
       .leftJoin('increase_budgets.users', 'users')
       .leftJoin('increase_budgets.budget_account', 'budget_accounts')
       .leftJoin('budget_accounts.departments', 'departments')
+      .innerJoin('increase_budgets.increase_budget_details', 'details')
+      .innerJoin('details.budget_item', 'budget_items')
       .addSelect(selectField);
 
     return queryBuilder;

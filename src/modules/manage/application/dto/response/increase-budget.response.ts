@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BudgetAccountResponse } from './budget-account.response';
 import { IncreaseBudgetFileResponse } from './increase-budget-file.response';
 import { UserResponse } from './user.response';
+import { IncreaseBudgetDetailResponse } from './increase-budget-detail.response';
 
 export class IncreaseBudgetResponse {
   @ApiProperty()
@@ -36,4 +37,7 @@ export class IncreaseBudgetResponse {
 
   @ApiProperty()
   increase_budget_files: IncreaseBudgetFileResponse[] | null;
+
+  @ApiProperty()
+  details: IncreaseBudgetDetailResponse[] | null;
 }

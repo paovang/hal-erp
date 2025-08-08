@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common';
 import { UpdateIncreaseBudgetDto } from '../dto/create/increaseBudget/update.dto';
 import { IncreaseBudgetFileDataMapper } from './increase-budget-file.mapper';
 import { UserDataMapper } from './user.mapper';
+import { IncreaseBudgetDetailDataMapper } from './increase-budget-detail.mapper';
 
 @Injectable()
 export class IncreaseBudgetDataMapper {
@@ -16,6 +17,7 @@ export class IncreaseBudgetDataMapper {
     private readonly budget_account: BudgetAccountDataMapper,
     private readonly increase_budget_file: IncreaseBudgetFileDataMapper,
     private readonly create_by: UserDataMapper,
+    private readonly detail: IncreaseBudgetDetailDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
@@ -84,6 +86,10 @@ export class IncreaseBudgetDataMapper {
       ? entity.increase_budget_file.map((file) =>
           this.increase_budget_file.toResponse(file),
         )
+      : null;
+
+    response.details = entity.details
+      ? entity.details.map((detail) => this.detail.toResponse(detail))
       : null;
 
     return response;

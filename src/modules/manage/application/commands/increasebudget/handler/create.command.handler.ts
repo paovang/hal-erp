@@ -119,7 +119,10 @@ export class CreateCommandHandler
 
         let sum_total = 0;
         for (const detail of query.dto.increase_budget_details) {
-          const detail_entity = this._dataDetailMapper.toEntity(detail);
+          const detail_entity = this._dataDetailMapper.toEntity(
+            detail,
+            increase_budget_id,
+          );
           await this._writeDetail.create(detail_entity, manager);
           sum_total += detail.allocated_amount;
         }

@@ -35,6 +35,7 @@ import { ExchangeRateController } from '../../controllers/exchange-rate.controll
 import { BankController } from '../../controllers/bank.controller';
 import { DocumentStatusController } from '../../controllers/document-status.controller';
 import { IncreaseBudgetController } from '../../controllers/increase-budget.controller';
+import { IncreaseBudgetDetailController } from '../../controllers/increase-budget-detail.controller';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { IncreaseBudgetController } from '../../controllers/increase-budget.cont
     BankController,
     DocumentStatusController,
     IncreaseBudgetController,
+    IncreaseBudgetDetailController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

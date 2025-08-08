@@ -27,5 +27,5 @@ export interface IIncreaseBudgetServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<IncreaseBudgetEntity>>;
 
-  //   delete(id: number, manager?: EntityManager): Promise<void>;
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

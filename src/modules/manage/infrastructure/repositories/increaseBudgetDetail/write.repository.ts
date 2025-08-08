@@ -5,6 +5,8 @@ import { IncreaseBudgetDetailEntity } from '@src/modules/manage/domain/entities/
 import { EntityManager } from 'typeorm';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { IncreaseBudgetDetailId } from '@src/modules/manage/domain/value-objects/increase-budget-detail-id.vo';
+import { IncreaseBudgetDetailOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget-detail.orm';
 
 @Injectable()
 export class WriteIncreaseBudgetDetailRepository
@@ -23,5 +25,16 @@ export class WriteIncreaseBudgetDetailRepository
         this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
       ),
     );
+  }
+
+  async delete(
+    id: IncreaseBudgetDetailId,
+    manager: EntityManager,
+  ): Promise<void> {
+    try {
+      await manager.softDelete(IncreaseBudgetDetailOrmEntity, id.value);
+    } catch (error) {
+      throw error;
+    }
   }
 }

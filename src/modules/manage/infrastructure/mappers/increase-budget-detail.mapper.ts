@@ -5,8 +5,12 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { IncreaseBudgetDetailId } from '../../domain/value-objects/increase-budget-detail-id.vo';
+import { Injectable } from '@nestjs/common';
+import { BudgetItemDataAccessMapper } from './budget-item.mapper';
 
+@Injectable()
 export class IncreaseBudgetDetailDataAccessMapper {
+  constructor(private readonly _budget_item: BudgetItemDataAccessMapper) {}
   toOrmEntity(
     entity: IncreaseBudgetDetailEntity,
     method: OrmEntityMethod,
@@ -20,6 +24,7 @@ export class IncreaseBudgetDetailDataAccessMapper {
     }
 
     mediaOrmEntity.budget_item_id = entity.budget_item_id;
+    mediaOrmEntity.increase_budget_id = entity.increase_budget_id;
     mediaOrmEntity.allocated_amount = entity.allocated_amount;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = entity.createdAt ?? new Date(now);
@@ -30,12 +35,18 @@ export class IncreaseBudgetDetailDataAccessMapper {
   }
 
   toEntity(ormData: IncreaseBudgetDetailOrmEntity): IncreaseBudgetDetailEntity {
-    return IncreaseBudgetDetailEntity.builder()
+    const builder = IncreaseBudgetDetailEntity.builder()
       .setIncreaseBudgetDetailId(new IncreaseBudgetDetailId(ormData.id))
       .setBudgetItemId(ormData.budget_item_id ?? 0)
+      .setIncreaseBudgetId(ormData.increase_budget_id ?? 0)
       .setAllocatedAmount(ormData.allocated_amount ?? 0)
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at)
-      .build();
+      .setUpdatedAt(ormData.updated_at);
+
+    if (ormData.budget_item) {
+      builder.setBudgetItem(this._budget_item.toEntity(ormData.budget_item));
+    }
+
+    return builder.build();
   }
 }

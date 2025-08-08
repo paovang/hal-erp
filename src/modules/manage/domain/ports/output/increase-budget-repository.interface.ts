@@ -15,7 +15,7 @@ export interface IWriteIncreaseBudgetRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<IncreaseBudgetEntity>>;
 
-  //   delete(id: PositionId, manager: EntityManager): Promise<void>;
+  delete(id: IncreaseBudgetId, manager: EntityManager): Promise<void>;
 }
 
 export interface IReadIncreaseBudgetRepository {

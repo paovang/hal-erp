@@ -6,6 +6,7 @@ import { IncreaseBudgetEntity } from '@src/modules/manage/domain/entities/increa
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { EntityManager } from 'typeorm';
 import { IncreaseBudgetOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget.orm';
+import { IncreaseBudgetId } from '@src/modules/manage/domain/value-objects/increase-budget-id.vo';
 
 @Injectable()
 export class WriteIncreaseBudgetRepository
@@ -43,6 +44,14 @@ export class WriteIncreaseBudgetRepository
       );
 
       return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async delete(id: IncreaseBudgetId, manager: EntityManager): Promise<void> {
+    try {
+      await manager.softDelete(IncreaseBudgetOrmEntity, id.value);
     } catch (error) {
       throw error;
     }

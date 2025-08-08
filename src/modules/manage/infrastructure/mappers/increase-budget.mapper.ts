@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common';
 import { BudgetAccountDataAccessMapper } from './budget-account.mapper';
 import { IncreaseBudgetFileDataAccessMapper } from './increase-budget-file.mapper';
 import { UserDataAccessMapper } from './user.mapper';
+import { IncreaseBudgetDetailDataAccessMapper } from './increase-budget-detail.mapper';
 
 @Injectable()
 export class IncreaseBudgetDataAccessMapper {
@@ -16,6 +17,7 @@ export class IncreaseBudgetDataAccessMapper {
     private readonly _budget_account: BudgetAccountDataAccessMapper,
     private readonly _budget_file: IncreaseBudgetFileDataAccessMapper,
     private readonly _create_by: UserDataAccessMapper,
+    private readonly _detail: IncreaseBudgetDetailDataAccessMapper,
   ) {}
   toOrmEntity(
     entity: IncreaseBudgetEntity,
@@ -68,6 +70,13 @@ export class IncreaseBudgetDataAccessMapper {
         this._budget_file.toEntity(file),
       );
       builder.setIncreaseBudgetFile(increaseBudgetFiles);
+    }
+
+    if (ormData.increase_budget_details) {
+      const increaseBudgetDetails = ormData.increase_budget_details.map(
+        (detail) => this._detail.toEntity(detail),
+      );
+      builder.setDetails(increaseBudgetDetails);
     }
 
     return builder.build();
