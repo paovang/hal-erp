@@ -84,6 +84,17 @@ export const selectUsers = [
   'users.deleted_at',
 ];
 
+// increase_budget_details
+export const selectIncreaseBudgetDetails = [
+  'details.id',
+  'details.increase_budget_id',
+  'details.budget_item_id',
+  'details.allocated_amount',
+  'details.created_at',
+  'details.updated_at',
+  'details.deleted_at',
+];
+
 // select user signatures
 export const selectUserSignatures = [
   'user_signatures.id',

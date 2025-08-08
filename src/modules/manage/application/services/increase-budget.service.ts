@@ -12,6 +12,7 @@ import { GetAllQuery } from '../queries/increaseBudget/get-all.query';
 import { GetOneQuery } from '../queries/increaseBudget/get-one.query';
 import { UpdateIncreaseBudgetDto } from '../dto/create/increaseBudget/update.dto';
 import { UpdateCommand } from '../commands/increasebudget/update.command';
+import { DeleteCommand } from '../commands/increasebudget/delete.command';
 
 @Injectable()
 export class IncreaseBudgetService implements IIncreaseBudgetServiceInterface {
@@ -59,9 +60,9 @@ export class IncreaseBudgetService implements IIncreaseBudgetServiceInterface {
     );
   }
 
-  //   async delete(id: number, manager?: EntityManager): Promise<void> {
-  //     return await this._commandBus.execute(
-  //       new DeleteCommand(id, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async delete(id: number, manager?: EntityManager): Promise<void> {
+    return await this._commandBus.execute(
+      new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
 }

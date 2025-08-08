@@ -5,6 +5,8 @@ import { EntityManager } from 'typeorm';
 import { IWriteIncreaseBudgetFileRepository } from '@src/modules/manage/domain/ports/output/increase-budget-file-repository.interface';
 import { IncreaseBudgetFileDataAccessMapper } from '../../mappers/increase-budget-file.mapper';
 import { IncreaseBudgetFileEntity } from '@src/modules/manage/domain/entities/increase-budget-file.entity';
+import { IncreaseBudgetFileOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget-file.orm';
+import { IncreaseBudgetFileId } from '@src/modules/manage/domain/value-objects/increase-budget-file-id.vo';
 
 @Injectable()
 export class WriteIncreaseBudgetFileRepository
@@ -23,5 +25,38 @@ export class WriteIncreaseBudgetFileRepository
         this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
       ),
     );
+  }
+
+  async update(
+    entity: IncreaseBudgetFileEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetFileEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
+
+    try {
+      await manager.update(
+        IncreaseBudgetFileOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async delete(
+    id: IncreaseBudgetFileId,
+    manager: EntityManager,
+  ): Promise<void> {
+    try {
+      await manager.softDelete(IncreaseBudgetFileOrmEntity, id.value);
+    } catch (error) {
+      throw error;
+    }
   }
 }

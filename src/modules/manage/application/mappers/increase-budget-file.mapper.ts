@@ -5,12 +5,13 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { CreateIncreaseBudgetDto } from '../dto/create/increaseBudget/create.dto';
+import { UpdateIncreaseBudgetDto } from '../dto/create/increaseBudget/update.dto';
 
 @Injectable()
 export class IncreaseBudgetFileDataMapper {
   /** Mapper Dto To Entity */
   toEntity(
-    dto: CreateIncreaseBudgetDto,
+    dto: CreateIncreaseBudgetDto | UpdateIncreaseBudgetDto,
     increase_budget_id?: number,
   ): IncreaseBudgetFileEntity {
     const builder = IncreaseBudgetFileEntity.builder();

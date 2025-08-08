@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -76,5 +77,10 @@ export class IncreaseBudgetController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number): Promise<void> {
+    return await this._increaseBudgetService.delete(id);
   }
 }

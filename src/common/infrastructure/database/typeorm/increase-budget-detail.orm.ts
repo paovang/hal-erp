@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { BudgetItemOrmEntity } from './budget-item.orm';
+import { IncreaseBudgetOrmEntity } from './increase-budget.orm';
 
 @Entity('increase_budget_details')
 export class IncreaseBudgetDetailOrmEntity {
@@ -30,6 +31,20 @@ export class IncreaseBudgetDetailOrmEntity {
   )
   @JoinColumn({ name: 'budget_item_id' })
   budget_item: Relation<BudgetItemOrmEntity>;
+
+  @Index()
+  @Column({ nullable: true })
+  increase_budget_id?: number;
+  @ManyToOne(
+    () => IncreaseBudgetOrmEntity,
+    (increase_budgets) => increase_budgets.increase_budget_details,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'increase_budget_id' })
+  increase_budgets: Relation<IncreaseBudgetOrmEntity>;
 
   @Index()
   @Column({ type: 'double precision', nullable: true })

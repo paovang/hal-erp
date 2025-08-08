@@ -4,6 +4,7 @@ import { IncreaseBudgetBuilder } from '../builders/increase-budget.builder';
 import { UserEntity } from './user.entity';
 import { BudgetAccountEntity } from './budget-account.entity';
 import { IncreaseBudgetFileEntity } from './increase-budget-file.entity';
+import { IncreaseBudgetDetailEntity } from './increase-budget-detail.entity';
 
 export class IncreaseBudgetEntity extends Entity<IncreaseBudgetId> {
   private readonly _budget_account_id: number;
@@ -17,6 +18,7 @@ export class IncreaseBudgetEntity extends Entity<IncreaseBudgetId> {
   private readonly _budget_account: BudgetAccountEntity | null;
   private readonly _increase_budget_file: IncreaseBudgetFileEntity[] | null;
   private readonly _created_by_user: UserEntity | null;
+  private readonly _details: IncreaseBudgetDetailEntity[] | null;
 
   private constructor(builder: IncreaseBudgetBuilder) {
     super();
@@ -32,6 +34,7 @@ export class IncreaseBudgetEntity extends Entity<IncreaseBudgetId> {
     this._budget_account = builder.budget_account ?? null;
     this._created_by_user = builder.created_by_user ?? null;
     this._increase_budget_file = builder.increase_budget_file ?? null;
+    this._details = builder.details ?? null;
   }
 
   get budget_account_id(): number {
@@ -76,6 +79,10 @@ export class IncreaseBudgetEntity extends Entity<IncreaseBudgetId> {
 
   get created_by_user(): UserEntity | null {
     return this._created_by_user;
+  }
+
+  get details(): IncreaseBudgetDetailEntity[] | null {
+    return this._details;
   }
 
   public static builder(): IncreaseBudgetBuilder {

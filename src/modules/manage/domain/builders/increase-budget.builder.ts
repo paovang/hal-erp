@@ -1,4 +1,5 @@
 import { BudgetAccountEntity } from '../entities/budget-account.entity';
+import { IncreaseBudgetDetailEntity } from '../entities/increase-budget-detail.entity';
 import { IncreaseBudgetFileEntity } from '../entities/increase-budget-file.entity';
 import { IncreaseBudgetEntity } from '../entities/increase-budget.entity';
 import { UserEntity } from '../entities/user.entity';
@@ -17,6 +18,7 @@ export class IncreaseBudgetBuilder {
   budget_account: BudgetAccountEntity | null;
   increase_budget_file: IncreaseBudgetFileEntity[] | null;
   created_by_user: UserEntity | null;
+  details: IncreaseBudgetDetailEntity[] | null;
 
   setIncreaseBudgetId(value: IncreaseBudgetId): this {
     this.increaseBudgetId = value;
@@ -77,6 +79,11 @@ export class IncreaseBudgetBuilder {
 
   setCreatedByUser(created_by_user: UserEntity | null): this {
     this.created_by_user = created_by_user;
+    return this;
+  }
+
+  setDetails(details: IncreaseBudgetDetailEntity[] | null): this {
+    this.details = details;
     return this;
   }
 

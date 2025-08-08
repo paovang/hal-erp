@@ -14,6 +14,7 @@ import {
 import { BudgetAccountOrmEntity } from './budget-account.orm';
 import { UserOrmEntity } from './user.orm';
 import { IncreaseBudgetFileOrmEntity } from './increase-budget-file.orm';
+import { IncreaseBudgetDetailOrmEntity } from './increase-budget-detail.orm';
 
 @Entity('increase_budgets')
 export class IncreaseBudgetOrmEntity {
@@ -70,4 +71,10 @@ export class IncreaseBudgetOrmEntity {
     (increase_budget_files) => increase_budget_files.increase_budgets,
   )
   increase_budget_files: Relation<IncreaseBudgetFileOrmEntity[]>;
+
+  @OneToMany(
+    () => IncreaseBudgetDetailOrmEntity,
+    (increase_budget_details) => increase_budget_details.increase_budgets,
+  )
+  increase_budget_details: Relation<IncreaseBudgetDetailOrmEntity[]>;
 }

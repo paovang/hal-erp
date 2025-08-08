@@ -1,6 +1,6 @@
-import { PartialType } from '@nestjs/swagger';
+import { OmitType } from '@nestjs/swagger';
 import { CreateIncreaseBudgetDto } from './create.dto';
 
-export class UpdateIncreaseBudgetDto extends PartialType(
-  CreateIncreaseBudgetDto,
-) {}
+export class UpdateIncreaseBudgetDto extends OmitType(CreateIncreaseBudgetDto, [
+  'increase_budget_details',
+]) {}
