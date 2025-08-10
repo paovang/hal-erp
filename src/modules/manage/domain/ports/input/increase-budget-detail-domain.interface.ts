@@ -3,6 +3,7 @@ import { CreateIncreaseBudgetDetailDto } from '@src/modules/manage/application/d
 import { EntityManager } from 'typeorm';
 import { IncreaseBudgetDetailEntity } from '../../entities/increase-budget-detail.entity';
 import { IncreaseBudgetDetailQueryDto } from '@src/modules/manage/application/dto/query/increase-budget-detail.dto';
+import { UpdateIncreaseBudgetDetailDto } from '@src/modules/manage/application/dto/create/increaseBudgetDetail/update.dto';
 
 export interface IIncreaseBudgetDetailServiceInterface {
   getAll(
@@ -11,10 +12,10 @@ export interface IIncreaseBudgetDetailServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
 
-  //   getOne(
-  //     id: number,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
+  getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
 
   create(
     id: number,
@@ -22,11 +23,11 @@ export interface IIncreaseBudgetDetailServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
 
-  //   update(
-  //     id: number,
-  //     dto: UpdateIncreaseBudgetDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
+  update(
+    id: number,
+    dto: UpdateIncreaseBudgetDetailDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
 
-  //   delete(id: number, manager?: EntityManager): Promise<void>;
+  delete(id: number, manager?: EntityManager): Promise<void>;
 }

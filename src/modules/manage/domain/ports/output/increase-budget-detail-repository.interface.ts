@@ -11,6 +11,11 @@ export interface IWriteIncreaseBudgetDetailRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
 
+  update(
+    entity: IncreaseBudgetDetailEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
+
   delete(id: IncreaseBudgetDetailId, manager: EntityManager): Promise<void>;
 }
 
@@ -21,10 +26,10 @@ export interface IReadIncreaseBudgetDetailRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
 
-  // findOne(
-  //   id: IncreaseBudgetId,
-  //   manager: EntityManager,
-  // ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
+  findOne(
+    id: IncreaseBudgetDetailId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>>;
 
   sum_total(id: IncreaseBudgetId, manager: EntityManager): Promise<number>;
 }

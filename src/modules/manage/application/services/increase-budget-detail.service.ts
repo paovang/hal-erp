@@ -9,6 +9,10 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { CreateCommand } from '../commands/increaseBudgetDetail/create.command';
 import { IncreaseBudgetDetailQueryDto } from '../dto/query/increase-budget-detail.dto';
 import { GetAllQuery } from '../queries/increaseBudgetDetail/get-all.query';
+import { UpdateIncreaseBudgetDetailDto } from '../dto/create/increaseBudgetDetail/update.dto';
+import { UpdateCommand } from '../commands/increaseBudgetDetail/update.command';
+import { GetOneQuery } from '../queries/increaseBudgetDetail/get-one.query';
+import { DeleteCommand } from '../commands/increaseBudgetDetail/delete.command';
 
 @Injectable()
 export class IncreaseBudgetDetailService
@@ -31,14 +35,14 @@ export class IncreaseBudgetDetailService
     );
   }
 
-  //   async getOne(
-  //     id: number,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<IncreaseBudgetDetailEntity>> {
-  //     return await this._queryBus.execute(
-  //       new GetOneQuery(id, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>> {
+    return await this._queryBus.execute(
+      new GetOneQuery(id, manager ?? this._readEntityManager),
+    );
+  }
 
   async create(
     id: number,
@@ -50,19 +54,19 @@ export class IncreaseBudgetDetailService
     );
   }
 
-  //   async update(
-  //     id: number,
-  //     dto: UpdateIncreaseBudgetDto,
-  //     manager?: EntityManager,
-  //   ): Promise<ResponseResult<IncreaseBudgetDetailEntity>> {
-  //     return await this._commandBus.execute(
-  //       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async update(
+    id: number,
+    dto: UpdateIncreaseBudgetDetailDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>> {
+    return await this._commandBus.execute(
+      new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
 
-  //   async delete(id: number, manager?: EntityManager): Promise<void> {
-  //     return await this._commandBus.execute(
-  //       new DeleteCommand(id, manager ?? this._readEntityManager),
-  //     );
-  //   }
+  async delete(id: number, manager?: EntityManager): Promise<void> {
+    return await this._commandBus.execute(
+      new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
 }
