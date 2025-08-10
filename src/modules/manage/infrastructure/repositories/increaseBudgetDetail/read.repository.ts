@@ -18,6 +18,7 @@ import {
   selectBudgetItems,
   selectDepartments,
 } from '@src/common/constants/select-field';
+import { IncreaseBudgetDetailId } from '@src/modules/manage/domain/value-objects/increase-budget-detail-id.vo';
 
 @Injectable()
 export class ReadIncreaseBudgetDetailRepository
@@ -62,7 +63,7 @@ export class ReadIncreaseBudgetDetailRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager, id: number) {
+  private createBaseQuery(manager: EntityManager, id?: number) {
     const selectFields = [
       ...selectBudgetItems,
       ...selectBudgetAccounts,
@@ -88,5 +89,16 @@ export class ReadIncreaseBudgetDetailRepository
       dateColumn: '',
       filterByColumns: [],
     };
+  }
+
+  async findOne(
+    id: IncreaseBudgetDetailId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>> {
+    const item = await this.createBaseQuery(manager)
+      .where('increase_budget_details.id = :id', { id: id.value })
+      .getOneOrFail();
+
+    return this._dataAccessMapper.toEntity(item);
   }
 }

@@ -6,14 +6,15 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { CreateIncreaseBudgetDetailDto } from '../dto/create/increaseBudgetDetail/create.dto';
 import { BudgetItemDataMapper } from './budget-item.mapper';
+import { UpdateIncreaseBudgetDetailDto } from '../dto/create/increaseBudgetDetail/update.dto';
 
 @Injectable()
 export class IncreaseBudgetDetailDataMapper {
   constructor(private readonly _budget_item: BudgetItemDataMapper) {}
   /** Mapper Dto To Entity */
   toEntity(
-    dto: CreateIncreaseBudgetDetailDto,
-    increase_budget_id: number,
+    dto: CreateIncreaseBudgetDetailDto | UpdateIncreaseBudgetDetailDto,
+    increase_budget_id?: number,
   ): IncreaseBudgetDetailEntity {
     const builder = IncreaseBudgetDetailEntity.builder();
 

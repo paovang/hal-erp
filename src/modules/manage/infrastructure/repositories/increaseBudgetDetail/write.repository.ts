@@ -27,6 +27,28 @@ export class WriteIncreaseBudgetDetailRepository
     );
   }
 
+  async update(
+    entity: IncreaseBudgetDetailEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
+
+    try {
+      await manager.update(
+        IncreaseBudgetDetailOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async delete(
     id: IncreaseBudgetDetailId,
     manager: EntityManager,
