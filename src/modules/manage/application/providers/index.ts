@@ -80,4 +80,5 @@ export const AllRegisterProviders: Provider[] = [
   ...IncreaseBudgetProvider,
   ...IncreaseBudgetDetailProvider,
   ...IncreaseBudgetFileProvider,
+  ...UserTypeProvider,
 ];
