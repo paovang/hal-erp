@@ -29,11 +29,9 @@ export class GetAllByDepartmentQueryHandler
         HttpStatus.BAD_REQUEST,
       );
     }
-
     await findOneOrFail(query.manager, DepartmentUserOrmEntity, {
-      id: query.department_id,
+      department_id: query.department_id,
     });
-
     return await this._readRepo.findAllByDepartment(
       new DepartmentUserId(query.department_id),
       query.manager,

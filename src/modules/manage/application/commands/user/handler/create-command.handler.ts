@@ -1,6 +1,7 @@
 import { Inject } from '@nestjs/common';
 import {
   USER_SIGNATURE_IMAGE_FOLDER,
+  USER_TYPE_APPLICATION_SERVICE,
   WRITE_USER_REPOSITORY,
   WRITE_USER_SIGNATURE_REPOSITORY,
 } from '../../../constants/inject-key.const';
@@ -32,6 +33,9 @@ import * as path from 'path';
 import { createMockMulterFile } from '@src/common/utils/services/file-utils.service';
 import { access, unlink } from 'fs/promises';
 import { constants } from 'fs';
+import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
+import { UserTypeEnum } from '@src/common/constants/user-type.enum';
+import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -41,6 +45,7 @@ export class CreateCommandHandler
     @Inject(WRITE_USER_REPOSITORY)
     private readonly _write: IWriteUserRepository,
     private readonly _dataMapper: UserDataMapper,
+    private readonly _userTypeDataMapper: UserTypeDataMapper,
     private readonly _dataUserSignatureMapper: UserSignatureDataMapper,
     @Inject(WRITE_USER_SIGNATURE_REPOSITORY)
     private readonly _writeUserSignature: IWriteUserSignatureRepository,
@@ -52,6 +57,8 @@ export class CreateCommandHandler
     private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
+    @Inject(USER_TYPE_APPLICATION_SERVICE)
+    private readonly _userTypeRepo: IWriteUserTypeRepository,
   ) {}
 
   async execute(query: CreateCommand): Promise<ResponseResult<UserEntity>> {
@@ -119,14 +126,21 @@ export class CreateCommandHandler
             mergeData,
             user_id,
           );
-
           await this._writeUserSignature.create(userSignatureEntity, manager);
           if (mockFile) {
             await access(mockFile.path, constants.F_OK);
             await unlink(mockFile.path);
           }
         }
-
+        const insertType = {
+          user_id: user_id,
+          name: UserTypeEnum.ADMIN,
+        };
+        const entityType = this._userTypeDataMapper.toEntity(
+          insertType,
+          user_id,
+        );
+        await this._userTypeRepo.create(entityType, manager);
         return user;
       },
     );

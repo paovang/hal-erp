@@ -1,6 +1,7 @@
 import { PermissionEntity } from '../entities/permission.entity';
 import { RoleEntity } from '../entities/role.entity';
 import { UserSignatureEntity } from '../entities/user-signature.entity';
+import { UserTypeEntity } from '../entities/user-type.entity';
 import { UserEntity } from '../entities/user.entity';
 import { UserId } from '../value-objects/user-id.vo';
 
@@ -18,6 +19,7 @@ export class UserBuilder {
   roles: RoleEntity[];
   permissions: PermissionEntity[] | null;
   userSignature: UserSignatureEntity | null = null;
+  userType: UserTypeEntity[] | null = null;
 
   setUserId(value: UserId): this {
     this.userId = value;
@@ -81,6 +83,10 @@ export class UserBuilder {
 
   setRoles(roles: RoleEntity[]): this {
     this.roles = roles;
+    return this;
+  }
+  setUserType(type: UserTypeEntity[] | null): this {
+    this.userType = type;
     return this;
   }
 

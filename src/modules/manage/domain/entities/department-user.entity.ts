@@ -4,6 +4,7 @@ import { DepartmentUserId } from '../value-objects/department-user-id.vo';
 import { DepartmentEntity } from './department.entity';
 import { PositionEntity } from './position.entity';
 import { UserEntity } from './user.entity';
+import { UserTypeEntity } from './user-type.entity';
 
 export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _departmentId: number;
@@ -18,6 +19,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _user: UserEntity;
+  private readonly _user_type: UserTypeEntity[] | null;
   private readonly _department: DepartmentEntity;
   private readonly _position: PositionEntity;
   private readonly _line_manager: UserEntity | null;
@@ -37,6 +39,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._user = builder.user;
+    this._user_type = builder.user_type;
     this._department = builder.department ?? null;
     this._position = builder.position ?? null;
     this._line_manager = builder.line_manager ?? null;
@@ -96,6 +99,10 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
 
   get user(): UserEntity {
     return this._user;
+  }
+
+  get user_type(): UserTypeEntity[] | null {
+    return this._user_type;
   }
 
   get line_manager(): UserEntity | null {

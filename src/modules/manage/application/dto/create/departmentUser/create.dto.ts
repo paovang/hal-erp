@@ -12,6 +12,7 @@ import {
   Matches,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
+// import { UserTypeEnum } from '@src/common/constants/user-type.enum';
 
 export class CreateDepartmentUserDto {
   @ApiProperty()
@@ -51,6 +52,17 @@ export class CreateDepartmentUserDto {
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   // @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly positionId: number;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  // @IsEnum(UserTypeEnum, {
+  //   message: i18nValidationMessage('validation.IS_ENUM'),
+  // })
+  readonly user_type: string[];
 
   @ApiProperty()
   @IsOptional()

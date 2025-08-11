@@ -9,13 +9,16 @@ import { Injectable } from '@nestjs/common';
 import { RoleDataAccessMapper } from './role.mapper';
 import { PermissionDataAccessMapper } from './permission.mapper';
 import { UserSignatureDataAccessMapper } from './user-signature.mapper';
+import { UserTypeDataAccessMapper } from './user-type.mapper';
 
 @Injectable()
 export class UserDataAccessMapper {
   constructor(
     private readonly roleMapper: RoleDataAccessMapper,
     private readonly permissionMapper: PermissionDataAccessMapper,
+    private readonly userTypeMapper: UserTypeDataAccessMapper,
     private readonly userSignature: UserSignatureDataAccessMapper,
+    // private readonly userTypeMapper: UserTypeDataAccessMapper,
   ) {}
   toOrmEntity(userEntity: UserEntity, method: OrmEntityMethod): UserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
@@ -67,7 +70,12 @@ export class UserDataAccessMapper {
 
       builder.setPermissions(this.permissionMapper.toEntities(permissions));
     }
-
+    if (ormData?.user_types) {
+      // console.log('type:', ormData.user_types);
+      builder.setUserType(
+        ormData?.user_types.map((type) => this.userTypeMapper.toEntity(type)),
+      );
+    }
     return builder.build();
   }
 }

@@ -35,6 +35,7 @@ import { UnitOrmEntity } from './typeorm/unit.orm';
 import { UserApprovalStepOrmEntity } from './typeorm/user-approval-step.orm';
 import { UserApprovalOrmEntity } from './typeorm/user-approval.orm';
 import { UserSignatureOrmEntity } from './typeorm/user-signature.orm';
+import { UserTypeOrmEntity } from './typeorm/user-type.orm';
 import { UserOrmEntity } from './typeorm/user.orm';
 import { VatOrmEntity } from './typeorm/vat.orm';
 import { VendorOrmEntity } from './typeorm/vendor.orm';
@@ -82,4 +83,5 @@ export const models = [
   BankOrmEntity,
   DocumentAttachmentOrmEntity,
   DocumentTransactionOrmEntity,
+  UserTypeOrmEntity,
 ];

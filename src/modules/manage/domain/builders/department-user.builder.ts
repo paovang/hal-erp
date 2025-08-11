@@ -1,6 +1,7 @@
 import { DepartmentUserEntity } from '../entities/department-user.entity';
 import { DepartmentEntity } from '../entities/department.entity';
 import { PositionEntity } from '../entities/position.entity';
+import { UserTypeEntity } from '../entities/user-type.entity';
 import { UserEntity } from '../entities/user.entity';
 import { DepartmentUserId } from '../value-objects/department-user-id.vo';
 
@@ -19,6 +20,7 @@ export class DepartmentUserBuilder {
   deletedAt!: Date | null;
   department: DepartmentEntity;
   user: UserEntity;
+  user_type: UserTypeEntity[] | null;
   position: PositionEntity;
   line_manager: UserEntity;
 
@@ -59,6 +61,11 @@ export class DepartmentUserBuilder {
 
   setTel(tel: string): this {
     this.tel = tel;
+    return this;
+  }
+
+  setUserType(user_type: UserTypeEntity[] | null): this {
+    this.user_type = user_type;
     return this;
   }
 

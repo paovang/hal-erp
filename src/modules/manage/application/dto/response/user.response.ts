@@ -32,6 +32,9 @@ export class UserResponse {
   user_signature: UserSignatureResponse | null;
 
   @ApiProperty()
+  user_types: any[];
+
+  @ApiProperty()
   roles: RoleResponse[];
 
   @ApiProperty()

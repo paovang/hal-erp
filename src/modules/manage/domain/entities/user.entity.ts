@@ -4,6 +4,7 @@ import { Entity } from '@src/common/domain/entities/entity';
 import { RoleEntity } from './role.entity';
 import { PermissionEntity } from './permission.entity';
 import { UserSignatureEntity } from './user-signature.entity';
+import { UserTypeEntity } from './user-type.entity';
 
 export class UserEntity extends Entity<UserId> {
   private readonly _username: string;
@@ -18,6 +19,7 @@ export class UserEntity extends Entity<UserId> {
   private readonly _roles: RoleEntity[];
   private readonly _permissions: PermissionEntity[] | null;
   private readonly _userSignature: UserSignatureEntity | null;
+  private readonly _userType: UserTypeEntity[] | null;
 
   private constructor(builder: UserBuilder) {
     super();
@@ -34,6 +36,7 @@ export class UserEntity extends Entity<UserId> {
     this._roles = builder.roles;
     this._permissions = builder.permissions ?? null;
     this._userSignature = builder.userSignature ?? null;
+    this._userType = builder.userType ?? null;
   }
 
   get username(): string {
@@ -80,6 +83,9 @@ export class UserEntity extends Entity<UserId> {
     return this._roles;
   }
 
+  get user_type(): UserTypeEntity[] | null {
+    return this._userType;
+  }
   get permissions(): PermissionEntity[] | null {
     return this._permissions;
   }

@@ -5,6 +5,7 @@ import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/depart
 import { HttpStatus, Inject } from '@nestjs/common';
 import {
   USER_SIGNATURE_IMAGE_FOLDER,
+  USER_TYPE_APPLICATION_SERVICE,
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
   WRITE_USER_SIGNATURE_REPOSITORY,
@@ -39,6 +40,9 @@ import { UserSignatureDataMapper } from '../../../mappers/user-signature.mapper'
 import { IWriteUserSignatureRepository } from '@src/modules/manage/domain/ports/output/user-signature-repository.interface';
 import { UserSignatureId } from '@src/modules/manage/domain/value-objects/user-signature-id.vo';
 import { UserSignatureOrmEntity } from '@src/common/infrastructure/database/typeorm/user-signature.orm';
+import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
+import { UserTypeEnum } from '@src/common/constants/user-type.enum';
+import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -48,6 +52,7 @@ export class UpdateCommandHandler
     @Inject(WRITE_DEPARTMENT_USER_REPOSITORY)
     private readonly _write: IWriteDepartmentUserRepository,
     private readonly _dataMapper: DepartmentUserDataMapper,
+    private readonly _userTypeDataMapper: UserTypeDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     private readonly _dataUserSignatureMapper: UserSignatureDataMapper,
@@ -63,6 +68,8 @@ export class UpdateCommandHandler
     private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
+    @Inject(USER_TYPE_APPLICATION_SERVICE)
+    private readonly _userTypeRepo: IWriteUserTypeRepository,
   ) {}
 
   async execute(query: UpdateCommand): Promise<any> {
@@ -144,6 +151,24 @@ export class UpdateCommandHandler
 
           await this._writeUserSignature.update(userSignatureEntity, manager);
         }
+        // const user_id = (result as any)._userID;
+
+        // console.log('insert:', query.dto);
+        const mergeUserType = query.dto.user_type.map((userType) => ({
+          name: userType,
+        }));
+        const usertTypeEntities = [];
+        for (const userTypeDto of mergeUserType) {
+          const entity = this._userTypeDataMapper.toEntity(
+            {
+              name: userTypeDto.name as UserTypeEnum, // Cast to enum
+            },
+            query.id,
+          );
+          usertTypeEntities.push(entity);
+        }
+        // Save the mapped user types
+        await this._userTypeRepo.update(usertTypeEntities, manager);
 
         return result;
       },

@@ -129,7 +129,7 @@ export class UserDataMapper {
           return permission;
         })
       : [];
-
+    response.user_types = entity.user_type?.map((type) => type.name) ?? [];
     return response;
   }
 }
