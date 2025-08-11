@@ -27,12 +27,17 @@ export class LoginCommandHandler
         'userHasPermissions.permission',
       ],
     });
+    const fullUserType = await this.userRepository.findOne({
+      where: { id: result.user.id },
+      relations: ['user_types', 'user_types.user'],
+    });
 
     // Step 3: Extract permissions and role names
     const permissions =
       fullUser?.userHasPermissions?.map((uhp) => uhp.permission?.name) ?? [];
 
     const roleNames = fullUser?.roles?.map((role) => role.name) ?? [];
+    const userType = fullUserType?.user_types?.map((type) => type.name) ?? [];
 
     const { userHasPermissions, ...userWithoutPermissions } = fullUser ?? {};
 
@@ -42,6 +47,7 @@ export class LoginCommandHandler
         ...userWithoutPermissions,
         permission: permissions,
         roles: roleNames,
+        user_type: userType,
       },
     };
   }

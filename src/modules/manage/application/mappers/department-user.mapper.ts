@@ -9,6 +9,7 @@ import { UserDataMapper } from './user.mapper';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { UserTypeDataMapper } from './user-type.mapper';
 
 @Injectable()
 export class DepartmentUserDataMapper {
@@ -16,6 +17,7 @@ export class DepartmentUserDataMapper {
     private readonly departmentDataMapper: DepartmentDataMapper,
     private readonly positionDataMapper: PositionDataMapper,
     private readonly userDataMapper: UserDataMapper,
+    private readonly userTypeDataMapper: UserTypeDataMapper,
   ) {}
 
   /** Mapper Dto To Entity */
@@ -45,6 +47,10 @@ export class DepartmentUserDataMapper {
     if (dto.tel) {
       builder.setTel(dto.tel);
     }
+
+    // if (dto.user_type) {
+    //   builder.setTel(dto.user_type);
+    // }
 
     // Set password only if it's a create operation and password exists in dto
     if (isCreate && 'password' in dto && dto.password) {
@@ -92,6 +98,11 @@ export class DepartmentUserDataMapper {
     response.user = entity.user
       ? this.userDataMapper.toResponse(entity.user)
       : null;
+
+    if (response.user) {
+      response.user.user_types =
+        entity.user_type?.map((type) => type.name) ?? [];
+    }
 
     response.line_manager = entity.line_manager
       ? this.userDataMapper.toResponse(entity.line_manager)

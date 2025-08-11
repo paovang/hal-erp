@@ -9,12 +9,14 @@ import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { PositionDataAccessMapper } from './position.mapper';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { UserTypeDataAccessMapper } from './user-type.mapper';
 
 @Injectable()
 export class DepartmentUserDataAccessMapper {
   constructor(
     private readonly departmentMapper: DepartmentDataAccessMapper,
     private readonly userMapper: UserDataAccessMapper,
+    private readonly userTypeMapper: UserTypeDataAccessMapper,
     private readonly positionMapper: PositionDataAccessMapper,
   ) {}
 
@@ -24,7 +26,6 @@ export class DepartmentUserDataAccessMapper {
   ): DepartmentUserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = departmentUserEntity.getId();
-
     const mediaOrmEntity = new DepartmentUserOrmEntity();
     if (id) {
       mediaOrmEntity.id = id.value;
@@ -35,6 +36,8 @@ export class DepartmentUserDataAccessMapper {
     mediaOrmEntity.user_id = departmentUserEntity.userId;
     mediaOrmEntity.line_manager_id =
       departmentUserEntity.line_manager_id ?? null;
+    // mediaOrmEntity.user_id =
+    //   departmentUserEntity.user_type?.map((type) => type.user_id) ?? 0;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at =
         departmentUserEntity.createdAt ?? new Date(now);
@@ -67,6 +70,13 @@ export class DepartmentUserDataAccessMapper {
     }
     if (ormData.line_manager) {
       builder.setLineManager(this.userMapper.toEntity(ormData.line_manager));
+    }
+    if (ormData?.users?.user_types) {
+      builder.setUserType(
+        ormData?.users?.user_types.map((type) =>
+          this.userTypeMapper.toEntity(type),
+        ),
+      );
     }
 
     return builder.build();

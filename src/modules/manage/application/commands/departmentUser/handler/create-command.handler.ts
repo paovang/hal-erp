@@ -4,6 +4,7 @@ import { ResponseResult } from '@common/infrastructure/pagination/pagination.int
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import {
   USER_SIGNATURE_IMAGE_FOLDER,
+  USER_TYPE_APPLICATION_SERVICE,
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
   WRITE_USER_SIGNATURE_REPOSITORY,
@@ -34,6 +35,9 @@ import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.
 import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/permission.orm';
 import { UserSignatureDataMapper } from '../../../mappers/user-signature.mapper';
 import { IWriteUserSignatureRepository } from '@src/modules/manage/domain/ports/output/user-signature-repository.interface';
+import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
+import { UserTypeEnum } from '@src/common/constants/user-type.enum';
+import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -43,6 +47,7 @@ export class CreateCommandHandler
     @Inject(WRITE_DEPARTMENT_USER_REPOSITORY)
     private readonly _write: IWriteDepartmentUserRepository,
     private readonly _dataMapper: DepartmentUserDataMapper,
+    private readonly _userTypeDataMapper: UserTypeDataMapper,
     private readonly _dataUserMapper: UserDataMapper,
     @Inject(WRITE_USER_REPOSITORY)
     private readonly _writeUser: IWriteUserRepository,
@@ -54,6 +59,8 @@ export class CreateCommandHandler
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
     private readonly _userContextService: UserContextService,
+    @Inject(USER_TYPE_APPLICATION_SERVICE)
+    private readonly _userTypeRepo: IWriteUserTypeRepository,
     @Inject(USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY)
     private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)
@@ -90,7 +97,6 @@ export class CreateCommandHandler
       this._dataSource,
       async (manager) => {
         const hashedPassword = await bcrypt.hash(query.dto.password, 10);
-
         const dtoWithHashedPassword = {
           ...query.dto,
           password: hashedPassword,
@@ -128,6 +134,24 @@ export class CreateCommandHandler
         );
         // departmentUserEntity.signature_file = s3ImageResponse.fileKey;
         const result = await this._write.create(departmentUserEntity, manager);
+        const user_id = (result as any)._userID;
+
+        // console.log('insert:', query.dto);
+        const mergeUserType = query.dto.user_type.map((userType) => ({
+          name: userType,
+        }));
+        const usertTypeEntities = [];
+        for (const userTypeDto of mergeUserType) {
+          const entity = this._userTypeDataMapper.toEntity(
+            {
+              name: userTypeDto.name as UserTypeEnum, // Cast to enum
+            },
+            user_id,
+          );
+          usertTypeEntities.push(entity);
+        }
+        // Save the mapped user types
+        await this._userTypeRepo.create(usertTypeEntities, manager);
         return result;
       },
     );

@@ -61,7 +61,7 @@ export class ReadDepartmentUserRepository
       .leftJoin('department_users.line_manager', 'line_manager')
       .leftJoin('users.user_signatures', 'user_signatures')
       .leftJoin('users.userHasPermissions', 'user_has_permissions')
-      .leftJoinAndSelect('users.user_types', 'user_types')
+      .leftJoin('users.user_types', 'user_types')
       .leftJoin('user_has_permissions.permission', 'permissions')
       .leftJoin('department_users.positions', 'positions')
       .leftJoin('users.roles', 'roles')
@@ -91,8 +91,7 @@ export class ReadDepartmentUserRepository
         'line_manager.email',
         'line_manager.tel',
 
-        // 'user_types.name',
-        // 'user_types.user_id',
+        'user_types.name',
       ]);
 
     if (departmentId && departmentId != null) {

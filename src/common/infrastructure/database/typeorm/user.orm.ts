@@ -24,6 +24,7 @@ import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 import { ReceiptOrmEntity } from './receipt.orm';
 import { DocumentAttachmentOrmEntity } from './document-attachment.orm';
 import { IncreaseBudgetOrmEntity } from './increase-budget.orm';
+import { UserTypeOrmEntity } from './user-type.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -91,6 +92,9 @@ export class UserOrmEntity {
 
   @OneToMany(() => DocumentOrmEntity, (documents) => documents.users)
   documents: Relation<DocumentOrmEntity[]>;
+
+  @OneToMany(() => UserTypeOrmEntity, (type) => type.user)
+  user_types: Relation<UserTypeOrmEntity[]>;
 
   @ManyToMany(() => RoleOrmEntity, (role) => role.users, {
     onDelete: 'CASCADE',
