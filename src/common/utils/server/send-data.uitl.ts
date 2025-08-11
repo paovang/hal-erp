@@ -59,7 +59,7 @@ export async function sendApprovalRequest(
 
     if (response.status !== 200 && response.status !== 201) {
       throw new ManageDomainException(
-        'errors.create_pr',
+        'errors.send_request',
         HttpStatus.BAD_REQUEST,
         { property: response.data },
       );
