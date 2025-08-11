@@ -50,7 +50,10 @@ import { IWriteUserApprovalRepository } from '@src/modules/manage/domain/ports/o
 import { UserApprovalDataMapper } from '../../../mappers/user-approval.mapper';
 import { IWriteUserApprovalStepRepository } from '@src/modules/manage/domain/ports/output/user-approval-step-repository.interface';
 import { UserApprovalStepDataMapper } from '../../../mappers/user-approval-step.mapper';
-import { STATUS_KEY } from '../../../constants/status-key.const';
+import {
+  EnumRequestApprovalType,
+  STATUS_KEY,
+} from '../../../constants/status-key.const';
 import { CreateUserApprovalDto } from '../../../dto/create/userApproval/create.dto';
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
@@ -62,6 +65,9 @@ import { DocumentApproverDataMapper } from '../../../mappers/document-approver.m
 import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 import { assertOrThrow } from '@src/common/utils/assert.util';
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
+import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
+import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -138,7 +144,8 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        const user_id = this._userContextService.getAuthUser()?.user.id;
+        const user = this._userContextService.getAuthUser()?.user;
+        const user_id = user.id;
 
         const department = await findOneOrFail(
           query.manager,
@@ -245,6 +252,7 @@ export class CreateCommandHandler
           document_id,
           total,
           user_id,
+          user,
         );
 
         return po_result;
@@ -258,7 +266,23 @@ export class CreateCommandHandler
     document_id: number,
     total: number,
     user_id: number,
+    user: UserEntity,
   ): Promise<void> {
+    const department = await findOneOrFail(manager, DepartmentUserOrmEntity, {
+      user_id: user_id,
+    });
+
+    const department_id = (department as any).department_id;
+
+    const get_department_name = await findOneOrFail(
+      manager,
+      DepartmentOrmEntity,
+      {
+        id: department_id,
+      },
+    );
+
+    const department_name = (get_department_name as any).name;
     const approval_workflow = await findOneOrFail(
       manager,
       ApprovalWorkflowOrmEntity,
@@ -303,6 +327,16 @@ export class CreateCommandHandler
     );
 
     const user_approval_step_id = (user_approval_step as any)._id._value;
+
+    // send approval request server to server
+    await sendApprovalRequest(
+      user_approval_step_id,
+      total,
+      user,
+      user_id,
+      department_name,
+      EnumRequestApprovalType.PO,
+    );
 
     await handleApprovalStep({
       a_w_s,

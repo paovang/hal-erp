@@ -37,6 +37,7 @@ import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/t
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import {
   EnumPaymentType,
+  EnumRequestApprovalType,
   SelectStatus,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
@@ -56,6 +57,8 @@ import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/re
 import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
 import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
+import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -131,12 +134,23 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        const user_id = this.getUserId();
+        const user = this._userContextService.getAuthUser()?.user;
+        const user_id = user.id;
 
         const department_id = await this.getDepartmentId(
           query.manager,
           user_id,
         );
+
+        const get_department_name = await findOneOrFail(
+          manager,
+          DepartmentOrmEntity,
+          {
+            id: department_id,
+          },
+        );
+
+        const department_name = (get_department_name as any).name;
 
         const document_number = await this.generateDocumentNumber(
           query.manager,
@@ -178,6 +192,16 @@ export class CreateCommandHandler
           manager,
         );
 
+        // send approval request server to server
+        await sendApprovalRequest(
+          user_approval_step_id,
+          total,
+          user,
+          user_id,
+          department_name,
+          EnumRequestApprovalType.RC,
+        );
+
         await this.handleApprovalStepCall(
           a_w_s,
           total,
@@ -189,11 +213,6 @@ export class CreateCommandHandler
         return responseReceipt;
       },
     );
-  }
-
-  // ฟังก์ชันย่อยแต่ละตัว
-  private getUserId(): number {
-    return this._userContextService.getAuthUser()?.user.id;
   }
 
   private async getDepartmentId(

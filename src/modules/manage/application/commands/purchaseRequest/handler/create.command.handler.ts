@@ -50,12 +50,17 @@ import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/databa
 import { IWriteUserApprovalStepRepository } from '@src/modules/manage/domain/ports/output/user-approval-step-repository.interface';
 import { UserApprovalStepDataMapper } from '../../../mappers/user-approval-step.mapper';
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
-import { STATUS_KEY } from '../../../constants/status-key.const';
+import {
+  EnumRequestApprovalType,
+  STATUS_KEY,
+} from '../../../constants/status-key.const';
 import { CreateUserApprovalDto } from '../../../dto/create/userApproval/create.dto';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
 import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 
 interface CustomApprovalDto
   extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
@@ -67,11 +72,6 @@ interface CustomApprovalDto
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
   status: number;
 }
-
-// interface CustomDocumentApprover {
-//   user_approval_step_id: number;
-//   user_id: number;
-// }
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -179,10 +179,11 @@ export class CreateCommandHandler
           '../../../../../../../assets/uploads/',
         );
 
-        const user_id = this._userContextService.getAuthUser()?.user.id;
+        const user = this._userContextService.getAuthUser()?.user;
+        const user_id = user.id;
 
         const department = await findOneOrFail(
-          query.manager,
+          manager,
           DepartmentUserOrmEntity,
           {
             user_id: user_id,
@@ -190,6 +191,16 @@ export class CreateCommandHandler
         );
 
         const department_id = (department as any).department_id;
+
+        const get_department_name = await findOneOrFail(
+          manager,
+          DepartmentOrmEntity,
+          {
+            id: department_id,
+          },
+        );
+
+        const department_name = (get_department_name as any).name;
 
         const DEntity = this._dataDMapper.toEntity(
           query.dto.document,
@@ -276,6 +287,16 @@ export class CreateCommandHandler
         );
 
         const user_approval_step_id = (user_approval_step as any)._id._value;
+
+        // send approval request server to server
+        await sendApprovalRequest(
+          user_approval_step_id,
+          total,
+          user,
+          user_id,
+          department_name,
+          EnumRequestApprovalType.PR,
+        );
 
         await handleApprovalStep({
           a_w_s,

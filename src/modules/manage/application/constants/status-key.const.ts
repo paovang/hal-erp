@@ -70,3 +70,10 @@ export enum EnumBudgetType {
   EXPENDITURE = 'expenditure',
   ADVANCE = 'advance',
 }
+
+// request approval type
+export enum EnumRequestApprovalType {
+  PR = 'PR',
+  PO = 'PO',
+  RC = 'RC',
+}
