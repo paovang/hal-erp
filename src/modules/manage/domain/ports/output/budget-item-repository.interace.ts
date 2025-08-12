@@ -13,6 +13,20 @@ export interface IReadBudgetItemRepository {
     id: BudgetItemId,
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetItemEntity>>;
+
+  getItemId(
+    id: BudgetItemId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>>;
+
+  report(
+    dto: BudgetItemQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>>;
+
+  calculate(id: number, manager: EntityManager): Promise<number>;
+
+  getTotal(id: number, manager: EntityManager): Promise<number>;
 }
 
 export interface IWriteBudgetItemRepository {

@@ -39,11 +39,29 @@ export class BudgetItemDataAccessMapper {
   }
 
   toEntity(row: BudgetItemOrmEntity): BudgetItemEntity {
+    const totalAllocated = Array.isArray(row.increase_budget_detail)
+      ? row.increase_budget_detail.reduce(
+          (sum, detail) => sum + Number(detail.allocated_amount ?? 0),
+          0,
+        )
+      : 0;
+
+    const totalUsedAmount = Array.isArray(row.document_transactions)
+      ? row.document_transactions.reduce(
+          (sum, transaction) => sum + Number(transaction.amount ?? 0),
+          0,
+        )
+      : 0;
+
+    const balance = totalAllocated - totalUsedAmount;
+
     const builder = BudgetItemEntity.builder()
       .setBudgetItemId(new BudgetItemId(row.id))
       .setName(row.name ?? '')
       .setBudgetAccountId(row.budget_account_id ?? 0)
-      .setAllocatedAmount(row.allocated_amount ?? 0)
+      .setAllocatedAmount(totalAllocated)
+      .setUsedAmount(totalUsedAmount)
+      .setBalance(balance)
       .setDescription(row.description ?? '')
       .setCreatedAt(row.created_at)
       .setUpdatedAt(row.updated_at);
@@ -53,16 +71,6 @@ export class BudgetItemDataAccessMapper {
         this.budgetAccount.toEntity(row.budget_accounts),
       );
     }
-
-    // if (Array.isArray(row.budget_item_details)) {
-    //   const transformedDetails: BudgetItemDetailEntity[] = [];
-
-    //   for (const detail of row.budget_item_details) {
-    //     transformedDetails.push(this.details.toEntity(detail));
-    //   }
-
-    //   builder.setDetails(transformedDetails);
-    // }
 
     return builder.build();
   }

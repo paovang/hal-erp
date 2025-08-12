@@ -16,6 +16,8 @@ export interface IBudgetItemServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<BudgetItemEntity>>;
 
+  GetItemId(id: number): Promise<ResponseResult<BudgetItemEntity>>;
+
   create(
     dto: CreateBudgetItemDto,
     manager?: EntityManager,
@@ -28,4 +30,9 @@ export interface IBudgetItemServiceInterface {
   ): Promise<ResponseResult<BudgetItemEntity>>;
 
   delete(id: number, manager?: EntityManager): Promise<void>;
+
+  getReportBudget(
+    query: BudgetItemQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>>;
 }

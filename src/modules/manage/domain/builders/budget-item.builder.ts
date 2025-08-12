@@ -7,6 +7,8 @@ export class BudgetItemBuilder {
   name: string;
   budgetAccountId: number;
   allocated_amount: number;
+  use_amount: number;
+  balance: number;
   description: string | null;
   createdAt!: Date;
   updatedAt!: Date | null;
@@ -32,6 +34,16 @@ export class BudgetItemBuilder {
 
   setAllocatedAmount(allocated_amount: number): this {
     this.allocated_amount = allocated_amount;
+    return this;
+  }
+
+  setUsedAmount(use_amount: number): this {
+    this.use_amount = use_amount;
+    return this;
+  }
+
+  setBalance(balance: number): this {
+    this.balance = balance;
     return this;
   }
 

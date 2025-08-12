@@ -14,6 +14,8 @@ export class BudgetItemEntity extends Entity<BudgetItemId> {
   // private readonly _details: BudgetItemDetailEntity[] | null;
   private readonly _count_details: number | null;
   private readonly _budget_account: BudgetAccountEntity | null;
+  private _use_amount: number;
+  private _balance: number;
 
   private constructor(builder: BudgetItemBuilder) {
     super();
@@ -28,6 +30,8 @@ export class BudgetItemEntity extends Entity<BudgetItemId> {
     // this._details = builder.details ?? null;
     this._count_details = builder.count_details ?? null;
     this._budget_account = builder.budgetAccount ?? null;
+    this._use_amount = builder.use_amount ?? 0;
+    this._balance = builder.balance ?? 0;
   }
 
   get budgetAccountId(): number {
@@ -43,6 +47,14 @@ export class BudgetItemEntity extends Entity<BudgetItemId> {
 
   get description(): string | null {
     return this._description;
+  }
+
+  get useAmount(): number {
+    return this._use_amount;
+  }
+
+  get balance(): number {
+    return this._balance;
   }
 
   get createdAt(): Date {

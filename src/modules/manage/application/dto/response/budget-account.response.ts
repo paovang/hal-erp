@@ -18,8 +18,8 @@ export class BudgetAccountResponse {
   @ApiProperty()
   fiscal_year: number;
 
-  @ApiProperty()
-  allocated_amount: number;
+  // @ApiProperty()
+  // allocated_amount: number;
 
   @ApiProperty()
   type: EnumBudgetType;

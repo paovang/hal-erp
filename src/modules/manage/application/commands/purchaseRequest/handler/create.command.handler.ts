@@ -63,7 +63,10 @@ import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm
 import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 
 interface CustomApprovalDto
-  extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
+  extends Omit<
+    ApprovalDto,
+    'type' | 'files' | 'purchase_order_items' | 'otp' | 'approval_id' | 'select'
+  > {
   user_approval_id: number;
   requires_file_upload: boolean;
   step_number: number;

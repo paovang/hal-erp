@@ -6,6 +6,7 @@ import { HttpStatus, Inject } from '@nestjs/common';
 import {
   FILE_FOLDER,
   LENGTH_DOCUMENT_TRANSACTION_CODE,
+  READ_BUDGET_ITEM_REPOSITORY,
   WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_ATTACHMENT_REPOSITORY,
   WRITE_DOCUMENT_TRANSACTION_REPOSITORY,
@@ -73,9 +74,15 @@ import {
 import { CodeGeneratorUtil } from '@src/common/utils/code-generator.util';
 import { DocumentTransactionOrmEntity } from '@src/common/infrastructure/database/typeorm/document-transaction.orm';
 import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item.orm';
+import { DocumentStatusOrmEntity } from '@src/common/infrastructure/database/typeorm/document-statuse.orm';
+import { IReadBudgetItemRepository } from '@src/modules/manage/domain/ports/output/budget-item-repository.interace';
+import { verifyOtp } from '@src/common/utils/server/verify-otp.util';
 
 interface CustomApprovalDto
-  extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
+  extends Omit<
+    ApprovalDto,
+    'type' | 'files' | 'purchase_order_items' | 'otp' | 'approval_id' | 'select'
+  > {
   user_approval_id: number;
   approval_workflow_step_id: number;
   statusId: number;
@@ -121,6 +128,9 @@ export class ApproveStepCommandHandler
     private readonly _writeTransaction: IWriteDocumentTransactionRepository,
     private readonly _dataTransactionMapper: DocumentTransactionDataMapper,
 
+    @Inject(READ_BUDGET_ITEM_REPOSITORY)
+    private readonly _readBudget: IReadBudgetItemRepository,
+
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -150,6 +160,25 @@ export class ApproveStepCommandHandler
           );
         }
 
+        const DocumentStatus = await findOneOrFail(
+          manager,
+          DocumentStatusOrmEntity,
+          {
+            id: query.dto.statusId,
+          },
+        );
+
+        const status = (DocumentStatus as any).name;
+        let tel = user?.tel ? String(user.tel).trim() : '';
+
+        if (!tel.match(/^\d+$/)) {
+          throw new Error('Invalid tel: must contain digits only');
+        }
+
+        if (!tel.startsWith('20')) {
+          tel = '20' + tel;
+        }
+
         const step = await manager.findOne(UserApprovalStepOrmEntity, {
           where: { id: query.stepId },
           relations: ['user_approvals', 'user_approvals.documents'],
@@ -169,6 +198,9 @@ export class ApproveStepCommandHandler
             HttpStatus.BAD_REQUEST,
           );
         }
+
+        // Verify OTP
+        await verifyOtp(query, status, tel);
 
         if (step.requires_file_upload === true) {
           const document_id = step.user_approvals.document_id;
@@ -305,32 +337,67 @@ export class ApproveStepCommandHandler
               roles.includes('budget-admin') ||
               roles.includes('budget-user')
             ) {
-              await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-                id: query.dto.purchase_order_items.id,
-              });
+              let sum_total = 0;
+              for (const item of query.dto.purchase_order_items) {
+                await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                  id: item.id,
+                });
 
-              await findOneOrFail(manager, BudgetItemOrmEntity, {
-                id: query.dto.purchase_order_items.budget_item_id,
-              });
+                await findOneOrFail(manager, BudgetItemOrmEntity, {
+                  id: item.budget_item_id,
+                });
 
-              const itemId = query.dto.purchase_order_items.id;
+                const allBudgetItemIds = query.dto.purchase_order_items.map(
+                  (item) => item.budget_item_id,
+                );
 
-              const POEntity = this._dataPoItemMapper.toEntityForUpdate(
-                query.dto.purchase_order_items,
-              );
+                // Check if all values in the array are the same
+                const [firstBudgetItemId, ...rest] = allBudgetItemIds;
+                if (rest.every((id) => id === firstBudgetItemId)) {
+                  const get_total = await this._readBudget.getTotal(
+                    item.id,
+                    manager,
+                  );
 
-              // Set and validate ID
-              await POEntity.initializeUpdateSetId(
-                new PurchaseOrderItemId(itemId),
-              );
-              await POEntity.validateExistingIdForUpdate();
+                  sum_total += get_total;
+                } else {
+                  const get_total = await this._readBudget.getTotal(
+                    item.id,
+                    manager,
+                  );
 
-              // Final existence check for ID before update
-              await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-                id: POEntity.getId().value,
-              });
+                  sum_total = get_total;
+                }
 
-              await this._writePoItem.update(POEntity, manager);
+                const check_budget = await this._readBudget.calculate(
+                  item.budget_item_id,
+                  manager,
+                );
+
+                if (sum_total > check_budget) {
+                  throw new ManageDomainException(
+                    'errors.insufficient_budget',
+                    HttpStatus.BAD_REQUEST,
+                    { property: 'budget' },
+                  );
+                }
+                const itemId = item.id;
+
+                const POEntity = this._dataPoItemMapper.toEntityForUpdate(item);
+
+                // Set and validate ID
+                await POEntity.initializeUpdateSetId(
+                  new PurchaseOrderItemId(itemId),
+                );
+                await POEntity.validateExistingIdForUpdate();
+
+                // Final existence check for ID before update
+                await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                  id: POEntity.getId().value,
+                });
+
+                await this._writePoItem.update(POEntity, manager);
+              }
             }
 
             total = po.purchase_order_items.reduce(
@@ -599,7 +666,7 @@ export class ApproveStepCommandHandler
         document_id: receipt.document_id!,
         budget_item_detail_id: find_budget_item.id,
         transaction_number: transactionNumber,
-        amount: find_budget_item.allocated_amount ?? 0,
+        amount: item.total ?? 0,
         transaction_type: EnumDocumentTransactionType.COMMIT,
       };
 

@@ -45,6 +45,8 @@ export class BudgetItemDataMapper {
     response.name = entity.name;
     response.budget_account_id = entity.budgetAccountId;
     response.allocated_amount = entity.allocatedAmount;
+    response.use_amount = entity.useAmount;
+    response.balance_amount = entity.balance;
     response.description = entity.description;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

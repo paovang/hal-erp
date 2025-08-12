@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayNotEmpty,
   IsArray,
   IsEnum,
   IsNotEmpty,
@@ -28,13 +29,29 @@ export class ApprovalDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  readonly approval_id: number;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  readonly otp: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsEnum(EnumPrOrPo, { message: i18nValidationMessage('validation.IS_ENUM') })
   readonly type: EnumPrOrPo;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => [UpdatePurchaseOrderBudgetItemDto] })
+  // @ValidateIf((o) => o.type === EnumPrOrPo.PO)
   @ValidateIf((o) => o.type === EnumPrOrPo.PO)
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  purchase_order_items: UpdatePurchaseOrderBudgetItemDto;
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  @ValidateNested({ each: true })
+  @Type(() => UpdatePurchaseOrderBudgetItemDto)
+  purchase_order_items: UpdatePurchaseOrderBudgetItemDto[];
 
   @ApiProperty()
   @IsOptional()

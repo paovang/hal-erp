@@ -15,6 +15,12 @@ export class BudgetItemResponse {
   allocated_amount: number;
 
   @ApiProperty()
+  use_amount: number;
+
+  @ApiProperty()
+  balance_amount: number;
+
+  @ApiProperty()
   description: string | null;
 
   @ApiProperty()

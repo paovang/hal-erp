@@ -84,7 +84,10 @@ interface ReceiptInterItemInterface {
 }
 
 interface CustomApprovalDto
-  extends Omit<ApprovalDto, 'type' | 'files' | 'purchase_order_items'> {
+  extends Omit<
+    ApprovalDto,
+    'type' | 'files' | 'purchase_order_items' | 'otp' | 'approval_id' | 'select'
+  > {
   user_approval_id: number;
   requires_file_upload: boolean;
   step_number: number;

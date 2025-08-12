@@ -29,9 +29,9 @@ export class BudgetAccountDataMapper {
       builder.setFiscalYear(dto.fiscal_year);
     }
 
-    if (dto.allocated_amount) {
-      builder.setAllocatedAmount(dto.allocated_amount);
-    }
+    // if (dto.allocated_amount) {
+    //   builder.setAllocatedAmount(dto.allocated_amount);
+    // }
 
     if (dto.departmentId) {
       builder.setDepartmentId(dto.departmentId);
@@ -52,7 +52,7 @@ export class BudgetAccountDataMapper {
     response.name = entity.name;
     response.department_id = Number(entity.departmentId);
     response.fiscal_year = entity.fiscal_year;
-    response.allocated_amount = entity.allocated_amount;
+    // response.allocated_amount = entity.allocated_amount;
     response.type = entity.type;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

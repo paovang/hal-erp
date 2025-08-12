@@ -27,7 +27,7 @@ export class BudgetAccountDataAccessMapper {
     mediaOrmEntity.code = budgetAccountEntity.code;
     mediaOrmEntity.name = budgetAccountEntity.name;
     mediaOrmEntity.fiscal_year = budgetAccountEntity.fiscal_year;
-    mediaOrmEntity.allocated_amount = budgetAccountEntity.allocated_amount;
+    // mediaOrmEntity.allocated_amount = budgetAccountEntity.allocated_amount;
     mediaOrmEntity.department_id = budgetAccountEntity.departmentId;
     mediaOrmEntity.type = budgetAccountEntity.type;
     if (method === OrmEntityMethod.CREATE) {
@@ -45,7 +45,7 @@ export class BudgetAccountDataAccessMapper {
       .setCode(ormData.code ?? '')
       .setName(ormData.name ?? '')
       .setFiscalYear(ormData.fiscal_year ?? 0)
-      .setAllocatedAmount(ormData.allocated_amount ?? 0)
+      // .setAllocatedAmount(ormData.allocated_amount ?? 0)
       .setType(ormData.type ?? EnumBudgetType.EXPENDITURE)
       .setDepartmentId(ormData.department_id ?? 0)
       .setCreatedAt(ormData.created_at)

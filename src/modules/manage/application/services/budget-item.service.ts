@@ -13,6 +13,8 @@ import { DeleteCommand } from '../commands/BudgetItem/delete.command';
 import { CreateBudgetItemDto } from '../dto/create/BudgetItem/create.dto';
 import { BudgetItemQueryDto } from '../dto/query/budget-item.dto';
 import { UpdateBudgetItemDto } from '../dto/create/BudgetItem/update.dto';
+import { GetReportQuery } from '../queries/BudgetItem/report.query';
+import { GetItemIdQuery } from '../queries/BudgetItem/get-item-id.query';
 
 @Injectable()
 export class BudgetItemService implements IBudgetItemServiceInterface {
@@ -22,7 +24,6 @@ export class BudgetItemService implements IBudgetItemServiceInterface {
     @InjectEntityManager(process.env.CONNECTION_NAME)
     private readonly _readEntityManager: EntityManager,
   ) {}
-
   async create(
     dto: CreateBudgetItemDto,
     manager?: EntityManager,
@@ -50,6 +51,15 @@ export class BudgetItemService implements IBudgetItemServiceInterface {
     );
   }
 
+  async GetItemId(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>> {
+    return await this._queryBus.execute(
+      new GetItemIdQuery(id, manager ?? this._readEntityManager),
+    );
+  }
+
   async update(
     id: number,
     dto: UpdateBudgetItemDto,
@@ -63,6 +73,15 @@ export class BudgetItemService implements IBudgetItemServiceInterface {
   async delete(id: number, manager?: EntityManager): Promise<void> {
     return await this._commandBus.execute(
       new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getReportBudget(
+    query: BudgetItemQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>> {
+    return await this._queryBus.execute(
+      new GetReportQuery(query, manager ?? this._readEntityManager),
     );
   }
 }

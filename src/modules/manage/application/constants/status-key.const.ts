@@ -77,3 +77,9 @@ export enum EnumRequestApprovalType {
   PO = 'PO',
   RC = 'RC',
 }
+
+// send otp status
+export enum EnumSendOtpStatus {
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+}

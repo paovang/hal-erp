@@ -54,6 +54,29 @@ export class BudgetItemController {
     );
   }
 
+  @Get('report')
+  async getReportBudgetItems(
+    @Query() query: BudgetItemQueryDto,
+  ): Promise<ResponseResult<BudgetItemResponse>> {
+    const result = await this._budgetItemService.getReportBudget(query);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get('item/:id')
+  async GetItemId(
+    @Param('id') id: number,
+  ): Promise<ResponseResult<BudgetItemResponse>> {
+    const result = await this._budgetItemService.GetItemId(id);
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
   @Get(':id')
   async getOne(
     @Param('id') id: number,

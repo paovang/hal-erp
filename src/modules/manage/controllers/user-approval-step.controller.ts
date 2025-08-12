@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Inject, Param, Post } from '@nestjs/common';
 import { USER_APPROVAL_STEP_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { IUserApprovalStepServiceInterface } from '../domain/ports/input/user-approval-step-domain-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
@@ -18,17 +18,9 @@ export class UserApprovalStepController {
     private readonly _dataMapper: UserApprovalStepDataMapper,
   ) {}
 
-  @Put('approve/:id')
-  async update(
-    @Param('id') id: number,
-    @Body() dto: ApprovalDto,
-  ): Promise<ResponseResult<UserApprovalStepResponse>> {
-    const result = await this._userApprovalService.update(id, dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
+  @Post('send-otp/:id')
+  async sendOTP(@Param('id') id: number): Promise<any> {
+    return await this._userApprovalService.sendOTP(id);
   }
 
   // อนุมัติ step ปัจจุบัน

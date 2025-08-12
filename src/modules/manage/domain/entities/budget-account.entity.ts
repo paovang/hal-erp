@@ -9,7 +9,7 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
   private readonly _name: string;
   private readonly _departmentId: number;
   private readonly _fiscal_year: number;
-  private readonly _allocated_amount: number;
+  // private readonly _allocated_amount: number;
   private readonly _type: EnumBudgetType;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
@@ -23,7 +23,7 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
     this._name = builder.name;
     this._departmentId = builder.departmentId;
     this._fiscal_year = builder.fiscal_year;
-    this._allocated_amount = builder.allocated_amount;
+    // this._allocated_amount = builder.allocated_amount;
     this._type = builder.type;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
@@ -47,9 +47,9 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
     return this._fiscal_year;
   }
 
-  get allocated_amount(): number {
-    return this._allocated_amount;
-  }
+  // get allocated_amount(): number {
+  //   return this._allocated_amount;
+  // }
 
   get type(): EnumBudgetType {
     return this._type;

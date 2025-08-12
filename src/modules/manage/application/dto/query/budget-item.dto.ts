@@ -10,4 +10,20 @@ export class BudgetItemQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsString()
+  fiscal_year?: string;
+
+  @IsOptional()
+  @IsString()
+  budget_account_id?: string;
+
+  @IsOptional()
+  @IsString()
+  type?: string;
+
+  @IsOptional()
+  @IsString()
+  department_id?: string;
 }

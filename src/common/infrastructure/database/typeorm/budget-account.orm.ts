@@ -33,9 +33,9 @@ export class BudgetAccountOrmEntity {
   @Column({ type: 'integer', nullable: true })
   fiscal_year?: number;
 
-  @Index()
-  @Column({ type: 'double precision', nullable: true })
-  allocated_amount?: number;
+  // @Index()
+  // @Column({ type: 'double precision', nullable: true })
+  // allocated_amount?: number;
 
   @Index()
   @Column({ nullable: true })

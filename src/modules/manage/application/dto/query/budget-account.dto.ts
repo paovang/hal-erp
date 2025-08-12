@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationDto } from '@src/common/validations/dto/pagination.dto';
-import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { i18nValidationMessage } from 'nestjs-i18n';
+import { IsOptional, IsString } from 'class-validator';
 
 export class BudgetAccountQueryDto extends PaginationDto {
   @ApiProperty({
@@ -14,10 +12,17 @@ export class BudgetAccountQueryDto extends PaginationDto {
   search?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
-  fiscal_year?: number;
+  @IsString()
+  fiscal_year?: string;
 
   @IsOptional()
   type?: string;
+
+  @IsOptional()
+  @IsString()
+  departmentId?: string;
+
+  @IsOptional()
+  @IsString()
+  budgetId?: string;
 }
