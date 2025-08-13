@@ -78,6 +78,13 @@ export class UserApprovalStepOrmEntity {
   @Column({ type: 'text', nullable: true })
   remark?: string;
 
+  @Column({
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  is_otp: boolean;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

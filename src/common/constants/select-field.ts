@@ -117,7 +117,7 @@ export const selectBudgetAccounts = [
   'budget_accounts.code',
   'budget_accounts.name',
   'budget_accounts.fiscal_year',
-  'budget_accounts.allocated_amount',
+  // 'budget_accounts.allocated_amount',
   'budget_accounts.department_id',
   'budget_accounts.type',
   'budget_accounts.created_at',
@@ -305,6 +305,7 @@ export const selectUserApprovalSteps = [
   'user_approval_steps.status_id',
   'user_approval_steps.remark',
   'user_approval_steps.requires_file_upload',
+  'user_approval_steps.is_otp',
   'user_approval_steps.created_at',
   'user_approval_steps.updated_at',
 ];

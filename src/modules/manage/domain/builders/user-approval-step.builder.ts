@@ -13,6 +13,7 @@ export class UserApprovalStepBuilder {
   status_id: number;
   remark: string;
   requires_file_upload: boolean;
+  is_otp: boolean;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -57,6 +58,11 @@ export class UserApprovalStepBuilder {
 
   setRequiresFileUpload(requires_file_upload: boolean): this {
     this.requires_file_upload = requires_file_upload;
+    return this;
+  }
+
+  setIsOtp(is_otp: boolean): this {
+    this.is_otp = is_otp;
     return this;
   }
 

@@ -86,11 +86,12 @@ interface ReceiptInterItemInterface {
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
-    'type' | 'files' | 'purchase_order_items' | 'otp' | 'approval_id' | 'select'
+    'type' | 'files' | 'purchase_order_items' | 'otp' | 'approval_id'
   > {
   user_approval_id: number;
   requires_file_upload: boolean;
   step_number: number;
+  is_otp: boolean;
 }
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
@@ -351,6 +352,7 @@ export class CreateCommandHandler
       step_number: a_w_s?.step_number ?? 1,
       statusId: STATUS_KEY.PENDING,
       requires_file_upload: a_w_s!.requires_file_upload!,
+      is_otp: a_w_s!.is_otp!,
       remark: null,
     };
     const aw_step =

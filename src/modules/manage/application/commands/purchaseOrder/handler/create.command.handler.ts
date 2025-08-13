@@ -85,11 +85,12 @@ interface CustomUserApprovalDto extends CreateUserApprovalDto {
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
-    'type' | 'files' | 'purchase_order_items' | 'otp' | 'approval_id' | 'select'
+    'type' | 'files' | 'purchase_order_items' | 'otp' | 'approval_id'
   > {
   user_approval_id: number;
   step_number: number;
   requires_file_upload: boolean;
+  is_otp: boolean;
 }
 
 @CommandHandler(CreateCommand)
@@ -321,6 +322,7 @@ export class CreateCommandHandler
       step_number: a_w_s?.step_number ?? 1,
       remark: null,
       requires_file_upload: a_w_s!.requires_file_upload,
+      is_otp: a_w_s!.is_otp,
     };
     const aw_step =
       this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);

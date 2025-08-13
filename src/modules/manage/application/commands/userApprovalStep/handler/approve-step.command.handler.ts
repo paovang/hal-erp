@@ -88,6 +88,7 @@ interface CustomApprovalDto
   statusId: number;
   step_number: number;
   requires_file_upload: boolean;
+  is_otp: boolean;
 }
 
 interface UpdateUserApprovalStatusDto {
@@ -199,8 +200,10 @@ export class ApproveStepCommandHandler
           );
         }
 
-        // Verify OTP
-        await verifyOtp(query, status, tel);
+        if (step.is_otp === true) {
+          // Verify OTP
+          await verifyOtp(query, status, tel);
+        }
 
         if (step.requires_file_upload === true) {
           const document_id = step.user_approvals.document_id;
@@ -293,6 +296,7 @@ export class ApproveStepCommandHandler
             remark: null,
             step_number: a_w_s.step_number ?? 0,
             requires_file_upload: a_w_s.requires_file_upload,
+            is_otp: a_w_s.is_otp,
           };
 
           const pendingEntity = this._dataMapper.toEntityForInsert(pendingDto);

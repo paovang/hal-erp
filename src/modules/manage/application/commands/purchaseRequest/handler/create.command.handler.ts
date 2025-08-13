@@ -70,6 +70,7 @@ interface CustomApprovalDto
   user_approval_id: number;
   requires_file_upload: boolean;
   step_number: number;
+  is_otp: boolean;
 }
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
@@ -281,6 +282,7 @@ export class CreateCommandHandler
           statusId: STATUS_KEY.PENDING,
           remark: null,
           requires_file_upload: a_w_s!.requires_file_upload, // assert that it is not null or undefined
+          is_otp: a_w_s!.is_otp,
         };
         const aw_step =
           this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);

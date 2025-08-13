@@ -14,6 +14,7 @@ export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
   private readonly _status_id: number;
   private readonly _remark: string;
   private readonly _requires_file_upload: boolean;
+  private readonly _is_otp: boolean;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -37,6 +38,7 @@ export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
     this._user = builder.user ?? null;
     this._approvalWorkflowStep = builder.approvalWorkflowStep ?? null;
     this._requires_file_upload = builder.requires_file_upload;
+    this._is_otp = builder.is_otp;
   }
 
   get user_approval_id(): number {
@@ -65,6 +67,10 @@ export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
 
   get requires_file_upload(): boolean {
     return this._requires_file_upload;
+  }
+
+  get is_otp(): boolean {
+    return this._is_otp;
   }
 
   get createdAt(): Date {

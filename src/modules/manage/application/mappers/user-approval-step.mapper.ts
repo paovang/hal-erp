@@ -14,6 +14,7 @@ interface CustomApprovalDto {
   step_number: number;
   statusId: number;
   requires_file_upload: boolean;
+  is_otp: boolean;
 }
 
 @Injectable()
@@ -54,6 +55,7 @@ export class UserApprovalStepDataMapper {
     builder.setStepNumber(dto.step_number);
     builder.setRequiresFileUpload(dto.requires_file_upload);
     builder.setStatusId(dto.statusId);
+    builder.setIsOtp(dto.is_otp);
     return builder.build();
   }
 
@@ -72,6 +74,7 @@ export class UserApprovalStepDataMapper {
     response.status_id = Number(entity.status_id);
     response.remark = entity.remark;
     response.requires_file_upload = entity.requires_file_upload;
+    response.is_otp = entity.is_otp;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);

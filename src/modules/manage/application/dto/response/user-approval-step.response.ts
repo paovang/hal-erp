@@ -29,6 +29,9 @@ export class UserApprovalStepResponse {
   requires_file_upload: boolean;
 
   @ApiProperty()
+  is_otp: boolean;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()
