@@ -65,7 +65,7 @@ import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
-    'type' | 'files' | 'purchase_order_items' | 'otp' | 'approval_id' | 'select'
+    'type' | 'files' | 'purchase_order_items' | 'otp' | 'approval_id'
   > {
   user_approval_id: number;
   requires_file_upload: boolean;
@@ -292,6 +292,9 @@ export class CreateCommandHandler
         );
 
         const user_approval_step_id = (user_approval_step as any)._id._value;
+        const titles = purchaseRequestItems
+          .map((item) => item.title)
+          .join(', ');
 
         // send approval request server to server
         await sendApprovalRequest(
@@ -301,6 +304,7 @@ export class CreateCommandHandler
           user_id,
           department_name,
           EnumRequestApprovalType.PR,
+          titles,
         );
 
         await handleApprovalStep({

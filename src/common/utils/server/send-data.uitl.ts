@@ -14,6 +14,7 @@ export async function sendApprovalRequest(
   user_id: number,
   department_name: string,
   type: EnumRequestApprovalType,
+  titles?: string,
 ) {
   const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
   let tel = user?.tel ? String(user.tel).trim() : '';
@@ -27,13 +28,14 @@ export async function sendApprovalRequest(
   }
 
   console.log('object', type);
+  console.log('title', titles);
 
   const send_data_to_approval = {
     source_request_id: Number(user_approval_step_id),
     source_system: 'E-DOCUMENT',
     request_type: type,
     request_amount: Number(total),
-    title: 'ຊື້ຄອມພີວເຕີມາໃຊ້ໃນຫ້ອງການ 2',
+    title: String(titles) ?? 'ຂໍຈັດຊື້',
     due_date: new Date(now),
     callback_url: 'http://127.0.0.1:3001',
     requester: {

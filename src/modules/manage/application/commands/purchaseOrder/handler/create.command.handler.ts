@@ -332,6 +332,17 @@ export class CreateCommandHandler
     );
 
     const user_approval_step_id = (user_approval_step as any)._id._value;
+    const purchaseRequestItems = query.dto.items;
+
+    const ids = purchaseRequestItems.map(
+      (item) => item.purchase_request_item_id,
+    );
+
+    const foundItems = await manager.find(PurchaseRequestItemOrmEntity, {
+      where: { id: In(ids) },
+    });
+
+    const titles = foundItems.map((item) => item.title).join(', ');
 
     // send approval request server to server
     await sendApprovalRequest(
@@ -341,6 +352,7 @@ export class CreateCommandHandler
       user_id,
       department_name,
       EnumRequestApprovalType.PO,
+      titles,
     );
 
     await handleApprovalStep({

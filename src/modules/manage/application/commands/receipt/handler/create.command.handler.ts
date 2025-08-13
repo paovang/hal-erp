@@ -16,7 +16,7 @@ import {
 import { ReceiptDataMapper } from '../../../mappers/receipt.mapper';
 import { IWriteReceiptRepository } from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
@@ -59,6 +59,7 @@ import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
 import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -196,6 +197,31 @@ export class CreateCommandHandler
           manager,
         );
 
+        const receiptItems = query.dto.receipt_items;
+
+        // Step 1: Get purchase_order_item_ids
+        const orderItemIds = receiptItems.map(
+          (item) => item.purchase_order_item_id,
+        );
+
+        // Step 2: Find PurchaseOrderItemOrmEntity records
+        const orderItems = await manager.find(PurchaseOrderItemOrmEntity, {
+          where: { id: In(orderItemIds) },
+        });
+
+        // Step 3: Extract purchase_request_item_ids
+        const requestItemIds = orderItems.map(
+          (item) => item.purchase_request_item_id,
+        );
+
+        // Step 4: Find PurchaseRequestItemOrmEntity records
+        const requestItems = await manager.find(PurchaseRequestItemOrmEntity, {
+          where: { id: In(requestItemIds) },
+        });
+
+        // Step 5: Map and join the titles
+        const titles = requestItems.map((item) => item.title).join(', ');
+
         // send approval request server to server
         await sendApprovalRequest(
           user_approval_step_id,
@@ -204,6 +230,7 @@ export class CreateCommandHandler
           user_id,
           department_name,
           EnumRequestApprovalType.RC,
+          titles,
         );
 
         await this.handleApprovalStepCall(
