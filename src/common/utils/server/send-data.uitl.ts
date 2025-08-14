@@ -63,7 +63,7 @@ export async function sendApprovalRequest(
       throw new ManageDomainException(
         'errors.send_request',
         HttpStatus.BAD_REQUEST,
-        { property: response.data },
+        { property: response.data.message },
       );
     }
 
@@ -77,7 +77,7 @@ export async function sendApprovalRequest(
     throw new ManageDomainException(
       'errors.send_request',
       HttpStatus.BAD_REQUEST,
-      { property: error.response?.data || error.message },
+      { property: error.response?.data?.message || error.message },
     );
   }
 }
