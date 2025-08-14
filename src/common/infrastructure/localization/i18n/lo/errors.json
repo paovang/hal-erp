@@ -64,6 +64,6 @@
   "invalid_step_number": "ຂັ້ນຕອນທໍາອິດຕ້ອງເລີ່ມຈາກ {property}.",
   "pr_not_approved": "ກະລຸນາອະນຸມັດ PR ກ່ອນ.",
   "please_set_department_approver": "ກະລຸນາຕັ້ງຄ່າຜູ້ອະນຸມັດກ່ອນ.",
-  "send_request": "ການສົ່ງຂໍ້ມູນລະຫວ່າງ server ມີບັນຫາ",
+  "send_request": "ການສົ່ງຂໍ້ມູນລະຫວ່າງ server ມີບັນຫາ, {property}",
   "send_otp": "ການສົ່ງ OTP ມີບັນຫາ. {property}"
 }

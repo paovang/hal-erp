@@ -64,6 +64,6 @@
   "invalid_step_number": "The step number must start from {property}.",
   "pr_not_approved": "PR not approved",
   "please_set_department_approver": "Please set department approver",
-  "send_request": "Send request failed. Please try again later.",
+  "send_request": "Send request failed. {property}",
   "send_otp": "Send OTP failed. {property}"
 }
