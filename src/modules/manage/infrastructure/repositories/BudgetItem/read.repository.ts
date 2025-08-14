@@ -56,7 +56,6 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'budget_accounts.name',
         'budget_accounts.code',
         'budget_accounts.fiscal_year',
-        'budget_accounts.allocated_amount',
         'budget_accounts.department_id',
         'budget_accounts.created_at',
         'budget_accounts.updated_at',
