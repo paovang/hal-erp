@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayNotEmpty,
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -29,10 +30,17 @@ export class ApprovalDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsBoolean({ message: i18nValidationMessage('validation.IS_BOOLEAN') })
+  readonly is_otp: boolean;
+
+  @ApiProperty()
+  @ValidateIf((o) => o.is_otp === true)
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly approval_id: number;
 
   @ApiProperty()
+  @ValidateIf((o) => o.is_otp === true)
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
   readonly otp: string;
@@ -43,7 +51,6 @@ export class ApprovalDto {
   readonly type: EnumPrOrPo;
 
   @ApiProperty({ type: () => [UpdatePurchaseOrderBudgetItemDto] })
-  // @ValidateIf((o) => o.type === EnumPrOrPo.PO)
   @ValidateIf((o) => o.type === EnumPrOrPo.PO)
   @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
   @ArrayNotEmpty({
