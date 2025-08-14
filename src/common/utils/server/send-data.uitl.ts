@@ -28,7 +28,6 @@ export async function sendApprovalRequest(
   }
 
   console.log('object', type);
-  console.log('title', titles);
 
   const send_data_to_approval = {
     source_request_id: Number(user_approval_step_id),
