@@ -75,7 +75,7 @@ export async function sendApprovalRequest(
     });
 
     throw new ManageDomainException(
-      'errors.create_pr',
+      'errors.send_request',
       HttpStatus.BAD_REQUEST,
       { property: error.response?.data || error.message },
     );
