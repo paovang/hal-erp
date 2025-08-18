@@ -172,7 +172,7 @@ export class UpdateCommandHandler
         for (const userTypeDto of query.dto.user_type) {
           const entity = this._userTypeDataMapper.toEntity(
             {
-              name: userTypeDto as UserTypeEnum, // Cast to enum
+              name: userTypeDto as UserTypeEnum,
             },
             query.id,
           );
