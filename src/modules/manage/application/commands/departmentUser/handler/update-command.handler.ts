@@ -43,6 +43,8 @@ import { UserSignatureOrmEntity } from '@src/common/infrastructure/database/type
 import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
 import { UserTypeEnum } from '@src/common/constants/user-type.enum';
 import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
+import { UserTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/user-type.orm';
+import { UserTypeId } from '@src/modules/manage/domain/value-objects/user-type-id.vo';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -152,23 +154,32 @@ export class UpdateCommandHandler
           await this._writeUserSignature.update(userSignatureEntity, manager);
         }
         // const user_id = (result as any)._userID;
-
-        // console.log('insert:', query.dto);
-        const mergeUserType = query.dto.user_type.map((userType) => ({
-          name: userType,
-        }));
+        // const mergeUserType = query.dto.user_type.map((userType) => ({
+        //   name: userType,
+        // }));
         const usertTypeEntities = [];
-        for (const userTypeDto of mergeUserType) {
+
+        const find_user_type = await manager.find(UserTypeOrmEntity, {
+          where: {
+            user_id: query.id,
+          },
+        });
+
+        for (const userType of find_user_type) {
+          await this._userTypeRepo.delete(new UserTypeId(userType.id), manager);
+        }
+
+        for (const userTypeDto of query.dto.user_type) {
           const entity = this._userTypeDataMapper.toEntity(
             {
-              name: userTypeDto.name as UserTypeEnum, // Cast to enum
+              name: userTypeDto as UserTypeEnum, // Cast to enum
             },
             query.id,
           );
+
           usertTypeEntities.push(entity);
         }
-        // Save the mapped user types
-        await this._userTypeRepo.update(usertTypeEntities, manager);
+        await this._userTypeRepo.create(usertTypeEntities, manager);
 
         return result;
       },
@@ -184,17 +195,43 @@ export class UpdateCommandHandler
       );
     }
 
-    await findOneOrFail(query.manager, UserOrmEntity, {
-      id: query.id,
-    });
+    await findOneOrFail(
+      query.manager,
+      UserOrmEntity,
+      {
+        id: query.id,
+      },
+      `${query.id}`,
+    );
 
-    await findOneOrFail(query.manager, DepartmentOrmEntity, {
-      id: query.dto.departmentId,
-    });
+    await findOneOrFail(
+      query.manager,
+      DepartmentOrmEntity,
+      {
+        id: query.dto.departmentId,
+      },
+      `${query.dto.departmentId}`,
+    );
 
-    await findOneOrFail(query.manager, PositionOrmEntity, {
-      id: query.dto.positionId,
-    });
+    await findOneOrFail(
+      query.manager,
+      PositionOrmEntity,
+      {
+        id: query.dto.positionId,
+      },
+      `${query.dto.positionId}`,
+    );
+
+    if (query.dto.line_manager_id) {
+      await findOneOrFail(
+        query.manager,
+        UserOrmEntity,
+        {
+          id: Number(query.dto.line_manager_id),
+        },
+        `${query.dto.line_manager_id}`,
+      );
+    }
 
     await _checkColumnDuplicate(
       UserOrmEntity,

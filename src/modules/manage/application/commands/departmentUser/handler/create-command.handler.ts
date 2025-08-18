@@ -136,7 +136,6 @@ export class CreateCommandHandler
         const result = await this._write.create(departmentUserEntity, manager);
         const user_id = (result as any)._userID;
 
-        // console.log('insert:', query.dto);
         const mergeUserType = query.dto.user_type.map((userType) => ({
           name: userType,
         }));
@@ -158,13 +157,34 @@ export class CreateCommandHandler
   }
 
   private async checkData(query: CreateCommand): Promise<void> {
-    await findOneOrFail(query.manager, PositionOrmEntity, {
-      id: Number(query.dto.positionId),
-    });
+    await findOneOrFail(
+      query.manager,
+      PositionOrmEntity,
+      {
+        id: Number(query.dto.positionId),
+      },
+      `${query.dto.positionId}`,
+    );
 
-    await findOneOrFail(query.manager, DepartmentOrmEntity, {
-      id: Number(query.dto.departmentId),
-    });
+    await findOneOrFail(
+      query.manager,
+      DepartmentOrmEntity,
+      {
+        id: Number(query.dto.departmentId),
+      },
+      `${query.dto.departmentId}`,
+    );
+
+    if (query.dto.line_manager_id) {
+      await findOneOrFail(
+        query.manager,
+        UserOrmEntity,
+        {
+          id: Number(query.dto.line_manager_id),
+        },
+        `${query.dto.line_manager_id}`,
+      );
+    }
 
     await _checkColumnDuplicate(
       UserOrmEntity,

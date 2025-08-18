@@ -41,21 +41,24 @@ export class WriteUserTypeRepository implements IWriteUserTypeRepository {
     entity: UserTypeEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<UserTypeEntity>> {
-    const id = entity.getId().value;
+    console.log('object', entity);
+    // const id = entity.getId().value;
+    // console.log('id', id);
+
     const ormEntity = this._dataAccessMapper.toOrmEntity(
       entity,
       OrmEntityMethod.UPDATE,
     );
 
     try {
-      await manager.update(UserTypeOrmEntity, id, ormEntity);
+      await manager.update(UserTypeOrmEntity, entity.getId().value, ormEntity);
 
       // Re-fetch the updated entity (optional but recommended)
-      const updated = await manager.findOneByOrFail(UserTypeOrmEntity, {
-        id,
-      });
+      // const updated = await manager.findOneByOrFail(UserTypeOrmEntity, {
+      //   id,
+      // });
 
-      return this._dataAccessMapper.toEntity(updated);
+      return this._dataAccessMapper.toEntity(ormEntity);
     } catch (error) {
       throw new ManageDomainException(
         'errors.internal_service_error',

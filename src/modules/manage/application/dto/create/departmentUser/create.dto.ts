@@ -66,8 +66,6 @@ export class CreateDepartmentUserDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly line_manager_id?: number;
 
   @ApiProperty()
