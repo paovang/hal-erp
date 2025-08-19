@@ -12,9 +12,9 @@ export async function verifyOtp(
   const apiUrl = process.env.APPROVAL_API_URL || 'http://127.0.0.1:3001';
   let send_status = null;
 
-  if (status === 'approved') {
+  if (status === 'APPROVED') {
     send_status = EnumSendOtpStatus.APPROVED;
-  } else if (status === 'rejected') {
+  } else if (status === 'REJECTED') {
     send_status = EnumSendOtpStatus.REJECTED;
   } else {
     throw new ManageDomainException(
