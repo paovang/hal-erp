@@ -54,9 +54,6 @@ export class ApprovalDto {
   @ValidateIf((o) => o.type === EnumPrOrPo.PO)
   @IsOptional()
   @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
-  // @ArrayNotEmpty({
-  //   message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
-  // })
   @ValidateNested({ each: true })
   @Type(() => UpdatePurchaseOrderBudgetItemDto)
   purchase_order_items: UpdatePurchaseOrderBudgetItemDto[];
