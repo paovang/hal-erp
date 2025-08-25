@@ -22,6 +22,7 @@ export enum SelectStatus {
 export enum EnumPaymentType {
   CASH = 'cash',
   TRANSFER = 'transfer',
+  CHEQUE = 'cheque',
 }
 
 // pr or po
@@ -82,4 +83,10 @@ export enum EnumRequestApprovalType {
 export enum EnumSendOtpStatus {
   APPROVED = 'approved',
   REJECTED = 'rejected',
+}
+
+// document status
+export enum EnumDocumentStatus {
+  PENDING = 'pending',
+  SUCCESS = 'success',
 }

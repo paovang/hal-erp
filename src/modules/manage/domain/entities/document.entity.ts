@@ -5,6 +5,7 @@ import { DepartmentEntity } from './department.entity';
 import { UserEntity } from './user.entity';
 import { DocumentTypeEntity } from './document-type.entity';
 import { PositionEntity } from './position.entity';
+import { EnumDocumentStatus } from '../../application/constants/status-key.const';
 
 export class DocumentEntity extends Entity<DocumentId> {
   private readonly _document_number: string;
@@ -14,6 +15,7 @@ export class DocumentEntity extends Entity<DocumentId> {
   private readonly _department_id: number;
   private readonly _requester_id: number;
   private readonly _document_type_id: number;
+  private readonly _status: EnumDocumentStatus;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -39,6 +41,7 @@ export class DocumentEntity extends Entity<DocumentId> {
     this._requester = builder.requester ?? null;
     this._position = builder.position ?? null;
     this._documentType = builder.documentType ?? null;
+    this._status = builder.status;
   }
 
   get document_number(): string {
@@ -63,6 +66,10 @@ export class DocumentEntity extends Entity<DocumentId> {
 
   get requester_id(): number {
     return this._requester_id;
+  }
+
+  get status(): EnumDocumentStatus {
+    return this._status;
   }
 
   get position(): PositionEntity[] | null {

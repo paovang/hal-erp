@@ -41,6 +41,7 @@ export class DocumentDataAccessMapper {
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = documentTypeEntity.createdAt ?? new Date(now);
     }
+    mediaOrmEntity.status = documentTypeEntity.status;
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

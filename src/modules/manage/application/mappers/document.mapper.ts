@@ -11,6 +11,7 @@ import { DocumentEntityMode } from '@src/common/utils/orm-entity-method.enum';
 import { CreateDocumentDto } from '../dto/create/Document/create.dto';
 import { UpdateDocumentDto } from '../dto/create/Document/update.dto';
 import { PositionDataMapper } from './position.mapper';
+import { EnumDocumentStatus } from '../constants/status-key.const';
 
 @Injectable()
 export class DocumentDataMapper {
@@ -56,6 +57,16 @@ export class DocumentDataMapper {
 
     if (dto.documentTypeId) {
       builder.setDocumentTypeId(dto.documentTypeId);
+    }
+
+    return builder.build();
+  }
+
+  toEntityUpdate(status: EnumDocumentStatus): DocumentEntity {
+    const builder = DocumentEntity.builder();
+
+    if (status) {
+      builder.setStatus(status);
     }
 
     return builder.build();

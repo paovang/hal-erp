@@ -168,6 +168,7 @@ export class ApproveStepCommandHandler
             id: query.dto.statusId,
           },
         );
+        console.log('object');
 
         const status = (DocumentStatus as any).name;
         let tel = user?.tel ? String(user.tel).trim() : '';
@@ -200,6 +201,8 @@ export class ApproveStepCommandHandler
           );
         }
 
+        console.log('object', user_id);
+
         if (step.is_otp === true) {
           // Verify OTP
           await verifyOtp(query, status, tel);
@@ -209,6 +212,8 @@ export class ApproveStepCommandHandler
           const document_id = step.user_approvals.document_id;
           await this.uploadFile(query, manager, document_id!, user_id);
         }
+
+        console.log('object', user_id);
 
         const documentApprover = await manager.findOne(
           DocumentApproverOrmEntity,
@@ -224,6 +229,8 @@ export class ApproveStepCommandHandler
             { property: 'document approver' },
           );
         }
+
+        console.log('object1');
 
         // Update current step to APPROVED
         const approvedStepEntity = this._dataMapper.toEntity(

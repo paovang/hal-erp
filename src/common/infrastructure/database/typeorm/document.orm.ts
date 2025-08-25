@@ -21,6 +21,7 @@ import { PurchaseOrderOrmEntity } from './purchase-order.orm';
 import { ReceiptOrmEntity } from './receipt.orm';
 import { DocumentAttachmentOrmEntity } from './document-attachment.orm';
 import { DocumentTransactionOrmEntity } from './document-transaction.orm';
+import { EnumDocumentStatus } from '@src/modules/manage/application/constants/status-key.const';
 
 @Entity('documents')
 export class DocumentOrmEntity {
@@ -80,6 +81,14 @@ export class DocumentOrmEntity {
   })
   @JoinColumn({ name: 'requester_id' })
   users: Relation<UserOrmEntity>;
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: EnumDocumentStatus,
+    default: EnumDocumentStatus.PENDING,
+  })
+  status: EnumDocumentStatus;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

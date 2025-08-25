@@ -13,6 +13,8 @@ import { GetOneQuery } from '../queries/purchaseRequest/get-one.query';
 import { UpdatePurchaseRequestDto } from '../dto/create/purchaseRequest/update.dto';
 import { UpdateCommand } from '../commands/purchaseRequest/update.command';
 import { DeleteCommand } from '../commands/purchaseRequest/delete.command';
+import { AddStepDto } from '../dto/create/purchaseRequest/add-step.dto';
+import { AddStepCommand } from '../commands/purchaseRequest/add-setp.command';
 
 @Injectable()
 export class PurchaseRequestService
@@ -65,6 +67,16 @@ export class PurchaseRequestService
   async delete(id: number, manager?: EntityManager): Promise<void> {
     return await this._commandBus.execute(
       new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  async addStep(
+    id: number,
+    dto: AddStepDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseRequestEntity>> {
+    return await this._commandBus.execute(
+      new AddStepCommand(id, dto, manager ?? this._readEntityManager),
     );
   }
 }

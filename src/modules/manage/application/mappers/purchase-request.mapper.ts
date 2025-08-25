@@ -9,6 +9,7 @@ import { PurchaseRequestItemDataMapper } from './purchase-request-item.mapper';
 import { DocumentDataMapper } from './document.mapper';
 import { UserApprovalDataMapper } from './user-approval.mapper';
 import { UpdatePurchaseRequestDto } from '../dto/create/purchaseRequest/update.dto';
+import { AddStepDto } from '../dto/create/purchaseRequest/add-step.dto';
 
 @Injectable()
 export class PurchaseRequestDataMapper {
@@ -19,7 +20,7 @@ export class PurchaseRequestDataMapper {
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
-    dto: CreatePurchaseRequestDto | UpdatePurchaseRequestDto,
+    dto: CreatePurchaseRequestDto | UpdatePurchaseRequestDto | AddStepDto,
     pr_code?: string,
     document_id?: number,
   ): PurchaseRequestEntity {
@@ -33,11 +34,19 @@ export class PurchaseRequestDataMapper {
       builder.setPrNumber(pr_code);
     }
 
-    if (dto.expired_date) {
+    // if (dto.expired_date) {
+    //   builder.setExpiredDate(dto.expired_date);
+    // }
+
+    if ('expired_date' in dto && dto.expired_date) {
       builder.setExpiredDate(dto.expired_date);
     }
 
-    if (dto.purposes) {
+    // if (dto.purposes) {
+    //   builder.setPurposes(dto.purposes);
+    // }
+
+    if ('purposes' in dto && dto.purposes) {
       builder.setPurposes(dto.purposes);
     }
 

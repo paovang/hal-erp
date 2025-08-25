@@ -19,6 +19,7 @@ import { PurchaseRequestResponse } from '../application/dto/response/purchase-re
 import { CreatePurchaseRequestDto } from '../application/dto/create/purchaseRequest/create.dto';
 import { PurchaseRequestQueryDto } from '../application/dto/query/purchase-request.dto';
 import { UpdatePurchaseRequestDto } from '../application/dto/create/purchaseRequest/update.dto';
+import { AddStepDto } from '../application/dto/create/purchaseRequest/add-step.dto';
 
 @Controller('purchase-requests')
 export class PurchaseRequestController {
@@ -35,6 +36,19 @@ export class PurchaseRequestController {
     @Body() dto: CreatePurchaseRequestDto,
   ): Promise<ResponseResult<PurchaseRequestResponse>> {
     const result = await this._purchaseRequestService.create(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Put('add-step/:id')
+  async addStep(
+    @Param('id') id: number,
+    @Body() dto: AddStepDto,
+  ): Promise<ResponseResult<PurchaseRequestResponse>> {
+    const result = await this._purchaseRequestService.addStep(id, dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

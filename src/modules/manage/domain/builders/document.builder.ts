@@ -1,3 +1,4 @@
+import { EnumDocumentStatus } from '../../application/constants/status-key.const';
 import { DepartmentEntity } from '../entities/department.entity';
 import { DocumentTypeEntity } from '../entities/document-type.entity';
 import { DocumentEntity } from '../entities/document.entity';
@@ -14,6 +15,7 @@ export class DocumentBuilder {
   department_id: number;
   requester_id: number;
   document_type_id: number;
+  status: EnumDocumentStatus;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -39,6 +41,11 @@ export class DocumentBuilder {
 
   setDescription(description: string): this {
     this.description = description;
+    return this;
+  }
+
+  setStatus(status: EnumDocumentStatus): this {
+    this.status = status;
     return this;
   }
 

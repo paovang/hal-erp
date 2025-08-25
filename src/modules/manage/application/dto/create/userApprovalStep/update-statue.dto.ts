@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  ArrayNotEmpty,
+  // ArrayNotEmpty,
   IsArray,
   IsBoolean,
   IsEnum,
@@ -53,9 +53,9 @@ export class ApprovalDto {
   @ApiProperty({ type: () => [UpdatePurchaseOrderBudgetItemDto] })
   @ValidateIf((o) => o.type === EnumPrOrPo.PO)
   @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
-  @ArrayNotEmpty({
-    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
-  })
+  // @ArrayNotEmpty({
+  //   message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  // })
   @ValidateNested({ each: true })
   @Type(() => UpdatePurchaseOrderBudgetItemDto)
   purchase_order_items: UpdatePurchaseOrderBudgetItemDto[];

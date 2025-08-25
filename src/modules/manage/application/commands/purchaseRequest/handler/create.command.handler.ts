@@ -45,22 +45,22 @@ import { DocumentEntityMode } from '@src/common/utils/orm-entity-method.enum';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { UserApprovalDataMapper } from '../../../mappers/user-approval.mapper';
 import { IWriteUserApprovalRepository } from '@src/modules/manage/domain/ports/output/user-approval-repository.interface';
-import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
-import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { IWriteUserApprovalStepRepository } from '@src/modules/manage/domain/ports/output/user-approval-step-repository.interface';
 import { UserApprovalStepDataMapper } from '../../../mappers/user-approval-step.mapper';
+// import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
+import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
+import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
+import { CreateUserApprovalDto } from '../../../dto/create/userApproval/create.dto';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import {
   EnumRequestApprovalType,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
-import { CreateUserApprovalDto } from '../../../dto/create/userApproval/create.dto';
-import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
-import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
-import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
-import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
-import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
-import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
+// import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
+// import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
+// import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 
 interface CustomApprovalDto
   extends Omit<
@@ -75,6 +75,11 @@ interface CustomApprovalDto
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
   status: number;
+}
+
+interface CustomDocumentApprover {
+  user_approval_step_id: number;
+  user_id: number;
 }
 
 @CommandHandler(CreateCommand)
@@ -193,6 +198,7 @@ export class CreateCommandHandler
             user_id: user_id,
           },
         );
+        console.log('object');
 
         const department_id = (department as any).department_id;
 
@@ -215,6 +221,7 @@ export class CreateCommandHandler
         );
 
         const D = await this._writeD.create(DEntity, manager);
+        console.log('object');
 
         const document_id = (D as any)._id._value;
 
@@ -243,23 +250,23 @@ export class CreateCommandHandler
           return total + item.quantity * item.price;
         }, 0);
 
-        const approval_workflow = await findOneOrFail(
-          manager,
-          ApprovalWorkflowOrmEntity,
-          {
-            document_type_id: query.dto.document.documentTypeId,
-          },
-        );
+        // const approval_workflow = await findOneOrFail(
+        //   manager,
+        //   ApprovalWorkflowOrmEntity,
+        //   {
+        //     document_type_id: query.dto.document.documentTypeId,
+        //   },
+        // );
 
-        const aw_id = (approval_workflow as any).id;
+        // const aw_id = (approval_workflow as any).id;
 
-        const a_w_s = await query.manager.findOne(
-          ApprovalWorkflowStepOrmEntity,
-          {
-            where: { approval_workflow_id: aw_id },
-            order: { step_number: 'ASC' },
-          },
-        );
+        // const a_w_s = await query.manager.findOne(
+        //   ApprovalWorkflowStepOrmEntity,
+        //   {
+        //     where: { approval_workflow_id: aw_id },
+        //     order: { step_number: 'ASC' },
+        //   },
+        // );
 
         const merge: CustomUserApprovalDto = {
           documentId: document_id,
@@ -278,11 +285,11 @@ export class CreateCommandHandler
 
         const pendingDto: CustomApprovalDto = {
           user_approval_id: ua_id,
-          step_number: a_w_s?.step_number ?? 1,
+          step_number: 0,
           statusId: STATUS_KEY.PENDING,
           remark: null,
-          requires_file_upload: a_w_s!.requires_file_upload, // assert that it is not null or undefined
-          is_otp: a_w_s!.is_otp,
+          requires_file_upload: false, // assert that it is not null or undefined
+          is_otp: true,
         };
         const aw_step =
           this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);
@@ -307,43 +314,53 @@ export class CreateCommandHandler
           titles,
         );
 
-        await handleApprovalStep({
-          a_w_s,
-          total,
-          user_id,
+        const d_approver: CustomDocumentApprover = {
           user_approval_step_id,
-          manager,
-          dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-          writeDocumentApprover: this._writeDocumentApprover,
-          getApprover: this.getApprover.bind(this),
-        });
+          user_id: user_id ?? 0,
+        };
+
+        const d_approver_entity =
+          await this._dataDocumentApproverMapper.toEntity(d_approver);
+
+        await this._writeDocumentApprover.create(d_approver_entity, manager);
+
+        // await handleApprovalStep({
+        //   a_w_s,
+        //   total,
+        //   user_id,
+        //   user_approval_step_id,
+        //   manager,
+        //   dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+        //   writeDocumentApprover: this._writeDocumentApprover,
+        //   getApprover: this.getApprover.bind(this),
+        // });
 
         return pr;
       },
     );
   }
 
-  private async getApprover(
-    sum_total: number,
-    manager: EntityManager,
-  ): Promise<BudgetApprovalRuleOrmEntity[]> {
-    const budgetApprovalRule = await manager
-      .getRepository(BudgetApprovalRuleOrmEntity)
-      .createQueryBuilder('rule')
-      .where(':sum_total BETWEEN rule.min_amount AND rule.max_amount', {
-        sum_total,
-      })
-      .getMany();
+  // private async getApprover(
+  //   sum_total: number,
+  //   manager: EntityManager,
+  // ): Promise<BudgetApprovalRuleOrmEntity[]> {
+  //   const budgetApprovalRule = await manager
+  //     .getRepository(BudgetApprovalRuleOrmEntity)
+  //     .createQueryBuilder('rule')
+  //     .where(':sum_total BETWEEN rule.min_amount AND rule.max_amount', {
+  //       sum_total,
+  //     })
+  //     .getMany();
 
-    if (budgetApprovalRule.length > 0) {
-      return budgetApprovalRule;
-    } else {
-      throw new ManageDomainException(
-        'errors.set_budget_approver_rule',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
+  //   if (budgetApprovalRule.length > 0) {
+  //     return budgetApprovalRule;
+  //   } else {
+  //     throw new ManageDomainException(
+  //       'errors.set_budget_approver_rule',
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+  // }
 
   private async insertItem(
     query: CreateCommand,
