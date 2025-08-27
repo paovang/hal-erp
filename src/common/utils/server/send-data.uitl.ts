@@ -28,6 +28,7 @@ export async function sendApprovalRequest(
   }
 
   console.log('type', type);
+  console.log('user', user);
   console.log('tel', tel);
 
   const send_data_to_approval = {

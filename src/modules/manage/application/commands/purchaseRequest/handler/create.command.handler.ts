@@ -201,7 +201,7 @@ export class CreateCommandHandler
             user_id: user_id,
           },
         );
-        console.log('object');
+        console.log('object', user);
 
         const department_id = (department as any).department_id;
 
