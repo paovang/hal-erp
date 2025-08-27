@@ -8,6 +8,7 @@ import {
   LENGTH_DOCUMENT_CODE,
   LENGTH_PURCHASE_REQUEST_CODE,
   PR_FILE_NAME_FOLDER,
+  READ_PURCHASE_REQUEST_REPOSITORY,
   WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_REPOSITORY,
   WRITE_PURCHASE_REQUEST_ITEM_REPOSITORY,
@@ -15,7 +16,10 @@ import {
   WRITE_USER_APPROVAL_REPOSITORY,
   WRITE_USER_APPROVAL_STEP_REPOSITORY,
 } from '../../../constants/inject-key.const';
-import { IWritePurchaseRequestRepository } from '@src/modules/manage/domain/ports/output/purchase-request-repository.interface';
+import {
+  IReadPurchaseRequestRepository,
+  IWritePurchaseRequestRepository,
+} from '@src/modules/manage/domain/ports/output/purchase-request-repository.interface';
 import { PurchaseRequestDataMapper } from '../../../mappers/purchase-request.mapper';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
@@ -58,10 +62,7 @@ import {
   EnumRequestApprovalType,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
-// import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
-// import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
-// import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
-
+import { PurchaseRequestId } from '@src/modules/manage/domain/value-objects/purchase-request-id.vo';
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
@@ -91,6 +92,8 @@ export class CreateCommandHandler
     private readonly _write: IWritePurchaseRequestRepository,
     private readonly _dataMapper: PurchaseRequestDataMapper,
     private readonly _codeGeneratorUtil: CodeGeneratorUtil,
+    @Inject(READ_PURCHASE_REQUEST_REPOSITORY)
+    private readonly _read: IReadPurchaseRequestRepository,
     // item
     @Inject(WRITE_PURCHASE_REQUEST_ITEM_REPOSITORY)
     private readonly _writeItem: IWritePurchaseRequestItemRepository,
@@ -221,7 +224,6 @@ export class CreateCommandHandler
         );
 
         const D = await this._writeD.create(DEntity, manager);
-        console.log('object');
 
         const document_id = (D as any)._id._value;
 
@@ -335,7 +337,7 @@ export class CreateCommandHandler
         //   getApprover: this.getApprover.bind(this),
         // });
 
-        return pr;
+        return await this._read.findOne(new PurchaseRequestId(pr_id), manager);
       },
     );
   }

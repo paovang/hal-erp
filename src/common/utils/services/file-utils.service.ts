@@ -43,10 +43,6 @@ export async function createMockMulterFile(
     );
   }
 
-  // Log the file type for debugging
-  console.log(`📄 Uploaded file: ${filename}`);
-  console.log(`🔍 Detected MIME type: ${mimeType}`);
-
   let finalBuffer = buffer;
 
   // Only process image files (optional)
