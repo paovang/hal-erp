@@ -23,6 +23,7 @@ import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/databa
 import {
   EnumDocumentTransactionType,
   EnumPrOrPo,
+  EnumRequestApprovalType,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
@@ -77,6 +78,9 @@ import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm
 import { DocumentStatusOrmEntity } from '@src/common/infrastructure/database/typeorm/document-statuse.orm';
 import { IReadBudgetItemRepository } from '@src/modules/manage/domain/ports/output/budget-item-repository.interace';
 import { verifyOtp } from '@src/common/utils/server/verify-otp.util';
+import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
+import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 
 interface CustomApprovalDto
   extends Omit<
@@ -161,6 +165,26 @@ export class ApproveStepCommandHandler
           );
         }
 
+        const department = await findOneOrFail(
+          manager,
+          DepartmentUserOrmEntity,
+          {
+            user_id: user_id,
+          },
+        );
+
+        const department_id = (department as any).department_id;
+
+        const get_department_name = await findOneOrFail(
+          manager,
+          DepartmentOrmEntity,
+          {
+            id: department_id,
+          },
+        );
+
+        const department_name = (get_department_name as any).name;
+
         const DocumentStatus = await findOneOrFail(
           manager,
           DocumentStatusOrmEntity,
@@ -168,7 +192,6 @@ export class ApproveStepCommandHandler
             id: query.dto.statusId,
           },
         );
-        console.log('object');
 
         const status = (DocumentStatus as any).name;
         let tel = user?.tel ? String(user.tel).trim() : '';
@@ -201,8 +224,6 @@ export class ApproveStepCommandHandler
           );
         }
 
-        console.log('object', user_id);
-
         if (step.is_otp === true) {
           // Verify OTP
           await verifyOtp(query, status, tel);
@@ -212,8 +233,6 @@ export class ApproveStepCommandHandler
           const document_id = step.user_approvals.document_id;
           await this.uploadFile(query, manager, document_id!, user_id);
         }
-
-        console.log('object', user_id);
 
         const documentApprover = await manager.findOne(
           DocumentApproverOrmEntity,
@@ -229,8 +248,6 @@ export class ApproveStepCommandHandler
             { property: 'document approver' },
           );
         }
-
-        console.log('object1');
 
         // Update current step to APPROVED
         const approvedStepEntity = this._dataMapper.toEntity(
@@ -295,6 +312,30 @@ export class ApproveStepCommandHandler
           });
         }
 
+        // get pr data
+        const purchase_request = await manager.findOne(
+          PurchaseRequestOrmEntity,
+          {
+            where: { document_id: step.user_approvals.document_id },
+            relations: ['purchase_request_items'],
+          },
+        );
+
+        if (!purchase_request) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.NOT_FOUND,
+            { property: 'purchase request' },
+          );
+        }
+
+        const titles = purchase_request.purchase_request_items
+          .map((item) => item.title)
+          .filter(Boolean);
+
+        const titlesString = titles.join(', ');
+        // end
+
         if (a_w_s) {
           const pendingDto: CustomApprovalDto = {
             user_approval_id: step.user_approvals.id,
@@ -315,22 +356,35 @@ export class ApproveStepCommandHandler
           const user_approval_step_id = (userApprovalStep as any)._id._value;
           let total = 0;
           if (query.dto.type === EnumPrOrPo.PR) {
-            const pr = await manager.findOne(PurchaseRequestOrmEntity, {
-              where: { document_id: step.user_approvals.document_id },
-              relations: ['purchase_request_items'],
-            });
-            if (!pr) {
-              throw new ManageDomainException(
-                'errors.not_found',
-                HttpStatus.NOT_FOUND,
-                { property: 'purchase request' },
-              );
-            }
+            // const pr = await manager.findOne(PurchaseRequestOrmEntity, {
+            //   where: { document_id: step.user_approvals.document_id },
+            //   relations: ['purchase_request_items'],
+            // });
+            // if (!pr) {
+            //   throw new ManageDomainException(
+            //     'errors.not_found',
+            //     HttpStatus.NOT_FOUND,
+            //     { property: 'purchase request' },
+            //   );
+            // }
 
-            total = pr.purchase_request_items.reduce(
+            total = purchase_request.purchase_request_items.reduce(
               (sum, item) => sum + (item.total_price || 0),
               0,
             );
+
+            if (step.is_otp === true) {
+              // send approval request server to server
+              await sendApprovalRequest(
+                user_approval_step_id,
+                total,
+                user,
+                user_id,
+                department_name,
+                EnumRequestApprovalType.PR,
+                titlesString,
+              );
+            }
           } else if (query.dto.type === EnumPrOrPo.PO) {
             const po = await manager.findOne(PurchaseOrderOrmEntity, {
               where: { document_id: step.user_approvals.document_id },
@@ -409,6 +463,19 @@ export class ApproveStepCommandHandler
 
                 await this._writePoItem.update(POEntity, manager);
               }
+
+              if (step.is_otp === true) {
+                // send approval request server to server
+                await sendApprovalRequest(
+                  user_approval_step_id,
+                  total,
+                  user,
+                  user_id,
+                  department_name,
+                  EnumRequestApprovalType.PR,
+                  titlesString,
+                );
+              }
             }
 
             total = po.purchase_order_items.reduce(
@@ -454,6 +521,19 @@ export class ApproveStepCommandHandler
               (sum, item) => sum + (item.total || 0),
               0,
             );
+
+            if (step.is_otp === true) {
+              // send approval request server to server
+              await sendApprovalRequest(
+                user_approval_step_id,
+                total,
+                user,
+                user_id,
+                department_name,
+                EnumRequestApprovalType.PR,
+                titlesString,
+              );
+            }
           } else {
             throw new ManageDomainException(
               'errors.not_found',

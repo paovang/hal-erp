@@ -35,7 +35,8 @@ export async function sendApprovalRequest(
     request_type: type,
     request_amount: Number(total),
     title: String(titles) ?? 'ຂໍຈັດຊື້',
-    due_date: new Date(now),
+    due_date: now,
+    // due_date: '2025-08-31 00:32:07',
     callback_url: 'http://127.0.0.1:3001',
     requester: {
       id: Number(user_id),
@@ -71,6 +72,11 @@ export async function sendApprovalRequest(
     console.error('❌ Approval API Error:', {
       status: error.response?.status,
       message: error.response?.data,
+    });
+
+    console.error('❌ Approval API Error:', {
+      status: error.response?.status,
+      message: error.response?.data.errors,
     });
 
     throw new ManageDomainException(
