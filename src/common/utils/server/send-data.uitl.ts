@@ -20,7 +20,10 @@ export async function sendApprovalRequest(
   let tel = user?.tel ? String(user.tel).trim() : '';
 
   if (!tel.match(/^\d+$/)) {
-    throw new Error('Invalid tel: must contain digits only');
+    throw new ManageDomainException(
+      'Invalid tel: must contain digits only',
+      HttpStatus.BAD_REQUEST,
+    );
   }
 
   if (!tel.startsWith('20')) {
@@ -46,6 +49,7 @@ export async function sendApprovalRequest(
       department: String(department_name),
     },
   };
+  console.log('object to send approval', send_data_to_approval);
   const apiUrl = process.env.APPROVAL_API_URL || 'http://127.0.0.1:3001';
   try {
     const response = await axios.post(
@@ -58,6 +62,8 @@ export async function sendApprovalRequest(
         },
       },
     );
+
+    console.log('object response', response.data);
 
     if (response.status !== 200 && response.status !== 201) {
       throw new ManageDomainException(
