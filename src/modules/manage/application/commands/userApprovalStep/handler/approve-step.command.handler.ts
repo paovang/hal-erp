@@ -472,7 +472,7 @@ export class ApproveStepCommandHandler
                   user,
                   user_id,
                   department_name,
-                  EnumRequestApprovalType.PR,
+                  EnumRequestApprovalType.PO,
                   titlesString,
                 );
               }
@@ -530,7 +530,7 @@ export class ApproveStepCommandHandler
                 user,
                 user_id,
                 department_name,
-                EnumRequestApprovalType.PR,
+                EnumRequestApprovalType.RC,
                 titlesString,
               );
             }
