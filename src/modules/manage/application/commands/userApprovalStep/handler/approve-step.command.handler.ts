@@ -312,30 +312,6 @@ export class ApproveStepCommandHandler
           });
         }
 
-        // get pr data
-        const purchase_request = await manager.findOne(
-          PurchaseRequestOrmEntity,
-          {
-            where: { document_id: step.user_approvals.document_id },
-            relations: ['purchase_request_items'],
-          },
-        );
-
-        if (!purchase_request) {
-          throw new ManageDomainException(
-            'errors.not_found',
-            HttpStatus.NOT_FOUND,
-            { property: 'purchase request' },
-          );
-        }
-
-        const titles = purchase_request.purchase_request_items
-          .map((item) => item.title)
-          .filter(Boolean);
-
-        const titlesString = titles.join(', ');
-        // end
-
         if (a_w_s) {
           const pendingDto: CustomApprovalDto = {
             user_approval_id: step.user_approvals.id,
@@ -356,17 +332,29 @@ export class ApproveStepCommandHandler
           const user_approval_step_id = (userApprovalStep as any)._id._value;
           let total = 0;
           if (query.dto.type === EnumPrOrPo.PR) {
-            // const pr = await manager.findOne(PurchaseRequestOrmEntity, {
-            //   where: { document_id: step.user_approvals.document_id },
-            //   relations: ['purchase_request_items'],
-            // });
-            // if (!pr) {
-            //   throw new ManageDomainException(
-            //     'errors.not_found',
-            //     HttpStatus.NOT_FOUND,
-            //     { property: 'purchase request' },
-            //   );
-            // }
+            // get pr data
+            const purchase_request = await manager.findOne(
+              PurchaseRequestOrmEntity,
+              {
+                where: { document_id: step.user_approvals.document_id },
+                relations: ['purchase_request_items'],
+              },
+            );
+
+            if (!purchase_request) {
+              throw new ManageDomainException(
+                'errors.not_found',
+                HttpStatus.NOT_FOUND,
+                { property: 'purchase request' },
+              );
+            }
+
+            const titles = purchase_request.purchase_request_items
+              .map((item) => item.title)
+              .filter(Boolean);
+
+            const titlesString = titles.join(', ');
+            // end
 
             total = purchase_request.purchase_request_items.reduce(
               (sum, item) => sum + (item.total_price || 0),
@@ -388,7 +376,10 @@ export class ApproveStepCommandHandler
           } else if (query.dto.type === EnumPrOrPo.PO) {
             const po = await manager.findOne(PurchaseOrderOrmEntity, {
               where: { document_id: step.user_approvals.document_id },
-              relations: ['purchase_order_items'],
+              relations: [
+                'purchase_order_items',
+                'purchase_order_items.purchase_request_items',
+              ],
             });
             if (!po) {
               throw new ManageDomainException(
@@ -397,6 +388,11 @@ export class ApproveStepCommandHandler
                 { property: 'purchase order' },
               );
             }
+
+            const titlesString = po.purchase_order_items
+              .flatMap((item) => item.purchase_request_items)
+              .map((prItem) => prItem.title)
+              .join(', ');
 
             if (
               roles.includes('budget-admin') ||
@@ -478,6 +474,19 @@ export class ApproveStepCommandHandler
               }
             }
 
+            if (step.is_otp === true) {
+              // send approval request server to server
+              await sendApprovalRequest(
+                user_approval_step_id,
+                total,
+                user,
+                user_id,
+                department_name,
+                EnumRequestApprovalType.PO,
+                titlesString,
+              );
+            }
+
             total = po.purchase_order_items.reduce(
               (sum, item) => sum + (item.total || 0),
               0,
@@ -487,7 +496,7 @@ export class ApproveStepCommandHandler
               where: { document_id: step.user_approvals.document_id },
               relations: [
                 'receipt_items',
-                'receipt_items.purchase_order_items',
+                'receipt_items.purchase_order_items.purchase_request_items',
               ],
             });
 
@@ -498,6 +507,12 @@ export class ApproveStepCommandHandler
                 { property: 'receipt' },
               );
             }
+
+            const titlesString = receipt.receipt_items
+              .flatMap((receiptItem) => receiptItem.purchase_order_items)
+              .flatMap((poItem) => poItem.purchase_request_items)
+              .map((prItem) => prItem.title)
+              .join(', ');
 
             if (
               roles.includes('account-admin') ||
