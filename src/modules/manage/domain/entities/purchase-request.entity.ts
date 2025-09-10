@@ -19,6 +19,8 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
   private readonly _purchaseRequestItems: PurchaseRequestItemEntity[] | null;
   private readonly _document: DocumentEntity | null;
   private readonly _user_approval: UserApprovalEntity | null;
+  private _workflow_step_total: number | 0;
+  private _step: number | 0;
 
   private constructor(builder: PurchaseRequestBuilder) {
     super();
@@ -35,6 +37,8 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
     this._purchaseRequestItems = builder.purchaseRequestItem ?? null;
     this._document = builder.document ?? null;
     this._user_approval = builder.user_approval ?? null;
+    this._workflow_step_total = builder.workflow_step_total;
+    this._step = builder.step;
   }
 
   get document_id(): number {
@@ -77,8 +81,16 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
     return this._document;
   }
 
+  get step(): number | 0 {
+    return this._step;
+  }
+
   get user_approval(): UserApprovalEntity | null {
     return this._user_approval;
+  }
+
+  get workflow_step_total(): number | 0 {
+    return this._workflow_step_total;
   }
 
   get purchaseRequestItems(): PurchaseRequestItemEntity[] | null {

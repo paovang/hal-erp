@@ -50,7 +50,10 @@ export class PurchaseOrderDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  toEntity(ormData: PurchaseOrderOrmEntity): PurchaseOrderEntity {
+  toEntity(
+    ormData: PurchaseOrderOrmEntity,
+    step: number = 0,
+  ): PurchaseOrderEntity {
     // const items = ormData.purchase_order_items || [];
     // interface PurchaseRequestItemLike {
     //   total?: number;
@@ -69,8 +72,8 @@ export class PurchaseOrderDataAccessMapper {
       .setExpiredDate(ormData.expired_date ?? new Date())
       .setPurposes(ormData.purposes ?? '')
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at);
-    // .setTotal(total);
+      .setUpdatedAt(ormData.updated_at)
+      .setStep(step);
 
     if (ormData.purchase_requests) {
       builder.setPurchaseRequest(

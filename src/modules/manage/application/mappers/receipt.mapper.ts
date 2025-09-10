@@ -67,6 +67,8 @@ export class ReceiptDataMapper {
 
   /** Mapper Entity To Response */
   toResponse(entity: ReceiptEntity): ReceiptResponse {
+    const isStepPending = entity.step > 0 ? true : false;
+
     const response = new ReceiptResponse();
     response.id = Number(entity.getId().value);
     response.receipt_number = entity.receipt_number;
@@ -83,6 +85,7 @@ export class ReceiptDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.step = isStepPending;
 
     response.currency_totals = entity.currencyTotals?.length
       ? entity.currencyTotals.map((total) => ({

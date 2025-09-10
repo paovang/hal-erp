@@ -48,7 +48,7 @@ export class ReceiptDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  toEntity(ormData: ReceiptOrmEntity): ReceiptEntity {
+  toEntity(ormData: ReceiptOrmEntity, step: number = 0): ReceiptEntity {
     const builder = ReceiptEntity.builder()
       .setReceiptId(new ReceiptId(ormData.id))
       .setReceiptNumber(ormData.receipt_number)
@@ -59,7 +59,8 @@ export class ReceiptDataAccessMapper {
       .setReceivedBy(ormData.received_by ?? 0)
       .setRemark(ormData.remark)
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at);
+      .setUpdatedAt(ormData.updated_at)
+      .setStep(step);
 
     if (ormData.documents) {
       builder.setDocument(this.documentMapper.toEntity(ormData.documents));

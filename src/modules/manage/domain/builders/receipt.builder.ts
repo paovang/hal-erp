@@ -23,6 +23,7 @@ export class ReceiptBuilder {
   user_approval: UserApprovalEntity | null;
   currency_totals?: CurrencyTotal[] | null;
   document_attachments?: DocumentAttachmentEntity[] | null;
+  step: number | 0;
 
   setReceiptId(value: ReceiptId): this {
     this.receiptId = value;
@@ -68,6 +69,11 @@ export class ReceiptBuilder {
     document_attachments: DocumentAttachmentEntity[] | null,
   ): this {
     this.document_attachments = document_attachments;
+    return this;
+  }
+
+  setStep(step: number | 0): this {
+    this.step = step;
     return this;
   }
 

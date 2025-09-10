@@ -23,6 +23,7 @@ export class PurchaseOrderBuilder {
   // selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
   document: DocumentEntity | null;
   user_approval: UserApprovalEntity | null;
+  step: number | 0;
 
   setPurchaseOrderId(value: PurchaseOrderId): this {
     this.purchaseOrderId = value;
@@ -76,6 +77,11 @@ export class PurchaseOrderBuilder {
 
   setTotal(total: number | 0): this {
     this.total = total;
+    return this;
+  }
+
+  setStep(step: number | 0): this {
+    this.step = step;
     return this;
   }
 

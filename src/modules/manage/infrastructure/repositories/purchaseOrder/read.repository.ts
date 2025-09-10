@@ -57,6 +57,8 @@ import {
   EligiblePersons,
   EnumPrOrPo,
 } from '@src/modules/manage/application/constants/status-key.const';
+import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
+import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 
 @Injectable()
 export class ReadPurchaseOrderRepository
@@ -231,6 +233,21 @@ export class ReadPurchaseOrderRepository
       .where('purchase_orders.id = :id', { id: id.value })
       .getOneOrFail();
 
-    return this._dataAccessMapper.toEntity(item);
+    const user_approval_step = await manager
+      .createQueryBuilder(UserApprovalOrmEntity, 'user_approvals')
+      .where('user_approvals.document_id = :id', { id: item.document_id })
+      .getCount();
+
+    const workflow_step = await manager
+      .createQueryBuilder(ApprovalWorkflowStepOrmEntity, 'steps')
+      .innerJoin('steps.approval_workflows', 'approval_workflows')
+      .where('approval_workflows.document_type_id = :id', {
+        id: item.documents.document_type_id,
+      })
+      .getCount();
+
+    const step = workflow_step - user_approval_step;
+
+    return this._dataAccessMapper.toEntity(item, step);
   }
 }

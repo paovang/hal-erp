@@ -45,7 +45,10 @@ export class PurchaseRequestDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  toEntity(ormData: PurchaseRequestOrmEntity): PurchaseRequestEntity {
+  toEntity(
+    ormData: PurchaseRequestOrmEntity,
+    step: number = 0,
+  ): PurchaseRequestEntity {
     const items = ormData.purchase_request_items || [];
     interface PurchaseRequestItemLike {
       total_price?: number;
@@ -58,6 +61,8 @@ export class PurchaseRequestDataAccessMapper {
       0,
     );
 
+    const totalWorkflowStep = 0;
+
     const builder = PurchaseRequestEntity.builder()
       .setPurchaseRequestId(new PurchaseRequestId(ormData.id))
       .setDocumentId(ormData.document_id ?? 0)
@@ -68,7 +73,9 @@ export class PurchaseRequestDataAccessMapper {
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .setDeletedAt(ormData.deleted_at)
-      .setTotal(total);
+      .setTotal(total)
+      .setWorkflowStepTotal(totalWorkflowStep ?? 0)
+      .setStep(step);
 
     if (ormData.documents) {
       builder.setDocument(this.documentMapper.toEntity(ormData.documents));

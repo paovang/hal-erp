@@ -36,6 +36,9 @@ export class PurchaseOrderResponse {
   total: number | 0;
 
   @ApiProperty()
+  step: boolean;
+
+  @ApiProperty()
   purchase_request: PurchaseRequestResponse | null;
 
   @ApiProperty()

@@ -18,6 +18,8 @@ export class PurchaseRequestBuilder {
   purchaseRequestItem: PurchaseRequestItemEntity[] | null;
   document: DocumentEntity | null;
   user_approval: UserApprovalEntity | null;
+  workflow_step_total: number | 0;
+  step: number | 0;
 
   setPurchaseRequestId(value: PurchaseRequestId): this {
     this.purchaseRequestId = value;
@@ -66,6 +68,16 @@ export class PurchaseRequestBuilder {
 
   setTotal(total: number | 0): this {
     this.total = total;
+    return this;
+  }
+
+  setStep(step: number | 0): this {
+    this.step = step;
+    return this;
+  }
+
+  setWorkflowStepTotal(workflow_step_total: number | 0): this {
+    this.workflow_step_total = workflow_step_total;
     return this;
   }
 

@@ -34,6 +34,9 @@ export class ReceiptResponse {
   updated_at: string;
 
   @ApiProperty()
+  step: boolean;
+
+  @ApiProperty()
   currency_totals: CurrencyTotal[] | null;
 
   @ApiProperty()

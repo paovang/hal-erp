@@ -24,6 +24,7 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
   // private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
   private readonly _document: DocumentEntity | null;
   private readonly _user_approval: UserApprovalEntity | null;
+  private _step: number | 0;
 
   private constructor(builder: PurchaseOrderBuilder) {
     super();
@@ -43,6 +44,7 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
     // this._selectedVendor = builder.selectedVendor ?? null;
     this._document = builder.document ?? null;
     this._user_approval = builder.user_approval ?? null;
+    this._step = builder.step;
   }
 
   get purchase_request_id(): number {
@@ -83,6 +85,10 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
 
   get total(): number | 0 {
     return this._total;
+  }
+
+  get step(): number | 0 {
+    return this._step;
   }
 
   get purchaseRequest(): PurchaseRequestEntity | null {

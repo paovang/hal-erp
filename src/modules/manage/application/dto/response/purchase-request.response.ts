@@ -35,6 +35,9 @@ export class PurchaseRequestResponse {
   total: number | 0;
 
   @ApiProperty()
+  step: boolean;
+
+  @ApiProperty()
   document: DocumentResponse | null;
 
   @ApiProperty()

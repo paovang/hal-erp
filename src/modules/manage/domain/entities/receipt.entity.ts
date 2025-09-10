@@ -24,6 +24,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _user_approval: UserApprovalEntity | null;
   private readonly _currency_totals?: CurrencyTotal[] | null;
   private readonly _document_attachments?: DocumentAttachmentEntity[] | null;
+  private _step: number | 0;
 
   private constructor(builder: ReceiptBuilder) {
     super();
@@ -43,6 +44,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
     this._currency_totals = builder.currency_totals ?? null;
     this._account_code = builder.account_code ?? null;
     this._document_attachments = builder.document_attachments ?? null;
+    this._step = builder.step;
   }
 
   get receipt_number(): string {
@@ -87,6 +89,10 @@ export class ReceiptEntity extends Entity<ReceiptId> {
 
   get currencyTotals(): CurrencyTotal[] | null {
     return this._currency_totals ?? null;
+  }
+
+  get step(): number | 0 {
+    return this._step;
   }
 
   get item(): ReceiptItemEntity[] | null {

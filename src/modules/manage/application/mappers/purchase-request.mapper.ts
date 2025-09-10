@@ -55,6 +55,8 @@ export class PurchaseRequestDataMapper {
 
   /** Mapper Entity To Response */
   toResponse(entity: PurchaseRequestEntity): PurchaseRequestResponse {
+    const isStepPending = entity.step > 0 ? true : false;
+
     const response = new PurchaseRequestResponse();
     response.id = Number(entity.getId().value);
     response.document_id = Number(entity.document_id);
@@ -73,6 +75,7 @@ export class PurchaseRequestDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.total = entity.total;
+    response.step = isStepPending;
 
     response.document = entity.document
       ? this.documentMapper.toResponse(entity.document)
