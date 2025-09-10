@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { DomainException } from '@common/domain/exceptions/domain.exception';
+import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 
 export class ManageDomainException extends DomainException {
   constructor(
