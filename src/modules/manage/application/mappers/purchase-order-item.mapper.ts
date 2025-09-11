@@ -7,6 +7,7 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { PurchaseOrderSelectedVendorDataMapper } from './purchase-order-selected-vendor.mapper';
 import { UpdatePurchaseOrderBudgetItemDto } from '../dto/create/purchaseOrderItem/update.dto';
 import { BudgetItemDataMapper } from './budget-item.mapper';
+import { PurchaseRequestItemDataMapper } from './purchase-request-item.mapper';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -21,6 +22,7 @@ interface CustomPurchaseOrderItemDto {
 export class PurchaseOrderItemDataMapper {
   constructor(
     private readonly _budgetItem: BudgetItemDataMapper,
+    private readonly _purchaseRequestItem: PurchaseRequestItemDataMapper,
     private readonly selectedVendorMapper: PurchaseOrderSelectedVendorDataMapper,
   ) {}
 
@@ -100,6 +102,10 @@ export class PurchaseOrderItemDataMapper {
 
     response.budget_item = entity.budgetItem
       ? this._budgetItem.toResponse(entity.budgetItem)
+      : null;
+
+    response.purchase_request_item = entity.purchase_request_item
+      ? this._purchaseRequestItem.toResponse(entity.purchase_request_item)
       : null;
 
     response.selected_vendor = entity.selectedVendor

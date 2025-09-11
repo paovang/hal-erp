@@ -6,6 +6,7 @@ import { ReceiptItemEntity } from '../../domain/entities/receipt-item.entity';
 import { ReceiptItemResponse } from '../dto/response/receipt-item.response';
 import { EnumPaymentType } from '../constants/status-key.const';
 import { CurrencyDataMapper } from './currency.mapper';
+import { PurchaseOrderItemDataMapper } from './purchase-order-item.mapper';
 
 interface ReceiptItemInterface {
   receipt_id: number;
@@ -27,6 +28,7 @@ export class ReceiptItemDataMapper {
   constructor(
     private readonly _currency: CurrencyDataMapper,
     private readonly _payment_currency: CurrencyDataMapper,
+    private readonly _purchase_order_item: PurchaseOrderItemDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(dto: ReceiptItemInterface): ReceiptItemEntity {
@@ -111,6 +113,9 @@ export class ReceiptItemDataMapper {
       : null;
     response.payment_currency = entity.payment_currency
       ? this._payment_currency.toResponse(entity.payment_currency)
+      : null;
+    response.purchase_order_item = entity.purchase_order_item
+      ? this._purchase_order_item.toResponse(entity.purchase_order_item)
       : null;
 
     return response;

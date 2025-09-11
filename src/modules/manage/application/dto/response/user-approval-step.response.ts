@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { DocumentStatusResponse } from './document-status.response';
 import { UserResponse } from './user.response';
 import { ApprovalWorkflowStepResponse } from './approval-workflow-step.response';
+import { PositionResponse } from './position.response';
 
 export class UserApprovalStepResponse {
   @ApiProperty()
@@ -45,6 +46,9 @@ export class UserApprovalStepResponse {
 
   @ApiProperty()
   approver: UserResponse | null;
+
+  @ApiProperty()
+  position: PositionResponse | null;
 
   @ApiProperty()
   approval_workflow_step: ApprovalWorkflowStepResponse | null;

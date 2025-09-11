@@ -238,6 +238,15 @@ export const selectCurrencies = [
   'currencies.updated_at',
 ];
 
+// bank_account_currency
+export const selectBankAccountCurrencies = [
+  'bank_account_currency.id',
+  'bank_account_currency.code',
+  'bank_account_currency.name',
+  'bank_account_currency.created_at',
+  'bank_account_currency.updated_at',
+];
+
 export const selectSelectedVendors = [
   'selected_vendors.id',
   'selected_vendors.name',
@@ -333,6 +342,24 @@ export const selectStatus = [
   'status.name',
   'status.created_at',
   'status.updated_at',
+];
+
+// department_user_approvers
+export const selectDepartmentUserApprovers = [
+  'department_user_approver.id',
+  'department_user_approver.department_id',
+  'department_user_approver.position_id',
+  'department_user_approver.user_id',
+  'department_user_approver.created_at',
+  'department_user_approver.updated_at',
+];
+
+// position_approver
+export const selectPositionApprover = [
+  'position_approver.id',
+  'position_approver.name',
+  'position_approver.created_at',
+  'position_approver.updated_at',
 ];
 
 // approval_workflow_steps

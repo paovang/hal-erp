@@ -12,11 +12,13 @@ import {
 } from '../../application/constants/status-key.const';
 import { PurchaseOrderSelectedVendorDataAccessMapper } from './purchase-order-selected-vendor.mapper';
 import { BudgetItemDataAccessMapper } from './budget-item.mapper';
+import { PurchaseRequestItemDataAccessMapper } from './purchase-request-item.mapper';
 
 @Injectable()
 export class PurchaseOrderItemDataAccessMapper {
   constructor(
     private readonly _budgetItem: BudgetItemDataAccessMapper,
+    private readonly _purchaseRequestItem: PurchaseRequestItemDataAccessMapper,
     private readonly _selectedVendor: PurchaseOrderSelectedVendorDataAccessMapper,
   ) {}
 
@@ -79,6 +81,12 @@ export class PurchaseOrderItemDataAccessMapper {
 
     if (ormData.budget_item) {
       builder.setBudgetItem(this._budgetItem.toEntity(ormData.budget_item));
+    }
+
+    if (ormData.purchase_request_items) {
+      builder.setPurchaseRequestItem(
+        this._purchaseRequestItem.toEntity(ormData.purchase_request_items),
+      );
     }
 
     if (ormData.purchase_order_selected_vendors) {

@@ -18,7 +18,6 @@ export class UserDataAccessMapper {
     private readonly permissionMapper: PermissionDataAccessMapper,
     private readonly userTypeMapper: UserTypeDataAccessMapper,
     private readonly userSignature: UserSignatureDataAccessMapper,
-    // private readonly userTypeMapper: UserTypeDataAccessMapper,
   ) {}
   toOrmEntity(userEntity: UserEntity, method: OrmEntityMethod): UserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
@@ -76,6 +75,7 @@ export class UserDataAccessMapper {
         ormData?.user_types.map((type) => this.userTypeMapper.toEntity(type)),
       );
     }
+
     return builder.build();
   }
 }

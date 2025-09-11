@@ -19,22 +19,31 @@ import {
 import {
   selectApprover,
   selectApproverUserSignatures,
+  selectBankAccountCurrencies,
+  selectBanks,
   selectCreatedBy,
   selectCurrencies,
   selectCurrency,
   selectDepartments,
+  selectDepartmentUserApprovers,
   selectDepartmentUsers,
   selectDocumentAttachments,
   selectDocuments,
   selectDocumentStatuses,
   selectDocumentTypes,
+  selectPositionApprover,
   selectPositions,
+  selectPurchaseOrderItems,
+  selectPurchaseOrderSelectedVendors,
+  selectPurchaseRequestItems,
   selectReceiptBy,
   selectReceiptItems,
+  selectSelectedVendors,
   selectStatus,
   selectUserApprovals,
   selectUserApprovalSteps,
   selectUsers,
+  selectVendorBankAccounts,
 } from '@src/common/constants/select-field';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
 import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
@@ -102,6 +111,15 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectCurrency,
       ...selectDocumentAttachments,
       ...selectCreatedBy,
+      ...selectDepartmentUserApprovers,
+      ...selectPositionApprover,
+      ...selectPurchaseOrderItems,
+      ...selectPurchaseRequestItems,
+      ...selectPurchaseOrderSelectedVendors,
+      ...selectSelectedVendors,
+      ...selectVendorBankAccounts,
+      ...selectBanks,
+      ...selectBankAccountCurrencies,
     ];
 
     const query = manager
@@ -116,6 +134,22 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .innerJoin('receipts.receipt_items', 'receipt_items')
       .innerJoin('receipt_items.currency', 'currency')
       .innerJoin('receipt_items.payment_currency', 'currencies')
+      .innerJoin('receipt_items.purchase_order_items', 'purchase_order_items')
+      .innerJoin(
+        'purchase_order_items.purchase_request_items',
+        'purchase_request_items',
+      )
+      .innerJoin(
+        'purchase_order_items.purchase_order_selected_vendors',
+        'purchase_order_selected_vendors',
+      )
+      .innerJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
+      .leftJoin(
+        'purchase_order_selected_vendors.vendor_bank_account',
+        'vendor_bank_accounts',
+      )
+      .leftJoin('vendor_bank_accounts.banks', 'bank')
+      .leftJoin('vendor_bank_accounts.currencies', 'bank_account_currency')
       .innerJoin('documents.user_approvals', 'user_approvals')
       .innerJoin('user_approvals.document_statuses', 'document_statuses')
       .innerJoin('user_approvals.user_approval_steps', 'user_approval_steps')
@@ -126,6 +160,8 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
         'document_approver.user_approval_step_id = user_approval_steps.id',
       )
       .leftJoin('user_approval_steps.approver', 'approver')
+      .leftJoin('approver.department_users', 'department_user_approver')
+      .leftJoin('department_user_approver.positions', 'position_approver')
       .leftJoin('user_approval_steps.status', 'status')
       .leftJoin('approver.user_signatures', 'approver_user_signatures')
       .leftJoin('documents.document_attachments', 'document_attachments')

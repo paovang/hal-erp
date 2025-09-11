@@ -4,6 +4,7 @@ import { ReceiptItemId } from '../value-objects/receipt-item-id.vo';
 import { EnumPaymentType } from '../../application/constants/status-key.const';
 import { ReceiptItemBuilder } from '../builders/receipt-item.builder';
 import { CurrencyEntity } from './currency.entity';
+import { PurchaseOrderItemEntity } from './purchase-order-item.entity';
 
 export class ReceiptItemEntity extends Entity<ReceiptItemId> {
   private readonly _receipt_id: number;
@@ -23,6 +24,7 @@ export class ReceiptItemEntity extends Entity<ReceiptItemId> {
   private readonly _deletedAt: Date | null;
   private readonly _currency: CurrencyEntity | null;
   private readonly _payment_currency: CurrencyEntity | null;
+  private readonly _purchase_order_item: PurchaseOrderItemEntity | null;
 
   private constructor(builder: ReceiptItemBuilder) {
     super();
@@ -44,6 +46,7 @@ export class ReceiptItemEntity extends Entity<ReceiptItemId> {
     this._deletedAt = builder.deletedAt ?? null;
     this._currency = builder.currency ?? null;
     this._payment_currency = builder.payment_currency ?? null;
+    this._purchase_order_item = builder.purchase_order_item ?? null;
   }
 
   get receipt_id(): number {
@@ -76,6 +79,10 @@ export class ReceiptItemEntity extends Entity<ReceiptItemId> {
 
   get vat(): number {
     return this._vat;
+  }
+
+  get purchase_order_item(): PurchaseOrderItemEntity | null {
+    return this._purchase_order_item;
   }
 
   get payment_currency_id(): number {

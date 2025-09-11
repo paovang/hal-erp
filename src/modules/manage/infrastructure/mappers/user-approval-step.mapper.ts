@@ -8,12 +8,14 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { PositionDataAccessMapper } from './position.mapper';
 
 @Injectable()
 export class UserApprovalStepDataAccessMapper {
   constructor(
     private readonly DocumentStatusDataMapper: DocumentStatusDataAccessMapper,
     private readonly userDataMapper: UserDataAccessMapper,
+    private readonly positionMapper: PositionDataAccessMapper,
   ) {}
 
   toOrmEntity(
@@ -69,6 +71,16 @@ export class UserApprovalStepDataAccessMapper {
 
     if (ormData.approver) {
       build.setApprover(this.userDataMapper.toEntity(ormData.approver));
+    }
+
+    const positions = ormData.approver?.department_users?.map(
+      (departmentUser) => departmentUser.positions,
+    );
+    if (positions) {
+      const positionEntities = positions.map((position) =>
+        this.positionMapper.toEntity(position),
+      );
+      build.setPosition(positionEntities);
     }
 
     return build.build();

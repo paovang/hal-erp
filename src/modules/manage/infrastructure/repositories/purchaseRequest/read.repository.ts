@@ -14,14 +14,15 @@ import { EntityManager, Repository } from 'typeorm';
 import { PurchaseRequestDataAccessMapper } from '../../mappers/purchase-request.mapper';
 import { PurchaseRequestId } from '../../../domain/value-objects/purchase-request-id.vo';
 import {
-  // selectApprovalWorkflowSteps,
   selectApprover,
   selectApproverUserSignatures,
   selectDepartments,
+  selectDepartmentUserApprovers,
   selectDepartmentUsers,
   selectDocuments,
   selectDocumentStatuses,
   selectDocumentTypes,
+  selectPositionApprover,
   selectPositions,
   selectPurchaseRequestItems,
   selectStatus,
@@ -129,6 +130,8 @@ export class ReadPurchaseRequestRepository
       ...selectApprover,
       ...selectApproverUserSignatures,
       ...selectStatus,
+      ...selectDepartmentUserApprovers,
+      ...selectPositionApprover,
     ];
 
     const query = manager
@@ -149,6 +152,8 @@ export class ReadPurchaseRequestRepository
       .innerJoin('user_approvals.document_statuses', 'document_statuses')
       .innerJoin('user_approvals.user_approval_steps', 'user_approval_steps')
       .leftJoin('user_approval_steps.approver', 'approver')
+      .leftJoin('approver.department_users', 'department_user_approver')
+      .leftJoin('department_user_approver.positions', 'position_approver')
       .leftJoin('user_approval_steps.status', 'status')
       .leftJoin('approver.user_signatures', 'approver_user_signatures')
       .innerJoin(

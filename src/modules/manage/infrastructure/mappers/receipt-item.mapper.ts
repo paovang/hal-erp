@@ -7,12 +7,14 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { ReceiptItemId } from '../../domain/value-objects/receipt-item-id.vo';
 import { Injectable } from '@nestjs/common';
 import { CurrencyDataAccessMapper } from './currency.mapper';
+import { PurchaseOrderItemDataAccessMapper } from './purchase-order-item.mapper';
 
 @Injectable()
 export class ReceiptItemDataAccessMapper {
   constructor(
     private readonly _currency: CurrencyDataAccessMapper,
     private readonly _payment_currency: CurrencyDataAccessMapper,
+    private readonly _purchase_order_item: PurchaseOrderItemDataAccessMapper,
   ) {}
   toOrmEntity(
     receiptEntity: ReceiptItemEntity,
@@ -71,6 +73,12 @@ export class ReceiptItemDataAccessMapper {
     if (ormData.payment_currency) {
       builder.setPaymentCurrency(
         this._payment_currency.toEntity(ormData.payment_currency),
+      );
+    }
+
+    if (ormData.purchase_order_items) {
+      builder.setPurchaseOrderItem(
+        this._purchase_order_item.toEntity(ormData.purchase_order_items),
       );
     }
 

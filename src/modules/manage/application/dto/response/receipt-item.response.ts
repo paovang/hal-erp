@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CurrencyResponse } from './currency.response';
+import { PurchaseOrderItemResponse } from './purchase-order-item.response';
 
 export class ReceiptItemResponse {
   @ApiProperty()
@@ -52,4 +53,7 @@ export class ReceiptItemResponse {
 
   @ApiProperty()
   payment_currency: CurrencyResponse | null;
+
+  @ApiProperty()
+  purchase_order_item: PurchaseOrderItemResponse | null;
 }

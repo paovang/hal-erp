@@ -17,6 +17,7 @@ export class UserDataMapper {
   constructor(
     private readonly roleDataMapper: RoleDataMapper,
     private readonly userSignature: UserSignatureDataMapper,
+    // private readonly positionDataMapper: PositionDataMapper,
   ) {}
 
   /** Mapper Dto To Entity */

@@ -4,6 +4,7 @@ import { BadRequestException } from '@nestjs/common';
 import { PurchaseOrderItemBuilder } from '../builders/purchase-order-item.builder';
 import { PurchaseOrderSelectedVendorEntity } from './purchase-order-selected-vendor.entity';
 import { BudgetItemEntity } from './budget-item.entity';
+import { PurchaseRequestItemEntity } from './purchase-request-item.entity';
 
 export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   private readonly _purchase_order_id: number;
@@ -19,7 +20,7 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   private readonly _deletedAt: Date | null;
   private readonly _vat_total: number | 0;
   private readonly _total_with_vat: number | 0;
-  // private readonly _quote: PurchaseOrderItemQuoteEntity[] | null;
+  private readonly _purchase_request_item: PurchaseRequestItemEntity | null;
   private readonly _budgetItem: BudgetItemEntity | null;
   private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
 
@@ -41,6 +42,7 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     this._total_with_vat = builder.total_with_vat;
     this._budgetItem = builder.budgetItem ?? null;
     this._selectedVendor = builder.selectedVendor ?? null;
+    this._purchase_request_item = builder.purchase_request_item ?? null;
   }
 
   get purchase_order_id(): number {
@@ -98,10 +100,9 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   get budgetItem(): BudgetItemEntity | null {
     return this._budgetItem;
   }
-
-  // get quote(): PurchaseOrderItemQuoteEntity[] | null {
-  //   return this._quote;
-  // }
+  get purchase_request_item(): PurchaseRequestItemEntity | null {
+    return this._purchase_request_item;
+  }
 
   get selectedVendor(): PurchaseOrderSelectedVendorEntity[] | null {
     return this._selectedVendor;

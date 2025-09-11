@@ -8,6 +8,7 @@ import { DocumentStatusDataMapper } from './document-status.mapper';
 import { UserDataMapper } from './user.mapper';
 import { ApprovalDto } from '../dto/create/userApprovalStep/update-statue.dto';
 import { UserApprovalStepId } from '../../domain/value-objects/user-approval-step-id.vo';
+import { PositionDataMapper } from './position.mapper';
 
 interface CustomApprovalDto {
   user_approval_id: number;
@@ -22,6 +23,7 @@ export class UserApprovalStepDataMapper {
   constructor(
     private readonly documentStatusDataMapper: DocumentStatusDataMapper,
     private readonly userDataMapper: UserDataMapper,
+    private readonly positionDataMapper: PositionDataMapper,
   ) {}
   toEntity(
     dto: ApprovalDto,
@@ -89,6 +91,11 @@ export class UserApprovalStepDataMapper {
     response.approver = entity.user
       ? this.userDataMapper.toResponse(entity.user)
       : null;
+
+    response.position =
+      entity.position && entity.position.length > 0
+        ? this.positionDataMapper.toResponse(entity.position[0])
+        : null;
 
     return response;
   }

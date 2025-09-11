@@ -1,6 +1,7 @@
 import { BudgetItemEntity } from '../entities/budget-item.entity';
 import { PurchaseOrderItemEntity } from '../entities/purchase-order-item.entity';
 import { PurchaseOrderSelectedVendorEntity } from '../entities/purchase-order-selected-vendor.entity';
+import { PurchaseRequestItemEntity } from '../entities/purchase-request-item.entity';
 import { PurchaseOrderItemId } from '../value-objects/purchase-order-item-id.vo';
 
 export class PurchaseOrderItemBuilder {
@@ -18,9 +19,9 @@ export class PurchaseOrderItemBuilder {
   deletedAt!: Date | null;
   vat_total: number | 0;
   total_with_vat: number | 0;
-  // quote: PurchaseOrderItemQuoteEntity[] | null;
   budgetItem: BudgetItemEntity | null;
   selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
+  purchase_request_item: PurchaseRequestItemEntity | null;
 
   setPurchaseOrderItemId(value: PurchaseOrderItemId): this {
     this.purchaseOrderItemId = value;
@@ -92,10 +93,12 @@ export class PurchaseOrderItemBuilder {
     return this;
   }
 
-  // setQuote(quote: PurchaseOrderItemQuoteEntity[] | null): this {
-  //   this.quote = quote;
-  //   return this;
-  // }
+  setPurchaseRequestItem(
+    purchase_request_item: PurchaseRequestItemEntity | null,
+  ): this {
+    this.purchase_request_item = purchase_request_item;
+    return this;
+  }
 
   setSelectedVendor(
     selectedVendor: PurchaseOrderSelectedVendorEntity[] | null,

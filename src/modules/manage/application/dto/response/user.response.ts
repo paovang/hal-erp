@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { RoleResponse } from './role.response';
 import { PermissionResponse } from './permission.response';
 import { UserSignatureResponse } from './user-signature.response';
+import { PositionResponse } from './position.response';
 
 export class UserResponse {
   @ApiProperty()
@@ -39,4 +40,7 @@ export class UserResponse {
 
   @ApiProperty()
   permissions: PermissionResponse[] | null;
+
+  @ApiProperty()
+  position: PositionResponse | null;
 }

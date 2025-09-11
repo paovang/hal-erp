@@ -1,5 +1,6 @@
 import { EnumPaymentType } from '../../application/constants/status-key.const';
 import { CurrencyEntity } from '../entities/currency.entity';
+import { PurchaseOrderItemEntity } from '../entities/purchase-order-item.entity';
 import { ReceiptItemEntity } from '../entities/receipt-item.entity';
 import { ReceiptItemId } from '../value-objects/receipt-item-id.vo';
 
@@ -22,6 +23,7 @@ export class ReceiptItemBuilder {
   deletedAt!: Date | null;
   currency: CurrencyEntity | null;
   payment_currency: CurrencyEntity | null;
+  purchase_order_item: PurchaseOrderItemEntity | null;
 
   setReceiptItemId(value: ReceiptItemId): this {
     this.receiptItemId = value;
@@ -110,6 +112,13 @@ export class ReceiptItemBuilder {
 
   setPaymentCurrency(payment_currency: CurrencyEntity | null): this {
     this.payment_currency = payment_currency;
+    return this;
+  }
+
+  setPurchaseOrderItem(
+    purchase_order_item: PurchaseOrderItemEntity | null,
+  ): this {
+    this.purchase_order_item = purchase_order_item;
     return this;
   }
 

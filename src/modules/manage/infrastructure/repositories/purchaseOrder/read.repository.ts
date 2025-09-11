@@ -21,6 +21,7 @@ import {
   // selectCurrencies,
   selectCurrency,
   selectDepartments,
+  selectDepartmentUserApprovers,
   selectDepartmentUsers,
   selectDocuments,
   selectDocumentStatuses,
@@ -30,6 +31,7 @@ import {
   selectPoDocuments,
   selectPoDocumentTypes,
   selectPoPositions,
+  selectPositionApprover,
   selectPositions,
   selectPoUsers,
   selectPoUserSignatures,
@@ -139,6 +141,8 @@ export class ReadPurchaseOrderRepository
       ...selectStatus,
       ...selectBanks,
       ...selectBudgetItems,
+      ...selectDepartmentUserApprovers,
+      ...selectPositionApprover,
     ];
 
     const query = manager
@@ -187,6 +191,8 @@ export class ReadPurchaseOrderRepository
       .innerJoin('user_approvals.document_statuses', 'document_statuses')
       .innerJoin('user_approvals.user_approval_steps', 'user_approval_steps')
       .leftJoin('user_approval_steps.approver', 'approver')
+      .leftJoin('approver.department_users', 'department_user_approver')
+      .leftJoin('department_user_approver.positions', 'position_approver')
       .innerJoin('user_approval_steps.status', 'status')
       .leftJoin('approver.user_signatures', 'approver_user_signatures')
       .innerJoin(
