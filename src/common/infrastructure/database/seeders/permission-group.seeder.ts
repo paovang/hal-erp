@@ -202,13 +202,6 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
-        name: 'purchase-order-item-quote',
-        display_name: 'Purchase Order Item Quote',
-        type: 'all',
-        created_at: currentDateTime,
-        updated_at: currentDateTime,
-      },
-      {
         name: 'user-approval',
         display_name: 'User Approval',
         type: 'all',
@@ -218,6 +211,20 @@ export class PermissionGroupSeeder {
       {
         name: 'user-approval-step',
         display_name: 'User Approval Step',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'receipt',
+        display_name: 'Receipt',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'receipt-item',
+        display_name: 'Receipt Item',
         type: 'all',
         created_at: currentDateTime,
         updated_at: currentDateTime,

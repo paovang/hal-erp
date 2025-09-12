@@ -148,11 +148,6 @@ export class PermissionSeeder {
       'update-purchase-selected-vendor': 24,
       'delete-purchase-selected-vendor': 24,
 
-      'create-purchase-order-item-quote': 25,
-      'read-purchase-order-item-quote': 25,
-      'update-purchase-order-item-quote': 25,
-      'delete-purchase-order-item-quote': 25,
-
       'create-user-approval': 26,
       'read-user-approval': 26,
       'update-user-approval': 26,
@@ -162,6 +157,16 @@ export class PermissionSeeder {
       'read-user-approval-step': 27,
       'update-user-approval-step': 27,
       'delete-user-approval-step': 27,
+
+      'create-receipt': 28,
+      'read-receipt': 28,
+      'update-receipt': 28,
+      'delete-receipt': 28,
+
+      'create-receipt-item': 29,
+      'read-receipt-item': 29,
+      'update-receipt-item': 29,
+      'delete-receipt-item': 29,
     };
 
     const items = Object.entries(permissionGroupMapping).map(
