@@ -15,6 +15,7 @@ export class PermissionDataAccessMapper {
       PermissionEntity.builder()
         .setId(new PermissionId(ormData.id))
         .setName(ormData.name)
+        .setDisplayName(ormData.display_name)
         .setCreatedAt(ormData.created_at)
         .setUpdatedAt(ormData.updated_at)
         .setDeletedAt(ormData.deleted_at)
@@ -34,6 +35,7 @@ export class PermissionDataAccessMapper {
       mediaOrmEntity.id = id.value;
     }
     mediaOrmEntity.name = roleEntity.name;
+    mediaOrmEntity.display_name = roleEntity.displayName;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = roleEntity.createdAt ?? new Date(now);
     }
@@ -47,6 +49,7 @@ export class PermissionDataAccessMapper {
       PermissionEntity.builder()
         .setId(new PermissionId(p.id))
         .setName(p.name)
+        .setDisplayName(p.display_name)
         .setCreatedAt(p.created_at)
         .setUpdatedAt(p.updated_at)
         .setDeletedAt(p.deleted_at)
