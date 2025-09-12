@@ -148,25 +148,25 @@ export class PermissionSeeder {
       'update-purchase-selected-vendor': 24,
       'delete-purchase-selected-vendor': 24,
 
-      'create-user-approval': 26,
-      'read-user-approval': 26,
-      'update-user-approval': 26,
-      'delete-user-approval': 26,
+      'create-user-approval': 25,
+      'read-user-approval': 25,
+      'update-user-approval': 25,
+      'delete-user-approval': 25,
 
-      'create-user-approval-step': 27,
-      'read-user-approval-step': 27,
-      'update-user-approval-step': 27,
-      'delete-user-approval-step': 27,
+      'create-user-approval-step': 26,
+      'read-user-approval-step': 26,
+      'update-user-approval-step': 26,
+      'delete-user-approval-step': 26,
 
-      'create-receipt': 28,
-      'read-receipt': 28,
-      'update-receipt': 28,
-      'delete-receipt': 28,
+      'create-receipt': 27,
+      'read-receipt': 27,
+      'update-receipt': 27,
+      'delete-receipt': 27,
 
-      'create-receipt-item': 29,
-      'read-receipt-item': 29,
-      'update-receipt-item': 29,
-      'delete-receipt-item': 29,
+      'create-receipt-item': 28,
+      'read-receipt-item': 28,
+      'update-receipt-item': 28,
+      'delete-receipt-item': 28,
     };
 
     const items = Object.entries(permissionGroupMapping).map(
