@@ -44,6 +44,7 @@ export class ReportPurchaseRequestDataMapper {
   toResponse(
     entity: ReportPurchaseRequestEntity,
   ): ReportPurchaseRequestResponse {
+    console.log('entity', entity);
     const isStepPending = entity.step > 0 ? true : false;
     const response = new ReportPurchaseRequestResponse();
     response.id = Number(entity.getId().value);

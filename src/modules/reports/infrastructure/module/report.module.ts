@@ -4,6 +4,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { UserModule } from '@src/common/infrastructure/auth/user.module';
 import { UserService } from '@src/common/infrastructure/auth/user.service';
 import { ReportRegisterProviders } from '../../application/providers';
+import { ReportPurchaseRequestController } from '../../controllers/report-purchase-request.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { ReportRegisterProviders } from '../../application/providers';
       imports: [UserModule],
     }),
   ],
-  controllers: [],
+  controllers: [ReportPurchaseRequestController],
   providers: [...ReportRegisterProviders],
   exports: [...ReportRegisterProviders],
 })

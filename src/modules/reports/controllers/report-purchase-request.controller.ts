@@ -8,7 +8,7 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { ReportPurchaseRequestResponse } from '../application/dto/response/report-purchase-request.response';
 
 @Controller('reports/purchase-requests')
-export class ApprovalWorkflowStepController {
+export class ReportPurchaseRequestController {
   constructor(
     @Inject(REPORT_PURCHASE_REQUEST_APPLICATION_SERVICE)
     private readonly _service: IReportPurchaseRequestServiceInterface,
@@ -22,6 +22,7 @@ export class ApprovalWorkflowStepController {
     @Query() dto: any,
   ): Promise<ResponseResult<ReportPurchaseRequestResponse>> {
     const result = await this._service.report(dto);
+    console.log('result', result);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
