@@ -1,6 +1,8 @@
 import { Entity } from '@src/common/domain/entities/entity';
 import { DocumentApproverId } from '../value-objects/document-approver-id.vo';
 import { DocumentApproverBuilder } from '../builders/document-approver.builder';
+import { UserEntity } from './user.entity';
+import { DepartmentEntity } from './department.entity';
 
 export class DocumentApproverEntity extends Entity<DocumentApproverId> {
   private readonly _user_approval_step_id: number;
@@ -8,6 +10,8 @@ export class DocumentApproverEntity extends Entity<DocumentApproverId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _user: UserEntity | null;
+  private readonly _department: DepartmentEntity | null;
 
   private constructor(builder: DocumentApproverBuilder) {
     super();
@@ -17,6 +21,8 @@ export class DocumentApproverEntity extends Entity<DocumentApproverId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._user = builder.user ?? null;
+    this._department = builder.department ?? null;
   }
 
   get user_approval_step_id(): number {
@@ -37,6 +43,14 @@ export class DocumentApproverEntity extends Entity<DocumentApproverId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get user(): UserEntity | null {
+    return this._user;
+  }
+
+  get department(): DepartmentEntity | null {
+    return this._department;
   }
 
   public static builder(): DocumentApproverBuilder {

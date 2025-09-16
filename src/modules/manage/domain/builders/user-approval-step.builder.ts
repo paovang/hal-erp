@@ -1,4 +1,5 @@
 import { ApprovalWorkflowStepEntity } from '../entities/approval-workflow-step.entity';
+import { DocumentApproverEntity } from '../entities/document-approver.entity';
 import { DocumentStatusEntity } from '../entities/document-status.entity';
 import { PositionEntity } from '../entities/position.entity';
 import { UserApprovalStepEntity } from '../entities/user-approval-step.entity';
@@ -22,6 +23,7 @@ export class UserApprovalStepBuilder {
   user: UserEntity | null;
   approvalWorkflowStep: ApprovalWorkflowStepEntity | null;
   position: PositionEntity[] | null;
+  doc_approver: DocumentApproverEntity[] | null;
 
   setUserApprovalStepId(value: UserApprovalStepId): this {
     this.userApprovalStepId = value;
@@ -102,6 +104,11 @@ export class UserApprovalStepBuilder {
     approvalWorkflowStep: ApprovalWorkflowStepEntity | null,
   ): this {
     this.approvalWorkflowStep = approvalWorkflowStep;
+    return this;
+  }
+
+  setDocApprover(doc_approver: DocumentApproverEntity[] | null): this {
+    this.doc_approver = doc_approver;
     return this;
   }
 

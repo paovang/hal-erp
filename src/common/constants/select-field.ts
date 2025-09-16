@@ -247,6 +247,44 @@ export const selectBankAccountCurrencies = [
   'bank_account_currency.updated_at',
 ];
 
+// select document approver
+export const selectDocumentApprover = [
+  'document_approver.id',
+  'document_approver.user_approval_step_id',
+  'document_approver.user_id',
+  'document_approver.created_at',
+  'document_approver.updated_at',
+];
+
+//  select doc_approver user
+export const selectDocApproverUser = [
+  'doc_approver_user.id',
+  'doc_approver_user.username',
+  'doc_approver_user.email',
+  'doc_approver_user.tel',
+  'doc_approver_user.created_at',
+  'doc_approver_user.updated_at',
+];
+
+// select doc_dept_user
+export const selectDocDeptUser = [
+  'doc_dept_user.id',
+  'doc_dept_user.department_id',
+  'doc_dept_user.position_id',
+  'doc_dept_user.user_id',
+  'doc_dept_user.created_at',
+  'doc_dept_user.updated_at',
+];
+
+// select departments_approver
+export const selectDepartmentsApprover = [
+  'departments_approver.id',
+  'departments_approver.code',
+  'departments_approver.name',
+  'departments_approver.created_at',
+  'departments_approver.updated_at',
+];
+
 export const selectSelectedVendors = [
   'selected_vendors.id',
   'selected_vendors.name',

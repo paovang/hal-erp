@@ -1,4 +1,6 @@
+import { DepartmentEntity } from '../entities/department.entity';
 import { DocumentApproverEntity } from '../entities/document-approver.entity';
+import { UserEntity } from '../entities/user.entity';
 import { DocumentApproverId } from '../value-objects/document-approver-id.vo';
 
 export class DocumentApproverBuilder {
@@ -8,6 +10,8 @@ export class DocumentApproverBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  user: UserEntity | null;
+  department: DepartmentEntity | null;
 
   setDocumentApproverId(value: DocumentApproverId): this {
     this.documentApproverId = value;
@@ -36,6 +40,16 @@ export class DocumentApproverBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setUser(user: UserEntity | null): this {
+    this.user = user;
+    return this;
+  }
+
+  setDepartment(department: DepartmentEntity | null): this {
+    this.department = department;
     return this;
   }
 

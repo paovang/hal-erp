@@ -4,6 +4,8 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DocumentApproverResponse } from '../dto/response/document-approver.response';
+import { UserDataMapper } from './user.mapper';
+import { DepartmentDataMapper } from './department.mapper';
 
 interface DocumentApproverInterface {
   user_approval_step_id: number;
@@ -12,6 +14,10 @@ interface DocumentApproverInterface {
 
 @Injectable()
 export class DocumentApproverDataMapper {
+  constructor(
+    private readonly user: UserDataMapper,
+    private readonly department: DepartmentDataMapper,
+  ) {}
   /** Mapper Dto To Entity */
   toEntity(dto: DocumentApproverInterface): DocumentApproverEntity {
     const builder = DocumentApproverEntity.builder();
@@ -39,6 +45,11 @@ export class DocumentApproverDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.user = entity.user ? this.user.toResponse(entity.user) : null;
+    console.log('object', entity.department);
+    response.department = entity.department
+      ? this.department.toResponse(entity.department)
+      : null;
 
     return response;
   }

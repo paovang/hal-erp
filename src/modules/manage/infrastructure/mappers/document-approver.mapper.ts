@@ -6,9 +6,15 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { DocumentApproverId } from '../../domain/value-objects/document-approver-id.vo';
+import { UserDataAccessMapper } from './user.mapper';
+import { DepartmentDataAccessMapper } from './department.mapper';
 
 @Injectable()
 export class DocumentApproverDataAccessMapper {
+  constructor(
+    private readonly user: UserDataAccessMapper,
+    private readonly department: DepartmentDataAccessMapper,
+  ) {}
   toOrmEntity(
     documentApproverEntity: DocumentApproverEntity,
     method: OrmEntityMethod,
@@ -39,6 +45,17 @@ export class DocumentApproverDataAccessMapper {
       .setUserId(ormData.user_id ?? 0)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
+    if (ormData.users) {
+      builder.setUser(this.user.toEntity(ormData.users));
+    }
+
+    console.log('object', ormData.users.department_users[0].departments);
+
+    if (ormData.users.department_users[0].departments) {
+      builder.setDepartment(
+        this.department.toEntity(ormData.users.department_users[0].departments),
+      );
+    }
 
     return builder.build();
   }

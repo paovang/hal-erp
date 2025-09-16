@@ -6,6 +6,7 @@ import { DocumentStatusEntity } from './document-status.entity';
 import { UserEntity } from './user.entity';
 import { ApprovalWorkflowStepEntity } from './approval-workflow-step.entity';
 import { PositionEntity } from './position.entity';
+import { DocumentApproverEntity } from './document-approver.entity';
 
 export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
   private readonly _user_approval_id: number;
@@ -23,6 +24,7 @@ export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
   private readonly _user: UserEntity | null;
   private readonly _approvalWorkflowStep: ApprovalWorkflowStepEntity | null;
   private readonly _position: PositionEntity[] | null;
+  private readonly _doc_approver: DocumentApproverEntity[] | null;
 
   private constructor(builder: UserApprovalStepBuilder) {
     super();
@@ -42,6 +44,7 @@ export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
     this._requires_file_upload = builder.requires_file_upload;
     this._is_otp = builder.is_otp;
     this._position = builder.position ?? null;
+    this._doc_approver = builder.doc_approver ?? null;
   }
 
   get user_approval_id(): number {
@@ -102,6 +105,10 @@ export class UserApprovalStepEntity extends Entity<UserApprovalStepId> {
 
   get approvalWorkflowStep(): ApprovalWorkflowStepEntity | null {
     return this._approvalWorkflowStep;
+  }
+
+  get doc_approver(): DocumentApproverEntity[] | null {
+    return this._doc_approver;
   }
 
   public static builder(): UserApprovalStepBuilder {

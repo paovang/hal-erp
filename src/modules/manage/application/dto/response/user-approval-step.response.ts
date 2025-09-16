@@ -3,6 +3,7 @@ import { DocumentStatusResponse } from './document-status.response';
 import { UserResponse } from './user.response';
 import { ApprovalWorkflowStepResponse } from './approval-workflow-step.response';
 import { PositionResponse } from './position.response';
+import { DocumentApproverResponse } from './document-approver.response';
 
 export class UserApprovalStepResponse {
   @ApiProperty()
@@ -52,4 +53,7 @@ export class UserApprovalStepResponse {
 
   @ApiProperty()
   approval_workflow_step: ApprovalWorkflowStepResponse | null;
+
+  @ApiProperty()
+  doc_approver: DocumentApproverResponse[] | null;
 }

@@ -6,6 +6,7 @@ import { HttpStatus, Inject } from '@nestjs/common';
 import {
   LENGTH_DOCUMENT_CODE,
   LENGTH_RECEIPT_CODE,
+  READ_RECEIPT_REPOSITORY,
   WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_REPOSITORY,
   WRITE_RECEIPT_ITEM_REPOSITORY,
@@ -14,7 +15,10 @@ import {
   WRITE_USER_APPROVAL_STEP_REPOSITORY,
 } from '../../../constants/inject-key.const';
 import { ReceiptDataMapper } from '../../../mappers/receipt.mapper';
-import { IWriteReceiptRepository } from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
+import {
+  IReadReceiptRepository,
+  IWriteReceiptRepository,
+} from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
@@ -60,6 +64,7 @@ import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/
 import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
+import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -107,6 +112,8 @@ export class CreateCommandHandler
     @Inject(WRITE_RECEIPT_REPOSITORY)
     private readonly _write: IWriteReceiptRepository,
     private readonly _dataMapper: ReceiptDataMapper,
+    @Inject(READ_RECEIPT_REPOSITORY)
+    private readonly _readRepo: IReadReceiptRepository,
     // document
     @Inject(WRITE_DOCUMENT_REPOSITORY)
     private readonly _writeD: IWriteDocumentRepository,
@@ -179,6 +186,7 @@ export class CreateCommandHandler
         );
         const responseReceipt = await this._write.create(entity, manager);
         const receipt_id = (responseReceipt as any)._id._value;
+        console.log('object', receipt_id);
 
         await this.saveItem(query, manager, receipt_id);
 
@@ -241,7 +249,8 @@ export class CreateCommandHandler
           manager,
         );
 
-        return responseReceipt;
+        // return responseReceipt;
+        return await this._readRepo.findOne(new ReceiptId(receipt_id), manager);
       },
     );
   }

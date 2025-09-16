@@ -25,8 +25,12 @@ import {
   selectCurrencies,
   selectCurrency,
   selectDepartments,
+  selectDepartmentsApprover,
   selectDepartmentUserApprovers,
   selectDepartmentUsers,
+  selectDocApproverUser,
+  selectDocDeptUser,
+  selectDocumentApprover,
   selectDocumentAttachments,
   selectDocuments,
   selectDocumentStatuses,
@@ -120,6 +124,10 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectVendorBankAccounts,
       ...selectBanks,
       ...selectBankAccountCurrencies,
+      ...selectDocumentApprover,
+      ...selectDocApproverUser,
+      ...selectDocDeptUser,
+      ...selectDepartmentsApprover,
     ];
 
     const query = manager
@@ -166,6 +174,9 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .leftJoin('approver.user_signatures', 'approver_user_signatures')
       .leftJoin('documents.document_attachments', 'document_attachments')
       .leftJoin('document_attachments.users', 'created_by')
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
       .addSelect(selectFields);
 
     if (

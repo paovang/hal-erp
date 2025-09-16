@@ -9,6 +9,7 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { PositionDataAccessMapper } from './position.mapper';
+import { DocumentApproverDataAccessMapper } from './document-approver.mapper';
 
 @Injectable()
 export class UserApprovalStepDataAccessMapper {
@@ -16,6 +17,7 @@ export class UserApprovalStepDataAccessMapper {
     private readonly DocumentStatusDataMapper: DocumentStatusDataAccessMapper,
     private readonly userDataMapper: UserDataAccessMapper,
     private readonly positionMapper: PositionDataAccessMapper,
+    private readonly documentApproverMapper: DocumentApproverDataAccessMapper,
   ) {}
 
   toOrmEntity(
@@ -81,6 +83,14 @@ export class UserApprovalStepDataAccessMapper {
         this.positionMapper.toEntity(position),
       );
       build.setPosition(positionEntities);
+    }
+
+    if (ormData.document_approvers) {
+      build.setDocApprover(
+        ormData.document_approvers.map((docApp) =>
+          this.documentApproverMapper.toEntity(docApp),
+        ),
+      );
     }
 
     return build.build();
