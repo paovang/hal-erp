@@ -70,32 +70,32 @@ export class CreateCommandHandler
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
-    const optimizedImageProfile = await this._optimizeService.optimizeImage(
-      query.dto.signatureFile,
-    );
-
-    const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
-      optimizedImageProfile,
-      USER_SIGNATURE_IMAGE_FOLDER,
-    );
-
-    for (const roleId of query.dto.roleIds) {
-      await findOneOrFail(query.manager, RoleOrmEntity, {
-        id: roleId,
-      });
-    }
-
-    for (const permissionId of query.dto.permissionIds) {
-      await findOneOrFail(query.manager, PermissionOrmEntity, {
-        id: permissionId,
-      });
-    }
-
-    await this.checkData(query);
-
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        const optimizedImageProfile = await this._optimizeService.optimizeImage(
+          query.dto.signatureFile,
+        );
+
+        const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+          optimizedImageProfile,
+          USER_SIGNATURE_IMAGE_FOLDER,
+        );
+
+        for (const roleId of query.dto.roleIds) {
+          await findOneOrFail(manager, RoleOrmEntity, {
+            id: roleId,
+          });
+        }
+
+        for (const permissionId of query.dto.permissionIds) {
+          await findOneOrFail(manager, PermissionOrmEntity, {
+            id: permissionId,
+          });
+        }
+
+        await this.checkData(query);
+
         const hashedPassword = await bcrypt.hash(query.dto.password, 10);
         const dtoWithHashedPassword = {
           ...query.dto,
@@ -105,7 +105,7 @@ export class CreateCommandHandler
         const userEntity = this._dataUserMapper.toEntity(dtoWithHashedPassword);
         const data = await this._writeUser.create(
           userEntity,
-          query.manager,
+          manager,
           query.dto.roleIds,
           query.dto.permissionIds,
         );
