@@ -27,9 +27,9 @@ export class BudgetItemDataMapper {
       builder.setBudgetAccountId(dto.budget_accountId);
     }
 
-    if (dto.allocated_amount) {
-      builder.setAllocatedAmount(dto.allocated_amount);
-    }
+    // if (dto.allocated_amount) {
+    //   builder.setAllocatedAmount(dto.allocated_amount);
+    // }
 
     if (dto.description) {
       builder.setDescription(dto.description);

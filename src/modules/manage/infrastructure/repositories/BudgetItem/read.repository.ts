@@ -45,7 +45,6 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'budget_items.id',
         'budget_items.name',
         'budget_items.budget_account_id',
-        'budget_items.allocated_amount',
         'budget_items.created_at',
         'budget_items.updated_at',
       ])
@@ -258,5 +257,61 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     }
 
     return Number(result.total);
+  }
+
+  async getBudgetItem(
+    query: BudgetItemQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>> {
+    const queryBuilder = await this.createBaseQueryBudgetItem(manager, query);
+    query.sort_by = 'budget_items.id';
+
+    const data = await this._paginationService.paginate(
+      queryBuilder,
+      query,
+      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+      this.getFilterOptions(),
+    );
+    return data;
+  }
+
+  private createBaseQueryBudgetItem(
+    manager: EntityManager,
+    query: BudgetItemQueryDto,
+  ) {
+    const queryBuilder = manager
+      .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
+      .select([
+        'budget_items.id',
+        'budget_items.name',
+        'budget_items.budget_account_id',
+        'budget_items.created_at',
+        'budget_items.updated_at',
+      ])
+      .innerJoin('budget_items.budget_accounts', 'budget_accounts')
+      .leftJoin('budget_accounts.departments', 'departments')
+      .addSelect([
+        'budget_accounts.id',
+        'budget_accounts.name',
+        'budget_accounts.code',
+        'budget_accounts.fiscal_year',
+        'budget_accounts.department_id',
+        'budget_accounts.created_at',
+        'budget_accounts.updated_at',
+        'departments.id',
+        'departments.name',
+        'departments.code',
+        'departments.department_head_id',
+        'departments.created_at',
+        'departments.updated_at',
+      ]);
+
+    if (query?.budget_account_id) {
+      queryBuilder.where('budget_accounts.id = :budget_account_id', {
+        budget_account_id: query.budget_account_id,
+      });
+    }
+
+    return queryBuilder;
   }
 }

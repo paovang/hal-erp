@@ -39,8 +39,10 @@ export class ReadIncreaseBudgetRepository
     manager: EntityManager,
   ): Promise<ResponseResult<IncreaseBudgetEntity>> {
     const filterOptions = this.getFilterOptions();
-    const queryBuilder = await this.createBaseQuery(manager);
+    const budget_account = Number(query.budget_account_id);
+    const queryBuilder = await this.createBaseQuery(manager, budget_account);
     query.sort_by = 'increase_budgets.id';
+    console.log('object', budget_account);
 
     // Date filtering (single date)
     this.applyDateFilter(queryBuilder, filterOptions.dateColumn, query.date);
@@ -54,7 +56,7 @@ export class ReadIncreaseBudgetRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager) {
+  private createBaseQuery(manager: EntityManager, budget_account?: number) {
     const selectField = [
       ...selectBudgetAccounts,
       ...selectDepartments,
@@ -76,6 +78,12 @@ export class ReadIncreaseBudgetRepository
       .innerJoin('increase_budgets.increase_budget_details', 'details')
       .innerJoin('details.budget_item', 'budget_items')
       .addSelect(selectField);
+
+    if (budget_account) {
+      queryBuilder.andWhere('budget_accounts.id = :budget_account', {
+        budget_account,
+      });
+    }
 
     return queryBuilder;
   }

@@ -18,4 +18,8 @@ export class IncreaseBudgetQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   date?: string;
+
+  @IsOptional()
+  @IsString()
+  budget_account_id?: string;
 }

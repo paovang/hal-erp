@@ -39,9 +39,9 @@ export class BudgetItemOrmEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   name?: string;
 
-  @Index()
-  @Column({ type: 'double precision', nullable: true })
-  allocated_amount?: number;
+  // @Index()
+  // @Column({ type: 'double precision', nullable: true })
+  // allocated_amount?: number;
 
   @Column({ type: 'text', nullable: true })
   description?: string;

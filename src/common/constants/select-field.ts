@@ -207,7 +207,7 @@ export const selectBudgetItems = [
   'budget_items.id',
   'budget_items.budget_account_id',
   'budget_items.name',
-  'budget_items.allocated_amount',
+  // 'budget_items.allocated_amount',
   'budget_items.created_at',
   'budget_items.updated_at',
 ];

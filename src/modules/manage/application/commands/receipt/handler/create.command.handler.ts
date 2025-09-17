@@ -160,6 +160,7 @@ export class CreateCommandHandler
           {
             id: department_id,
           },
+          `department id: ${department_id}`,
         );
 
         const department_name = (get_department_name as any).name;
@@ -259,9 +260,14 @@ export class CreateCommandHandler
     manager: EntityManager,
     user_id: number,
   ): Promise<number> {
-    const department = await findOneOrFail(manager, DepartmentUserOrmEntity, {
-      user_id,
-    });
+    const department = await findOneOrFail(
+      manager,
+      DepartmentUserOrmEntity,
+      {
+        user_id,
+      },
+      `department user id: ${user_id}`,
+    );
     return (department as any).department_id;
   }
 
@@ -353,6 +359,7 @@ export class CreateCommandHandler
       {
         document_type_id: documentTypeId,
       },
+      `document type id: ${documentTypeId}`,
     );
     const aw_id = (approval_workflow as any).id;
     const a_w_s = await manager.findOne(ApprovalWorkflowStepOrmEntity, {

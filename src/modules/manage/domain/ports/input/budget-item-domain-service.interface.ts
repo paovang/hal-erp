@@ -18,6 +18,10 @@ export interface IBudgetItemServiceInterface {
 
   GetItemId(id: number): Promise<ResponseResult<BudgetItemEntity>>;
 
+  GetBudgetItem(
+    query: BudgetItemQueryDto,
+  ): Promise<ResponseResult<BudgetItemEntity>>;
+
   create(
     dto: CreateBudgetItemDto,
     manager?: EntityManager,

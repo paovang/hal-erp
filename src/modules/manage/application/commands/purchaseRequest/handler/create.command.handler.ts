@@ -150,7 +150,22 @@ export class CreateCommandHandler
       );
     }
 
-    const pr_code = await this._codeGeneratorUtil.generateUniqueCode(
+    // const pr_code = await this._codeGeneratorUtil.generateUniqueCode(
+    //   LENGTH_PURCHASE_REQUEST_CODE,
+    //   async (generatedCode: string) => {
+    //     try {
+    //       await findOneOrFail(query.manager, PurchaseRequestOrmEntity, {
+    //         pr_number: generatedCode,
+    //       });
+    //       return false;
+    //     } catch {
+    //       return true;
+    //     }
+    //   },
+    //   'PR',
+    // );
+
+    const pr_code = await this._codeGeneratorUtil.generateSequentialUniqueCode(
       LENGTH_PURCHASE_REQUEST_CODE,
       async (generatedCode: string) => {
         try {
@@ -162,7 +177,6 @@ export class CreateCommandHandler
           return true;
         }
       },
-      'PR',
     );
 
     const document_number = await this._codeGeneratorUtil.generateUniqueCode(
@@ -200,6 +214,7 @@ export class CreateCommandHandler
           {
             user_id: user_id,
           },
+          `department user id: ${user_id}`,
         );
 
         const department_id = (department as any).department_id;
@@ -210,9 +225,12 @@ export class CreateCommandHandler
           {
             id: department_id,
           },
+          `department id: ${department_id}`,
         );
 
         const department_name = (get_department_name as any).name;
+        const department_code = (get_department_name as any).code;
+        const code = pr_code + '/' + department_code;
 
         const DEntity = this._dataDMapper.toEntity(
           query.dto.document,
@@ -226,11 +244,7 @@ export class CreateCommandHandler
 
         const document_id = (D as any)._id._value;
 
-        const entity = this._dataMapper.toEntity(
-          query.dto,
-          pr_code,
-          document_id,
-        );
+        const entity = this._dataMapper.toEntity(query.dto, code, document_id);
 
         const pr = await this._write.create(entity, manager);
 
@@ -372,9 +386,14 @@ export class CreateCommandHandler
     processedItems: any,
   ): Promise<void> {
     for (const item of query.dto.purchase_request_items) {
-      await findOneOrFail(query.manager, UnitOrmEntity, {
-        id: item.unit_id,
-      });
+      await findOneOrFail(
+        query.manager,
+        UnitOrmEntity,
+        {
+          id: item.unit_id,
+        },
+        `unit id: ${item.unit_id}`,
+      );
 
       let fileKey = null;
       if (item.file_name) {

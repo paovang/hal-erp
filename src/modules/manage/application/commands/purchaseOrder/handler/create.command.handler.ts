@@ -68,6 +68,7 @@ import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/
 import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -157,6 +158,16 @@ export class CreateCommandHandler
           {
             user_id: user_id,
           },
+          `department user id: ${user_id}`,
+        );
+
+        await findOneOrFail(
+          manager,
+          DocumentTypeOrmEntity,
+          {
+            id: query.dto.document.documentTypeId,
+          },
+          `document type id: ${query.dto.document.documentTypeId}`,
         );
 
         const pr = await manager.findOne(PurchaseRequestOrmEntity, {
@@ -164,6 +175,32 @@ export class CreateCommandHandler
             id: query.dto.purchase_request_id,
           },
         });
+        const pr_doc = await findOneOrFail(
+          manager,
+          DocumentOrmEntity,
+          {
+            id: pr?.document_id,
+          },
+          `purchase request document id: ${pr?.document_id}`,
+        );
+
+        const doc_department_id = (pr_doc as any).department_id;
+        if (!doc_department_id) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.NOT_FOUND,
+            { property: 'department id' },
+          );
+        }
+
+        const pr_department = await findOneOrFail(
+          manager,
+          DepartmentOrmEntity,
+          {
+            id: doc_department_id,
+          },
+          `department id: ${doc_department_id}`,
+        );
 
         assertOrThrow(
           pr,
@@ -190,6 +227,13 @@ export class CreateCommandHandler
         );
 
         const department_id = (department as any).department_id;
+        const get_department_name = await findOneOrFail(
+          manager,
+          DepartmentOrmEntity,
+          {
+            id: department_id,
+          },
+        );
 
         const document_number =
           await this._codeGeneratorUtil.generateUniqueCode(
@@ -207,20 +251,41 @@ export class CreateCommandHandler
             'D',
           );
 
-        const po_number = await this._codeGeneratorUtil.generateUniqueCode(
-          LENGTH_PURCHASE_ORDER_CODE,
-          async (generatedCode: string) => {
-            try {
-              await findOneOrFail(manager, PurchaseOrderOrmEntity, {
-                po_number: generatedCode,
-              });
-              return false;
-            } catch {
-              return true;
-            }
-          },
-          'PO',
-        );
+        // const po_number = await this._codeGeneratorUtil.generateUniqueCode(
+        //   LENGTH_PURCHASE_ORDER_CODE,
+        //   async (generatedCode: string) => {
+        //     try {
+        //       await findOneOrFail(manager, PurchaseOrderOrmEntity, {
+        //         po_number: generatedCode,
+        //       });
+        //       return false;
+        //     } catch {
+        //       return true;
+        //     }
+        //   },
+        //   'PO',
+        // );
+
+        const po_number =
+          await this._codeGeneratorUtil.generateSequentialUniqueCode(
+            LENGTH_PURCHASE_ORDER_CODE,
+            async (generatedCode: string) => {
+              try {
+                await findOneOrFail(manager, PurchaseOrderOrmEntity, {
+                  po_number: generatedCode,
+                });
+                return false;
+              } catch {
+                return true;
+              }
+            },
+          );
+
+        const department_code = (get_department_name as any).code;
+        const pr_department_code = (pr_department as any).code;
+        const code =
+          po_number + '/' + department_code + '/' + pr_department_code;
+        console.log('po_number', code);
 
         const DEntity = this._dataDMapper.toEntity(
           query.dto.document,
@@ -238,7 +303,7 @@ export class CreateCommandHandler
           query.dto,
           document_id,
           pr!,
-          po_number,
+          code,
         );
 
         const po_result = await this._write.create(entity, manager);
