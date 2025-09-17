@@ -202,8 +202,6 @@ export class CreateCommandHandler
           },
         );
 
-        console.log('department', department);
-
         const department_id = (department as any).department_id;
 
         const get_department_name = await findOneOrFail(
@@ -213,8 +211,6 @@ export class CreateCommandHandler
             id: department_id,
           },
         );
-
-        console.log('object', get_department_name);
 
         const department_name = (get_department_name as any).name;
 
@@ -340,13 +336,7 @@ export class CreateCommandHandler
         //   getApprover: this.getApprover.bind(this),
         // });
 
-        const res = await this._read.findOne(
-          new PurchaseRequestId(pr_id),
-          manager,
-        );
-        console.log('res', res);
-
-        return res;
+        return await this._read.findOne(new PurchaseRequestId(pr_id), manager);
       },
     );
   }

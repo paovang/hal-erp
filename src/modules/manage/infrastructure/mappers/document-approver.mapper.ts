@@ -47,14 +47,14 @@ export class DocumentApproverDataAccessMapper {
       .setUpdatedAt(ormData.updated_at);
     if (ormData.users) {
       builder.setUser(this.user.toEntity(ormData.users));
-    }
 
-    console.log('object', ormData.users.department_users[0].departments);
-
-    if (ormData.users.department_users[0].departments) {
-      builder.setDepartment(
-        this.department.toEntity(ormData.users.department_users[0].departments),
-      );
+      if (ormData.users.department_users[0].departments) {
+        builder.setDepartment(
+          this.department.toEntity(
+            ormData.users.department_users[0].departments,
+          ),
+        );
+      }
     }
 
     return builder.build();
