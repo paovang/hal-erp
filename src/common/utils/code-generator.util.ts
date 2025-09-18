@@ -74,19 +74,7 @@ export class CodeGeneratorUtil {
    */
   formatNumericCode(n: number, length: number, prefix?: string): string {
     const numeric = Math.max(0, Math.floor(n)).toString().padStart(length, '0');
-    return prefix ? `${prefix}-${numeric}` : numeric;
-  }
-
-  /**
-   * Optional: random numeric string (digits only), zero-padded length.
-   * If you just need numbers (not sequential) like '0384', '9271', etc.
-   */
-  generateRandomDigits(length: number): string {
-    const bytes = randomBytes(length);
-    let out = '';
-    for (let i = 0; i < length; i++) {
-      out += (bytes[i] % 10).toString();
-    }
-    return out;
+    return prefix ? `${numeric}/${prefix}` : numeric;
+    // return prefix ? `${prefix}-${numeric}` : numeric;
   }
 }

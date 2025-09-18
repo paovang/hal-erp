@@ -2,7 +2,7 @@
 export const LENGTH_DEPARTMENT_CODE = 6;
 export const LENGTH_DOCUMENT_CODE = 6;
 export const LENGTH_DOCUMENT_TRANSACTION_CODE = 6;
-export const LENGTH_RECEIPT_CODE = 6;
+export const LENGTH_RECEIPT_CODE = 4;
 export const LENGTH_DOCUMENT_TYPE_CODE = 6;
 export const LENGTH_PURCHASE_REQUEST_CODE = 4;
 export const LENGTH_PURCHASE_ORDER_CODE = 4;

@@ -86,6 +86,7 @@ export class ReceiptDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.step = isStepPending;
+    response.step_number = entity.step;
 
     response.currency_totals = entity.currencyTotals?.length
       ? entity.currencyTotals.map((total) => ({

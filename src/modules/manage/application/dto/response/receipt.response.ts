@@ -37,6 +37,9 @@ export class ReceiptResponse {
   step: boolean;
 
   @ApiProperty()
+  step_number: number;
+
+  @ApiProperty()
   currency_totals: CurrencyTotal[] | null;
 
   @ApiProperty()

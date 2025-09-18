@@ -165,20 +165,6 @@ export class CreateCommandHandler
     //   'PR',
     // );
 
-    const pr_code = await this._codeGeneratorUtil.generateSequentialUniqueCode(
-      LENGTH_PURCHASE_REQUEST_CODE,
-      async (generatedCode: string) => {
-        try {
-          await findOneOrFail(query.manager, PurchaseRequestOrmEntity, {
-            pr_number: generatedCode,
-          });
-          return false;
-        } catch {
-          return true;
-        }
-      },
-    );
-
     const document_number = await this._codeGeneratorUtil.generateUniqueCode(
       LENGTH_DOCUMENT_CODE,
       async (generatedCode: string) => {
@@ -230,7 +216,21 @@ export class CreateCommandHandler
 
         const department_name = (get_department_name as any).name;
         const department_code = (get_department_name as any).code;
-        const code = pr_code + '/' + department_code;
+        const code = await this._codeGeneratorUtil.generateSequentialUniqueCode(
+          LENGTH_PURCHASE_REQUEST_CODE,
+          async (generatedCode: string) => {
+            try {
+              await findOneOrFail(manager, PurchaseRequestOrmEntity, {
+                pr_number: generatedCode,
+              });
+              return false;
+            } catch {
+              return true;
+            }
+          },
+          department_code,
+        );
+        console.log('object', code);
 
         const DEntity = this._dataDMapper.toEntity(
           query.dto.document,

@@ -266,25 +266,25 @@ export class CreateCommandHandler
         //   'PO',
         // );
 
-        const po_number =
-          await this._codeGeneratorUtil.generateSequentialUniqueCode(
-            LENGTH_PURCHASE_ORDER_CODE,
-            async (generatedCode: string) => {
-              try {
-                await findOneOrFail(manager, PurchaseOrderOrmEntity, {
-                  po_number: generatedCode,
-                });
-                return false;
-              } catch {
-                return true;
-              }
-            },
-          );
-
         const department_code = (get_department_name as any).code;
         const pr_department_code = (pr_department as any).code;
-        const code =
-          po_number + '/' + department_code + '/' + pr_department_code;
+
+        const prefix = department_code + '/' + pr_department_code;
+
+        const code = await this._codeGeneratorUtil.generateSequentialUniqueCode(
+          LENGTH_PURCHASE_ORDER_CODE,
+          async (generatedCode: string) => {
+            try {
+              await findOneOrFail(manager, PurchaseOrderOrmEntity, {
+                po_number: generatedCode,
+              });
+              return false;
+            } catch {
+              return true;
+            }
+          },
+          prefix,
+        );
         console.log('po_number', code);
 
         const DEntity = this._dataDMapper.toEntity(

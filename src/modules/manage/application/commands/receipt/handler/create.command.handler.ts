@@ -65,6 +65,7 @@ import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
 import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
+import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -163,13 +164,24 @@ export class CreateCommandHandler
           `department id: ${department_id}`,
         );
 
+        const check_po = await findOneOrFail(manager, PurchaseOrderOrmEntity, {
+          id: query.dto.purchase_order_id,
+        });
+
+        const po_code = (check_po as any).po_number;
+        const poRest = (po_code ?? '').replace(/^\d{4}\//, '');
+
         const department_name = (get_department_name as any).name;
 
-        const document_number = await this.generateDocumentNumber(
-          query.manager,
+        const document_number = await this.generateDocumentNumber(manager);
+        // const code = po?.purchase_requests?.documents?.departments?.code;
+
+        const receipt_number = await this.generateReceiptNumber(
+          manager,
+          poRest,
         );
 
-        const receipt_number = await this.generateReceiptNumber(query.manager);
+        console.log('receipt_number', receipt_number);
 
         const document_id = await this.createDocument(
           query,
@@ -187,7 +199,6 @@ export class CreateCommandHandler
         );
         const responseReceipt = await this._write.create(entity, manager);
         const receipt_id = (responseReceipt as any)._id._value;
-        console.log('object', receipt_id);
 
         await this.saveItem(query, manager, receipt_id);
 
@@ -290,8 +301,11 @@ export class CreateCommandHandler
     );
   }
 
-  private async generateReceiptNumber(manager: EntityManager): Promise<string> {
-    return await this._codeGeneratorUtil.generateUniqueCode(
+  private async generateReceiptNumber(
+    manager: EntityManager,
+    poRest: string,
+  ): Promise<string> {
+    return await this._codeGeneratorUtil.generateSequentialUniqueCode(
       LENGTH_RECEIPT_CODE,
       async (generatedCode: string) => {
         try {
@@ -303,7 +317,7 @@ export class CreateCommandHandler
           return true;
         }
       },
-      'RN',
+      poRest,
     );
   }
 
