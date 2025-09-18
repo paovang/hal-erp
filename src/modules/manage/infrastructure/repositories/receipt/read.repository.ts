@@ -51,8 +51,8 @@ import {
 } from '@src/common/constants/select-field';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
 import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
-import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
+import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
 
 @Injectable()
 export class ReadReceiptRepository implements IReadReceiptRepository {
@@ -208,7 +208,8 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .getOneOrFail();
 
     const user_approval_step = await manager
-      .createQueryBuilder(UserApprovalOrmEntity, 'user_approvals')
+      .createQueryBuilder(UserApprovalStepOrmEntity, 'steps')
+      .innerJoin('steps.user_approvals', 'user_approvals')
       .where('user_approvals.document_id = :id', { id: item.document_id })
       .getCount();
 
