@@ -58,6 +58,7 @@ export class ReceiptDataAccessMapper {
       .setReceiptDate(ormData.receipt_date)
       .setReceivedBy(ormData.received_by ?? 0)
       .setRemark(ormData.remark)
+      .setAccountCode(ormData.account_code ?? null)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .setStep(step);

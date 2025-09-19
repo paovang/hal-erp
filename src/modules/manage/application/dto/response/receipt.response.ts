@@ -28,6 +28,9 @@ export class ReceiptResponse {
   remark: string;
 
   @ApiProperty()
+  account_code: string | null;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()

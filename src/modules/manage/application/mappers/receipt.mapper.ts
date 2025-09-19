@@ -79,6 +79,7 @@ export class ReceiptDataMapper {
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.received_by = Number(entity.received_by);
     response.remark = entity.remark;
+    response.account_code = entity.account_code;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
