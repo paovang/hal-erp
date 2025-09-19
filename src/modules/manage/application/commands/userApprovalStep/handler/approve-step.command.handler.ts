@@ -361,7 +361,7 @@ export class ApproveStepCommandHandler
               0,
             );
 
-            if (step.is_otp === true) {
+            if (a_w_s.is_otp === true) {
               // send approval request server to server
               await sendApprovalRequest(
                 user_approval_step_id,
@@ -460,7 +460,7 @@ export class ApproveStepCommandHandler
                 await this._writePoItem.update(POEntity, manager);
               }
 
-              if (step.is_otp === true) {
+              if (a_w_s.is_otp === true) {
                 // send approval request server to server
                 await sendApprovalRequest(
                   user_approval_step_id,
@@ -474,7 +474,7 @@ export class ApproveStepCommandHandler
               }
             }
 
-            if (step.is_otp === true) {
+            if (a_w_s.is_otp === true) {
               // send approval request server to server
               await sendApprovalRequest(
                 user_approval_step_id,
@@ -537,7 +537,7 @@ export class ApproveStepCommandHandler
               0,
             );
 
-            if (step.is_otp === true) {
+            if (a_w_s.is_otp === true) {
               // send approval request server to server
               await sendApprovalRequest(
                 user_approval_step_id,

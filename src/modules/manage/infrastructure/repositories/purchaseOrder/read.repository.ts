@@ -59,8 +59,8 @@ import {
   EligiblePersons,
   EnumPrOrPo,
 } from '@src/modules/manage/application/constants/status-key.const';
-import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
+import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
 
 @Injectable()
 export class ReadPurchaseOrderRepository
@@ -240,7 +240,8 @@ export class ReadPurchaseOrderRepository
       .getOneOrFail();
 
     const user_approval_step = await manager
-      .createQueryBuilder(UserApprovalOrmEntity, 'user_approvals')
+      .createQueryBuilder(UserApprovalStepOrmEntity, 'steps')
+      .innerJoin('steps.user_approvals', 'user_approvals')
       .where('user_approvals.document_id = :id', { id: item.document_id })
       .getCount();
 
