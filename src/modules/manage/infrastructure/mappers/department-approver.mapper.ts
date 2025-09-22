@@ -23,7 +23,7 @@ export class DepartmentApproverDataAccessMapper {
     const id = departmentApproverEntity.getId();
 
     const mediaOrmEntity = new DepartmentApproverOrmEntity();
-    if (id) {
+    if (id && method === OrmEntityMethod.UPDATE) {
       mediaOrmEntity.id = id.value;
     }
     mediaOrmEntity.department_id = departmentApproverEntity.departmentId

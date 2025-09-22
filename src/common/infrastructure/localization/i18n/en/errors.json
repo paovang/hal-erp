@@ -33,7 +33,7 @@
   "incorrect_password": "Incorrect password",
   "min_amount_greater_than_max_amount": "Min amount greater than max amount",
   "invalid_credentials": "Invalid Credentials",
-  "already_exists": "Already exists",
+  "already_exists": "{property} Already exists",
   "username_already_exists": "Username already exists",
   "allocated_amount_exceeds_budget_account": "The allocated amount exceeds the available budget in the account.",
   "already_in_use": "Cannot delete because this item is already in use {property}",

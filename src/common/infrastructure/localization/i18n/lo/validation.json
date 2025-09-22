@@ -18,5 +18,7 @@
   "IS_DATE": "{property} ຕ້ອງເປັນວັນທີ.",
   "IS_ENUM_TYPE": "{property} ຕ້ອງເປັນ 'vendor' ຫຼື 'budget_item_detail'.",
   "INVALID_ENUM": "{property} ປະເພດຊຳລະບໍ່ມີໃນລະບົບ.",
-  "IS_ENUM": "ຕ້ອງເປັນຄ່າ {property} ທີ່ຖືກຕ້ອງ."
+  "IS_ENUM": "ຕ້ອງເປັນຄ່າ {property} ທີ່ຖືກຕ້ອງ.",
+  "ARRAY_UNIQUE": "{property} ຄ່າແຕ່ລະຄ່າໃນອາເຣຕ້ອງບໍ່ຊ້ຳກັນ.",
+  "ARRAY_MIN_SIZE": "{property} ຕ້ອງມີຢ່າງນ້ອຍ {constraint1} ລາຍການ."
 }

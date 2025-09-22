@@ -2,15 +2,15 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateByUserCommand } from '../create.command';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { DepartmentApproverEntity } from '@src/modules/manage/domain/entities/department-approver.entity';
-import { Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { WRITE_DEPARTMENT_APPROVER_REPOSITORY } from '../../../constants/inject-key.const';
 import { DepartmentApproverDataMapper } from '../../../mappers/department-approver.mapper';
 import { IWriteDepartmentApproverRepository } from '@src/modules/manage/domain/ports/output/department-approver-repositiory.interface';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
-import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { DepartmentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/department-approver.orm';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 
 @CommandHandler(CreateByUserCommand)
 export class CreateByUserCommandHandler
@@ -26,32 +26,43 @@ export class CreateByUserCommandHandler
   async execute(
     query: CreateByUserCommand,
   ): Promise<ResponseResult<DepartmentApproverEntity>> {
-    // await _checkColumnDuplicate(
-    //   DepartmentApproverOrmEntity,
-    //   'department_id',
-    //   query.dto.department_id,
-    //   query.manager,
-    //   'errors.already_exists',
-    // );
-    await _checkColumnDuplicate(
-      DepartmentApproverOrmEntity,
-      'user_id',
-      query.dto.user_id,
-      query.manager,
-      'errors.already_exists',
-    );
-    await findOneOrFail(query.manager, UserOrmEntity, {
-      id: query.dto.user_id,
-    });
     await findOneOrFail(query.manager, DepartmentOrmEntity, {
       id: query.dto.department_id,
     });
 
-    const entity = this._dataMapper.toEntity(
-      query.dto,
-      query.dto.department_id,
-    );
+    const exists_user: number[] = [];
 
-    return await this._write.create(entity, query.manager);
+    let res: ResponseResult<DepartmentApproverEntity> | null = null;
+    for (const userId of query.dto.user_id) {
+      const user = await query.manager.findOne(DepartmentApproverOrmEntity, {
+        where: { user_id: userId },
+      });
+
+      if (user) {
+        exists_user.push(userId);
+        continue;
+      }
+
+      await findOneOrFail(query.manager, UserOrmEntity, {
+        id: userId,
+      });
+
+      const entity = this._dataMapper.toEntityArray(
+        query.dto.department_id,
+        userId,
+      );
+
+      res = await this._write.create(entity, query.manager);
+    }
+    if (exists_user.length > 0) {
+      throw new ManageDomainException(
+        'errors.already_exists',
+        HttpStatus.BAD_REQUEST,
+        {
+          property: `User ${exists_user.join(', ')}`,
+        },
+      );
+    }
+    return res;
   }
 }

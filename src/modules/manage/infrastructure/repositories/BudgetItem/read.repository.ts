@@ -26,7 +26,8 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     query: BudgetItemQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetItemEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const budget_account_id = Number(query.budget_account_id);
+    const queryBuilder = await this.createBaseQuery(manager, budget_account_id);
     query.sort_by = 'budget_items.id';
 
     const data = await this._paginationService.paginate(
@@ -38,8 +39,8 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager) {
-    return manager
+  private createBaseQuery(manager: EntityManager, budget_account_id?: number) {
+    const query = manager
       .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
       .select([
         'budget_items.id',
@@ -65,7 +66,15 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'departments.created_at',
         'departments.updated_at',
       ]);
+
+    if (budget_account_id) {
+      query.where('budget_accounts.id = :budget_account_id', {
+        budget_account_id: budget_account_id,
+      });
+    }
+    return query;
   }
+
   private getFilterOptions(): FilterOptions {
     return {
       searchColumns: ['budget_items.name'],
