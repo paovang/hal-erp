@@ -583,6 +583,8 @@ export class ApproveStepCommandHandler
           return approvedStepEntity;
         }
 
+        console.log('test');
+
         const approvedStepEntity = this._dataMapper.toEntity(
           query.dto,
           user_id,
