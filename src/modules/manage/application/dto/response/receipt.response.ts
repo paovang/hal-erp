@@ -16,6 +16,9 @@ export class ReceiptResponse {
   purchase_order_id: number;
 
   @ApiProperty()
+  purchase_request_id: number;
+
+  @ApiProperty()
   document_id: number;
 
   @ApiProperty()

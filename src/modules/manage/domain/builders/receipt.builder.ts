@@ -24,6 +24,7 @@ export class ReceiptBuilder {
   currency_totals?: CurrencyTotal[] | null;
   document_attachments?: DocumentAttachmentEntity[] | null;
   step: number | 0;
+  purchase_request_id: number;
 
   setReceiptId(value: ReceiptId): this {
     this.receiptId = value;
@@ -37,6 +38,11 @@ export class ReceiptBuilder {
 
   setPurchaseOrderId(purchase_order_id: number): this {
     this.purchase_order_id = purchase_order_id;
+    return this;
+  }
+
+  setPurchaseRequestId(purchase_request_id: number): this {
+    this.purchase_request_id = purchase_request_id;
     return this;
   }
 

@@ -212,6 +212,14 @@ export const selectBudgetItems = [
   'budget_items.updated_at',
 ];
 
+// select purchase orders
+export const selectPurchaseOrders = [
+  'purchase_orders.id',
+  'purchase_orders.po_number',
+  'purchase_orders.document_id',
+  'purchase_orders.purchase_request_id',
+];
+
 // select provinces
 export const selectProvinces = [
   'provinces.id',
