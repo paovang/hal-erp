@@ -39,6 +39,7 @@ import {
   selectPositionApprover,
   selectPositions,
   selectPurchaseOrderItems,
+  selectPurchaseOrders,
   selectPurchaseOrderSelectedVendors,
   selectPurchaseRequestItems,
   selectReceiptBy,
@@ -130,10 +131,12 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectDocDeptUser,
       ...selectDepartmentsApprover,
       ...selectBudgetItems,
+      ...selectPurchaseOrders,
     ];
 
     const query = manager
       .createQueryBuilder(ReceiptOrmEntity, 'receipts')
+      .innerJoin('receipts.purchase_orders', 'purchase_orders')
       .innerJoin('receipts.documents', 'documents')
       .innerJoin('documents.departments', 'departments')
       .innerJoin('documents.users', 'users')

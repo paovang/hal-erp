@@ -55,6 +55,7 @@ export class ReceiptDataAccessMapper {
       .setReceiptNumber(ormData.receipt_number)
       .setDocumentId(ormData.document_id ?? 0)
       .setPurchaseOrderId(ormData.purchase_order_id ?? 0)
+      .setPurchaseRequestId(ormData.purchase_orders?.purchase_request_id ?? 0)
       .setReceiptDate(ormData.receipt_date)
       .setReceivedBy(ormData.received_by ?? 0)
       .setRemark(ormData.remark)

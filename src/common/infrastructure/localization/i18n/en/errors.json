@@ -65,5 +65,6 @@
   "pr_not_approved": "PR not approved",
   "please_set_department_approver": "Please set department approver",
   "send_request": "Send request failed. {property}",
-  "send_otp": "Send OTP failed. {property}"
+  "send_otp": "Send OTP failed. {property}",
+  "insufficient_budget": "Insufficient budget in account {property}"
 }

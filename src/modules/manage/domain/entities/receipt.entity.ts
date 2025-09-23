@@ -24,6 +24,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _user_approval: UserApprovalEntity | null;
   private readonly _currency_totals?: CurrencyTotal[] | null;
   private readonly _document_attachments?: DocumentAttachmentEntity[] | null;
+  private readonly _purchase_request_id: number;
   private _step: number | 0;
 
   private constructor(builder: ReceiptBuilder) {
@@ -45,6 +46,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
     this._account_code = builder.account_code ?? null;
     this._document_attachments = builder.document_attachments ?? null;
     this._step = builder.step;
+    this._purchase_request_id = builder.purchase_request_id;
   }
 
   get receipt_number(): string {
@@ -73,6 +75,10 @@ export class ReceiptEntity extends Entity<ReceiptId> {
 
   get remark(): string {
     return this._remark;
+  }
+
+  get purchase_request_id(): number {
+    return this._purchase_request_id;
   }
 
   get createdAt(): Date {
