@@ -405,6 +405,7 @@ export class ApproveStepCommandHandler
                 roles.includes('budget-user')
               ) {
                 console.log('object', roles);
+                console.log('data', query.dto.purchase_order_items);
                 let sum_total = 0;
                 for (const item of query.dto.purchase_order_items) {
                   await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
