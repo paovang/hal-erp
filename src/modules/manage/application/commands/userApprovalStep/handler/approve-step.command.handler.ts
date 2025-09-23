@@ -249,10 +249,7 @@ export class ApproveStepCommandHandler
           );
         }
 
-        console.log('test_phoud');
-
         if (query.dto.statusId === STATUS_KEY.APPROVED) {
-          console.log('test_phoud 2');
           // Update current step to APPROVED
           const approvedStepEntity = this._dataMapper.toEntity(
             query.dto,
@@ -264,14 +261,11 @@ export class ApproveStepCommandHandler
           );
           await approvedStepEntity.validateExistingIdForUpdate();
 
-          console.log('test_phoud 3');
-
           await findOneOrFail(query.manager, UserApprovalStepOrmEntity, {
             id: approvedStepEntity.getId().value,
           });
 
           await this._write.update(approvedStepEntity, manager, query.stepId);
-          console.log('test_phoud 4');
 
           const document = await manager.findOne(DocumentOrmEntity, {
             where: { id: step.user_approvals.document_id },
@@ -284,7 +278,6 @@ export class ApproveStepCommandHandler
               { property: 'document' },
             );
           }
-          console.log('test_phoud 5');
 
           const approvalWorkflow = await manager.findOne(
             ApprovalWorkflowOrmEntity,
@@ -300,7 +293,6 @@ export class ApproveStepCommandHandler
               { property: 'approval workflow' },
             );
           }
-          console.log('test_phoud 6');
 
           // Determine current step number safely
           const currentStepNumber = step?.step_number ?? 0;
@@ -311,7 +303,6 @@ export class ApproveStepCommandHandler
               step_number: currentStepNumber + 1,
             },
           });
-          console.log('test_phoud 7');
 
           if (!a_w_s) {
             a_w_s = await manager.findOne(ApprovalWorkflowStepOrmEntity, {
@@ -342,7 +333,6 @@ export class ApproveStepCommandHandler
 
             const user_approval_step_id = (userApprovalStep as any)._id._value;
             let total = 0;
-            console.log('type', query.dto.type);
 
             if (query.dto.type === EnumPrOrPo.PR) {
               // get pr data
@@ -387,7 +377,6 @@ export class ApproveStepCommandHandler
                 );
               }
             } else if (query.dto.type === EnumPrOrPo.PO) {
-              console.log('po', query.dto.type);
               const po = await manager.findOne(PurchaseOrderOrmEntity, {
                 where: { document_id: step.user_approvals.document_id },
                 relations: [
@@ -407,14 +396,11 @@ export class ApproveStepCommandHandler
                 .flatMap((item) => item.purchase_request_items)
                 .map((prItem) => prItem.title)
                 .join(', ');
-              console.log('role', roles);
 
               if (
                 roles.includes('budget-admin') ||
                 roles.includes('budget-user')
               ) {
-                console.log('object', roles);
-                console.log('data', query.dto.purchase_order_items);
                 let sum_total = 0;
                 for (const item of query.dto.purchase_order_items) {
                   await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
@@ -477,9 +463,6 @@ export class ApproveStepCommandHandler
 
                   await this._writePoItem.update(POEntity, manager);
                 }
-
-                console.log('ນອກເງື່ອນໄຂ', roles);
-
                 if (a_w_s.is_otp === true) {
                   // send approval request server to server
                   await sendApprovalRequest(
@@ -591,7 +574,6 @@ export class ApproveStepCommandHandler
 
           // ກໍລະນິບໍ່ມິ step ຕໍ່ໄປແລ້ວ
           if (query.dto.type === EnumPrOrPo.PO) {
-            console.log('po', query.dto.type);
             const po = await manager.findOne(PurchaseOrderOrmEntity, {
               where: { document_id: step.user_approvals.document_id },
               relations: [
@@ -611,8 +593,6 @@ export class ApproveStepCommandHandler
               roles.includes('budget-admin') ||
               roles.includes('budget-user')
             ) {
-              console.log('object', roles);
-              console.log('data', query.dto.purchase_order_items);
               let sum_total = 0;
               for (const item of query.dto.purchase_order_items) {
                 await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
@@ -674,8 +654,6 @@ export class ApproveStepCommandHandler
 
                 await this._writePoItem.update(POEntity, manager);
               }
-
-              console.log('ນອກເງື່ອນໄຂ', roles);
             }
           } else if (query.dto.type === EnumPrOrPo.R) {
             const receipt = await manager.findOne(ReceiptOrmEntity, {
@@ -722,8 +700,6 @@ export class ApproveStepCommandHandler
           await this.checkDataAndUpdateUserApproval(query, manager);
           return approvedStepEntity;
         }
-
-        console.log('test');
 
         const approvedStepEntity = this._dataMapper.toEntity(
           query.dto,
