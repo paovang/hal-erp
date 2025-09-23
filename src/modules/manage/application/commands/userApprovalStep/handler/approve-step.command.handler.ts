@@ -333,6 +333,8 @@ export class ApproveStepCommandHandler
 
             const user_approval_step_id = (userApprovalStep as any)._id._value;
             let total = 0;
+            console.log('type', query.dto.type);
+
             if (query.dto.type === EnumPrOrPo.PR) {
               // get pr data
               const purchase_request = await manager.findOne(
@@ -376,6 +378,7 @@ export class ApproveStepCommandHandler
                 );
               }
             } else if (query.dto.type === EnumPrOrPo.PO) {
+              console.log('po', query.dto.type);
               const po = await manager.findOne(PurchaseOrderOrmEntity, {
                 where: { document_id: step.user_approvals.document_id },
                 relations: [
@@ -395,6 +398,7 @@ export class ApproveStepCommandHandler
                 .flatMap((item) => item.purchase_request_items)
                 .map((prItem) => prItem.title)
                 .join(', ');
+              console.log('role', roles);
 
               if (
                 roles.includes('budget-admin') ||
