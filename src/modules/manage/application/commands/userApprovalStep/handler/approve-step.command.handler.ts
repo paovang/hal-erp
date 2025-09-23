@@ -572,129 +572,132 @@ export class ApproveStepCommandHandler
             });
           }
 
-          // ກໍລະນິບໍ່ມິ step ຕໍ່ໄປແລ້ວ
-          if (query.dto.type === EnumPrOrPo.PO) {
-            const po = await manager.findOne(PurchaseOrderOrmEntity, {
-              where: { document_id: step.user_approvals.document_id },
-              relations: [
-                'purchase_order_items',
-                'purchase_order_items.purchase_request_items',
-              ],
-            });
-            if (!po) {
-              throw new ManageDomainException(
-                'errors.not_found',
-                HttpStatus.NOT_FOUND,
-                { property: 'purchase order' },
-              );
-            }
-
-            if (
-              roles.includes('budget-admin') ||
-              roles.includes('budget-user')
-            ) {
-              let sum_total = 0;
-              for (const item of query.dto.purchase_order_items) {
-                await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-                  id: item.id,
-                });
-
-                await findOneOrFail(manager, BudgetItemOrmEntity, {
-                  id: item.budget_item_id,
-                });
-
-                const allBudgetItemIds = query.dto.purchase_order_items.map(
-                  (item) => item.budget_item_id,
+          if (!a_w_s) {
+            // ກໍລະນິບໍ່ມິ step ຕໍ່ໄປແລ້ວ
+            if (query.dto.type === EnumPrOrPo.PO) {
+              const po = await manager.findOne(PurchaseOrderOrmEntity, {
+                where: { document_id: step.user_approvals.document_id },
+                relations: [
+                  'purchase_order_items',
+                  'purchase_order_items.purchase_request_items',
+                ],
+              });
+              if (!po) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'purchase order' },
                 );
+              }
 
-                // Check if all values in the array are the same
-                const [firstBudgetItemId, ...rest] = allBudgetItemIds;
-                if (rest.every((id) => id === firstBudgetItemId)) {
-                  const get_total = await this._readBudget.getTotal(
-                    item.id,
+              if (
+                roles.includes('budget-admin') ||
+                roles.includes('budget-user')
+              ) {
+                let sum_total = 0;
+                for (const item of query.dto.purchase_order_items) {
+                  await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                    id: item.id,
+                  });
+
+                  await findOneOrFail(manager, BudgetItemOrmEntity, {
+                    id: item.budget_item_id,
+                  });
+
+                  const allBudgetItemIds = query.dto.purchase_order_items.map(
+                    (item) => item.budget_item_id,
+                  );
+
+                  // Check if all values in the array are the same
+                  const [firstBudgetItemId, ...rest] = allBudgetItemIds;
+                  if (rest.every((id) => id === firstBudgetItemId)) {
+                    const get_total = await this._readBudget.getTotal(
+                      item.id,
+                      manager,
+                    );
+
+                    sum_total += get_total;
+                  } else {
+                    const get_total = await this._readBudget.getTotal(
+                      item.id,
+                      manager,
+                    );
+
+                    sum_total = get_total;
+                  }
+
+                  const check_budget = await this._readBudget.calculate(
+                    item.budget_item_id,
                     manager,
                   );
 
-                  sum_total += get_total;
+                  if (sum_total > check_budget) {
+                    throw new ManageDomainException(
+                      'errors.insufficient_budget',
+                      HttpStatus.BAD_REQUEST,
+                      { property: `${check_budget}` },
+                    );
+                  }
+                  const itemId = item.id;
+
+                  const POEntity =
+                    this._dataPoItemMapper.toEntityForUpdate(item);
+
+                  // Set and validate ID
+                  await POEntity.initializeUpdateSetId(
+                    new PurchaseOrderItemId(itemId),
+                  );
+                  await POEntity.validateExistingIdForUpdate();
+
+                  // Final existence check for ID before update
+                  await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                    id: POEntity.getId().value,
+                  });
+
+                  await this._writePoItem.update(POEntity, manager);
+                }
+              }
+            } else if (query.dto.type === EnumPrOrPo.R) {
+              const receipt = await manager.findOne(ReceiptOrmEntity, {
+                where: { document_id: step.user_approvals.document_id },
+                relations: [
+                  'receipt_items',
+                  'receipt_items.purchase_order_items.purchase_request_items',
+                ],
+              });
+
+              if (!receipt) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'receipt' },
+                );
+              }
+
+              if (
+                roles.includes('account-admin') ||
+                roles.includes('account-user')
+              ) {
+                if (!receipt.account_code) {
+                  if (!query.dto.account_code) {
+                    throw new ManageDomainException(
+                      'errors.account_code_required',
+                      HttpStatus.BAD_REQUEST,
+                    );
+                  }
+
+                  await this.registerAccount(query, manager, receipt.id);
                 } else {
-                  const get_total = await this._readBudget.getTotal(
-                    item.id,
-                    manager,
-                  );
-
-                  sum_total = get_total;
+                  await this.insertDataInTransaction(manager, receipt);
                 }
-
-                const check_budget = await this._readBudget.calculate(
-                  item.budget_item_id,
-                  manager,
-                );
-
-                if (sum_total > check_budget) {
-                  throw new ManageDomainException(
-                    'errors.insufficient_budget',
-                    HttpStatus.BAD_REQUEST,
-                    { property: `${check_budget}` },
-                  );
-                }
-                const itemId = item.id;
-
-                const POEntity = this._dataPoItemMapper.toEntityForUpdate(item);
-
-                // Set and validate ID
-                await POEntity.initializeUpdateSetId(
-                  new PurchaseOrderItemId(itemId),
-                );
-                await POEntity.validateExistingIdForUpdate();
-
-                // Final existence check for ID before update
-                await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-                  id: POEntity.getId().value,
-                });
-
-                await this._writePoItem.update(POEntity, manager);
               }
-            }
-          } else if (query.dto.type === EnumPrOrPo.R) {
-            const receipt = await manager.findOne(ReceiptOrmEntity, {
-              where: { document_id: step.user_approvals.document_id },
-              relations: [
-                'receipt_items',
-                'receipt_items.purchase_order_items.purchase_request_items',
-              ],
-            });
-
-            if (!receipt) {
+            } else {
               throw new ManageDomainException(
                 'errors.not_found',
                 HttpStatus.NOT_FOUND,
-                { property: 'receipt' },
+                { property: 'type' },
               );
             }
-
-            if (
-              roles.includes('account-admin') ||
-              roles.includes('account-user')
-            ) {
-              if (!receipt.account_code) {
-                if (!query.dto.account_code) {
-                  throw new ManageDomainException(
-                    'errors.account_code_required',
-                    HttpStatus.BAD_REQUEST,
-                  );
-                }
-
-                await this.registerAccount(query, manager, receipt.id);
-              } else {
-                await this.insertDataInTransaction(manager, receipt);
-              }
-            }
-          } else {
-            throw new ManageDomainException(
-              'errors.not_found',
-              HttpStatus.NOT_FOUND,
-              { property: 'type' },
-            );
           }
 
           await this.checkDataAndUpdateUserApproval(query, manager);
