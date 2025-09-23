@@ -691,12 +691,6 @@ export class ApproveStepCommandHandler
                   await this.insertDataInTransaction(manager, receipt);
                 }
               }
-            } else {
-              throw new ManageDomainException(
-                'errors.not_found',
-                HttpStatus.NOT_FOUND,
-                { property: 'type' },
-              );
             }
           }
 
