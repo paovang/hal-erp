@@ -249,6 +249,8 @@ export class ApproveStepCommandHandler
           );
         }
 
+        console.log('test_phoud');
+
         if (query.dto.statusId === STATUS_KEY.APPROVED) {
           // Update current step to APPROVED
           const approvedStepEntity = this._dataMapper.toEntity(
