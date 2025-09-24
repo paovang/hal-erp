@@ -40,12 +40,34 @@ export class BudgetAccountDataAccessMapper {
   }
 
   toEntity(ormData: BudgetAccountOrmEntity): BudgetAccountEntity {
+    const allocated_amount = Array.isArray(ormData.increase_budgets)
+      ? ormData.increase_budgets.reduce(
+          (sum, increase) => sum + Number(increase.allocated_amount ?? 0),
+          0,
+        )
+      : 0;
+
+    const increase_amount = (ormData.budget_items ?? [])
+      .flatMap((item) => item.increase_budget_detail ?? [])
+      .reduce((sum, d) => sum + (d.allocated_amount ?? 0), 0);
+
+    const totalUsedAmount = (ormData.budget_items ?? [])
+      .flatMap((item) => item.document_transactions ?? [])
+      .reduce((sum, d) => sum + (d.amount ?? 0), 0);
+
+    const total_budget = allocated_amount - increase_amount;
+    const balance_amount = increase_amount - totalUsedAmount;
+
     const build = BudgetAccountEntity.builder()
       .setBudgetAccountId(new BudgetAccountId(ormData.id))
       .setCode(ormData.code ?? '')
       .setName(ormData.name ?? '')
       .setFiscalYear(ormData.fiscal_year ?? 0)
-      // .setAllocatedAmount(ormData.allocated_amount ?? 0)
+      .setAllocatedAmount(allocated_amount)
+      .setTotalBudget(total_budget)
+      .setIncreaseAmount(increase_amount)
+      .setUsedAmount(totalUsedAmount)
+      .setBalanceAmount(balance_amount)
       .setType(ormData.type ?? EnumBudgetType.EXPENDITURE)
       .setDepartmentId(ormData.department_id ?? 0)
       .setCreatedAt(ormData.created_at)

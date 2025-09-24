@@ -48,7 +48,20 @@ export class ReadBudgetAccountRepository
   private createBaseQuery(manager: EntityManager) {
     return manager
       .createQueryBuilder(BudgetAccountOrmEntity, 'budget_accounts')
-      .leftJoinAndSelect('budget_accounts.departments', 'departments');
+      .leftJoinAndSelect('budget_accounts.departments', 'departments')
+      .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
+      .leftJoin('budget_accounts.budget_items', 'budget_items')
+      .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
+      .leftJoin('budget_items.document_transactions', 'document_transactions')
+      .addSelect([
+        'increase_budgets.id',
+        'increase_budgets.allocated_amount',
+        'budget_items.id',
+        'budget_items.name',
+        'increase_budget_detail.id',
+        'increase_budget_detail.allocated_amount',
+        'document_transactions.amount',
+      ]);
   }
 
   private getFilterOptions(): FilterOptions {

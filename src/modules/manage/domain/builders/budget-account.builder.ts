@@ -9,7 +9,11 @@ export class BudgetAccountBuilder {
   name: string;
   departmentId: number;
   fiscal_year: number;
-  // allocated_amount: number;
+  allocated_amount: number;
+  increase_amount: number;
+  used_amount: number;
+  balance_amount: number;
+  total_budget: number;
   type: EnumBudgetType;
   createdAt!: Date;
   updatedAt!: Date | null;
@@ -41,10 +45,30 @@ export class BudgetAccountBuilder {
     return this;
   }
 
-  // setAllocatedAmount(allocated_amount: number): this {
-  //   this.allocated_amount = allocated_amount;
-  //   return this;
-  // }
+  setAllocatedAmount(allocated_amount: number): this {
+    this.allocated_amount = allocated_amount;
+    return this;
+  }
+
+  setIncreaseAmount(increase_amount: number): this {
+    this.increase_amount = increase_amount;
+    return this;
+  }
+
+  setUsedAmount(used_amount: number): this {
+    this.used_amount = used_amount;
+    return this;
+  }
+
+  setBalanceAmount(balance_amount: number): this {
+    this.balance_amount = balance_amount;
+    return this;
+  }
+
+  setTotalBudget(total_budget: number): this {
+    this.total_budget = total_budget;
+    return this;
+  }
 
   setType(type: EnumBudgetType): this {
     this.type = type;

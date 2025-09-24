@@ -9,12 +9,16 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
   private readonly _name: string;
   private readonly _departmentId: number;
   private readonly _fiscal_year: number;
-  // private readonly _allocated_amount: number;
   private readonly _type: EnumBudgetType;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _department: DepartmentEntity | null;
+  private readonly _allocated_amount: number;
+  private readonly _increase_amount: number;
+  private readonly _used_amount: number;
+  private readonly _balance_amount: number;
+  private readonly _total_budget: number;
 
   private constructor(builder: BudgetAccountBuilder) {
     super();
@@ -23,12 +27,16 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
     this._name = builder.name;
     this._departmentId = builder.departmentId;
     this._fiscal_year = builder.fiscal_year;
-    // this._allocated_amount = builder.allocated_amount;
     this._type = builder.type;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._department = builder.department ?? null;
+    this._allocated_amount = builder.allocated_amount;
+    this._increase_amount = builder.increase_amount;
+    this._used_amount = builder.used_amount;
+    this._balance_amount = builder.balance_amount;
+    this._total_budget = builder.total_budget;
   }
 
   get code(): string {
@@ -47,9 +55,25 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
     return this._fiscal_year;
   }
 
-  // get allocated_amount(): number {
-  //   return this._allocated_amount;
-  // }
+  get allocated_amount(): number {
+    return this._allocated_amount;
+  }
+
+  get increase_amount(): number {
+    return this._increase_amount;
+  }
+
+  get used_amount(): number {
+    return this._used_amount;
+  }
+
+  get balance_amount(): number {
+    return this._balance_amount;
+  }
+
+  get total_budget(): number {
+    return this._total_budget;
+  }
 
   get type(): EnumBudgetType {
     return this._type;

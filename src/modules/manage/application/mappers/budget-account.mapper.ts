@@ -52,7 +52,11 @@ export class BudgetAccountDataMapper {
     response.name = entity.name;
     response.department_id = Number(entity.departmentId);
     response.fiscal_year = entity.fiscal_year;
-    // response.allocated_amount = entity.allocated_amount;
+    response.allocated_amount = entity.allocated_amount;
+    response.total_budget = entity.total_budget;
+    response.increase_amount = entity.increase_amount;
+    response.used_amount = entity.used_amount;
+    response.balance_amount = entity.balance_amount;
     response.type = entity.type;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

@@ -243,7 +243,6 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .select('SUM(increase_budget_detail.allocated_amount)', 'total')
       .from('increase_budget_details', 'increase_budget_detail')
       .where('increase_budget_detail.budget_item_id = :id', { id })
-
       .getRawOne();
 
     const total =
