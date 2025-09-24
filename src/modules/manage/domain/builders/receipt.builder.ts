@@ -25,6 +25,10 @@ export class ReceiptBuilder {
   document_attachments?: DocumentAttachmentEntity[] | null;
   step: number | 0;
   purchase_request_id: number;
+  po_number: string;
+  po_doc_type: string;
+  pr_number: string;
+  pr_doc_type: string;
 
   setReceiptId(value: ReceiptId): this {
     this.receiptId = value;
@@ -41,8 +45,28 @@ export class ReceiptBuilder {
     return this;
   }
 
+  setPoNumber(po_number: string): this {
+    this.po_number = po_number;
+    return this;
+  }
+
+  setPoDocType(po_doc_type: string): this {
+    this.po_doc_type = po_doc_type;
+    return this;
+  }
+
   setPurchaseRequestId(purchase_request_id: number): this {
     this.purchase_request_id = purchase_request_id;
+    return this;
+  }
+
+  setPrNumber(pr_number: string): this {
+    this.pr_number = pr_number;
+    return this;
+  }
+
+  setPrDocType(pr_doc_type: string): this {
+    this.pr_doc_type = pr_doc_type;
     return this;
   }
 

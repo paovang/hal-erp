@@ -26,6 +26,10 @@ export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _document_attachments?: DocumentAttachmentEntity[] | null;
   private readonly _purchase_request_id: number;
   private _step: number | 0;
+  private readonly _po_number: string;
+  private readonly _pr_number: string;
+  private readonly _po_doc_type: string;
+  private readonly _pr_doc_type: string;
 
   private constructor(builder: ReceiptBuilder) {
     super();
@@ -47,6 +51,10 @@ export class ReceiptEntity extends Entity<ReceiptId> {
     this._document_attachments = builder.document_attachments ?? null;
     this._step = builder.step;
     this._purchase_request_id = builder.purchase_request_id;
+    this._po_number = builder.po_number;
+    this._pr_number = builder.pr_number;
+    this._po_doc_type = builder.po_doc_type;
+    this._pr_doc_type = builder.pr_doc_type;
   }
 
   get receipt_number(): string {
@@ -55,6 +63,22 @@ export class ReceiptEntity extends Entity<ReceiptId> {
 
   get purchase_order_id(): number {
     return this._purchase_order_id;
+  }
+
+  get po_number(): string {
+    return this._po_number;
+  }
+
+  get pr_number(): string {
+    return this._pr_number;
+  }
+
+  get po_doc_type(): string {
+    return this._po_doc_type;
+  }
+
+  get pr_doc_type(): string {
+    return this._pr_doc_type;
   }
 
   get document_id(): number {
