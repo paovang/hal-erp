@@ -473,6 +473,20 @@ export const selectPoDocumentTypes = [
   'po_document_types.updated_at',
 ];
 
+// pr_document_types
+export const selectPrDocumentTypes = [
+  'pr_document_types.id',
+  'pr_document_types.code',
+  'pr_document_types.name',
+];
+
+// pr_documents
+export const selectPrDocuments = [
+  'pr_documents.id',
+  'pr_documents.title',
+  'pr_documents.document_type_id',
+];
+
 // po_user_signatures
 export const selectPoUserSignatures = [
   'po_user_signatures.id',

@@ -73,7 +73,11 @@ export class ReceiptDataMapper {
     response.id = Number(entity.getId().value);
     response.receipt_number = entity.receipt_number;
     response.purchase_order_id = Number(entity.purchase_order_id);
+    response.po_number = entity.po_number;
+    response.po_doc_type = entity.po_doc_type;
     response.purchase_request_id = Number(entity.purchase_request_id);
+    response.pr_number = entity.pr_number;
+    response.pr_doc_type = entity.pr_doc_type;
     response.document_id = Number(entity.document_id);
     response.receipt_date = moment
       .tz(entity.receipt_date, Timezone.LAOS)

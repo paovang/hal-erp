@@ -36,12 +36,17 @@ import {
   selectDocuments,
   selectDocumentStatuses,
   selectDocumentTypes,
+  selectPoDocuments,
+  selectPoDocumentTypes,
   selectPositionApprover,
   selectPositions,
+  selectPrDocuments,
+  selectPrDocumentTypes,
   selectPurchaseOrderItems,
   selectPurchaseOrders,
   selectPurchaseOrderSelectedVendors,
   selectPurchaseRequestItems,
+  selectPurchaseRequests,
   selectReceiptBy,
   selectReceiptItems,
   selectSelectedVendors,
@@ -132,11 +137,21 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectDepartmentsApprover,
       ...selectBudgetItems,
       ...selectPurchaseOrders,
+      ...selectPoDocuments,
+      ...selectPoDocumentTypes,
+      ...selectPurchaseRequests,
+      ...selectPrDocuments,
+      ...selectPrDocumentTypes,
     ];
 
     const query = manager
       .createQueryBuilder(ReceiptOrmEntity, 'receipts')
       .innerJoin('receipts.purchase_orders', 'purchase_orders')
+      .innerJoin('purchase_orders.documents', 'po_documents')
+      .innerJoin('po_documents.document_types', 'po_document_types')
+      .innerJoin('purchase_orders.purchase_requests', 'purchase_requests')
+      .innerJoin('purchase_requests.documents', 'pr_documents')
+      .innerJoin('pr_documents.document_types', 'pr_document_types')
       .innerJoin('receipts.documents', 'documents')
       .innerJoin('documents.departments', 'departments')
       .innerJoin('documents.users', 'users')
