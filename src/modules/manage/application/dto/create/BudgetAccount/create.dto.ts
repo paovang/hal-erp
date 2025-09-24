@@ -25,7 +25,7 @@ export class CreateBudgetAccountDto {
   @Min(currentYear, {
     message: i18nValidationMessage('validation.YEAR_MUST_BE_CURRENT_OR_NEXT'),
   })
-  @Max(currentYear + 1, {
+  @Max(currentYear, {
     message: i18nValidationMessage('validation.YEAR_MUST_BE_CURRENT_OR_NEXT'),
   })
   readonly fiscal_year: number;
