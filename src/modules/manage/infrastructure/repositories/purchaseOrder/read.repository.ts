@@ -257,4 +257,14 @@ export class ReadPurchaseOrderRepository
 
     return this._dataAccessMapper.toEntity(item, step);
   }
+
+  async countItem(
+    user_id: number,
+    manager: EntityManager,
+  ): Promise<ResponseResult<{ amount: number }>> {
+    const count = await this.createBaseQuery(manager, undefined, user_id)
+      .where('status.id = :id', { id: 1 })
+      .getCount();
+    return { amount: count };
+  }
 }

@@ -16,6 +16,8 @@ export interface IReadPurchaseOrderRepository {
     id: PurchaseOrderId,
     manager: EntityManager,
   ): Promise<ResponseResult<PurchaseOrderEntity>>;
+
+  countItem(user_id: number, manager: EntityManager): Promise<any>;
 }
 
 export interface IWritePurchaseOrderRepository {

@@ -8,6 +8,8 @@ import { UserApprovalStepEntity } from '../../domain/entities/user-approval-step
 import { IUserApprovalStepServiceInterface } from '../../domain/ports/input/user-approval-step-domain-service.interface';
 import { ApproveStepCommand } from '../commands/userApprovalStep/approve-step.command';
 import { SendOTPCommand } from '../commands/userApprovalStep/send-otp.command';
+import { CountItemDto } from '../dto/query/count-item.dto';
+import { CountItemQuery } from '../queries/userApprovalStep/count-item.query';
 
 @Injectable()
 export class UserApprovalStepService
@@ -33,6 +35,15 @@ export class UserApprovalStepService
   ): Promise<ResponseResult<UserApprovalStepEntity>> {
     return await this._commandBus.execute(
       new ApproveStepCommand(stepId, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async count(
+    query: CountItemDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<{ amount: number }>> {
+    return await this._queryBus.execute(
+      new CountItemQuery(query, manager ?? this._readEntityManager),
     );
   }
 }

@@ -1,4 +1,12 @@
-import { Body, Controller, Inject, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { USER_APPROVAL_STEP_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { IUserApprovalStepServiceInterface } from '../domain/ports/input/user-approval-step-domain-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
@@ -7,6 +15,7 @@ import { UserApprovalStepDataMapper } from '../application/mappers/user-approval
 import { ApprovalDto } from '../application/dto/create/userApprovalStep/update-statue.dto';
 import { UserApprovalStepResponse } from '../application/dto/response/user-approval-step.response';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
+import { CountItemDto } from '../application/dto/query/count-item.dto';
 
 @Controller()
 export class UserApprovalStepController {
@@ -36,5 +45,13 @@ export class UserApprovalStepController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  @Get('count')
+  async count(
+    @Query() query: CountItemDto,
+  ): Promise<ResponseResult<{ amount: number }>> {
+    const result = await this._userApprovalService.count(query);
+    return { amount: result.amount };
   }
 }

@@ -30,4 +30,9 @@ export interface IReadReceiptRepository {
     id: ReceiptId,
     manager: EntityManager,
   ): Promise<ResponseResult<ReceiptEntity>>;
+
+  countItem(
+    user_id: number,
+    manager: EntityManager,
+  ): Promise<ResponseResult<{ amount: number }>>;
 }
