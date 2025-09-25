@@ -76,8 +76,16 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     user_id?: number,
     roles?: string[],
   ): Promise<ResponseResult<ReceiptEntity>> {
+    const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(manager, user_id, roles);
     query.sort_by = 'receipts.id';
+
+    // Date filtering (single date)
+    this.applyDateFilter(
+      queryBuilder,
+      filterOptions.dateColumn,
+      query.order_date,
+    );
 
     const status = await countStatusAmounts(
       manager,
@@ -214,10 +222,26 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
 
   private getFilterOptions(): FilterOptions {
     return {
-      searchColumns: ['receipts.pr_number'],
-      dateColumn: '',
-      filterByColumns: ['receipts.receipt_date', 'documents.department_id'],
+      searchColumns: ['receipts.receipt_number'],
+      dateColumn: 'receipts.receipt_date',
+      filterByColumns: ['documents.department_id'],
     };
+  }
+
+  /**
+   * ==> Applies date filter to the query builder if dateColumn and date are provided.
+   */
+  private applyDateFilter(
+    queryBuilder: any, // Replace 'any' with your actual QueryBuilder type
+    dateColumn: string | undefined,
+    date?: string,
+  ) {
+    if (dateColumn && date) {
+      queryBuilder.andWhere(`${dateColumn} BETWEEN :dateStart AND :dateEnd`, {
+        dateStart: `${date} 00:00:00`,
+        dateEnd: `${date} 23:59:59`,
+      });
+    }
   }
 
   async findOne(
@@ -245,5 +269,15 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     const step = workflow_step - user_approval_step;
 
     return this._dataAccessMapper.toEntity(item, step);
+  }
+
+  async countItem(
+    user_id: number,
+    manager: EntityManager,
+  ): Promise<ResponseResult<{ amount: number }>> {
+    const count = await this.createBaseQuery(manager, user_id)
+      .where('status.id = :id', { id: 1 })
+      .getCount();
+    return { amount: count };
   }
 }

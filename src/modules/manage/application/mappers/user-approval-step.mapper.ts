@@ -107,4 +107,6 @@ export class UserApprovalStepDataMapper {
 
     return response;
   }
+
+  // toResponseCount(entity: UserApprovalStepEntity): UserApprovalStepResponse {}
 }
