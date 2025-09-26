@@ -17,6 +17,7 @@ import {
   selectApprover,
   selectApproverUserSignatures,
   selectBanks,
+  selectBudgetAccounts,
   selectBudgetItems,
   // selectCurrencies,
   selectCurrency,
@@ -143,6 +144,7 @@ export class ReadPurchaseOrderRepository
       ...selectBudgetItems,
       ...selectDepartmentUserApprovers,
       ...selectPositionApprover,
+      ...selectBudgetAccounts,
     ];
 
     const query = manager
@@ -170,6 +172,7 @@ export class ReadPurchaseOrderRepository
       .innerJoin('purchase_order_items.purchase_request_items', 'request_items')
       .innerJoin('request_items.units', 'request_item_unit')
       .leftJoin('purchase_order_items.budget_item', 'budget_items')
+      .leftJoin('budget_items.budget_accounts', 'budget_accounts')
       .innerJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
       // .leftJoin('selected_vendors.vendor_bank_accounts', 'vendor_bank_accounts')
       .leftJoin(

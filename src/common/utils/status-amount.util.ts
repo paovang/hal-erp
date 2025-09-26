@@ -18,7 +18,7 @@ export async function countStatusAmounts(
     .innerJoin('ua.document_statuses', 'ds')
     .innerJoin('ua.user_approval_steps', 'uas')
     .innerJoin('ua.documents', 'doc')
-    .leftJoin('doc.departments', 'departments')
+    // .leftJoin('doc.departments', 'departments')
     .innerJoin(
       'uas.document_approvers',
       'document_approver',
