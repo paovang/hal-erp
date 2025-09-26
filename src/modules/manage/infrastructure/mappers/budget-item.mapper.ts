@@ -27,7 +27,6 @@ export class BudgetItemDataAccessMapper {
       mediaOrmEntity.id = id.value;
     }
     mediaOrmEntity.budget_account_id = budgetItemEntity.budgetAccountId;
-    // mediaOrmEntity.allocated_amount = budgetItemEntity.allocatedAmount;
     mediaOrmEntity.description = budgetItemEntity.description ?? '';
     mediaOrmEntity.name = budgetItemEntity.name;
     if (method === OrmEntityMethod.CREATE) {
