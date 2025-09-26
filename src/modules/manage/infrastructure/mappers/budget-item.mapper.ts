@@ -53,6 +53,7 @@ export class BudgetItemDataAccessMapper {
       : 0;
 
     const balance = totalAllocated - totalUsedAmount;
+    // console.log("object");
 
     const builder = BudgetItemEntity.builder()
       .setBudgetItemId(new BudgetItemId(row.id))
