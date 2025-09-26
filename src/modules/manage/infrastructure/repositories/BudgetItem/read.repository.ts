@@ -51,6 +51,8 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       ])
       .innerJoin('budget_items.budget_accounts', 'budget_accounts')
       .leftJoin('budget_accounts.departments', 'departments')
+      .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
+      .leftJoin('budget_items.document_transactions', 'document_transactions')
       .addSelect([
         'budget_accounts.id',
         'budget_accounts.name',
@@ -65,6 +67,8 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'departments.department_head_id',
         'departments.created_at',
         'departments.updated_at',
+        'increase_budget_detail.allocated_amount',
+        'document_transactions.amount',
       ]);
 
     if (budget_account_id) {

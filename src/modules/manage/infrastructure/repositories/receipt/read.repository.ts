@@ -21,6 +21,7 @@ import {
   selectApproverUserSignatures,
   selectBankAccountCurrencies,
   selectBanks,
+  selectBudgetAccounts,
   selectBudgetItems,
   selectCreatedBy,
   selectCurrencies,
@@ -150,6 +151,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectPurchaseRequests,
       ...selectPrDocuments,
       ...selectPrDocumentTypes,
+      ...selectBudgetAccounts,
     ];
 
     const query = manager
@@ -176,6 +178,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
         'purchase_request_items',
       )
       .leftJoin('purchase_order_items.budget_item', 'budget_items')
+      .leftJoin('budget_items.budget_accounts', 'budget_accounts')
       .innerJoin(
         'purchase_order_items.purchase_order_selected_vendors',
         'purchase_order_selected_vendors',
