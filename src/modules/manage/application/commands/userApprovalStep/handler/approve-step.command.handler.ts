@@ -687,9 +687,8 @@ export class ApproveStepCommandHandler
                   }
 
                   await this.registerAccount(query, manager, receipt.id);
-                } else {
-                  await this.insertDataInTransaction(manager, receipt);
                 }
+                await this.insertDataInTransaction(manager, receipt);
               }
             }
           }
