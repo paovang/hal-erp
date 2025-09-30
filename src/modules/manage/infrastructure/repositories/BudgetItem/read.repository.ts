@@ -177,7 +177,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     const data = await this._paginationService.paginate(
       queryBuilder,
       query,
-      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+      this._dataAccessMapper.toEntityReport.bind(this._dataAccessMapper),
       this.getReportFilterOptions(),
     );
     return data;
@@ -199,6 +199,8 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .innerJoin('budget_items.budget_accounts', 'budget_accounts')
       .leftJoin('budget_accounts.departments', 'departments')
       .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
+      .leftJoin('budget_items.document_transactions', 'document_transactions')
+
       // .leftJoinAndSelect(
       //   'budget_items.increase_budget_detail',
       //   'increase_budget_detail',
@@ -218,11 +220,16 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'departments.department_head_id',
         'departments.created_at',
         'departments.updated_at',
+        'increase_budget_detail.id',
         'increase_budget_detail.allocated_amount',
+        'document_transactions.amount',
+        'document_transactions.id',
+        'document_transactions.budget_item_id',
       ])
       .groupBy('budget_items.id')
       .addGroupBy('increase_budget_detail.id')
       .addGroupBy('budget_accounts.id')
+      .addGroupBy('document_transactions.id')
       .addGroupBy('departments.id');
 
     if (query?.budget_account_id) {
@@ -288,8 +295,11 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'departments.department_head_id',
         'departments.created_at',
         'departments.updated_at',
+        'increase_budget_detail.id',
         'increase_budget_detail.allocated_amount',
         'document_transactions.amount',
+        'document_transactions.id',
+        'document_transactions.budget_item_id',
       ])
       .where('budget_items.id = :id', { id: id.value })
       .getOne();
@@ -298,7 +308,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND);
     }
 
-    return this._dataAccessMapper.toEntity(item);
+    return this._dataAccessMapper.toEntityReport(item);
   }
 
   async calculate(id: number, manager: EntityManager): Promise<number> {
