@@ -35,8 +35,16 @@ export class ReadBudgetAccountRepository
   ): Promise<ResponseResult<BudgetAccountEntity>> {
     const queryBuilder = await this.createBaseQuery(manager);
     query.sort_by = 'budget_accounts.id';
+    // Entity
 
-    const data = await this._paginationService.paginate(
+    const data = await this._paginationService.paginate<
+      BudgetAccountOrmEntity & {
+        allocated_amount_total?: string;
+        used_amount?: string;
+        increase_amount?: string;
+      }, // T
+      BudgetAccountEntity
+    >(
       queryBuilder,
       query,
       this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
@@ -46,7 +54,7 @@ export class ReadBudgetAccountRepository
   }
 
   private createBaseQuery(manager: EntityManager) {
-    return manager
+    const queryBuilder = manager
       .createQueryBuilder(BudgetAccountOrmEntity, 'budget_accounts')
       .leftJoinAndSelect('budget_accounts.departments', 'departments')
       .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
@@ -60,8 +68,39 @@ export class ReadBudgetAccountRepository
         'budget_items.name',
         'increase_budget_detail.id',
         'increase_budget_detail.allocated_amount',
+        'document_transactions.id',
         'document_transactions.amount',
       ]);
+
+    queryBuilder.addSelect(
+      (subQuery) =>
+        subQuery
+          .select('COALESCE(SUM(increase_budgets.allocated_amount), 0)')
+          .from('increase_budgets', 'increase_budgets')
+          .where('increase_budgets.budget_account_id = budget_accounts.id'),
+      'allocated_amount_total',
+    );
+
+    queryBuilder.addSelect(
+      (subQuery) =>
+        subQuery
+          .select('COALESCE(SUM(document_transactions.amount), 0)')
+          .from('document_transactions', 'document_transactions')
+          .where('document_transactions.budget_item_id = budget_items.id'),
+      'used_amount',
+    );
+
+    // Add a subquery to get the total allocated amount per budget item
+    queryBuilder.addSelect(
+      (subQuery) =>
+        subQuery
+          .select('COALESCE(SUM(increase_budget_detail.allocated_amount), 0)')
+          .from('increase_budget_details', 'increase_budget_detail')
+          .where('increase_budget_detail.budget_item_id = budget_items.id'),
+      'increase_amount',
+    );
+
+    return queryBuilder;
   }
 
   private getFilterOptions(): FilterOptions {

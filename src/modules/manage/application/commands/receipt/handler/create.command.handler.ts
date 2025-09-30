@@ -164,9 +164,14 @@ export class CreateCommandHandler
           `department id: ${department_id}`,
         );
 
-        const check_po = await findOneOrFail(manager, PurchaseOrderOrmEntity, {
-          id: query.dto.purchase_order_id,
-        });
+        const check_po = await findOneOrFail(
+          manager,
+          PurchaseOrderOrmEntity,
+          {
+            id: query.dto.purchase_order_id,
+          },
+          `purchase order id: ${query.dto.purchase_order_id}`,
+        );
 
         const po_code = (check_po as any).po_number;
         const poRest = (po_code ?? '').replace(/^\d{4}\//, '');

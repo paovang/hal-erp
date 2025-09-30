@@ -130,6 +130,42 @@ export class PaginationService implements IPaginationService {
     });
   }
 
+  // private async standardPaginate<OrmEntity extends ObjectLiteral, Entity>(
+  //   queryBuilder: SelectQueryBuilder<OrmEntity>,
+  //   {
+  //     limit = 10,
+  //     page = 1,
+  //     sort_by = 'id',
+  //     sort_order = 'DESC',
+  //   }: StandardPaginationInput,
+  //   mapper: (item: OrmEntity) => Entity,
+  //   status?: StatusAmount[] | null,
+  // ): Promise<StandardPaginationResult<Entity>> {
+  //   const total = await queryBuilder.getCount();
+  //   const total_pages = Math.ceil(total / limit);
+  //   page = Math.max(1, Math.min(page, total_pages));
+
+  //   const [data, totalData] = await queryBuilder
+  //     .orderBy(
+  //       this.getValidSortValue('id', sort_by),
+  //       this.getValidSortValue('DESC', sort_order),
+  //     )
+  //     .take(limit)
+  //     .skip((page - 1) * limit)
+  //     .getManyAndCount();
+  //   console.log('data', status);
+  //   return {
+  //     status: status,
+  //     data: data.map(mapper),
+  //     pagination: {
+  //       total: totalData,
+  //       total_pages,
+  //       limit,
+  //       page,
+  //     },
+  //   };
+  // }
+
   private async standardPaginate<OrmEntity extends ObjectLiteral, Entity>(
     queryBuilder: SelectQueryBuilder<OrmEntity>,
     {
@@ -145,20 +181,29 @@ export class PaginationService implements IPaginationService {
     const total_pages = Math.ceil(total / limit);
     page = Math.max(1, Math.min(page, total_pages));
 
-    const [data, totalData] = await queryBuilder
+    // ✅ Use getRawAndEntities instead of getManyAndCount
+    const { entities, raw } = await queryBuilder
       .orderBy(
         this.getValidSortValue('id', sort_by),
         this.getValidSortValue('DESC', sort_order),
       )
       .take(limit)
       .skip((page - 1) * limit)
-      .getManyAndCount();
-    console.log('data', status);
+      .getRawAndEntities();
+
+    // Merge subquery fields into entities before mapping
+    const mappedData = entities.map((entity, idx) => ({
+      ...entity,
+      used_amount: Number(raw[idx]?.used_amount ?? 0),
+      allocated_amount_total: Number(raw[idx]?.allocated_amount_total ?? 0),
+      increase_amount: Number(raw[idx]?.increase_amount ?? 0),
+    }));
+
     return {
       status: status,
-      data: data.map(mapper),
+      data: mappedData.map(mapper),
       pagination: {
-        total: totalData,
+        total,
         total_pages,
         limit,
         page,

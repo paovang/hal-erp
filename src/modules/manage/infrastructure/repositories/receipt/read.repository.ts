@@ -278,9 +278,25 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     user_id: number,
     manager: EntityManager,
   ): Promise<ResponseResult<{ amount: number }>> {
-    const count = await this.createBaseQuery(manager, user_id)
-      .where('status.id = :id', { id: 1 })
-      .getCount();
-    return { amount: count };
+    const result = await manager
+      .createQueryBuilder(ReceiptOrmEntity, 'receipts')
+      .innerJoin('receipts.documents', 'documents')
+      .innerJoin('documents.user_approvals', 'user_approvals')
+      .innerJoin('user_approvals.user_approval_steps', 'user_approval_steps')
+      .innerJoin(
+        'user_approval_steps.document_approvers',
+        'document_approver',
+        'document_approver.user_approval_step_id = user_approval_steps.id',
+      )
+      .leftJoin('user_approval_steps.status', 'status')
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
+      .where('document_approver.user_id = :user_id', { user_id })
+      .andWhere('status.id = :id', { id: 1 })
+      .select('COUNT(user_approval_steps.id)', 'amount')
+      .getRawOne<{ amount: string }>();
+
+    return { amount: Number(result?.amount) };
   }
 }
