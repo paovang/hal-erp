@@ -39,7 +39,13 @@ export class BudgetAccountDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  toEntity(ormData: BudgetAccountOrmEntity): BudgetAccountEntity {
+  toEntity(
+    ormData: BudgetAccountOrmEntity & {
+      allocated_amount_total?: string;
+      used_amount?: string;
+      increase_amount?: string;
+    },
+  ): BudgetAccountEntity {
     const allocated_amount = Array.isArray(ormData.increase_budgets)
       ? ormData.increase_budgets.reduce(
           (sum, increase) => sum + Number(increase.allocated_amount ?? 0),
@@ -54,6 +60,13 @@ export class BudgetAccountDataAccessMapper {
     const totalUsedAmount = (ormData.budget_items ?? [])
       .flatMap((item) => item.document_transactions ?? [])
       .reduce((sum, d) => sum + (d.amount ?? 0), 0);
+
+    // const allocated_amount = Number(ormData.allocated_amount_total ?? 0);
+    // const totalUsedAmount = Number(ormData.used_amount ?? 0);
+    // const increase_amount = Number(ormData.increase_amount ?? 0);
+    console.log('totalAllocated', allocated_amount);
+    console.log('totalUsedAmount', totalUsedAmount);
+    console.log('increase_amount', increase_amount);
 
     const total_budget = allocated_amount - increase_amount;
     const balance_amount = increase_amount - totalUsedAmount;

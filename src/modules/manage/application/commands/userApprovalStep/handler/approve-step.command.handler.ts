@@ -690,9 +690,7 @@ export class ApproveStepCommandHandler
                 }
               }
 
-              console.log('account_code', receipt.account_code);
               if (receipt.account_code) {
-                console.log('account_code', receipt.account_code);
                 await this.insertDataInTransaction(manager, receipt);
               }
             }
@@ -969,8 +967,6 @@ export class ApproveStepCommandHandler
         amount: item.total ?? 0,
         transaction_type: EnumDocumentTransactionType.COMMIT,
       };
-
-      console.log('transactionData', transactionData);
 
       // Map and save transaction entity
       const transactionEntity =
