@@ -38,48 +38,43 @@ export class BudgetItemDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  // toEntity(
-  //   row: BudgetItemOrmEntity & {
-  //     totalUsedAmount?: number;
-  //     totalAllocated?: number;
-  //   },
-  // ): BudgetItemEntity {
-  //   // const totalAllocated = Array.isArray(row.increase_budget_detail)
-  //   //   ? row.increase_budget_detail.reduce(
-  //   //       (sum, detail) => sum + Number(detail.allocated_amount ?? 0),
-  //   //       0,
-  //   //     )
-  //   //   : 0;
-  //   // console.log('object row', totalAllocated);
+  toEntityReport(row: BudgetItemOrmEntity): BudgetItemEntity {
+    const totalAllocated = Array.isArray(row.increase_budget_detail)
+      ? row.increase_budget_detail.reduce(
+          (sum, detail) => sum + Number(detail.allocated_amount ?? 0),
+          0,
+        )
+      : 0;
 
-  //   // const totalUsedAmount = Array.isArray(row.document_transactions)
-  //   //   ? row.document_transactions.reduce(
-  //   //       (sum, transaction) => sum + Number(transaction.amount ?? 0),
-  //   //       0,
-  //   //     )
-  //   //   : 0;
+    const totalUsedAmount = Array.isArray(row.document_transactions)
+      ? row.document_transactions.reduce(
+          (sum, transaction) => sum + Number(transaction.amount ?? 0),
+          0,
+        )
+      : 0;
+    console.log('object row', totalUsedAmount);
 
-  //   const balance = totalAllocated - totalUsedAmount;
+    const balance = totalAllocated - totalUsedAmount;
 
-  //   const builder = BudgetItemEntity.builder()
-  //     .setBudgetItemId(new BudgetItemId(row.id))
-  //     .setName(row.name ?? '')
-  //     .setBudgetAccountId(row.budget_account_id ?? 0)
-  //     .setAllocatedAmount(totalAllocated)
-  //     .setUsedAmount(totalUsedAmount)
-  //     .setBalance(balance)
-  //     .setDescription(row.description ?? '')
-  //     .setCreatedAt(row.created_at)
-  //     .setUpdatedAt(row.updated_at);
+    const builder = BudgetItemEntity.builder()
+      .setBudgetItemId(new BudgetItemId(row.id))
+      .setName(row.name ?? '')
+      .setBudgetAccountId(row.budget_account_id ?? 0)
+      .setAllocatedAmount(totalAllocated)
+      .setUsedAmount(totalUsedAmount)
+      .setBalance(balance)
+      .setDescription(row.description ?? '')
+      .setCreatedAt(row.created_at)
+      .setUpdatedAt(row.updated_at);
 
-  //   if (row.budget_accounts) {
-  //     builder.setBudgetAccount(
-  //       this.budgetAccount.toEntity(row.budget_accounts),
-  //     );
-  //   }
+    if (row.budget_accounts) {
+      builder.setBudgetAccount(
+        this.budgetAccount.toEntity(row.budget_accounts),
+      );
+    }
 
-  //   return builder.build();
-  // }
+    return builder.build();
+  }
 
   toEntity(
     row: BudgetItemOrmEntity & {
