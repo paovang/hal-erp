@@ -78,12 +78,15 @@ export class UpdateCommandHandler
           ...increase_dto,
           budget_account_id: query.id,
         };
+        console.log('object', query.dto.allocated_amount);
 
         const entityIncrease = this._dataIncreaseMapper.toEntity(
           merge,
           user_id,
           query.dto.allocated_amount,
         );
+
+        console.log('entityIncrease', entityIncrease);
 
         await entityIncrease.initializeUpdateSetId(
           new IncreaseBudgetId(increase_id),

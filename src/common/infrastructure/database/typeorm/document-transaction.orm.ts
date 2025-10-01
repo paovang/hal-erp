@@ -51,7 +51,7 @@ export class DocumentTransactionOrmEntity {
   @JoinColumn({ name: 'budget_item_id' })
   budget_items: Relation<BudgetItemOrmEntity>;
 
-  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
+  @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
   amount?: number;
 
   @Index()
