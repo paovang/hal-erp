@@ -70,11 +70,11 @@ export class PurchaseOrderItemOrmEntity {
   quantity?: number;
 
   @Index()
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
   price?: number;
 
   @Index()
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
   total?: number;
 
   @Index()

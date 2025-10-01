@@ -47,10 +47,10 @@ export class ReceiptItemOrmEntity {
   @Column({ type: 'integer', nullable: true })
   quantity?: number;
 
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
   price?: number;
 
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
   total?: number;
 
   @Index()

@@ -47,7 +47,7 @@ export class IncreaseBudgetDetailOrmEntity {
   increase_budgets: Relation<IncreaseBudgetOrmEntity>;
 
   @Index()
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
   allocated_amount?: number;
 
   @Column()
