@@ -71,11 +71,11 @@ export class PurchaseRequestItemOrmEntity {
   units: Relation<UnitOrmEntity>;
 
   @Index()
-  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
+  @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
   price?: number;
 
   @Index()
-  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
+  @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
   total_price?: number;
 
   @Index()
