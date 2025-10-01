@@ -32,8 +32,8 @@ import { createMockMulterFile } from '@src/common/utils/services/file-utils.serv
 import path from 'path';
 import { DocumentTransactionOrmEntity } from '@src/common/infrastructure/database/typeorm/document-transaction.orm';
 import { IncreaseBudgetDetailOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget-detail.orm';
-import { IncreaseBudgetId } from '@src/modules/manage/domain/value-objects/increase-budget-id.vo';
-import { IncreaseBudgetOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget.orm';
+// import { IncreaseBudgetId } from '@src/modules/manage/domain/value-objects/increase-budget-id.vo';
+// import { IncreaseBudgetOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -117,14 +117,14 @@ export class CreateCommandHandler
 
         await this._writeFile.create(file_entity, manager);
 
-        let sum_total = 0;
+        // let sum_total = 0;
         for (const detail of query.dto.increase_budget_details) {
           const detail_entity = this._dataDetailMapper.toEntity(
             detail,
             increase_budget_id,
           );
           await this._writeDetail.create(detail_entity, manager);
-          sum_total += detail.allocated_amount;
+          // sum_total += detail.allocated_amount;
         }
 
         // const get_budget_account = await manager.findOne(
@@ -144,20 +144,20 @@ export class CreateCommandHandler
         //   sum_total += total;
         // }
 
-        const update_entity = this._dataMapper.toEntityUpdate(sum_total);
+        // const update_entity = this._dataMapper.toEntityUpdate(sum_total);
 
-        // Set and validate ID
-        await update_entity.initializeUpdateSetId(
-          new IncreaseBudgetId(increase_budget_id),
-        );
-        await update_entity.validateExistingIdForUpdate();
+        // // Set and validate ID
+        // await update_entity.initializeUpdateSetId(
+        //   new IncreaseBudgetId(increase_budget_id),
+        // );
+        // await update_entity.validateExistingIdForUpdate();
 
-        // Final existence check for ID before update
-        await findOneOrFail(manager, IncreaseBudgetOrmEntity, {
-          id: update_entity.getId().value,
-        });
+        // // Final existence check for ID before update
+        // await findOneOrFail(manager, IncreaseBudgetOrmEntity, {
+        //   id: update_entity.getId().value,
+        // });
 
-        return await this._write.update(update_entity, manager);
+        return result;
       },
     );
   }

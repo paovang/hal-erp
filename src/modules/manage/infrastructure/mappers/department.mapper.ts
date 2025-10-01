@@ -21,9 +21,8 @@ export class DepartmentDataAccessMapper {
     const mediaOrmEntity = new DepartmentOrmEntity();
     if (id) {
       mediaOrmEntity.id = id.value;
-    } else {
-      mediaOrmEntity.code = departmentEntity.code;
     }
+    mediaOrmEntity.code = departmentEntity.code;
     mediaOrmEntity.name = departmentEntity.name;
     mediaOrmEntity.is_line_manager = departmentEntity.is_line_manager;
     mediaOrmEntity.department_head_id = departmentEntity.department_head_id;

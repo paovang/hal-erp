@@ -8,6 +8,7 @@ import {
   LENGTH_DOCUMENT_CODE,
   LENGTH_PURCHASE_ORDER_CODE,
   PO_FILE_NAME_FOLDER,
+  READ_PURCHASE_ORDER_REPOSITORY,
   WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_REPOSITORY,
   WRITE_PURCHASE_ORDER_ITEM_REPOSITORY,
@@ -18,7 +19,10 @@ import {
 } from '../../../constants/inject-key.const';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
-import { IWritePurchaseOrderRepository } from '@src/modules/manage/domain/ports/output/purchase-order-repository.interface';
+import {
+  IReadPurchaseOrderRepository,
+  IWritePurchaseOrderRepository,
+} from '@src/modules/manage/domain/ports/output/purchase-order-repository.interface';
 import { IWriteDocumentRepository } from '@src/modules/manage/domain/ports/output/document-repository.interface';
 import { DocumentDataMapper } from '../../../mappers/document.mapper';
 import { CodeGeneratorUtil } from '@src/common/utils/code-generator.util';
@@ -59,7 +63,6 @@ import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
-import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
 import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
 import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
@@ -69,6 +72,7 @@ import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
+import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purchase-order-id.vo';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -94,6 +98,11 @@ interface CustomApprovalDto
   is_otp: boolean;
 }
 
+interface CustomDocumentApprover {
+  user_approval_step_id: number;
+  user_id: number;
+}
+
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
   implements IQueryHandler<CreateCommand, ResponseResult<PurchaseOrderEntity>>
@@ -102,6 +111,8 @@ export class CreateCommandHandler
     @Inject(WRITE_PURCHASE_ORDER_REPOSITORY)
     private readonly _write: IWritePurchaseOrderRepository,
     private readonly _dataMapper: PurchaseOrderDataMapper,
+    @Inject(READ_PURCHASE_ORDER_REPOSITORY)
+    private readonly _read: IReadPurchaseOrderRepository,
     // item
     @Inject(WRITE_PURCHASE_ORDER_ITEM_REPOSITORY)
     private readonly _writeItem: IWritePurchaseOrderItemRepository,
@@ -324,7 +335,8 @@ export class CreateCommandHandler
           user,
         );
 
-        return po_result;
+        // return po_result;
+        return await this._read.findOne(new PurchaseOrderId(po_id), manager);
       },
     );
   }
@@ -384,10 +396,11 @@ export class CreateCommandHandler
     const pendingDto: CustomApprovalDto = {
       user_approval_id: ua_id,
       statusId: STATUS_KEY.PENDING,
-      step_number: a_w_s?.step_number ?? 1,
+      step_number: 0,
+      // step_number: a_w_s?.step_number ?? 1,
       remark: null,
       requires_file_upload: a_w_s!.requires_file_upload,
-      is_otp: a_w_s!.is_otp,
+      is_otp: true,
     };
     const aw_step =
       this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);
@@ -420,16 +433,26 @@ export class CreateCommandHandler
       titles,
     );
 
-    await handleApprovalStep({
-      a_w_s,
-      total,
-      user_id,
+    const d_approver: CustomDocumentApprover = {
       user_approval_step_id,
-      manager,
-      dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-      writeDocumentApprover: this._writeDocumentApprover,
-      getApprover: this.getApprover.bind(this),
-    });
+      user_id: user_id ?? 0,
+    };
+
+    const d_approver_entity =
+      await this._dataDocumentApproverMapper.toEntity(d_approver);
+
+    await this._writeDocumentApprover.create(d_approver_entity, manager);
+
+    // await handleApprovalStep({
+    //   a_w_s,
+    //   total,
+    //   user_id,
+    //   user_approval_step_id,
+    //   manager,
+    //   dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+    //   writeDocumentApprover: this._writeDocumentApprover,
+    //   getApprover: this.getApprover.bind(this),
+    // });
   }
 
   private async saveSelectedVendor(

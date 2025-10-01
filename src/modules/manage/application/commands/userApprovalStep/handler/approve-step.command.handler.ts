@@ -171,6 +171,7 @@ export class ApproveStepCommandHandler
           {
             user_id: user_id,
           },
+          `department user id: ${user_id}`,
         );
 
         const department_id = (department as any).department_id;
@@ -181,6 +182,7 @@ export class ApproveStepCommandHandler
           {
             id: department_id,
           },
+          `department id: ${department_id}`,
         );
 
         const department_name = (get_department_name as any).name;
@@ -191,6 +193,7 @@ export class ApproveStepCommandHandler
           {
             id: query.dto.statusId,
           },
+          `document status id: ${query.dto.statusId}`,
         );
 
         const status = (DocumentStatus as any).name;
@@ -403,13 +406,23 @@ export class ApproveStepCommandHandler
               ) {
                 let sum_total = 0;
                 for (const item of query.dto.purchase_order_items) {
-                  await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-                    id: item.id,
-                  });
+                  await findOneOrFail(
+                    manager,
+                    PurchaseOrderItemOrmEntity,
+                    {
+                      id: item.id,
+                    },
+                    `purchase order item id: ${item.id}`,
+                  );
 
-                  await findOneOrFail(manager, BudgetItemOrmEntity, {
-                    id: item.budget_item_id,
-                  });
+                  await findOneOrFail(
+                    manager,
+                    BudgetItemOrmEntity,
+                    {
+                      id: item.budget_item_id,
+                    },
+                    `budget item id: ${item.budget_item_id}`,
+                  );
 
                   const allBudgetItemIds = query.dto.purchase_order_items.map(
                     (item) => item.budget_item_id,

@@ -37,7 +37,7 @@ export class ExchangeRateOrmEntity {
 
   // ----- Rate -----
   @Index()
-  @Column({ type: 'decimal', precision: 15, scale: 3 })
+  @Column({ type: 'decimal', precision: 15, scale: 8 })
   rate: number;
 
   // ----- Status -----

@@ -100,6 +100,10 @@ interface CustomApprovalDto
   step_number: number;
   is_otp: boolean;
 }
+interface CustomDocumentApprover {
+  user_approval_step_id: number;
+  user_id: number;
+}
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
   status: number;
@@ -258,13 +262,23 @@ export class CreateCommandHandler
           titles,
         );
 
-        await this.handleApprovalStepCall(
-          a_w_s,
-          total,
-          user_id,
+        // await this.handleApprovalStepCall(
+        //   a_w_s,
+        //   total,
+        //   user_id,
+        //   user_approval_step_id,
+        //   manager,
+        // );
+
+        const d_approver: CustomDocumentApprover = {
           user_approval_step_id,
-          manager,
-        );
+          user_id: user_id ?? 0,
+        };
+
+        const d_approver_entity =
+          await this._dataDocumentApproverMapper.toEntity(d_approver);
+
+        await this._writeDocumentApprover.create(d_approver_entity, manager);
 
         // return responseReceipt;
         return await this._readRepo.findOne(new ReceiptId(receipt_id), manager);
@@ -411,10 +425,11 @@ export class CreateCommandHandler
   ): Promise<number> {
     const pendingDto: CustomApprovalDto = {
       user_approval_id: ua_id,
-      step_number: a_w_s?.step_number ?? 1,
+      step_number: 0,
+      // step_number: a_w_s?.step_number ?? 1,
       statusId: STATUS_KEY.PENDING,
       requires_file_upload: a_w_s!.requires_file_upload!,
-      is_otp: a_w_s!.is_otp!,
+      is_otp: true,
       remark: null,
     };
     const aw_step =
