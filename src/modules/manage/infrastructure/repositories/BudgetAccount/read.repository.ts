@@ -37,14 +37,7 @@ export class ReadBudgetAccountRepository
     query.sort_by = 'budget_accounts.id';
     // Entity
 
-    const data = await this._paginationService.paginate<
-      BudgetAccountOrmEntity & {
-        allocated_amount_total?: string;
-        used_amount?: string;
-        increase_amount?: string;
-      }, // T
-      BudgetAccountEntity
-    >(
+    const data = await this._paginationService.paginate(
       queryBuilder,
       query,
       this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
@@ -72,33 +65,33 @@ export class ReadBudgetAccountRepository
         'document_transactions.amount',
       ]);
 
-    queryBuilder.addSelect(
-      (subQuery) =>
-        subQuery
-          .select('COALESCE(SUM(increase_budgets.allocated_amount), 0)')
-          .from('increase_budgets', 'increase_budgets')
-          .where('increase_budgets.budget_account_id = budget_accounts.id'),
-      'allocated_amount_total',
-    );
+    // queryBuilder.addSelect(
+    //   (subQuery) =>
+    //     subQuery
+    //       .select('COALESCE(SUM(increase_budgets.allocated_amount), 0)')
+    //       .from('increase_budgets', 'increase_budgets')
+    //       .where('increase_budgets.budget_account_id = budget_accounts.id'),
+    //   'allocated_amount_total',
+    // );
 
-    queryBuilder.addSelect(
-      (subQuery) =>
-        subQuery
-          .select('COALESCE(SUM(document_transactions.amount), 0)')
-          .from('document_transactions', 'document_transactions')
-          .where('document_transactions.budget_item_id = budget_items.id'),
-      'used_amount',
-    );
+    // queryBuilder.addSelect(
+    //   (subQuery) =>
+    //     subQuery
+    //       .select('COALESCE(SUM(document_transactions.amount), 0)')
+    //       .from('document_transactions', 'document_transactions')
+    //       .where('document_transactions.budget_item_id = budget_items.id'),
+    //   'used_amount',
+    // );
 
-    // Add a subquery to get the total allocated amount per budget item
-    queryBuilder.addSelect(
-      (subQuery) =>
-        subQuery
-          .select('COALESCE(SUM(increase_budget_detail.allocated_amount), 0)')
-          .from('increase_budget_details', 'increase_budget_detail')
-          .where('increase_budget_detail.budget_item_id = budget_items.id'),
-      'increase_amount',
-    );
+    // // Add a subquery to get the total allocated amount per budget item
+    // queryBuilder.addSelect(
+    //   (subQuery) =>
+    //     subQuery
+    //       .select('COALESCE(SUM(increase_budget_detail.allocated_amount), 0)')
+    //       .from('increase_budget_details', 'increase_budget_detail')
+    //       .where('increase_budget_detail.budget_item_id = budget_items.id'),
+    //   'increase_amount',
+    // );
 
     return queryBuilder;
   }
