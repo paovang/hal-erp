@@ -18,7 +18,11 @@ export class DepartmentDataMapper {
     code?: string,
   ): DepartmentEntity {
     const builder = DepartmentEntity.builder();
-    builder.code = dto.code ?? code ?? '';
+    // builder.code = dto.code ?? code ?? '';
+
+    if (code || dto.code) {
+      builder.setCode(code ?? dto.code ?? '');
+    }
 
     if (dto.name) {
       builder.setName(dto.name);
@@ -28,7 +32,7 @@ export class DepartmentDataMapper {
       builder.setIsLineManager(is_line_manager);
     }
 
-    if (dto.department_head_id) {
+    if (dto.department_head_id || dto.department_head_id === 0) {
       builder.setDepartmentHeadId(dto.department_head_id);
     }
 
