@@ -22,10 +22,17 @@ export class DepartmentDataAccessMapper {
     if (id) {
       mediaOrmEntity.id = id.value;
     }
+    if (
+      departmentEntity.department_head_id === 0 ||
+      departmentEntity.department_head_id === undefined
+    ) {
+      mediaOrmEntity.department_head_id = null as any;
+    } else {
+      mediaOrmEntity.department_head_id = departmentEntity.department_head_id;
+    }
     mediaOrmEntity.code = departmentEntity.code;
     mediaOrmEntity.name = departmentEntity.name;
     mediaOrmEntity.is_line_manager = departmentEntity.is_line_manager;
-    mediaOrmEntity.department_head_id = departmentEntity.department_head_id;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = departmentEntity.createdAt ?? new Date(now);
     }

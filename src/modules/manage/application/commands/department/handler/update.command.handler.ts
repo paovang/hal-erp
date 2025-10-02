@@ -31,6 +31,7 @@ export class UpdateCommandHandler
     } else {
       isLineManager = true;
     }
+
     const entity = this._dataMapper.toEntity(query.dto, isLineManager);
     await entity.initializeUpdateSetId(new DepartmentId(query.id));
     await entity.validateExistingIdForUpdate();
