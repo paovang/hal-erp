@@ -24,7 +24,6 @@ import {
   EnumDocumentTransactionType,
   EnumPrOrPo,
   EnumRequestApprovalType,
-  EnumWorkflowStep,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
@@ -166,6 +165,12 @@ export class ApproveStepCommandHandler
           );
         }
 
+        let department_name = '';
+
+        const department = await manager.findOne(DepartmentUserOrmEntity, {
+          where: { user_id: user_id },
+        });
+
         // const department = await findOneOrFail(
         //   manager,
         //   DepartmentUserOrmEntity,
@@ -175,18 +180,25 @@ export class ApproveStepCommandHandler
         //   `department user id: ${user_id}`,
         // );
 
-        // const department_id = (department as any).department_id;
+        if (department) {
+          console.log('1');
+          const department_id = (department as any).department_id;
 
-        // const get_department_name = await findOneOrFail(
-        //   manager,
-        //   DepartmentOrmEntity,
-        //   {
-        //     id: department_id,
-        //   },
-        //   `department id: ${department_id}`,
-        // );
+          const get_department_name = await findOneOrFail(
+            manager,
+            DepartmentOrmEntity,
+            {
+              id: department_id,
+            },
+            `department id: ${department_id}`,
+          );
 
-        // const department_name = (get_department_name as any).name;
+          department_name = (get_department_name as any).name;
+        } else {
+          console.log('2', user.username);
+
+          department_name = user.username || '';
+        }
 
         const DocumentStatus = await findOneOrFail(
           manager,
@@ -298,7 +310,7 @@ export class ApproveStepCommandHandler
             );
           }
 
-          // // Determine current step number safely
+          // Determine current step number safely
           const currentStepNumber = step?.step_number ?? 0;
 
           let a_w_s = await manager.findOne(ApprovalWorkflowStepOrmEntity, {
@@ -315,34 +327,6 @@ export class ApproveStepCommandHandler
                 step_number: currentStepNumber + 2,
               },
             });
-          }
-
-          let department_name = '';
-
-          if (a_w_s?.type !== EnumWorkflowStep.SPECIFIC_USER) {
-            const department = await findOneOrFail(
-              manager,
-              DepartmentUserOrmEntity,
-              {
-                user_id: user_id,
-              },
-              `department user id: ${user_id}`,
-            );
-
-            const department_id = (department as any).department_id;
-
-            const get_department_name = await findOneOrFail(
-              manager,
-              DepartmentOrmEntity,
-              {
-                id: department_id,
-              },
-              `department id: ${department_id}`,
-            );
-
-            department_name = (get_department_name as any).name;
-          } else {
-            department_name = user?.username ?? '';
           }
 
           if (a_w_s) {
