@@ -84,7 +84,6 @@ export class UserApprovalStepDataAccessMapper {
       );
       build.setPosition(positionEntities);
     }
-
     if (ormData.document_approvers) {
       build.setDocApprover(
         ormData.document_approvers.map((docApp) =>

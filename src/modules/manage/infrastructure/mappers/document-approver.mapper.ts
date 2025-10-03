@@ -48,12 +48,17 @@ export class DocumentApproverDataAccessMapper {
     if (ormData.users) {
       builder.setUser(this.user.toEntity(ormData.users));
 
-      if (ormData.users.department_users[0].departments) {
-        builder.setDepartment(
-          this.department.toEntity(
-            ormData.users.department_users[0].departments,
-          ),
-        );
+      // if (ormData.users.department_users[0].departments) {
+      //   builder.setDepartment(
+      //     this.department.toEntity(
+      //       ormData.users.department_users[0].departments,
+      //     ),
+      //   );
+      // }
+      const firstDept = ormData.users.department_users?.[0]?.departments;
+
+      if (firstDept) {
+        builder.setDepartment(this.department.toEntity(firstDept));
       }
     }
 
