@@ -14,6 +14,7 @@ export class PurchaseOrderItemBuilder {
   price: number;
   total: number;
   is_vat: boolean;
+  vat: number;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -65,6 +66,11 @@ export class PurchaseOrderItemBuilder {
 
   setIsVat(is_vat: boolean): this {
     this.is_vat = is_vat;
+    return this;
+  }
+
+  setVat(vat: number): this {
+    this.vat = vat;
     return this;
   }
 

@@ -73,6 +73,7 @@ import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purchase-order-id.vo';
+import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -81,6 +82,7 @@ interface CustomPurchaseOrderItemDto {
   quantity: number;
   total: number;
   is_vat: boolean;
+  vat: number;
 }
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
@@ -536,14 +538,11 @@ export class CreateCommandHandler
     po_id: number,
   ): Promise<void> {
     for (const item of query.dto.items) {
-      const pr_item = await query.manager.findOne(
-        PurchaseRequestItemOrmEntity,
-        {
-          where: {
-            id: item.purchase_request_item_id,
-          },
+      const pr_item = await manager.findOne(PurchaseRequestItemOrmEntity, {
+        where: {
+          id: item.purchase_request_item_id,
         },
-      );
+      });
 
       assertOrThrow(
         pr_item,
@@ -552,6 +551,11 @@ export class CreateCommandHandler
         'purchase request item',
       );
 
+      const vat = await manager.find(VatOrmEntity, {
+        take: 1,
+      });
+      const VAT_RATE = vat[0]?.amount ?? 0;
+
       const itemDto: CustomPurchaseOrderItemDto = {
         purchase_request_item_id: item.purchase_request_item_id,
         remark: pr_item?.remark ?? '',
@@ -559,6 +563,7 @@ export class CreateCommandHandler
         price: item.price ?? 0,
         total: (pr_item?.quantity ?? 0) * (item.price ?? 0),
         is_vat: item?.is_vat ?? false,
+        vat: VAT_RATE,
       };
       const itemEntity = this._dataItemMapper.toEntity(itemDto, po_id);
       const po_item = await this._writeItem.create(itemEntity, manager);

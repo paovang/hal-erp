@@ -77,13 +77,13 @@ export class ReceiptItemOrmEntity {
   @JoinColumn({ name: 'payment_currency_id' })
   payment_currency: Relation<CurrencyOrmEntity>;
 
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
   exchange_rate?: number;
 
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
   vat?: number;
 
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
   payment_total?: number;
 
   @Index()

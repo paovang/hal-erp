@@ -376,7 +376,7 @@ export class ApproveStepCommandHandler
               // end
 
               total = purchase_request.purchase_request_items.reduce(
-                (sum, item) => sum + (item.total_price || 0),
+                (sum, item) => sum + Number(item.total_price || 0),
                 0,
               );
 
@@ -449,14 +449,14 @@ export class ApproveStepCommandHandler
                       manager,
                     );
 
-                    sum_total += get_total;
+                    sum_total += Number(get_total);
                   } else {
                     const get_total = await this._readBudget.getTotal(
                       item.id,
                       manager,
                     );
 
-                    sum_total = get_total;
+                    sum_total = Number(get_total);
                   }
 
                   const check_budget = await this._readBudget.calculate(
@@ -517,7 +517,7 @@ export class ApproveStepCommandHandler
               }
 
               total = po.purchase_order_items.reduce(
-                (sum, item) => sum + (item.total || 0),
+                (sum, item) => sum + Number(item.total || 0),
                 0,
               );
             } else if (query.dto.type === EnumPrOrPo.R) {
@@ -562,7 +562,7 @@ export class ApproveStepCommandHandler
               }
 
               total = receipt.receipt_items.reduce(
-                (sum, item) => sum + (item.total || 0),
+                (sum, item) => sum + Number(item.total || 0),
                 0,
               );
 
@@ -642,14 +642,14 @@ export class ApproveStepCommandHandler
                       manager,
                     );
 
-                    sum_total += get_total;
+                    sum_total += Number(get_total);
                   } else {
                     const get_total = await this._readBudget.getTotal(
                       item.id,
                       manager,
                     );
 
-                    sum_total = get_total;
+                    sum_total = Number(get_total);
                   }
 
                   const check_budget = await this._readBudget.calculate(
@@ -997,7 +997,7 @@ export class ApproveStepCommandHandler
         document_id: receipt.document_id!,
         budget_item_detail_id: find_budget_item.id,
         transaction_number: transactionNumber,
-        amount: item.total ?? 0,
+        amount: Number(item.total) ?? 0,
         transaction_type: EnumDocumentTransactionType.COMMIT,
       };
 

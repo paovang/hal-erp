@@ -15,6 +15,7 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   private readonly _price: number;
   private readonly _total: number;
   private readonly _is_vat: boolean;
+  private readonly _vat: number;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -35,6 +36,7 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     this._price = builder.price;
     this._total = builder.total;
     this._is_vat = builder.is_vat;
+    this._vat = builder.vat;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -75,6 +77,10 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
 
   get is_vat(): boolean {
     return this._is_vat;
+  }
+
+  get vat(): number {
+    return this._vat;
   }
 
   get createdAt(): Date {

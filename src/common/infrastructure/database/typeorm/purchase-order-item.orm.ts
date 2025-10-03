@@ -89,6 +89,9 @@ export class PurchaseOrderItemOrmEntity {
   })
   is_vat?: SelectStatus;
 
+  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
+  vat?: number;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
