@@ -956,6 +956,13 @@ export class ApproveStepCommandHandler
   ): Promise<void> {
     for (const item of receipt.receipt_items) {
       const poItem = item.purchase_order_items;
+      const exists = await manager.exists(DocumentTransactionOrmEntity, {
+        where: {
+          document_id: receipt.document_id,
+          budget_item_id: poItem.budget_item_id,
+        },
+      });
+      if (exists) continue;
 
       // Ensure purchase order item exists
       if (!poItem || !poItem.budget_item_id) {
