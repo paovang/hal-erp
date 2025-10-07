@@ -58,6 +58,15 @@ export class ReceiptResponse {
   step_number: number;
 
   @ApiProperty()
+  sub_total: number | 0;
+
+  @ApiProperty()
+  vat: number | 0;
+
+  @ApiProperty()
+  total: number | 0;
+
+  @ApiProperty()
   currency_totals: CurrencyTotal[] | null;
 
   @ApiProperty()

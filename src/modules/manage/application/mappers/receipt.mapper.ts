@@ -93,13 +93,18 @@ export class ReceiptDataMapper {
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.step = isStepPending;
     response.step_number = entity.step;
+    response.sub_total = Number(entity.sub_total);
+    response.vat = Number(entity.vat);
+    response.total = Number(entity.total);
 
     response.currency_totals = entity.currencyTotals?.length
       ? entity.currencyTotals.map((total) => ({
           id: +total.id,
           code: total.code || '',
           name: total.name || null,
-          amount: +total.amount || 0,
+          total: Number(total.total) || 0,
+          vat: Number(total.vat) || 0,
+          amount: Number(total.amount) || 0,
         }))
       : [];
 

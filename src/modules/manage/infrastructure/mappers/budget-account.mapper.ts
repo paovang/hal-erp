@@ -55,13 +55,6 @@ export class BudgetAccountDataAccessMapper {
       .flatMap((item) => item.document_transactions ?? [])
       .reduce((sum, d) => sum + Number(d.amount ?? 0), 0);
 
-    // const allocated_amount = Number(ormData.allocated_amount_total ?? 0);
-    // const totalUsedAmount = Number(ormData.used_amount ?? 0);
-    // const increase_amount = Number(ormData.increase_amount ?? 0);
-    console.log('totalAllocated', allocated_amount);
-    console.log('totalUsedAmount', totalUsedAmount);
-    console.log('increase_amount', increase_amount);
-
     const total_budget = allocated_amount - increase_amount;
     const balance_amount = increase_amount - totalUsedAmount;
 

@@ -29,6 +29,9 @@ export class ReceiptBuilder {
   po_doc_type: string;
   pr_number: string;
   pr_doc_type: string;
+  sub_total: number | 0;
+  vat: number | 0;
+  total: number | 0;
 
   setReceiptId(value: ReceiptId): this {
     this.receiptId = value;
@@ -67,6 +70,21 @@ export class ReceiptBuilder {
 
   setPrDocType(pr_doc_type: string): this {
     this.pr_doc_type = pr_doc_type;
+    return this;
+  }
+
+  setSubTotal(sub_total: number | 0): this {
+    this.sub_total = sub_total;
+    return this;
+  }
+
+  setVat(vat: number | 0): this {
+    this.vat = vat;
+    return this;
+  }
+
+  setTotal(total: number | 0): this {
+    this.total = total;
     return this;
   }
 

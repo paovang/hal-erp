@@ -81,6 +81,12 @@ import { verifyOtp } from '@src/common/utils/server/verify-otp.util';
 import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { assertOrThrow } from '@src/common/utils/assert.util';
+import { ExchangeRateOrmEntity } from '@src/common/infrastructure/database/typeorm/exchange-rate.orm';
+import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
+import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
+import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
+import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 
 interface CustomApprovalDto
   extends Omit<
@@ -238,11 +244,6 @@ export class ApproveStepCommandHandler
             'errors.already_approved',
             HttpStatus.BAD_REQUEST,
           );
-        }
-
-        if (step.is_otp === true) {
-          // Verify OTP
-          await verifyOtp(query, status, tel);
         }
 
         if (step.requires_file_upload === true) {
@@ -723,6 +724,18 @@ export class ApproveStepCommandHandler
           }
 
           await this.checkDataAndUpdateUserApproval(query, manager);
+          try {
+            if (step.is_otp === true) {
+              // Verify OTP
+              await verifyOtp(query, status, tel);
+            }
+          } catch (error) {
+            throw new DomainException(
+              'errors.otp_verification_failed',
+              HttpStatus.BAD_REQUEST,
+              { details: (error as Error).message },
+            );
+          }
           return approvedStepEntity;
         }
 
@@ -744,11 +757,23 @@ export class ApproveStepCommandHandler
 
         await this.RejectUserApproval(query, manager);
 
+        try {
+          if (step.is_otp === true) {
+            // Verify OTP
+            await verifyOtp(query, status, tel);
+          }
+        } catch (error: any) {
+          console.log('error', error.message);
+          throw new ManageDomainException(
+            'errors.otp_verification_failed',
+            HttpStatus.BAD_REQUEST,
+            { property: `${error.message}` },
+          );
+        }
+
         return approvedStepEntity;
       },
     );
-
-    // return result;
   }
 
   private async RejectUserApproval(
@@ -954,32 +979,31 @@ export class ApproveStepCommandHandler
     manager: EntityManager,
     receipt: ReceiptOrmEntity,
   ): Promise<void> {
+    // Group receipt_items by budget_item_id
+    const grouped: Record<string, any[]> = {};
     for (const item of receipt.receipt_items) {
       const poItem = item.purchase_order_items;
+      if (!poItem || !poItem.budget_item_id) continue;
+      const key = String(poItem.budget_item_id);
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(item);
+    }
+
+    for (const budgetItemId in grouped) {
+      const items = grouped[budgetItemId];
+      // Check if transaction already exists for this budget_item_id
       const exists = await manager.exists(DocumentTransactionOrmEntity, {
         where: {
           document_id: receipt.document_id,
-          budget_item_id: poItem.budget_item_id,
+          budget_item_id: Number(budgetItemId),
         },
       });
       if (exists) continue;
 
-      // Ensure purchase order item exists
-      if (!poItem || !poItem.budget_item_id) {
-        throw new ManageDomainException(
-          `errors.invalid_budget_item`,
-          HttpStatus.BAD_REQUEST,
-          { property: 'budget_item_detail_id' },
-        );
-      }
-
       // Find budget item detail
       const find_budget_item = await manager.findOne(BudgetItemOrmEntity, {
-        where: {
-          id: poItem.budget_item_id,
-        },
+        where: { id: Number(budgetItemId) },
       });
-
       if (!find_budget_item) {
         throw new ManageDomainException(
           'errors.not_found',
@@ -988,23 +1012,104 @@ export class ApproveStepCommandHandler
         );
       }
 
+      // Use the first item for PO/vendor/currency lookup
+      const firstItem = items[0];
+      // const poItem = firstItem.purchase_order_items;
+      const purchase_order_item = await manager.findOne(
+        PurchaseOrderItemOrmEntity,
+        { where: { id: firstItem.purchase_order_item_id } },
+      );
+      assertOrThrow(
+        purchase_order_item,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'purchase order item',
+      );
+      const order_item_select_vendor = await manager.findOne(
+        PurchaseOrderSelectedVendorOrmEntity,
+        { where: { purchase_order_item_id: firstItem.purchase_order_item_id } },
+      );
+      assertOrThrow(
+        order_item_select_vendor,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'purchase order selected vendor',
+      );
+      const vendor_bank_account = await manager.findOne(
+        VendorBankAccountOrmEntity,
+        { where: { id: order_item_select_vendor?.vendor_bank_account_id } },
+      );
+      assertOrThrow(
+        vendor_bank_account,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'vendor bank account',
+      );
+      const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
+        where: {
+          from_currency_id: vendor_bank_account?.currency_id,
+          to_currency_id: firstItem.payment_currency_id,
+          is_active: true,
+        },
+      });
+      assertOrThrow(
+        exchange_rate,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'exchange rate',
+      );
+      const currency = await this.getCurrency(
+        exchange_rate!.from_currency_id,
+        manager,
+      );
+      const payment_currency = await this.getCurrency(
+        exchange_rate!.to_currency_id,
+        manager,
+      );
+
+      // Sum total for all items in this group
+      let sum_total = 0;
+      for (const item of items) {
+        const purchase_order_item = await manager.findOne(
+          PurchaseOrderItemOrmEntity,
+          { where: { id: item.purchase_order_item_id } },
+        );
+        const vat = Number(purchase_order_item?.vat ?? 0);
+        const get_total = Number(purchase_order_item?.total ?? 0);
+        sum_total += get_total + vat;
+      }
+      const rate = Number(exchange_rate?.rate ?? 0);
+      let payment_total = 0;
+      if (currency.code === 'USD' && payment_currency.code === 'LAK') {
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
+        payment_total = sum_total * rate;
+      } else {
+        payment_total = sum_total * 1;
+      }
+
       // Generate transaction number
       const transactionNumber =
         await this.generateDocumentTransactionNumber(manager);
-
-      // Prepare transaction data
       const transactionData: DocumentTransactionInterface = {
         document_id: receipt.document_id!,
         budget_item_detail_id: find_budget_item.id,
         transaction_number: transactionNumber,
-        amount: Number(item.total) ?? 0,
+        amount: Number(payment_total) ?? 0,
         transaction_type: EnumDocumentTransactionType.COMMIT,
       };
-
-      // Map and save transaction entity
       const transactionEntity =
         this._dataTransactionMapper.toEntity(transactionData);
       await this._writeTransaction.create(transactionEntity, manager);
     }
+  }
+
+  private async getCurrency(
+    currency: number,
+    manager: EntityManager,
+  ): Promise<CurrencyOrmEntity> {
+    return await findOneOrFail(manager, CurrencyOrmEntity, {
+      id: currency,
+    });
   }
 }

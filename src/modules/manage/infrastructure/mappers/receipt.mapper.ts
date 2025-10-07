@@ -49,6 +49,27 @@ export class ReceiptDataAccessMapper {
   }
 
   toEntity(ormData: ReceiptOrmEntity, step: number = 0): ReceiptEntity {
+    const items = ormData.receipt_items || [];
+    interface PurchaseRequestItemLike {
+      vat?: number;
+      payment_total?: number;
+      [key: string]: any;
+    }
+
+    const sub_total: number = items.reduce(
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + Number(item.payment_total || 0),
+      0,
+    );
+
+    const vat: number = items.reduce(
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + Number(item.vat || 0),
+      0,
+    );
+
+    const total = sub_total + vat;
+
     const builder = ReceiptEntity.builder()
       .setReceiptId(new ReceiptId(ormData.id))
       .setReceiptNumber(ormData.receipt_number)
@@ -71,6 +92,9 @@ export class ReceiptDataAccessMapper {
       .setAccountCode(ormData.account_code ?? null)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
+      .setSubTotal(sub_total ?? 0)
+      .setVat(vat ?? 0)
+      .setTotal(total ?? 0)
       .setStep(step);
 
     if (ormData.documents) {
@@ -98,6 +122,9 @@ export class ReceiptDataAccessMapper {
       // Calculate currency totals for this specific receipt
       const currencyTotals = this.calculateCurrencyTotalsFromItems(
         ormData.receipt_items,
+        sub_total,
+        vat,
+        total,
       );
       builder.setCurrencyTotals(currencyTotals);
     }
@@ -107,6 +134,9 @@ export class ReceiptDataAccessMapper {
 
   private calculateCurrencyTotalsFromItems(
     receiptItems: any[],
+    sub_total: number,
+    vat: number,
+    total: number,
   ): CurrencyTotal[] {
     const currencyMap = new Map<number, CurrencyTotal>();
 
@@ -116,20 +146,24 @@ export class ReceiptDataAccessMapper {
       const currencyId = paymentCurrency?.id;
       const currencyCode = paymentCurrency?.code;
       const currencyName = paymentCurrency?.name;
-      const paymentTotal = parseFloat(item.payment_total) || 0;
+      const subTotal = sub_total;
+      const vatTotal = vat;
+      const paymentTotal = total;
 
       if (currencyId && paymentTotal > 0) {
-        if (currencyMap.has(currencyId)) {
-          const existing = currencyMap.get(currencyId)!;
-          existing.amount += paymentTotal;
-        } else {
-          currencyMap.set(currencyId, {
-            id: currencyId,
-            code: currencyCode || '',
-            name: currencyName,
-            amount: paymentTotal,
-          });
-        }
+        // if (currencyMap.has(currencyId)) {
+        //   const existing = currencyMap.get(currencyId)!;
+        //   existing.amount += paymentTotal;
+        // } else {
+        currencyMap.set(currencyId, {
+          id: currencyId,
+          code: currencyCode || '',
+          name: currencyName,
+          total: subTotal,
+          vat: vatTotal,
+          amount: paymentTotal,
+        });
+        // }
       }
     });
 

@@ -551,19 +551,28 @@ export class CreateCommandHandler
         'purchase request item',
       );
 
-      const vat = await manager.find(VatOrmEntity, {
-        take: 1,
-      });
-      const VAT_RATE = vat[0]?.amount ?? 0;
+      let vat_total = 0;
+      if (item.is_vat === true) {
+        const vat = await manager.find(VatOrmEntity, {
+          take: 1,
+        });
+        const vat_rate = vat[0]?.amount ?? 0;
+        vat_total =
+          Number(pr_item?.quantity ?? 0) *
+          Number(item.price ?? 0) *
+          Number(vat_rate / 100);
+      } else {
+        vat_total = 0;
+      }
 
       const itemDto: CustomPurchaseOrderItemDto = {
         purchase_request_item_id: item.purchase_request_item_id,
         remark: pr_item?.remark ?? '',
         quantity: pr_item?.quantity ?? 0,
         price: item.price ?? 0,
-        total: (pr_item?.quantity ?? 0) * (item.price ?? 0),
+        total: Number(pr_item?.quantity ?? 0) * Number(item.price ?? 0),
         is_vat: item?.is_vat ?? false,
-        vat: VAT_RATE,
+        vat: vat_total,
       };
       const itemEntity = this._dataItemMapper.toEntity(itemDto, po_id);
       const po_item = await this._writeItem.create(itemEntity, manager);

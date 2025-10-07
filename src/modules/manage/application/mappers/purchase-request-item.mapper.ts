@@ -65,10 +65,10 @@ export class PurchaseRequestItemDataMapper {
     response.title = entity.title;
     response.file_name = entity.file_name;
     response.file_name_url = file_name;
-    response.quantity = entity.quantity;
+    response.quantity = Number(entity.quantity);
     response.unit_id = entity.unit_id;
-    response.price = entity.price;
-    response.total_price = entity.total_price;
+    response.price = Number(entity.price);
+    response.total_price = Number(entity.total_price);
     response.remark = entity.remark;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

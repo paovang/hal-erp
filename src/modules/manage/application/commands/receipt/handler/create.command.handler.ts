@@ -42,7 +42,6 @@ import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/databa
 import {
   EnumPaymentType,
   EnumRequestApprovalType,
-  SelectStatus,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
 import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
@@ -517,7 +516,7 @@ export class CreateCommandHandler
     for (const item of query.dto.receipt_items) {
       // await this.checkCurrency(item.currency_id, manager);
       await this.checkCurrency(item.payment_currency_id, manager);
-      const amount = await this.getVat(manager);
+      // const amount = await this.getVat(manager);
 
       const purchase_order_item = await manager.findOne(
         PurchaseOrderItemOrmEntity,
@@ -581,51 +580,52 @@ export class CreateCommandHandler
         'exchange rate',
       );
 
-      const currency = await this.getCurrency(
-        exchange_rate!.from_currency_id,
-        manager,
-      );
-      const payment_currency = await this.getCurrency(
-        exchange_rate!.to_currency_id,
-        manager,
-      );
+      // const currency = await this.getCurrency(
+      //   exchange_rate!.from_currency_id,
+      //   manager,
+      // );
+      // const payment_currency = await this.getCurrency(
+      //   exchange_rate!.to_currency_id,
+      //   manager,
+      // );
 
       let payment_total = 0;
-      let vat = 0;
       let sum_total = 0;
-      const quantity = purchase_order_item?.quantity ?? 0;
-      const price = purchase_order_item?.price ?? 0;
-      const get_total = purchase_order_item?.total ?? 0;
-      const rate = exchange_rate?.rate ?? 0;
+      const vat = Number(purchase_order_item?.vat ?? 0);
+      const quantity = Number(purchase_order_item?.quantity ?? 0);
+      const price = Number(purchase_order_item?.price ?? 0);
+      const get_total = Number(purchase_order_item?.total ?? 0);
+      // const rate = Number(exchange_rate?.rate ?? 0);
 
-      if (purchase_order_item?.is_vat === SelectStatus.TRUE) {
-        vat = amount ?? 0;
-        const vat_total = get_total * (vat / 100);
-        sum_total = get_total + vat_total;
-      } else {
-        vat = 0;
-        sum_total = get_total;
-      }
+      // if (purchase_order_item?.is_vat === SelectStatus.TRUE) {
+      //   vat = Number(purchase_order_item?.vat) ?? 0;
+      //   const vat_total = get_total * (vat / 100);
+      //   sum_total = get_total + vat_total;
+      // } else {
+      //   vat = 0;
+      // }
+      sum_total = get_total;
+      payment_total = sum_total;
 
-      if (currency.code === 'USD' && payment_currency.code === 'LAK') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
-        payment_total = sum_total * rate;
-      }
+      // if (currency.code === 'USD' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total * rate;
+      // }
 
       const interface_item: ReceiptInterItemInterface = {
         receipt_id: receipt_id,
@@ -635,7 +635,7 @@ export class CreateCommandHandler
         total: get_total,
         currency_id: vendor_bank_account?.currency_id ?? 0,
         payment_currency_id: item.payment_currency_id,
-        exchange_rate: rate,
+        exchange_rate: 1,
         vat: vat,
         payment_total: payment_total,
         payment_type: item.payment_type,

@@ -30,6 +30,9 @@ export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _pr_number: string;
   private readonly _po_doc_type: string;
   private readonly _pr_doc_type: string;
+  private readonly _sub_total: number | 0;
+  private readonly _vat: number | 0;
+  private readonly _total: number | 0;
 
   private constructor(builder: ReceiptBuilder) {
     super();
@@ -55,6 +58,9 @@ export class ReceiptEntity extends Entity<ReceiptId> {
     this._pr_number = builder.pr_number;
     this._po_doc_type = builder.po_doc_type;
     this._pr_doc_type = builder.pr_doc_type;
+    this._sub_total = builder.sub_total ?? 0;
+    this._vat = builder.vat ?? 0;
+    this._total = builder.total;
   }
 
   get receipt_number(): string {
@@ -95,6 +101,18 @@ export class ReceiptEntity extends Entity<ReceiptId> {
 
   get account_code(): string | null {
     return this._account_code;
+  }
+
+  get sub_total(): number | 0 {
+    return this._sub_total;
+  }
+
+  get vat(): number | 0 {
+    return this._vat;
+  }
+
+  get total(): number | 0 {
+    return this._total;
   }
 
   get remark(): string {

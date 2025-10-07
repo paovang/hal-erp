@@ -54,16 +54,27 @@ export class PurchaseOrderDataAccessMapper {
     ormData: PurchaseOrderOrmEntity,
     step: number = 0,
   ): PurchaseOrderEntity {
-    // const items = ormData.purchase_order_items || [];
-    // interface PurchaseRequestItemLike {
-    //   total?: number;
-    //   [key: string]: any;
-    // }
+    const items = ormData.purchase_order_items || [];
+    interface PurchaseRequestItemLike {
+      vat?: number;
+      total?: number;
+      [key: string]: any;
+    }
 
-    // const total: number = items.reduce(
-    //   (sum: number, item: PurchaseRequestItemLike) => sum + (item.total || 0),
-    //   0,
-    // );
+    const sub_total: number = items.reduce(
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + Number(item.total || 0),
+      0,
+    );
+
+    const vat: number = items.reduce(
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + Number(item.vat || 0),
+      0,
+    );
+
+    const total = sub_total + vat;
+
     const builder = PurchaseOrderEntity.builder()
       .setPurchaseOrderId(new PurchaseOrderId(ormData.id))
       .setPurchaseRequestId(ormData.purchase_request_id ?? 0)
@@ -73,6 +84,9 @@ export class PurchaseOrderDataAccessMapper {
       .setPurposes(ormData.purposes ?? '')
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
+      .setSubTotal(sub_total)
+      .setVat(vat)
+      .setTotal(total)
       .setStep(step);
 
     if (ormData.purchase_requests) {

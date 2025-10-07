@@ -66,5 +66,6 @@
   "please_set_department_approver": "ກະລຸນາຕັ້ງຄ່າຜູ້ອະນຸມັດກ່ອນ.",
   "send_request": "ການສົ່ງຂໍ້ມູນລະຫວ່າງ server ມີບັນຫາ, {property}",
   "send_otp": "ການສົ່ງ OTP ມີບັນຫາ. {property}",
-  "insufficient_budget": "ງົບປະມານໃນບັນຊີ {property} ບໍ່ພຽງພໍ"
+  "insufficient_budget": "ງົບປະມານໃນບັນຊີ {property} ບໍ່ພຽງພໍ",
+  "otp_verification_failed": "OTP ບໍ່ຖືກຕ້ອງ ຫຼື ໝົດເວລາແລ້ວ. {property}"
 }

@@ -83,8 +83,6 @@ export class BudgetItemDataAccessMapper {
   ): BudgetItemEntity {
     const totalAllocated = Number(row.allocated_amount_total ?? 0);
     const totalUsedAmount = Number(row.used_amount ?? 0);
-    console.log('totalAllocated', totalAllocated);
-    console.log('totalUsedAmount', totalUsedAmount);
     const balance = totalAllocated - totalUsedAmount;
     // console.log("object");
 

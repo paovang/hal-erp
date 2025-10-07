@@ -57,7 +57,7 @@ export class PurchaseRequestDataAccessMapper {
 
     const total: number = items.reduce(
       (sum: number, item: PurchaseRequestItemLike) =>
-        sum + (item.total_price || 0),
+        sum + Number(item.total_price || 0),
       0,
     );
 

@@ -9,6 +9,7 @@ export const selectPurchaseOrderItems = [
   'purchase_order_items.quantity',
   'purchase_order_items.total',
   'purchase_order_items.is_vat',
+  'purchase_order_items.vat',
   'purchase_order_items.created_at',
   'purchase_order_items.updated_at',
 ];
