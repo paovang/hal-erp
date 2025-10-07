@@ -736,7 +736,6 @@ export class ApproveStepCommandHandler
               { details: (error as Error).message },
             );
           }
-          // test
           return approvedStepEntity;
         }
 
