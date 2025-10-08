@@ -18,6 +18,7 @@ import { BudgetAccountOrmEntity } from './budget-account.orm';
 import { DocumentOrmEntity } from './document.orm';
 import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 import { UserOrmEntity } from './user.orm';
+import { RoleGroupOrmEntity } from './role-group.orm';
 // import { BudgetAccountOrmEntity } from './budget-account.orm';
 
 @Entity('departments')
@@ -90,4 +91,7 @@ export class DepartmentOrmEntity {
     (approval_workflow_steps) => approval_workflow_steps.departments,
   )
   approval_workflow_steps: Relation<ApprovalWorkflowStepOrmEntity[]>;
+
+  @OneToMany(() => RoleGroupOrmEntity, (roleGroup) => roleGroup.department)
+  rolesGroups: Relation<RoleGroupOrmEntity[]>;
 }

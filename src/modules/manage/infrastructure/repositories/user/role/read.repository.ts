@@ -13,7 +13,6 @@ import { RoleDataAccessMapper } from '../../../mappers/role.mapper';
 import { RoleQueryDto } from '@src/modules/manage/application/dto/query/role-query.dto';
 import { RoleEntity } from '@src/modules/manage/domain/entities/role.entity';
 import { RoleId } from '@src/modules/manage/domain/value-objects/role-id.vo';
-import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 
 @Injectable()
 export class ReadRoleRepository implements IReadRoleRepository {
@@ -29,7 +28,8 @@ export class ReadRoleRepository implements IReadRoleRepository {
     query: RoleQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<RoleEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const department_id = Number(query.department_id);
+    const queryBuilder = await this.createBaseQuery(manager, department_id);
     query.sort_by = 'roles.id';
 
     const data = await this._paginationService.paginate(
@@ -45,18 +45,41 @@ export class ReadRoleRepository implements IReadRoleRepository {
     id: RoleId,
     manager: EntityManager,
   ): Promise<ResponseResult<RoleEntity>> {
-    const item = await findOneOrFail(manager, RoleOrmEntity, {
-      id: id.value,
-    });
+    // const item = await findOneOrFail(manager, RoleOrmEntity, {
+    //   id: id.value,
+    // });
+
+    const item = await this.createBaseQuery(manager)
+      .where('roles.id = :id', { id: id.value })
+      .getOneOrFail();
 
     return this._dataAccessMapper.toEntity(item);
   }
 
-  private createBaseQuery(manager: EntityManager) {
+  private createBaseQuery(manager: EntityManager, department_id?: number) {
     const roleName = ['super-admin', 'admin'];
-    return manager
+    const queryBuilder = manager
       .createQueryBuilder(RoleOrmEntity, 'roles')
-      .where('roles.name NOT IN (:...roleName)', { roleName });
+      .leftJoin('roles.rolesGroups', 'roleGroups') // use rolesGroups (matches entity)
+      .leftJoin('roleGroups.department', 'departments') // use the alias roleGroups here
+      .leftJoinAndSelect('roles.permissions', 'permissions')
+      .where('roles.name NOT IN (:...roleName)', { roleName })
+      .addSelect([
+        'roleGroups.id',
+        'roleGroups.role_id',
+        'roleGroups.department_id',
+        'departments.id',
+        'departments.name',
+        'departments.code',
+      ]);
+
+    if (department_id) {
+      queryBuilder.andWhere('departments.id = :department_id', {
+        department_id,
+      });
+    }
+
+    return queryBuilder;
   }
 
   private getFilterOptions(): FilterOptions {

@@ -10,6 +10,9 @@ export class RoleEntity extends Entity<RoleId> {
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _permissions: PermissionEntity[];
+  private readonly _department_id: number;
+  private readonly _department_code: string;
+  private readonly _department_name: string;
 
   private constructor(builder: RoleBuilder) {
     super();
@@ -20,6 +23,9 @@ export class RoleEntity extends Entity<RoleId> {
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._permissions = builder.permissions;
+    this._department_id = builder.department_id;
+    this._department_code = builder.department_code;
+    this._department_name = builder.department_name;
   }
 
   get name(): string {
@@ -44,6 +50,18 @@ export class RoleEntity extends Entity<RoleId> {
 
   get permissions(): PermissionEntity[] {
     return this._permissions;
+  }
+
+  get department_id(): number {
+    return this._department_id;
+  }
+
+  get department_code(): string {
+    return this._department_code;
+  }
+
+  get department_name(): string {
+    return this._department_name;
   }
 
   public static builder(): RoleBuilder {

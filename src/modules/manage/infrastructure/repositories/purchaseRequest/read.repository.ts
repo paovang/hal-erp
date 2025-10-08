@@ -17,8 +17,12 @@ import {
   selectApprover,
   selectApproverUserSignatures,
   selectDepartments,
+  selectDepartmentsApprover,
   selectDepartmentUserApprovers,
   selectDepartmentUsers,
+  selectDocApproverUser,
+  selectDocDeptUser,
+  selectDocumentApprover,
   selectDocuments,
   selectDocumentStatuses,
   selectDocumentTypes,
@@ -132,6 +136,10 @@ export class ReadPurchaseRequestRepository
       ...selectStatus,
       ...selectDepartmentUserApprovers,
       ...selectPositionApprover,
+      ...selectDocumentApprover,
+      ...selectDocApproverUser,
+      ...selectDocDeptUser,
+      ...selectDepartmentsApprover,
     ];
 
     const query = manager
@@ -161,6 +169,9 @@ export class ReadPurchaseRequestRepository
         'document_approver',
         'document_approver.user_approval_step_id = user_approval_steps.id',
       )
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
       .addSelect(selectFields);
 
     if (

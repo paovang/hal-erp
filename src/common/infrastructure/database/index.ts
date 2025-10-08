@@ -42,6 +42,8 @@ import { VatOrmEntity } from './typeorm/vat.orm';
 import { VendorOrmEntity } from './typeorm/vendor.orm';
 import { VendorBankAccountOrmEntity } from './typeorm/vendor_bank_account.orm';
 import { IncreaseBudgetOrmEntity } from './typeorm/increase-budget.orm';
+import { RoleGroupOrmEntity } from './typeorm/role-group.orm';
+import { RolePermissionOrmEntity } from './typeorm/role-permission.orm';
 
 export const models = [
   DepartmentOrmEntity,
@@ -88,4 +90,6 @@ export const models = [
   DocumentAttachmentOrmEntity,
   DocumentTransactionOrmEntity,
   UserTypeOrmEntity,
+  RoleGroupOrmEntity,
+  RolePermissionOrmEntity,
 ];
