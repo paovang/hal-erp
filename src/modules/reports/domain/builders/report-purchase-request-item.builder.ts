@@ -1,3 +1,4 @@
+import { UnitEntity } from '@src/modules/manage/domain/entities/unit.entity';
 import { ReportPurchaseRequestItemEntity } from '../entities/report-purchase-request-item.entity';
 import { ReportPurchaseRequestItemId } from '../value-objects/report-purchase-request-item-id.vo';
 
@@ -14,7 +15,7 @@ export class ReportPurchaseRequestItemBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
-  //   unit: UnitEntity | null;
+  unit: UnitEntity | null;
 
   setPurchaseRequestItemId(value: ReportPurchaseRequestItemId): this {
     this.purchaseRequestItemId = value;
@@ -76,10 +77,10 @@ export class ReportPurchaseRequestItemBuilder {
     return this;
   }
 
-  //   setUnit(unit: UnitEntity | null): this {
-  //     this.unit = unit;
-  //     return this;
-  //   }
+  setUnit(unit: UnitEntity | null): this {
+    this.unit = unit;
+    return this;
+  }
 
   build(): ReportPurchaseRequestItemEntity {
     return ReportPurchaseRequestItemEntity.create(this);

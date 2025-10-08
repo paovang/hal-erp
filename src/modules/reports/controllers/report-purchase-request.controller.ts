@@ -6,6 +6,7 @@ import { IReportPurchaseRequestServiceInterface } from '../domain/ports/input/re
 import { ReportPurchaseRequestDataMapper } from '../application/mappers/report-purchase-request.mpper';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ReportPurchaseRequestResponse } from '../application/dto/response/report-purchase-request.response';
+import { PurchaseRequestReportQueryDto } from '../application/dto/query/purchase-request-report.query.dto';
 
 @Controller('reports/purchase-requests')
 export class ReportPurchaseRequestController {
@@ -19,14 +20,19 @@ export class ReportPurchaseRequestController {
 
   @Get('')
   async report(
-    @Query() dto: any,
+    @Query() dto: PurchaseRequestReportQueryDto,
   ): Promise<ResponseResult<ReportPurchaseRequestResponse>> {
     const result = await this._service.report(dto);
-    console.log('result', result);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  @Get('money')
+  async reportMoney(): Promise<any> {
+    const result = await this._service.reportMoney();
+    return result;
   }
 }

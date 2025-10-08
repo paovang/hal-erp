@@ -2,17 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
 import { ReportPurchaseRequestEntity } from '../../domain/entities/report-purchase-request.entity.';
 import { ReportPurchaseRequestId } from '../../domain/value-objects/report-purchase-request-id.vo';
+import { ReportPurchaseRequestItemDataAccessMapper } from './report-purchase-request-item.mapper';
+import { DocumentDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document.mapper';
 // import { ReportPurchaseRequestItemDataAccessMapper } from './report-purchase-request-item.mapper';
 
 @Injectable()
 export class ReportPurchaseRequestDataAccessMapper {
-  constructor() {} // private readonly purchaseRequestItemMapper: ReportPurchaseRequestItemDataAccessMapper, // private readonly userApprovalMapper: ReportUserApprovalDataAccessMapper, // private readonly documentMapper: ReportDocumentDataAccessMapper, // private readonly purchaseRequestItemMapper: ReportPurchaseRequestItemDataAccessMapper,
+  constructor(
+    private readonly purchaseRequestItemMapper: ReportPurchaseRequestItemDataAccessMapper,
+    private readonly documentMapper: DocumentDataAccessMapper,
+  ) {}
+  // private readonly purchaseRequestItemMapper: ReportPurchaseRequestItemDataAccessMapper, // private readonly userApprovalMapper: ReportUserApprovalDataAccessMapper, // private readonly documentMapper: ReportDocumentDataAccessMapper, // private readonly purchaseRequestItemMapper: ReportPurchaseRequestItemDataAccessMapper,
 
   toEntity(
     ormData: PurchaseRequestOrmEntity,
     step: number = 0,
   ): ReportPurchaseRequestEntity {
     const items = ormData.purchase_request_items || [];
+    const itemCount = items.length;
     interface PurchaseRequestItemLike {
       total_price?: number;
       [key: string]: any;
@@ -20,13 +27,11 @@ export class ReportPurchaseRequestDataAccessMapper {
 
     const total: number = items.reduce(
       (sum: number, item: PurchaseRequestItemLike) =>
-        sum + (item.total_price || 0),
+        sum + Number(item.total_price || 0),
       0,
     );
 
     const totalWorkflowStep = 0;
-
-    console.log('object', new ReportPurchaseRequestId(ormData.id));
     const builder = ReportPurchaseRequestEntity.builder()
       .setPurchaseRequestId(new ReportPurchaseRequestId(ormData.id))
       .setDocumentId(ormData.document_id ?? 0)
@@ -37,14 +42,14 @@ export class ReportPurchaseRequestDataAccessMapper {
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .setDeletedAt(ormData.deleted_at)
+      .setItemCount(itemCount)
       .setTotal(total)
       .setWorkflowStepTotal(totalWorkflowStep ?? 0)
       .setStep(step);
-    console.log('builder', builder);
 
-    // if (ormData.documents) {
-    //   builder.setDocument(this.documentMapper.toEntity(ormData.documents));
-    // }
+    if (ormData.documents) {
+      builder.setDocument(this.documentMapper.toEntity(ormData.documents));
+    }
 
     // if (ormData.documents && ormData.documents.user_approvals) {
     //   builder.setUserApproval(
@@ -52,13 +57,13 @@ export class ReportPurchaseRequestDataAccessMapper {
     //   );
     // }
 
-    // if (ormData.purchase_request_items) {
-    //   builder.setPurchaseRequestItem(
-    //     ormData.purchase_request_items.map((item) =>
-    //       this.purchaseRequestItemMapper.toEntity(item),
-    //     ),
-    //   );
-    // }
+    if (ormData.purchase_request_items) {
+      builder.setPurchaseRequestItem(
+        ormData.purchase_request_items.map((item) =>
+          this.purchaseRequestItemMapper.toEntity(item),
+        ),
+      );
+    }
 
     return builder.build();
   }

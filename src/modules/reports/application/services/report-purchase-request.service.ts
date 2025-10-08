@@ -6,6 +6,8 @@ import { IReportPurchaseRequestServiceInterface } from '../../domain/ports/input
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ReportPurchaseRequestEntity } from '../../domain/entities/report-purchase-request.entity.';
 import { GetReportQuery } from '../queries/reportPurchaseRequest/report.query';
+import { PurchaseRequestReportQueryDto } from '../dto/query/purchase-request-report.query.dto';
+import { GetReportMoneyQuery } from '../queries/reportPurchaseRequest/report-money.query';
 
 @Injectable()
 export class ReportPurchaseRequestService
@@ -19,11 +21,17 @@ export class ReportPurchaseRequestService
   ) {}
 
   async report(
-    dto: any,
+    dto: PurchaseRequestReportQueryDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<ReportPurchaseRequestEntity>> {
     return await this._queryBus.execute(
       new GetReportQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async reportMoney(manager?: EntityManager): Promise<any> {
+    return await this._queryBus.execute(
+      new GetReportMoneyQuery(manager ?? this._readEntityManager),
     );
   }
 }

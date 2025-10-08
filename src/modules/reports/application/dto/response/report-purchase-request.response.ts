@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ReportPurchaseRequestItemResponse } from './report-purchase-request-item.response';
+import { DocumentResponse } from '@src/modules/manage/application/dto/response/document.response';
 
 export class ReportPurchaseRequestResponse {
   @ApiProperty()
@@ -30,13 +31,16 @@ export class ReportPurchaseRequestResponse {
   deleted_at: string | null;
 
   @ApiProperty()
+  itemCount: number | 0;
+
+  @ApiProperty()
   total: number | 0;
 
   @ApiProperty()
   step: boolean;
 
-  // @ApiProperty()
-  // document: DocumentResponse | null;
+  @ApiProperty()
+  document: DocumentResponse | null;
 
   // @ApiProperty()
   // user_approval: UserApprovalResponse | null;

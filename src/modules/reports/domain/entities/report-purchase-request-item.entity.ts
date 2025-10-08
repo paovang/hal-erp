@@ -2,6 +2,7 @@ import { Entity } from '@src/common/domain/entities/entity';
 import { BadRequestException } from '@nestjs/common';
 import { ReportPurchaseRequestItemId } from '../value-objects/report-purchase-request-item-id.vo';
 import { ReportPurchaseRequestItemBuilder } from '../builders/report-purchase-request-item.builder';
+import { UnitEntity } from '@src/modules/manage/domain/entities/unit.entity';
 
 export class ReportPurchaseRequestItemEntity extends Entity<ReportPurchaseRequestItemId> {
   private readonly _purchase_request_id: number;
@@ -15,7 +16,7 @@ export class ReportPurchaseRequestItemEntity extends Entity<ReportPurchaseReques
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
-  //   private readonly _unit: UnitEntity | null;
+  private readonly _unit: UnitEntity | null;
 
   private constructor(builder: ReportPurchaseRequestItemBuilder) {
     super();
@@ -31,7 +32,7 @@ export class ReportPurchaseRequestItemEntity extends Entity<ReportPurchaseReques
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
-    // this._unit = builder.unit ?? null;
+    this._unit = builder.unit ?? null;
   }
 
   get purchase_request_id(): number {
@@ -78,9 +79,9 @@ export class ReportPurchaseRequestItemEntity extends Entity<ReportPurchaseReques
     return this._deletedAt;
   }
 
-  //   get unit(): UnitEntity | null {
-  //     return this._unit;
-  //   }
+  get unit(): UnitEntity | null {
+    return this._unit;
+  }
 
   public static builder(): ReportPurchaseRequestItemBuilder {
     return new ReportPurchaseRequestItemBuilder();

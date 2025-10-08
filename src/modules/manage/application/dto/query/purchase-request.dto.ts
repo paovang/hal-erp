@@ -13,10 +13,10 @@ export class PurchaseRequestQueryDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
-    description: 'Filter by document type id',
+    description: 'Filter by department id',
   })
   @IsOptional()
-  document_type_id?: number;
+  department_id?: number;
 
   @ApiProperty({
     required: false,
