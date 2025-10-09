@@ -78,9 +78,12 @@ export class ReportReadPurchaseRequestRepository
       EnumPrOrPo.PR,
       user_id,
       roles,
+      departmentId,
+      status_id,
       query.requested_date_start,
       query.requested_date_end,
     );
+
     const data = await this._paginationService.paginate(
       queryBuilder,
       query,

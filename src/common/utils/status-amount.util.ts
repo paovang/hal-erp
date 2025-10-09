@@ -12,39 +12,13 @@ export async function countStatusAmounts(
   type?: EnumPrOrPo,
   user_id?: number,
   roles?: string[],
+  departmentId?: number,
+  status_id?: number,
   start_date?: string,
   end_date?: string,
 ): Promise<{ id: number; status: string; amount: number }[]> {
   // เงื่อนไข type
   if (type === EnumPrOrPo.PO) {
-    // const query = manager
-    //   .createQueryBuilder('user_approvals', 'ua')
-    //   // .leftJoin('document')
-    //   .select('ua.status_id', 'id')
-    //   .addSelect('ds.name', 'status')
-    //   .addSelect('COUNT(*)', 'amount')
-    //   .innerJoin('ua.document_statuses', 'ds')
-    //   .innerJoin('ua.user_approval_steps', 'uas')
-    //   .innerJoin('ua.documents', 'doc')
-    //   // .leftJoin('doc.purchase_orders', 'po')
-    //   // .leftJoin('doc.departments', 'departments')
-    // .innerJoin(
-    //   'uas.document_approvers',
-    //   'document_approver',
-    //   'document_approver.user_approval_step_id = uas.id',
-    // );
-    // // Join เฉพาะ PO
-    // query.innerJoin('purchase_orders', 'po', 'doc.id = po.document_id');
-    // if (
-    //   roles &&
-    //   !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-    //   !roles.includes(EligiblePersons.ADMIN)
-    // ) {
-    //   query.andWhere('document_approver.user_id = :user_id', {
-    //     user_id,
-    //   });
-    // }
-
     const query = manager
       .createQueryBuilder(PurchaseOrderOrmEntity, 'po')
       .innerJoin('po.documents', 'doc')
@@ -116,6 +90,23 @@ export async function countStatusAmounts(
     ) {
       query.andWhere('document_approver.user_id = :user_id', {
         user_id,
+      });
+    }
+
+    if (departmentId) {
+      query.andWhere('documents.department_id = :departmentId', {
+        departmentId,
+      });
+    }
+
+    if (status_id) {
+      query.andWhere('ua.status_id = :status_id', { status_id });
+    }
+
+    if (start_date && end_date) {
+      query.andWhere(`pr.requested_date BETWEEN :dateStart AND :dateEnd`, {
+        dateStart: `${start_date} 00:00:00`,
+        dateEnd: `${end_date} 23:59:59`,
       });
     }
 
