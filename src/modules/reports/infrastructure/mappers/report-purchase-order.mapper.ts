@@ -18,7 +18,7 @@ export class ReportPurchaseOrderDataAccessMapper {
   ): ReportPurchaseOrderEntity {
     const items = ormData.purchase_order_items || [];
 
-    interface PurchaseOrderItemLike {
+    interface PurchaseRequestItemLike {
       total_price?: number;
       sub_total?: number;
       vat?: number;
@@ -26,17 +26,18 @@ export class ReportPurchaseOrderDataAccessMapper {
     }
 
     const sub_total: number = items.reduce(
-      (sum: number, item: PurchaseOrderItemLike) =>
-        sum + Number(item.sub_total || item.total_price || 0),
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + Number(item.total || 0),
       0,
     );
 
     const vat: number = items.reduce(
-      (sum: number, item: PurchaseOrderItemLike) => sum + Number(item.vat || 0),
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + Number(item.vat || 0),
       0,
     );
 
-    const total: number = sub_total + vat;
+    const total = sub_total + vat;
 
     const builder = ReportPurchaseOrderEntity.builder()
       .setPurchaseOrderId(new ReportPurchaseOrderId(ormData.id))

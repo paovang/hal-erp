@@ -102,6 +102,10 @@ export class ReportReadPurchaseOrderRepository
       EnumPrOrPo.PO,
       user_id,
       roles,
+      departmentId,
+      status_id,
+      query.start_date,
+      query.end_date,
     );
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -291,6 +295,7 @@ export class ReportReadPurchaseOrderRepository
       .innerJoin('purchase_orders.purchase_order_items', 'purchase_order_items')
       .select('document_statuses.name', 'status')
       .addSelect('SUM(purchase_order_items.total_price)', 'total')
+      .addSelect('SUM(purchase_order_items.vat)', 'total_vat')
       .innerJoin('purchase_orders.documents', 'documents')
       .innerJoin('documents.user_approvals', 'user_approvals')
       .innerJoin('user_approvals.document_statuses', 'document_statuses')
@@ -299,7 +304,7 @@ export class ReportReadPurchaseOrderRepository
 
     const data = item.map((row) => ({
       status: row.status,
-      total: Number(row.total),
+      total: Number(row.total) + Number(row.total_vat),
     }));
 
     return data;

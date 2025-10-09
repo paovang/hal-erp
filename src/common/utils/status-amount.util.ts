@@ -47,6 +47,23 @@ export async function countStatusAmounts(
       });
     }
 
+    if (departmentId) {
+      query.andWhere('doc.department_id = :departmentId', {
+        departmentId,
+      });
+    }
+
+    if (status_id) {
+      query.andWhere('ua.status_id = :status_id', { status_id });
+    }
+
+    if (start_date && end_date) {
+      query.andWhere(`po.expired_date BETWEEN :dateStart AND :dateEnd`, {
+        dateStart: `${start_date} 00:00:00`,
+        dateEnd: `${end_date} 23:59:59`,
+      });
+    }
+
     // Group โดยเฉพาะฟิลด์ที่เลือก (status id และ name)
     query.groupBy('ua.status_id').addGroupBy('ds.name');
 
@@ -94,7 +111,7 @@ export async function countStatusAmounts(
     }
 
     if (departmentId) {
-      query.andWhere('documents.department_id = :departmentId', {
+      query.andWhere('doc.department_id = :departmentId', {
         departmentId,
       });
     }
