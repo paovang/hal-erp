@@ -17,6 +17,7 @@ import { ChangePasswordDto } from '../dto/create/user/change-password.dto';
 import { ChangePasswordCommand } from '../commands/user/change-password.command';
 import { SendMailDto } from '../dto/create/user/send-email.dto';
 import { SendMailCommand } from '../commands/user/send-mail.command';
+import { LoginCommand } from '../commands/user/login.command';
 
 @Injectable()
 export class UserService implements IUserServiceInterface {
@@ -26,6 +27,12 @@ export class UserService implements IUserServiceInterface {
     @InjectEntityManager(process.env.CONNECTION_NAME)
     private readonly _readEntityManager: EntityManager,
   ) {}
+
+  async login(dto: any, manager?: EntityManager): Promise<any> {
+    return await this._commandBus.execute(
+      new LoginCommand(dto, manager ?? this._readEntityManager),
+    );
+  }
 
   async getAll(
     dto: UserQueryDto,

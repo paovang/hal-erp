@@ -9,12 +9,14 @@ import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { PositionDataAccessMapper } from './position.mapper';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { UserTypeDataAccessMapper } from './user-type.mapper';
 
 @Injectable()
 export class DepartmentUserDataAccessMapper {
   constructor(
     private readonly departmentMapper: DepartmentDataAccessMapper,
     private readonly userMapper: UserDataAccessMapper,
+    private readonly userTypeMapper: UserTypeDataAccessMapper,
     private readonly positionMapper: PositionDataAccessMapper,
   ) {}
 
@@ -24,7 +26,6 @@ export class DepartmentUserDataAccessMapper {
   ): DepartmentUserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = departmentUserEntity.getId();
-
     const mediaOrmEntity = new DepartmentUserOrmEntity();
     if (id) {
       mediaOrmEntity.id = id.value;
@@ -33,8 +34,10 @@ export class DepartmentUserDataAccessMapper {
     mediaOrmEntity.department_id = departmentUserEntity.departmentId;
     mediaOrmEntity.position_id = departmentUserEntity.positionId;
     mediaOrmEntity.user_id = departmentUserEntity.userId;
-    mediaOrmEntity.signature_file =
-      departmentUserEntity.signature_file ?? undefined;
+    mediaOrmEntity.line_manager_id =
+      departmentUserEntity.line_manager_id ?? null;
+    // mediaOrmEntity.user_id =
+    //   departmentUserEntity.user_type?.map((type) => type.user_id) ?? 0;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at =
         departmentUserEntity.createdAt ?? new Date(now);
@@ -50,7 +53,7 @@ export class DepartmentUserDataAccessMapper {
       .setDepartmentId(ormData.department_id ?? 0)
       .setUserId(ormData.user_id ?? 0)
       .setPositionId(ormData.position_id ?? 0)
-      .setSignatureFile(ormData.signature_file ?? null)
+      .setLineManagerId(ormData.line_manager_id ?? 0)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 
@@ -64,6 +67,16 @@ export class DepartmentUserDataAccessMapper {
     }
     if (ormData.positions) {
       builder.setPosition(this.positionMapper.toEntity(ormData.positions));
+    }
+    if (ormData.line_manager) {
+      builder.setLineManager(this.userMapper.toEntity(ormData.line_manager));
+    }
+    if (ormData?.users?.user_types) {
+      builder.setUserType(
+        ormData?.users?.user_types.map((type) =>
+          this.userTypeMapper.toEntity(type),
+        ),
+      );
     }
 
     return builder.build();

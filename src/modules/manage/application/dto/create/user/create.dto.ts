@@ -1,7 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
+  IsOptional,
   IsString,
   Length,
   Matches,
@@ -12,6 +16,9 @@ export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  @Matches(/^\S+$/, {
+    message: i18nValidationMessage('validation.NO_SPACES_ALLOWED'),
+  })
   readonly username: string;
 
   @ApiProperty()
@@ -33,4 +40,30 @@ export class CreateUserDto {
     message: i18nValidationMessage('validation.PASSWORD_LENGTH'),
   })
   readonly password: string;
+
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  @IsNumber(
+    {},
+    { each: true, message: i18nValidationMessage('validation.IS_NUMBER') },
+  )
+  roleIds: number[];
+
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  @IsNumber(
+    {},
+    { each: true, message: i18nValidationMessage('validation.IS_NUMBER') },
+  )
+  permissionIds: number[];
+
+  @ApiProperty()
+  @IsOptional()
+  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  signature?: any;
 }

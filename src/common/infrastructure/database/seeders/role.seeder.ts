@@ -1,10 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { HelperSeeder } from "./helper.seeder";
-import { EntityManager } from "typeorm";
-import { SeederLogOrmEntity } from "../typeorm/seeder-log.orm";
-import { Timezone } from "@src/common/domain/value-objects/timezone.vo";
-import { DateFormat } from "@src/common/domain/value-objects/date-format.vo";
-import { RoleOrmEntity } from "../typeorm/role.orm";
+import { Inject, Injectable } from '@nestjs/common';
+import { HelperSeeder } from './helper.seeder';
+import { EntityManager } from 'typeorm';
+import { SeederLogOrmEntity } from '../typeorm/seeder-log.orm';
+import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { RoleOrmEntity } from '../typeorm/role.orm';
 import moment from 'moment-timezone';
 
 @Injectable()
@@ -40,6 +40,60 @@ export class RoleSeeder {
       },
       {
         name: 'user',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'budget-admin',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'budget-user',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'account-admin',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'account-user',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'finance-admin',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'finance-user',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'procurement-admin',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'procurement-user',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'director',
         guard_name: 'api',
         created_at: currentDateTime,
         updated_at: currentDateTime,

@@ -4,6 +4,7 @@ import { PermissionBuilder } from '../builders/permission.builder';
 export class PermissionEntity extends Entity<PermissionId> {
   private readonly _name: string;
   private readonly _displayName: string;
+  private readonly _type: string;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -13,6 +14,7 @@ export class PermissionEntity extends Entity<PermissionId> {
     this.setId(builder.permissionId);
     this._name = builder.name;
     this._displayName = builder.display_name;
+    this._type = builder.type;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -36,6 +38,10 @@ export class PermissionEntity extends Entity<PermissionId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get type(): string {
+    return this._type;
   }
 
   public static builder(): PermissionBuilder {

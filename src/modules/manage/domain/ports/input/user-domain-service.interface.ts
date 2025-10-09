@@ -9,6 +9,8 @@ import { ChangePasswordDto } from '@src/modules/manage/application/dto/create/us
 import { SendMailDto } from '@src/modules/manage/application/dto/create/user/send-email.dto';
 
 export interface IUserServiceInterface {
+  login(dto: any): Promise<any>;
+  
   getAll(
     dto: UserQueryDto,
     manager?: EntityManager,

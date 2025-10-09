@@ -7,6 +7,8 @@ import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { PositionOrmEntity } from '@src/common/infrastructure/database/typeorm/position.orm';
 import { PositionId } from '@src/modules/manage/domain/value-objects/position-id.vo';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
+import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -18,6 +20,12 @@ export class DeleteCommandHandler
   ) {}
 
   async execute(query: DeleteCommand): Promise<void> {
+    await this.checkData(query);
+
+    return await this._write.delete(new PositionId(query.id), query.manager);
+  }
+
+  private async checkData(query: DeleteCommand): Promise<void> {
     if (isNaN(query.id)) {
       throw new ManageDomainException(
         'errors.must_be_number',
@@ -25,11 +33,17 @@ export class DeleteCommandHandler
       );
     }
 
-    /** Check Exits Document Type Id */
     await findOneOrFail(query.manager, PositionOrmEntity, {
       id: query.id,
     });
 
-    return await this._write.delete(new PositionId(query.id), query.manager);
+    await checkRelationOrThrow(
+      query.manager,
+      DepartmentUserOrmEntity,
+      { position_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'department user',
+    );
   }
 }

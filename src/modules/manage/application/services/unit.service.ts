@@ -12,7 +12,7 @@ import { GetAllQuery } from '../queries/unit/get-all.query';
 import { GetOneQuery } from '../queries/unit/get-one.query';
 import { UpdateUnitDto } from '../dto/create/unit/update.dto';
 import { UpdateCommand } from '../commands/unit/update.command';
-import { DeleteCommand } from '../commands/unit/delete-command';
+import { DeleteCommand } from '../commands/unit/delete.command';
 
 @Injectable()
 export class UnitService implements IUnitServiceInterface {

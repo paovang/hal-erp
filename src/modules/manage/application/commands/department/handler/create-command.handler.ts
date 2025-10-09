@@ -38,9 +38,24 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        let isLineManager: boolean;
         const code = await this.generateUniqueDepartmentCode(query);
 
-        const mapToEntity = this._dataMapper.toEntity(query.dto, code);
+        if (
+          query.dto.department_head_id &&
+          query.dto.department_head_id > 0 &&
+          query.dto.department_head_id != null
+        ) {
+          isLineManager = false;
+        } else {
+          isLineManager = true;
+        }
+
+        const mapToEntity = this._dataMapper.toEntity(
+          query.dto,
+          isLineManager,
+          code,
+        );
 
         return await this._write.create(mapToEntity, manager);
       },

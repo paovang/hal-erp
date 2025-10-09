@@ -13,7 +13,6 @@ import {
 import { UserQueryDto } from '@src/modules/manage/application/dto/query/user-query.dto';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
-import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 
 @Injectable()
 export class ReadUserRepository implements IReadUserRepository {
@@ -27,8 +26,9 @@ export class ReadUserRepository implements IReadUserRepository {
   async findAll(
     query: UserQueryDto,
     manager: EntityManager,
+    userId?: number,
   ): Promise<ResponseResult<UserEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const queryBuilder = await this.createBaseQuery(manager, userId);
     query.sort_by = 'users.id';
 
     const data = await this._paginationService.paginate(
@@ -44,15 +44,31 @@ export class ReadUserRepository implements IReadUserRepository {
     id: UserId,
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>> {
-    const item = await findOneOrFail(manager, UserOrmEntity, {
-      id: id.value,
-    });
+    const item = await this.createBaseQuery(manager)
+      .where('users.id = :id', { id: id.value })
+      .getOneOrFail();
 
     return this._dataAccessMapper.toEntity(item);
   }
 
-  private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(UserOrmEntity, 'users');
+  private createBaseQuery(manager: EntityManager, userId?: number) {
+    const roleName = ['super-admin'];
+
+    const query = manager
+      .createQueryBuilder(UserOrmEntity, 'users')
+      .leftJoinAndSelect('users.userHasPermissions', 'user_has_permissions')
+      .leftJoinAndSelect('user_has_permissions.permission', 'permissions')
+      .leftJoinAndSelect('users.roles', 'roles')
+      .leftJoinAndSelect('roles.permissions', 'role_permissions')
+      .leftJoinAndSelect('users.user_signatures', 'user_signatures')
+      .leftJoinAndSelect('users.user_types', 'user_types')
+      .where('roles.name NOT IN (:...roleName)', { roleName });
+
+    if (userId) {
+      query.andWhere('users.id != :userId', { userId });
+    }
+
+    return query;
   }
 
   private getFilterOptions(): FilterOptions {

@@ -3,6 +3,7 @@ import { VendorBankAccountQueryDto } from '../../dto/query/vendor-bank-account-q
 
 export class GetAllQuery {
   constructor(
+    public readonly id: number,
     public readonly dto: VendorBankAccountQueryDto,
     public readonly manager: EntityManager,
   ) {}

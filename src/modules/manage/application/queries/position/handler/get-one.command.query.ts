@@ -24,6 +24,7 @@ export class GetOneQueryHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
 

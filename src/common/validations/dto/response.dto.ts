@@ -2,6 +2,7 @@ export class BaseApiResponse<T> {
   data: T;
   message?: string;
   status_code: number;
+  status?: [];
 }
 
 export class BaseApiPaginatedResponse<T> extends BaseApiResponse<T[]> {

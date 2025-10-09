@@ -7,6 +7,10 @@ import { ITransactionManagerService } from '@common/infrastructure/transaction/t
 import { PermissionSeeder } from '../permission.seeder';
 import { PermissionGroupSeeder } from '../permission-group.seeder';
 import { RoleSeeder } from '../role.seeder';
+import { ProvinceSeeder } from '../province.seeder';
+import { UserSeeder } from '../user.seeder';
+import { VatSeeder } from '../vat.seeder';
+import { BankSeeder } from '../bank.seeder';
 
 @Injectable()
 export class SeederService {
@@ -14,10 +18,14 @@ export class SeederService {
     @InjectDataSource() private readonly dataSource: DataSource,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly transactionManagerService: ITransactionManagerService,
-    @Inject() private _userSeeder: DepartmentSeeder,
+    @Inject() private _departmentSeeder: DepartmentSeeder,
     @Inject() private _permissionGroupSeeder: PermissionGroupSeeder,
     @Inject() private _permissionSeeder: PermissionSeeder,
     @Inject() private _roleSeederSeeder: RoleSeeder,
+    @Inject() private _provinceSeeder: ProvinceSeeder,
+    @Inject() private _userSeeder: UserSeeder,
+    @Inject() private _vatSeeder: VatSeeder,
+    @Inject() private _bankSeeder: BankSeeder,
   ) {}
 
   async seed() {
@@ -25,10 +33,14 @@ export class SeederService {
       await this.transactionManagerService.runInTransaction(
         this.dataSource,
         async (manager) => {
-          await this._userSeeder.seed(manager);
+          await this._departmentSeeder.seed(manager);
           await this._permissionGroupSeeder.seed(manager);
           await this._permissionSeeder.seed(manager);
           await this._roleSeederSeeder.seed(manager);
+          await this._provinceSeeder.seed(manager);
+          await this._userSeeder.seed(manager);
+          await this._vatSeeder.seed(manager);
+          await this._bankSeeder.seed(manager);
         },
       );
     } catch (error) {

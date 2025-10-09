@@ -24,6 +24,9 @@ export class GetAllQueryHandler
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
     const departmentUser =
       this._userContextService.getAuthUser()?.departmentUser;
+    if (!departmentUser) {
+      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+    }
 
     // const departmentId = (departmentUser as any).department_id;
     const departmentId = (departmentUser as any).departments.id;

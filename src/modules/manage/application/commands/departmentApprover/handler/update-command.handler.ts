@@ -42,7 +42,9 @@ export class UpdateCommandHandler
     const departmentUser =
       this._userContextService.getAuthUser()?.departmentUser;
     if (!departmentUser) {
-      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND, {
+        property: 'user',
+      });
     }
 
     // const departmentId = (departmentUser as any).department_id;
@@ -57,7 +59,9 @@ export class UpdateCommandHandler
     });
 
     if (dp.department_id !== departmentId) {
-      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
+      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND, {
+        property: 'department',
+      });
     }
 
     const entity = this._dataMapper.toEntity(query.dto, departmentId);

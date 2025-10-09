@@ -4,9 +4,12 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
+import { PurchaseRequestItemOrmEntity } from './purchase-request-item.orm';
 
 @Entity('units')
 export class UnitOrmEntity {
@@ -27,4 +30,10 @@ export class UnitOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  @OneToMany(
+    () => PurchaseRequestItemOrmEntity,
+    (purchase_request_items) => purchase_request_items.units,
+  )
+  purchase_request_items: Relation<PurchaseRequestItemOrmEntity[]>;
 }

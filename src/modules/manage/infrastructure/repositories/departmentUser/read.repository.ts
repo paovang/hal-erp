@@ -13,6 +13,7 @@ import {
 import { DepartmentUserQueryDto } from '@src/modules/manage/application/dto/query/department-user-query.dto';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';
+import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 
 @Injectable()
 export class ReadDepartmentUserRepository
@@ -29,9 +30,13 @@ export class ReadDepartmentUserRepository
   async findAll(
     query: DepartmentUserQueryDto,
     manager: EntityManager,
-    departmentId?: number,
+    departmentId?: number | null,
   ): Promise<ResponseResult<DepartmentUserEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager, departmentId);
+    const queryBuilder = await this.createBaseQuery(
+      manager,
+      departmentId,
+      query.type,
+    );
 
     query.sort_by = 'department_users.id';
 
@@ -44,17 +49,80 @@ export class ReadDepartmentUserRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager, departmentId?: number) {
+  private createBaseQuery(
+    manager: EntityManager,
+    departmentId?: number | null,
+    type?: string,
+  ) {
     const qb = manager
       .createQueryBuilder(DepartmentUserOrmEntity, 'department_users')
-      .leftJoinAndSelect('department_users.departments', 'departments')
-      .leftJoinAndSelect('department_users.users', 'users')
-      .leftJoinAndSelect('department_users.positions', 'positions');
+      .leftJoin('department_users.departments', 'departments')
+      .leftJoin('department_users.users', 'users')
+      .leftJoin('department_users.line_manager', 'line_manager')
+      .leftJoin('users.user_signatures', 'user_signatures')
+      .leftJoin('users.userHasPermissions', 'user_has_permissions')
+      .leftJoinAndSelect('users.user_types', 'user_types')
+      .leftJoin('user_has_permissions.permission', 'permissions')
+      .leftJoin('department_users.positions', 'positions')
+      .leftJoin('users.roles', 'roles')
+      .leftJoin('roles.permissions', 'role_permissions')
+      .addSelect([
+        'departments.id',
+        'departments.name',
+        'departments.code',
+        'users.id',
+        'users.username',
+        'users.email',
+        'users.tel',
+        'user_has_permissions.user_id',
+        'user_has_permissions.permission_id',
+        'permissions.id',
+        'permissions.name',
+        'positions.id',
+        'positions.name',
+        'roles.id',
+        'roles.name',
+        'role_permissions.id',
+        'role_permissions.name',
+        'user_signatures.id',
+        'user_signatures.signature_file',
+        'line_manager.id',
+        'line_manager.username',
+        'line_manager.email',
+        'line_manager.tel',
 
-    if (departmentId) {
-      qb.where('department_users.department_id = :departmentId', {
+        // 'user_types.name',
+        // 'user_types.user_id',
+      ]);
+
+    if (departmentId && departmentId != null) {
+      qb.andWhere('department_users.department_id = :departmentId', {
         departmentId,
       });
+    }
+
+    if (departmentId && type === 'approvers') {
+      qb.andWhere(
+        `NOT EXISTS (
+      SELECT 1
+      FROM department_approvers da
+      WHERE da.user_id = department_users.user_id
+        AND da.department_id = :departmentId
+        AND da.deleted_at IS NULL
+    )`,
+        { departmentId },
+      );
+    } else if (departmentId && type === 'approval_rules') {
+      qb.andWhere(
+        `NOT EXISTS (
+      SELECT 1
+      FROM budget_approval_rules bar
+      WHERE bar.approver_id = department_users.user_id
+        AND bar.department_id = :departmentId
+        AND bar.deleted_at IS NULL
+    )`,
+        { departmentId },
+      );
     }
 
     return qb;
@@ -62,7 +130,12 @@ export class ReadDepartmentUserRepository
 
   private getFilterOptions(): FilterOptions {
     return {
-      searchColumns: ['', ''],
+      searchColumns: [
+        'users.username',
+        'users.email',
+        'users.tel',
+        'departments.name',
+      ],
       dateColumn: '',
       filterByColumns: [],
     };
@@ -77,5 +150,17 @@ export class ReadDepartmentUserRepository
       .getOneOrFail();
 
     return this._dataAccessMapper.toEntity(item);
+  }
+  async findAllByDepartment(
+    department_id: DepartmentId,
+    manager: EntityManager,
+  ): Promise<DepartmentUserEntity[]> {
+    const items = await this.createBaseQuery(manager)
+      .where('department_users.department_id = :department_id', {
+        department_id: department_id.value,
+      })
+      .getMany();
+
+    return items.map((item) => this._dataAccessMapper.toEntity(item));
   }
 }

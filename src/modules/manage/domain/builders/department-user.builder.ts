@@ -1,6 +1,7 @@
 import { DepartmentUserEntity } from '../entities/department-user.entity';
 import { DepartmentEntity } from '../entities/department.entity';
 import { PositionEntity } from '../entities/position.entity';
+import { UserTypeEntity } from '../entities/user-type.entity';
 import { UserEntity } from '../entities/user.entity';
 import { DepartmentUserId } from '../value-objects/department-user-id.vo';
 
@@ -13,13 +14,15 @@ export class DepartmentUserBuilder {
   email: string;
   password: string;
   tel: string;
-  signature_file: string | null;
+  line_manager_id: number;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   department: DepartmentEntity;
   user: UserEntity;
+  user_type: UserTypeEntity[] | null;
   position: PositionEntity;
+  line_manager: UserEntity;
 
   setDepartmentUserId(value: DepartmentUserId): this {
     this.departmentUserId = value;
@@ -61,8 +64,8 @@ export class DepartmentUserBuilder {
     return this;
   }
 
-  setSignatureFile(signature_file: string | null): this {
-    this.signature_file = signature_file;
+  setUserType(user_type: UserTypeEntity[] | null): this {
+    this.user_type = user_type;
     return this;
   }
 
@@ -81,6 +84,11 @@ export class DepartmentUserBuilder {
     return this;
   }
 
+  setLineManagerId(line_manager_id: number): this {
+    this.line_manager_id = line_manager_id;
+    return this;
+  }
+
   setDepartment(department: DepartmentEntity): this {
     this.department = department;
     return this;
@@ -93,6 +101,11 @@ export class DepartmentUserBuilder {
 
   setUser(user: UserEntity): this {
     this.user = user;
+    return this;
+  }
+
+  setLineManager(line_manager: UserEntity): this {
+    this.line_manager = line_manager;
     return this;
   }
 

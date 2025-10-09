@@ -9,6 +9,7 @@ import { UpdateCommand } from '@src/modules/manage/application/commands/departme
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -21,7 +22,27 @@ export class UpdateCommandHandler
   ) {}
 
   async execute(query: UpdateCommand): Promise<any> {
-    const entity = this._dataMapper.toEntity(query.dto);
+    let isLineManager: boolean;
+    if (
+      query.dto.department_head_id &&
+      query.dto.department_head_id > 0 &&
+      query.dto.department_head_id != null
+    ) {
+      isLineManager = false;
+    } else {
+      isLineManager = true;
+    }
+
+    await findOneOrFail(
+      query.manager,
+      UserOrmEntity,
+      {
+        id: query.dto.department_head_id,
+      },
+      'department head',
+    );
+
+    const entity = this._dataMapper.toEntity(query.dto, isLineManager);
     await entity.initializeUpdateSetId(new DepartmentId(query.id));
     await entity.validateExistingIdForUpdate();
 

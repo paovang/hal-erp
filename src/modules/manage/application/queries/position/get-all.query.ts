@@ -1,5 +1,5 @@
-import { EntityManager } from "typeorm";
-import { PositionQueryDto } from "../../dto/query/position-query.dto";
+import { EntityManager } from 'typeorm';
+import { PositionQueryDto } from '../../dto/query/position-query.dto';
 
 export class GetAllQuery {
   constructor(

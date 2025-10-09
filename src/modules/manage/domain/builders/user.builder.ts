@@ -1,3 +1,7 @@
+import { PermissionEntity } from '../entities/permission.entity';
+import { RoleEntity } from '../entities/role.entity';
+import { UserSignatureEntity } from '../entities/user-signature.entity';
+import { UserTypeEntity } from '../entities/user-type.entity';
 import { UserEntity } from '../entities/user.entity';
 import { UserId } from '../value-objects/user-id.vo';
 
@@ -10,6 +14,12 @@ export class UserBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  roleIds: number[] | null = null;
+  permissionIds: number[] | null = null;
+  roles: RoleEntity[];
+  permissions: PermissionEntity[] | null;
+  userSignature: UserSignatureEntity | null = null;
+  userType: UserTypeEntity[] | null = null;
 
   setUserId(value: UserId): this {
     this.userId = value;
@@ -48,6 +58,35 @@ export class UserBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setUserSignature(userSignature: UserSignatureEntity | null): this {
+    this.userSignature = userSignature;
+    return this;
+  }
+
+  setRoleIds(roleIds: number[] | null): this {
+    this.roleIds = roleIds;
+    return this;
+  }
+
+  setPermissions(permissions: PermissionEntity[] | null): this {
+    this.permissions = permissions;
+    return this;
+  }
+
+  setPermissionIds(permissionIds: number[] | null): this {
+    this.permissionIds = permissionIds;
+    return this;
+  }
+
+  setRoles(roles: RoleEntity[]): this {
+    this.roles = roles;
+    return this;
+  }
+  setUserType(type: UserTypeEntity[] | null): this {
+    this.userType = type;
     return this;
   }
 

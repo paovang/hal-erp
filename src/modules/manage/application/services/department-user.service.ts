@@ -13,6 +13,7 @@ import { UpdateDepartmentUserDto } from '../dto/create/departmentUser/update.dto
 import { UpdateCommand } from '../commands/departmentUser/update.command';
 import { DeleteCommand } from '../commands/departmentUser/delete.command';
 import { GetOneQuery } from '../queries/departmentUser/get-one.query';
+import { GetAllByDepartmentQuery } from '../queries/departmentUser/get-all-by-department.query';
 
 @Injectable()
 export class DepartmentUserService implements IDepartmentUserServiceInterface {
@@ -47,6 +48,17 @@ export class DepartmentUserService implements IDepartmentUserServiceInterface {
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     return await this._queryBus.execute(
       new GetOneQuery(id, manager ?? this._readEntityManager),
+    );
+  }
+  async getAllByDepartment(
+    department_id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>> {
+    return await this._queryBus.execute(
+      new GetAllByDepartmentQuery(
+        department_id,
+        manager ?? this._readEntityManager,
+      ),
     );
   }
 

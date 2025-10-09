@@ -6,12 +6,15 @@ import {
   Index,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserOrmEntity } from './user.orm';
 import { PermissionOrmEntity } from './permission.orm';
+import { RoleGroupOrmEntity } from './role-group.orm';
+import { RolePermissionOrmEntity } from './role-permission.orm';
 
 @Entity('roles')
 export class RoleOrmEntity {
@@ -59,4 +62,20 @@ export class RoleOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  @OneToMany(() => RoleGroupOrmEntity, (roleGroup) => roleGroup.role, {
+    onDelete: 'CASCADE',
+    onUpdate: 'NO ACTION',
+  })
+  rolesGroups: Relation<RoleGroupOrmEntity[]>;
+
+  @OneToMany(
+    () => RolePermissionOrmEntity,
+    (roles_permissions) => roles_permissions.role,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'NO ACTION',
+    },
+  )
+  roles_permissions: Relation<RolePermissionOrmEntity[]>;
 }

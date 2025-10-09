@@ -9,10 +9,8 @@ import { ReadDepartmentRepository } from '@src/modules/manage/infrastructure/rep
 import {
   LOCALIZATION_SERVICE,
   TRANSACTION_MANAGER_SERVICE,
-  TRANSFORM_RESULT_SERVICE,
   USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
 } from '@src/common/constants/inject-key.const';
-import { TransformResultService } from '@src/common/utils/services/transform-result.service';
 import { WriteDepartmentRepository } from '@src/modules/manage/infrastructure/repositories/department/write.repository';
 import { DepartmentMapperProviders } from '@src/modules/manage/application/providers/department/mapper.provider';
 import { DepartmentHandlersProviders } from '@src/modules/manage/application/providers/department/command.provider';

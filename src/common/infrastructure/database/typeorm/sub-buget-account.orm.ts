@@ -17,15 +17,15 @@ export class SubBudgetAccountOrmEntity {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
-  @Index()
-  @Column({ nullable: true })
-  budget_account_id?: number;
-  @ManyToOne(
-    () => BudgetAccountOrmEntity,
-    (budget_accounts) => budget_accounts.sub_budget_accounts,
-  )
-  @JoinColumn({ name: 'budget_account_id' })
-  budget_accounts: Relation<BudgetAccountOrmEntity>;
+  // @Index()
+  // @Column({ nullable: true })
+  // budget_account_id?: number;
+  // @ManyToOne(
+  //   () => BudgetAccountOrmEntity,
+  //   (budget_accounts) => budget_accounts.sub_budget_accounts,
+  // )
+  // @JoinColumn({ name: 'budget_account_id' })
+  // budget_accounts: Relation<BudgetAccountOrmEntity>;
 
   @Index()
   @Column({ type: 'varchar', length: 255, unique: true })

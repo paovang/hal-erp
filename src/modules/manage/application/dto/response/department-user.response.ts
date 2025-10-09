@@ -14,6 +14,12 @@ export class DepartmentUserResponse {
   position_id: number;
 
   @ApiProperty()
+  user_id: number;
+
+  @ApiProperty()
+  line_manager_id: number;
+
+  @ApiProperty()
   signature_file: string | null;
 
   @ApiProperty()
@@ -33,4 +39,7 @@ export class DepartmentUserResponse {
 
   @ApiProperty()
   user: UserResponse | null;
+
+  @ApiProperty()
+  line_manager: UserResponse | null;
 }

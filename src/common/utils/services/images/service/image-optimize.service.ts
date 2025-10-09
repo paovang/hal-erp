@@ -4,6 +4,7 @@ import { Readable } from 'stream';
 import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
 import { ImageOptions } from '@src/common/utils/services/images/interface/image-option.interface';
 import { DomainException } from '@src/common/domain/exceptions/domain.exception';
+import { SUPPORTED_IMAGE_MIME_TYPES } from '@src/common/constants/inject-key.const';
 
 /**
  * ImageService class provides methods to optimize images.
@@ -22,6 +23,10 @@ export class ImageOptimizeService implements IImageOptimizeService {
     file: Express.Multer.File,
     options: ImageOptions = {},
   ): Promise<Express.Multer.File> {
+    if (!SUPPORTED_IMAGE_MIME_TYPES.includes(file.mimetype)) {
+      // Return original file without image processing
+      return file;
+    }
     // Promise<Buffer>
     const DEFAULT_SCALE = 1;
     const DEFAULT_QUALITY = 80;

@@ -15,7 +15,6 @@ export class DeleteCommandHandler
   constructor(
     @Inject(WRITE_DEPARTMENT_APPROVER_REPOSITORY)
     private readonly _write: IWriteDepartmentApproverRepository,
-    // private readonly _dataMapper: DepartmentApproverDataMapper,
   ) {}
 
   async execute(query: DeleteCommand): Promise<void> {
@@ -23,6 +22,7 @@ export class DeleteCommandHandler
       throw new ManageDomainException(
         'errors.must_be_number',
         HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
       );
     }
     /** Check Exits CategoryId Id */

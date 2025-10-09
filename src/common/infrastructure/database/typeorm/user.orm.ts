@@ -14,6 +14,17 @@ import { DepartmentUserOrmEntity } from './department-user.orm';
 import { DepartmentApproverOrmEntity } from './department-approver.orm';
 import { RoleOrmEntity } from './role.orm';
 import { BudgetApprovalRuleOrmEntity } from './budget-approval-rule.orm';
+import { UserHasPermissionOrmEntity } from './model-has-permission.orm';
+import { DocumentOrmEntity } from './document.orm';
+import { UserSignatureOrmEntity } from './user-signature.orm';
+import { UserApprovalStepOrmEntity } from './user-approval-step.orm';
+import { DepartmentOrmEntity } from './department.orm';
+import { DocumentApproverOrmEntity } from './document-approver.orm';
+import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
+import { ReceiptOrmEntity } from './receipt.orm';
+import { DocumentAttachmentOrmEntity } from './document-attachment.orm';
+import { IncreaseBudgetOrmEntity } from './increase-budget.orm';
+import { UserTypeOrmEntity } from './user-type.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -43,11 +54,11 @@ export class UserOrmEntity {
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
 
-  // @OneToMany(
-  // () => UserApprovalStepEntity,
-  //     (user_approval_steps) => user_approval_steps.users,
-  // )
-  // user_approval_steps: Relation<UserApprovalStepEntity[]>;
+  @OneToMany(
+    () => UserApprovalStepOrmEntity,
+    (user_approval_steps) => user_approval_steps.approver,
+  )
+  user_approval_steps: Relation<UserApprovalStepOrmEntity[]>;
 
   @OneToMany(
     () => BudgetApprovalRuleOrmEntity,
@@ -67,17 +78,23 @@ export class UserOrmEntity {
   )
   department_users: Relation<DepartmentUserOrmEntity[]>;
 
+  @OneToMany(
+    () => DepartmentUserOrmEntity,
+    (line_manager) => line_manager.users,
+  )
+  line_manager: Relation<DepartmentUserOrmEntity[]>;
+
   // @OneToMany(
   // () => DocumentAttachmentEntity,
   //     (document_attachments) => document_attachments.users,
   // )
   // document_attachments: Relation<DocumentAttachmentEntity[]>;
 
-  // @OneToMany(
-  // () => DocumentEntity,
-  //     (documents) => documents.users,
-  // )
-  // documents: Relation<DocumentEntity[]>;
+  @OneToMany(() => DocumentOrmEntity, (documents) => documents.users)
+  documents: Relation<DocumentOrmEntity[]>;
+
+  @OneToMany(() => UserTypeOrmEntity, (type) => type.user)
+  user_types: Relation<UserTypeOrmEntity[]>;
 
   @ManyToMany(() => RoleOrmEntity, (role) => role.users, {
     onDelete: 'CASCADE',
@@ -95,4 +112,46 @@ export class UserOrmEntity {
     },
   })
   roles: Relation<RoleOrmEntity[]>;
+
+  @OneToMany(
+    () => UserHasPermissionOrmEntity,
+    (userHasPermission) => userHasPermission.user,
+  )
+  userHasPermissions: Relation<UserHasPermissionOrmEntity[]>;
+
+  @OneToMany(
+    () => UserSignatureOrmEntity,
+    (user_signatures) => user_signatures.users,
+  )
+  user_signatures: Relation<UserSignatureOrmEntity[]>;
+
+  @OneToMany(() => DepartmentOrmEntity, (departments) => departments.users)
+  departments: Relation<DepartmentOrmEntity[]>;
+
+  @OneToMany(
+    () => DocumentApproverOrmEntity,
+    (document_approvers) => document_approvers.users,
+  )
+  document_approvers: Relation<DocumentApproverOrmEntity[]>;
+
+  @OneToMany(
+    () => ApprovalWorkflowStepOrmEntity,
+    (approval_workflow_steps) => approval_workflow_steps.users,
+  )
+  approval_workflow_steps: Relation<ApprovalWorkflowStepOrmEntity[]>;
+
+  @OneToMany(() => ReceiptOrmEntity, (receipts) => receipts.users)
+  receipts: Relation<ReceiptOrmEntity[]>;
+
+  @OneToMany(
+    () => DocumentAttachmentOrmEntity,
+    (document_attachments) => document_attachments.users,
+  )
+  document_attachments: Relation<DocumentAttachmentOrmEntity[]>;
+
+  @OneToMany(
+    () => IncreaseBudgetOrmEntity,
+    (increase_budgets) => increase_budgets.users,
+  )
+  increase_budgets: Relation<IncreaseBudgetOrmEntity[]>;
 }

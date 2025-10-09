@@ -10,7 +10,17 @@ export interface IWriteDepartmentApproverRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentApproverEntity>>;
 
+  createByUser(
+    entity: DepartmentApproverEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentApproverEntity>>;
+
   update(
+    entity: DepartmentApproverEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentApproverEntity>>;
+
+  updateByUser(
     entity: DepartmentApproverEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentApproverEntity>>;

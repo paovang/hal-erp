@@ -1,11 +1,11 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { HelperSeeder } from "./helper.seeder";
-import { EntityManager } from "typeorm";
-import { SeederLogOrmEntity } from "../typeorm/seeder-log.orm";
+import { Inject, Injectable } from '@nestjs/common';
+import { HelperSeeder } from './helper.seeder';
+import { EntityManager } from 'typeorm';
+import { SeederLogOrmEntity } from '../typeorm/seeder-log.orm';
 import moment from 'moment-timezone';
-import { PermissionGroupOrmEntity } from "../typeorm/permission-group.orm";
-import { Timezone } from "@src/common/domain/value-objects/timezone.vo";
-import { DateFormat } from "@src/common/domain/value-objects/date-format.vo";
+import { PermissionGroupOrmEntity } from '../typeorm/permission-group.orm';
+import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 
 @Injectable()
 export class PermissionGroupSeeder {
@@ -92,6 +92,139 @@ export class PermissionGroupSeeder {
       {
         name: 'currency',
         display_name: 'Currency',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'document-type',
+        display_name: 'Document Type',
+        type: 'admin',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'vendor',
+        display_name: 'Vendor',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'vendor-bank-account',
+        display_name: 'Vendor Bank Account',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'budget-account',
+        display_name: 'Budget Account',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'budget-item',
+        display_name: 'Budget Item',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'budget-item-detail',
+        display_name: 'Budget Item Detail',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'budget-approval-rule',
+        display_name: 'Budget Approval Rule',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'approval-workflow',
+        display_name: 'Approval Workflow',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'approval-workflow-step',
+        display_name: 'Approval Workflow Step',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'document',
+        display_name: 'Document',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'purchase-request',
+        display_name: 'Purchase Request',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'purchase-request-item',
+        display_name: 'Purchase Request Item',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'purchase-order',
+        display_name: 'Purchase Order',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'purchase-order-item',
+        display_name: 'Purchase Order Item',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'purchase-order-selected-vendor',
+        display_name: 'Purchase Order Selected Vendor',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'user-approval',
+        display_name: 'User Approval',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'user-approval-step',
+        display_name: 'User Approval Step',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'receipt',
+        display_name: 'Receipt',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'receipt-item',
+        display_name: 'Receipt Item',
         type: 'all',
         created_at: currentDateTime,
         updated_at: currentDateTime,

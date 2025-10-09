@@ -1,9 +1,7 @@
 import {
   LOCALIZATION_SERVICE,
   TRANSACTION_MANAGER_SERVICE,
-  TRANSFORM_RESULT_SERVICE,
 } from '@src/common/constants/inject-key.const';
-import { TransformResultService } from '@src/common/utils/services/transform-result.service';
 import {
   DEPARTMENT_USER_APPLICATION_SERVICE,
   READ_DEPARTMENT_USER_REPOSITORY,

@@ -5,8 +5,20 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { UserId } from '../../domain/value-objects/user-id.vo';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { Injectable } from '@nestjs/common';
+import { RoleDataAccessMapper } from './role.mapper';
+import { PermissionDataAccessMapper } from './permission.mapper';
+import { UserSignatureDataAccessMapper } from './user-signature.mapper';
+import { UserTypeDataAccessMapper } from './user-type.mapper';
 
+@Injectable()
 export class UserDataAccessMapper {
+  constructor(
+    private readonly roleMapper: RoleDataAccessMapper,
+    private readonly permissionMapper: PermissionDataAccessMapper,
+    private readonly userTypeMapper: UserTypeDataAccessMapper,
+    private readonly userSignature: UserSignatureDataAccessMapper,
+  ) {}
   toOrmEntity(userEntity: UserEntity, method: OrmEntityMethod): UserOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = userEntity.getId();
@@ -30,7 +42,7 @@ export class UserDataAccessMapper {
   }
 
   toEntity(ormData: UserOrmEntity): UserEntity {
-    return UserEntity.builder()
+    const builder = UserEntity.builder()
       .setUserId(new UserId(ormData.id))
       .setUsername(ormData.username ?? '')
       .setEmail(ormData.email ?? '') // corrected
@@ -38,7 +50,32 @@ export class UserDataAccessMapper {
       .setPassword(ormData.password ?? '')
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
-      .setDeletedAt(ormData.deleted_at) // this was missing too
-      .build();
+      .setDeletedAt(ormData.deleted_at);
+
+    if (ormData.user_signatures && ormData.user_signatures.length > 0) {
+      builder.setUserSignature(
+        this.userSignature.toEntity(ormData.user_signatures[0]),
+      );
+    }
+
+    if (ormData.roles) {
+      builder.setRoles(this.roleMapper.toEntities(ormData.roles));
+    }
+
+    if (ormData.userHasPermissions) {
+      const permissions = ormData.userHasPermissions
+        .map((uhp) => uhp.permission)
+        .filter((p) => p != null);
+
+      builder.setPermissions(this.permissionMapper.toEntities(permissions));
+    }
+    if (ormData?.user_types) {
+      // console.log('type:', ormData.user_types);
+      builder.setUserType(
+        ormData?.user_types.map((type) => this.userTypeMapper.toEntity(type)),
+      );
+    }
+
+    return builder.build();
   }
 }

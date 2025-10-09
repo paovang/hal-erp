@@ -10,6 +10,19 @@ import { PermissionGroupId } from '../../domain/value-objects/permission-group-i
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 export class PermissionDataAccessMapper {
+  toEntities(ormPermissions: PermissionOrmEntity[]): PermissionEntity[] {
+    return ormPermissions.map((ormData) =>
+      PermissionEntity.builder()
+        .setId(new PermissionId(ormData.id))
+        .setName(ormData.name)
+        .setDisplayName(ormData.display_name)
+        .setCreatedAt(ormData.created_at)
+        .setUpdatedAt(ormData.updated_at)
+        .setDeletedAt(ormData.deleted_at)
+        .build(),
+    );
+  }
+
   toOrmEntity(
     roleEntity: PermissionEntity,
     method: OrmEntityMethod,
@@ -22,6 +35,7 @@ export class PermissionDataAccessMapper {
       mediaOrmEntity.id = id.value;
     }
     mediaOrmEntity.name = roleEntity.name;
+    mediaOrmEntity.display_name = roleEntity.displayName;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = roleEntity.createdAt ?? new Date(now);
     }
@@ -35,6 +49,7 @@ export class PermissionDataAccessMapper {
       PermissionEntity.builder()
         .setId(new PermissionId(p.id))
         .setName(p.name)
+        .setDisplayName(p.display_name)
         .setCreatedAt(p.created_at)
         .setUpdatedAt(p.updated_at)
         .setDeletedAt(p.deleted_at)

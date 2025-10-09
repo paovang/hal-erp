@@ -27,10 +27,11 @@ export class ReadVendorBankAccountRepository
   ) {}
 
   async findAll(
+    id: number,
     query: VendorBankAccountQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<VendorBankAccountEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const queryBuilder = await this.createBaseQuery(manager, id);
     query.sort_by = 'vendor_bank_accounts.id';
 
     const data = await this._paginationService.paginate(
@@ -42,23 +43,28 @@ export class ReadVendorBankAccountRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager) {
+  private createBaseQuery(manager: EntityManager, id?: number) {
     return manager
       .createQueryBuilder(VendorBankAccountOrmEntity, 'vendor_bank_accounts')
       .leftJoinAndSelect('vendor_bank_accounts.vendors', 'vendors')
-      .leftJoinAndSelect('vendor_bank_accounts.currencies', 'currencies');
+      .leftJoinAndSelect('vendor_bank_accounts.currencies', 'currencies')
+      .leftJoinAndSelect('vendor_bank_accounts.banks', 'banks')
+      .where('vendors.id = :id', { id });
   }
 
   private getFilterOptions(): FilterOptions {
     return {
       searchColumns: [
-        'vendor_bank_accounts.bank_name',
         'vendor_bank_accounts.account_name',
         'vendor_bank_accounts.account_number',
         'vendors.name',
         'vendors.contact_info',
+
         'currencies.name',
         'currencies.code',
+
+        'banks.name',
+        'banks.short_name',
       ],
       dateColumn: '',
       filterByColumns: [],

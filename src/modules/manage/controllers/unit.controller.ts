@@ -19,7 +19,6 @@ import { UnitResponse } from '../application/dto/response/unit.response';
 import { CreateUnitDto } from '../application/dto/create/unit/create.dto';
 import { UnitQueryDto } from '../application/dto/query/unit-query.dto';
 import { UpdateUnitDto } from '../application/dto/create/unit/update.dto';
-import { Public } from '@core-system/auth';
 
 @Controller('units')
 export class UnitController {
@@ -31,7 +30,6 @@ export class UnitController {
     private readonly _dataMapper: UnitDataMapper,
   ) {}
 
-  @Public()
   @Post('')
   async create(
     @Body() dto: CreateUnitDto,
@@ -44,7 +42,6 @@ export class UnitController {
     );
   }
 
-  @Public()
   @Get('')
   async getAll(
     @Query() dto: UnitQueryDto,
@@ -57,7 +54,6 @@ export class UnitController {
     );
   }
 
-  @Public()
   @Get(':id')
   async getOne(@Param('id') id: number): Promise<ResponseResult<UnitResponse>> {
     const result = await this._unitService.getOne(id);
@@ -68,7 +64,6 @@ export class UnitController {
     );
   }
 
-  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -82,7 +77,6 @@ export class UnitController {
     );
   }
 
-  @Public()
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._unitService.delete(id);

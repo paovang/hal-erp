@@ -9,12 +9,14 @@ import { VendorDataMapper } from './vendor.mapper';
 import { CurrencyDataMapper } from './currency.mapper';
 import { UpdateVendorBankAccountDto } from '../dto/create/vendorBankAccount/update.dto';
 import { UseBankAccountDto } from '../dto/create/vendorBankAccount/use-bank-account.dto';
+import { BankDataMapper } from './bank.mapper';
 
 @Injectable()
 export class VendorBankAccountDataMapper {
   constructor(
     private readonly vendorMapper: VendorDataMapper,
     private readonly currencyMapper: CurrencyDataMapper,
+    private readonly bankMapper: BankDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
@@ -34,8 +36,8 @@ export class VendorBankAccountDataMapper {
       builder.setAccountName(dto.account_name);
     }
 
-    if (dto.bank_name) {
-      builder.setBankName(dto.bank_name);
+    if (dto.bank_id) {
+      builder.setBankId(dto.bank_id);
     }
 
     if (dto.account_number) {
@@ -61,7 +63,7 @@ export class VendorBankAccountDataMapper {
     response.vendor_id = Number(entity.vendorID ?? null);
     response.currency_id = entity.currencyID ?? null;
     response.account_name = entity.accountName;
-    response.bank_name = entity.bankName;
+    response.bank_id = entity.bankId;
     response.account_number = entity.accountNumber;
     response.is_selected = entity.isSelected;
     response.created_at = moment
@@ -77,6 +79,9 @@ export class VendorBankAccountDataMapper {
 
     response.currency = entity.currency
       ? this.currencyMapper.toResponse(entity.currency)
+      : null;
+    response.bank = entity.bank
+      ? this.bankMapper.toResponse(entity.bank)
       : null;
 
     return response;

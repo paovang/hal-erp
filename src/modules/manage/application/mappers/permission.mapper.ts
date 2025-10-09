@@ -4,19 +4,18 @@ import {
   PermissionResponse,
 } from '../dto/response/permission.response';
 import { PermissionGroupEntity } from '../../domain/entities/permission-group.entity';
+import { PermissionEntity } from '../../domain/entities/permission.entity';
 
 @Injectable()
 export class PermissionDataMapper {
-  /** Mapper Dto To Entity */
-  //   toEntity(dto: CreateDepartmentDto | UpdateDepartmentDto): DepartmentEntity {
-  //     const builder = DepartmentEntity.builder();
-
-  //     if (dto.name) {
-  //       builder.setName(dto.name);
-  //     }
-
-  //     return builder.build();
-  //   }
+  toResponsePermissionEntity(entity: PermissionEntity): PermissionResponse {
+    const response = new PermissionResponse();
+    response.id = entity.getId().value;
+    response.name = entity.name;
+    response.display_name = entity.displayName;
+    response.type = entity.type;
+    return response;
+  }
 
   /** Mapper Entity To Response */
   toResponse(entity: PermissionGroupEntity): PermissionGroupResponse {

@@ -13,6 +13,7 @@ export interface IVendorBankAccountServiceInterface {
   ): Promise<ResponseResult<VendorBankAccountEntity>>;
 
   getAll(
+    id: number,
     dto: VendorBankAccountQueryDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<VendorBankAccountEntity>>;

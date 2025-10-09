@@ -8,11 +8,15 @@ export interface IWriteUserRepository {
   create(
     entity: UserEntity,
     manager: EntityManager,
+    roleIds?: number[],
+    permissionIds?: number[],
   ): Promise<ResponseResult<UserEntity>>;
 
   update(
     entity: UserEntity,
     manager: EntityManager,
+    roleIds?: number[],
+    permissionIds?: number[],
   ): Promise<ResponseResult<UserEntity>>;
 
   changePassword(
@@ -37,6 +41,7 @@ export interface IReadUserRepository {
   findAll(
     query: UserQueryDto,
     manager: EntityManager,
+    userId?: number,
   ): Promise<ResponseResult<UserEntity>>;
 
   findOne(

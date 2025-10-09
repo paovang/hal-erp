@@ -7,6 +7,8 @@ import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 import { DocumentTypeId } from '@src/modules/manage/domain/value-objects/document-type-id.vo';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
+import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -18,6 +20,15 @@ export class DeleteCommandHandler
   ) {}
 
   async execute(query: DeleteCommand): Promise<void> {
+    await this.checkData(query);
+
+    return await this._write.delete(
+      new DocumentTypeId(query.id),
+      query.manager,
+    );
+  }
+
+  private async checkData(query: DeleteCommand): Promise<void> {
     if (isNaN(query.id)) {
       throw new ManageDomainException(
         'errors.must_be_number',
@@ -30,9 +41,13 @@ export class DeleteCommandHandler
       id: query.id,
     });
 
-    return await this._write.delete(
-      new DocumentTypeId(query.id),
+    await checkRelationOrThrow(
       query.manager,
+      ApprovalWorkflowOrmEntity,
+      { document_type_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'approval workflow',
     );
   }
 }

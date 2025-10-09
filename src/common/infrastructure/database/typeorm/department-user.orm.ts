@@ -32,20 +32,44 @@ export class DepartmentUserOrmEntity {
   @Index()
   @Column({ nullable: true })
   position_id?: number;
-  @ManyToOne(() => PositionOrmEntity, (positions) => positions.department_users)
+  @ManyToOne(
+    () => PositionOrmEntity,
+    (positions) => positions.department_users,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
   @JoinColumn({ name: 'position_id' })
   positions: Relation<PositionOrmEntity>;
 
   @Index()
   @Column({ nullable: true })
   user_id?: number;
-  @ManyToOne(() => UserOrmEntity, (users) => users.department_users)
+  @ManyToOne(() => UserOrmEntity, (users) => users.department_users, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   users: Relation<UserOrmEntity>;
 
+  // @Index()
+  // @Column({ type: 'varchar', length: 255, nullable: true })
+  // signature_file?: string;
+
   @Index()
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  signature_file?: string;
+  @Column({ nullable: true })
+  line_manager_id?: number;
+  @ManyToOne(
+    () => UserOrmEntity,
+    (line_manager) => line_manager.department_users,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'line_manager_id' })
+  line_manager: Relation<UserOrmEntity>;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

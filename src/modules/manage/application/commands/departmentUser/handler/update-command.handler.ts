@@ -2,17 +2,23 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { UpdateCommand } from '../update.command';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
-import { BadRequestException, HttpStatus, Inject } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import {
+  USER_SIGNATURE_IMAGE_FOLDER,
+  USER_TYPE_APPLICATION_SERVICE,
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
+  WRITE_USER_SIGNATURE_REPOSITORY,
 } from '../../../constants/inject-key.const';
 import { IWriteDepartmentUserRepository } from '@src/modules/manage/domain/ports/output/department-user-repository.interface';
 import { DepartmentUserDataMapper } from '../../../mappers/department-user.mapper';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';
-import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
+import {
+  TRANSACTION_MANAGER_SERVICE,
+  USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
+} from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -22,10 +28,23 @@ import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.
 import { UserDataMapper } from '../../../mappers/user.mapper';
 import { IWriteUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
-import path from 'path';
-import * as fs from 'fs';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { UserContextService } from '@common/infrastructure/cls/cls.service';
+import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
+import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
+import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.orm';
+import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/permission.orm';
+import { UserSignatureDataMapper } from '../../../mappers/user-signature.mapper';
+import { IWriteUserSignatureRepository } from '@src/modules/manage/domain/ports/output/user-signature-repository.interface';
+import { UserSignatureId } from '@src/modules/manage/domain/value-objects/user-signature-id.vo';
+import { UserSignatureOrmEntity } from '@src/common/infrastructure/database/typeorm/user-signature.orm';
+import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
+import { UserTypeEnum } from '@src/common/constants/user-type.enum';
+import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
+import { UserTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/user-type.orm';
+import { UserTypeId } from '@src/modules/manage/domain/value-objects/user-type-id.vo';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -35,137 +54,63 @@ export class UpdateCommandHandler
     @Inject(WRITE_DEPARTMENT_USER_REPOSITORY)
     private readonly _write: IWriteDepartmentUserRepository,
     private readonly _dataMapper: DepartmentUserDataMapper,
+    private readonly _userTypeDataMapper: UserTypeDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
+    private readonly _dataUserSignatureMapper: UserSignatureDataMapper,
+    @Inject(WRITE_USER_SIGNATURE_REPOSITORY)
+    private readonly _writeUserSignature: IWriteUserSignatureRepository,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
     private readonly _dataUserMapper: UserDataMapper,
     @Inject(WRITE_USER_REPOSITORY)
     private readonly _writeUser: IWriteUserRepository,
     private readonly _userContextService: UserContextService,
+    @Inject(USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY)
+    private readonly _optimizeService: IImageOptimizeService,
+    @Inject(AMAZON_S3_SERVICE_KEY)
+    private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
+    @Inject(USER_TYPE_APPLICATION_SERVICE)
+    private readonly _userTypeRepo: IWriteUserTypeRepository,
   ) {}
 
-  private deleteFileIfExists(filename: string, file_path: string): void {
-    if (!filename) return;
-
-    const filePath = path.join(__dirname, file_path, filename);
-
-    if (fs.existsSync(filePath)) {
-      fs.unlink(filePath, (err) => {
-        if (!err) {
-          console.log('File deleted:', filePath);
-        }
-      });
-    }
-  }
-
-  private moveFileIfExists(filename: string, from: string, to: string): void {
-    if (!filename) return;
-
-    const fromPath = path.join(__dirname, from, filename);
-    const toPath = path.join(__dirname, to, filename);
-
-    // Ensure the destination folder exists
-    const destinationDir = path.dirname(toPath);
-    if (!fs.existsSync(destinationDir)) {
-      fs.mkdirSync(destinationDir, { recursive: true });
-    }
-
-    if (fs.existsSync(fromPath)) {
-      fs.rename(fromPath, toPath, (err) => {
-        if (!err) {
-          console.log('File moved:', filename);
-        }
-      });
-    } else {
-      throw new BadRequestException('File not found');
-    }
-  }
-
   async execute(query: UpdateCommand): Promise<any> {
-    const departmentUser =
-      this._userContextService.getAuthUser()?.departmentUser;
-    if (!departmentUser) {
-      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
-    }
+    let s3ImageResponse = null;
+    await this.checkData(query);
+    if (query.dto.signatureFile) {
+      const optimizedImageProfile = await this._optimizeService.optimizeImage(
+        query.dto.signatureFile,
+      );
 
-    // const departmentId = (departmentUser as any).department_id;
-    const departmentId = (departmentUser as any).departments.id;
+      s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+        optimizedImageProfile,
+        USER_SIGNATURE_IMAGE_FOLDER,
+      );
+    }
 
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        if (isNaN(query.id)) {
-          throw new ManageDomainException(
-            'errors.must_be_number',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-
-        const department_user = await findOneOrFail(
-          query.manager,
-          DepartmentUserOrmEntity,
-          {
-            department_id: departmentId,
-          },
-        );
-
-        if (department_user.user_id !== query.id) {
-          throw new ManageDomainException(
-            'errors.not_found',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-
-        await findOneOrFail(query.manager, UserOrmEntity, {
-          id: query.id,
-        });
-
-        await findOneOrFail(query.manager, PositionOrmEntity, {
-          id: query.dto.positionId,
-        });
-
-        await _checkColumnDuplicate(
-          UserOrmEntity,
-          'email',
-          query.dto.email,
-          query.manager,
-          'errors.email_already_exists',
-          query.id,
-        );
-
-        await _checkColumnDuplicate(
-          UserOrmEntity,
-          'tel',
-          query.dto.tel,
-          query.manager,
-          'errors.tel_already_exists',
-          query.id,
-        );
         const userEntity = this._dataUserMapper.toEntityForUpdate(query.dto);
 
         await userEntity.initializeUpdateSetId(new UserId(query.id));
         await userEntity.validateExistingIdForUpdate();
 
-        const data = await this._writeUser.update(userEntity, query.manager);
+        const data = await this._writeUser.update(
+          userEntity,
+          query.manager,
+          query.dto.roleIds,
+          query.dto.permissionIds,
+        );
 
         const updatedUserId = (data as any)._id._value;
 
-        // Validate department user exists by user_id
         const existingDeptUser = await findOneOrFail(
           manager,
           DepartmentUserOrmEntity,
           { user_id: updatedUserId },
         );
 
-        const file = (existingDeptUser as any).signature_file;
-
-        if (query.dto.signature_file && query.dto.signature_file !== '') {
-          // Delete old signature file
-          this.deleteFileIfExists(file, '../../../../../../../assets/files/');
-        }
-
-        // Map to DepartmentUserEntity and set ID
         const departmentUserEntity = this._dataMapper.toEntity(
           query.dto,
           false,
@@ -176,29 +121,155 @@ export class UpdateCommandHandler
           new DepartmentUserId(existingDeptUser.id),
         );
         await departmentUserEntity.validateExistingIdForUpdate();
-        // Confirm DepartmentUser exists by id before update
         await findOneOrFail(manager, DepartmentUserOrmEntity, {
           id: departmentUserEntity.getId().value,
         });
 
-        // Perform update
         const result = await this._write.update(departmentUserEntity, manager);
 
-        if (query.dto.signature_file && query.dto.signature_file !== '') {
-          this.moveFileIfExists(
-            query.dto.signature_file,
-            '../../../../../../../assets/uploads/',
-            '../../../../../../../assets/files/',
+        const UserSignature = await findOneOrFail(
+          manager,
+          UserSignatureOrmEntity,
+          { user_id: updatedUserId },
+        );
+
+        const mergeData = {
+          ...query.dto,
+          signature: s3ImageResponse?.fileKey ?? null,
+        };
+
+        if (query.dto.signatureFile) {
+          const userSignatureEntity = this._dataUserSignatureMapper.toEntity(
+            mergeData,
+            query.id,
+          );
+          await userSignatureEntity.initializeUpdateSetId(
+            new UserSignatureId(UserSignature.id),
+          );
+          await userSignatureEntity.validateExistingIdForUpdate();
+          await findOneOrFail(manager, UserSignatureOrmEntity, {
+            id: userSignatureEntity.getId().value,
+          });
+
+          await this._writeUserSignature.update(userSignatureEntity, manager);
+        }
+        // const user_id = (result as any)._userID;
+        // const mergeUserType = query.dto.user_type.map((userType) => ({
+        //   name: userType,
+        // }));
+        const usertTypeEntities = [];
+
+        const find_user_type = await manager.find(UserTypeOrmEntity, {
+          where: {
+            user_id: query.id,
+          },
+        });
+
+        for (const userType of find_user_type) {
+          await this._userTypeRepo.delete(new UserTypeId(userType.id), manager);
+        }
+
+        for (const userTypeDto of query.dto.user_type) {
+          const entity = this._userTypeDataMapper.toEntity(
+            {
+              name: userTypeDto as UserTypeEnum,
+            },
+            query.id,
           );
 
-          this.deleteFileIfExists(
-            query.dto.signature_file,
-            '../../../../../../../assets/uploads/',
-          );
+          usertTypeEntities.push(entity);
         }
+        await this._userTypeRepo.create(usertTypeEntities, manager);
 
         return result;
       },
     );
+  }
+
+  private async checkData(query: UpdateCommand): Promise<void> {
+    if (isNaN(query.id)) {
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
+      );
+    }
+
+    await findOneOrFail(
+      query.manager,
+      UserOrmEntity,
+      {
+        id: query.id,
+      },
+      `${query.id}`,
+    );
+
+    await findOneOrFail(
+      query.manager,
+      DepartmentOrmEntity,
+      {
+        id: query.dto.departmentId,
+      },
+      `${query.dto.departmentId}`,
+    );
+
+    await findOneOrFail(
+      query.manager,
+      PositionOrmEntity,
+      {
+        id: query.dto.positionId,
+      },
+      `${query.dto.positionId}`,
+    );
+
+    if (query.dto.line_manager_id) {
+      await findOneOrFail(
+        query.manager,
+        UserOrmEntity,
+        {
+          id: Number(query.dto.line_manager_id),
+        },
+        `${query.dto.line_manager_id}`,
+      );
+    }
+
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'username',
+      query.dto.username,
+      query.manager,
+      'errors.username_already_exists',
+      query.id,
+    );
+
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'email',
+      query.dto.email,
+      query.manager,
+      'errors.email_already_exists',
+      query.id,
+    );
+
+    await _checkColumnDuplicate(
+      UserOrmEntity,
+      'tel',
+      query.dto.tel,
+      query.manager,
+      'errors.tel_already_exists',
+      query.id,
+    );
+
+    for (const roleId of query.dto.roleIds) {
+      await findOneOrFail(query.manager, RoleOrmEntity, {
+        id: roleId,
+      });
+    }
+
+    for (const permissionId of query.dto.permissionIds) {
+      await findOneOrFail(query.manager, PermissionOrmEntity, {
+        id: permissionId,
+      });
+    }
   }
 }

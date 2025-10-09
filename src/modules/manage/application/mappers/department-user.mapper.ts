@@ -6,6 +6,10 @@ import { UpdateDepartmentUserDto } from '../dto/create/departmentUser/update.dto
 import { DepartmentDataMapper } from './department.mapper';
 import { PositionDataMapper } from './position.mapper';
 import { UserDataMapper } from './user.mapper';
+import moment from 'moment-timezone';
+import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { UserTypeDataMapper } from './user-type.mapper';
 
 @Injectable()
 export class DepartmentUserDataMapper {
@@ -13,6 +17,7 @@ export class DepartmentUserDataMapper {
     private readonly departmentDataMapper: DepartmentDataMapper,
     private readonly positionDataMapper: PositionDataMapper,
     private readonly userDataMapper: UserDataMapper,
+    private readonly userTypeDataMapper: UserTypeDataMapper,
   ) {}
 
   /** Mapper Dto To Entity */
@@ -20,12 +25,11 @@ export class DepartmentUserDataMapper {
     dto: Partial<CreateDepartmentUserDto | UpdateDepartmentUserDto>,
     isCreate: boolean,
     userId?: number,
-    departmentId?: number,
   ): DepartmentUserEntity {
     const builder = DepartmentUserEntity.builder();
 
-    if (departmentId) {
-      builder.setDepartmentId(departmentId);
+    if (dto.departmentId) {
+      builder.setDepartmentId(dto.departmentId);
     }
 
     if (dto.positionId) {
@@ -44,6 +48,10 @@ export class DepartmentUserDataMapper {
       builder.setTel(dto.tel);
     }
 
+    // if (dto.user_type) {
+    //   builder.setTel(dto.user_type);
+    // }
+
     // Set password only if it's a create operation and password exists in dto
     if (isCreate && 'password' in dto && dto.password) {
       builder.setPassword(dto.password);
@@ -53,24 +61,31 @@ export class DepartmentUserDataMapper {
       builder.setUserId(userId);
     }
 
-    if (dto.signature_file) {
-      builder.setSignatureFile(dto.signature_file);
+    if (dto.line_manager_id) {
+      builder.setLineManagerId(dto.line_manager_id);
     }
+
+    // if (s3ImageResponse) {
+    //   builder.setSignatureFile(s3ImageResponse.fileKey);
+    // }
 
     return builder.build();
   }
 
   /** Mapper Entity To Response */
   toResponse(entity: DepartmentUserEntity): DepartmentUserResponse {
-    const file = `${process.env.PATH_URL}/assets/files/${entity.signature_file}`;
     const response = new DepartmentUserResponse();
     response.id = entity.getId().value;
-    response.department_id = entity.department?.getId().value;
-    response.position_id = entity.position?.getId().value;
-    response.signature_file = entity.signature_file ?? null;
-    response.signature_file_url = entity.signature_file ? file : null;
-    response.created_at = entity.createdAt?.toISOString() ?? '';
-    response.updated_at = entity.updatedAt?.toISOString() ?? '';
+    response.department_id = entity.departmentId;
+    response.position_id = entity.positionId;
+    response.user_id = entity.userId;
+    response.line_manager_id = entity.line_manager_id ?? null;
+    response.created_at = moment
+      .tz(entity.createdAt, Timezone.LAOS)
+      .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.updated_at = moment
+      .tz(entity.updatedAt, Timezone.LAOS)
+      .format(DateFormat.DATETIME_READABLE_FORMAT);
 
     response.department = entity.department
       ? this.departmentDataMapper.toResponse(entity.department)
@@ -82,6 +97,15 @@ export class DepartmentUserDataMapper {
 
     response.user = entity.user
       ? this.userDataMapper.toResponse(entity.user)
+      : null;
+
+    if (response.user) {
+      response.user.user_types =
+        entity.user_type?.map((type) => type.name) ?? [];
+    }
+
+    response.line_manager = entity.line_manager
+      ? this.userDataMapper.toResponse(entity.line_manager)
       : null;
 
     return response;

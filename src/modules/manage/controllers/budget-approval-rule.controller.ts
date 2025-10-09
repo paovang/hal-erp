@@ -14,12 +14,11 @@ import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { IBudgetApprovalRuleServiceInterface } from '../domain/ports/input/budget-approval-rule-service.interface';
 import { BudgetApprovalRuleDataMapper } from '../application/mappers/budget-approval-rule.mapper';
-import { CreateBudgetApprovalRuleDto } from '../application/dto/create/BudgetApprovalRule/create.dto';
 import { BudgetApprovalRuleResponse } from '../application/dto/response/budget-approval-rule.response';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
+import { CreateBudgetApprovalRuleDto } from '../application/dto/create/BudgetApprovalRule/create.dto';
 import { BudgetApprovalRuleQueryDto } from '../application/dto/query/budget-approval-rule.dto';
 import { UpdateBudgetApprovalRuleDto } from '../application/dto/create/BudgetApprovalRule/update.dto';
-import { Public } from '@core-system/auth';
 
 @Controller('budget-approval-rules')
 export class BudgetApprovalRuleController {
@@ -31,7 +30,6 @@ export class BudgetApprovalRuleController {
     private readonly _dataMapper: BudgetApprovalRuleDataMapper,
   ) {}
 
-  @Public()
   @Post('')
   async create(
     @Body() dto: CreateBudgetApprovalRuleDto,
@@ -44,7 +42,6 @@ export class BudgetApprovalRuleController {
     );
   }
 
-  @Public()
   @Get('')
   async getAll(
     @Query() dto: BudgetApprovalRuleQueryDto,
@@ -57,7 +54,6 @@ export class BudgetApprovalRuleController {
     );
   }
 
-  @Public()
   @Get(':id')
   async getOne(
     @Param('id') id: number,
@@ -70,7 +66,6 @@ export class BudgetApprovalRuleController {
     );
   }
 
-  @Public()
   @Put(':id')
   async update(
     @Param('id') id: number,

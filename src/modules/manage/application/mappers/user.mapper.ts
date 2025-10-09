@@ -8,9 +8,18 @@ import { UserResponse } from '../dto/response/user.response';
 import { UpdateUserDto } from '../dto/create/user/update.dto';
 import { ChangePasswordDto } from '../dto/create/user/change-password.dto';
 import { SendMailDto } from '../dto/create/user/send-email.dto';
+import { RoleDataMapper } from './role.mapper';
+import { PermissionResponse } from '../dto/response/permission.response';
+import { UserSignatureDataMapper } from './user-signature.mapper';
 
 @Injectable()
 export class UserDataMapper {
+  constructor(
+    private readonly roleDataMapper: RoleDataMapper,
+    private readonly userSignature: UserSignatureDataMapper,
+    // private readonly positionDataMapper: PositionDataMapper,
+  ) {}
+
   /** Mapper Dto To Entity */
   toEntity(dto: CreateUserDto): UserEntity {
     const builder = UserEntity.builder();
@@ -29,6 +38,14 @@ export class UserDataMapper {
 
     if (dto.password) {
       builder.setPassword(dto.password);
+    }
+
+    if (dto.roleIds) {
+      builder.setRoleIds(dto.roleIds);
+    }
+
+    if (dto.permissionIds) {
+      builder.setPermissionIds(dto.permissionIds);
     }
 
     return builder.build();
@@ -96,6 +113,24 @@ export class UserDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
 
+    response.user_signature = entity.userSignature
+      ? this.userSignature.toResponse(entity.userSignature)
+      : null;
+
+    response.roles = entity.roles
+      ? entity.roles.map((role) => this.roleDataMapper.toResponse(role))
+      : [];
+
+    response.permissions = entity.permissions
+      ? entity.permissions.map((p) => {
+          const permission = new PermissionResponse();
+          permission.id = p.getId().value;
+          permission.name = p.name;
+          permission.display_name = p.displayName;
+          return permission;
+        })
+      : [];
+    response.user_types = entity.user_type?.map((type) => type.name) ?? [];
     return response;
   }
 }

@@ -7,12 +7,15 @@ import {
   JoinColumn,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { RoleOrmEntity } from './role.orm';
 import { PermissionGroupOrmEntity } from './permission-group.orm';
+import { UserHasPermissionOrmEntity } from './model-has-permission.orm';
+import { RolePermissionOrmEntity } from './role-permission.orm';
 
 @Entity('permissions')
 export class PermissionOrmEntity {
@@ -26,6 +29,10 @@ export class PermissionOrmEntity {
   @Index()
   @Column({ type: 'varchar', length: 255, nullable: true })
   guard_name!: string;
+
+  @Index()
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  display_name: string;
 
   @Index()
   @Column({ nullable: true })
@@ -53,4 +60,16 @@ export class PermissionOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  @OneToMany(
+    () => UserHasPermissionOrmEntity,
+    (userHasPermission) => userHasPermission.permission,
+  )
+  userHasPermissions: Relation<UserHasPermissionOrmEntity[]>;
+
+  @OneToMany(
+    () => RolePermissionOrmEntity,
+    (roles_permission) => roles_permission.permission,
+  )
+  roles_permissions: Relation<RolePermissionOrmEntity[]>;
 }

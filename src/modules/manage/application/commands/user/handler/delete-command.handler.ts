@@ -8,6 +8,10 @@ import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.
 import { UserId } from '@src/modules/manage/domain/value-objects/user-id.vo';
 import { UserDataMapper } from '../../../mappers/user.mapper';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
+import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
+import { DepartmentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/department-approver.orm';
+import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -20,12 +24,7 @@ export class DeleteCommandHandler
   ) {}
 
   async execute(query: DeleteCommand): Promise<void> {
-    if (isNaN(query.id)) {
-      throw new ManageDomainException(
-        'errors.must_be_number',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    await this.checkData(query);
 
     /** Check Exits Document Type Id */
     const entity = await findOneOrFail(query.manager, UserOrmEntity, {
@@ -52,5 +51,42 @@ export class DeleteCommandHandler
     await this._write.updateColumns(updatedEntity, query.manager);
 
     return await this._write.delete(new UserId(query.id), query.manager);
+  }
+
+  private async checkData(query: DeleteCommand): Promise<void> {
+    if (isNaN(query.id)) {
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
+      );
+    }
+
+    await checkRelationOrThrow(
+      query.manager,
+      BudgetApprovalRuleOrmEntity,
+      { approver_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'budget approval rule',
+    );
+
+    await checkRelationOrThrow(
+      query.manager,
+      DepartmentApproverOrmEntity,
+      { user_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'department approver',
+    );
+
+    await checkRelationOrThrow(
+      query.manager,
+      DepartmentUserOrmEntity,
+      { user_id: query.id },
+      'errors.already_in_use',
+      HttpStatus.BAD_REQUEST,
+      'department user',
+    );
   }
 }

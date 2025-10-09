@@ -37,11 +37,12 @@ export class VendorBankAccountService
   }
 
   async getAll(
+    id: number,
     dto: VendorBankAccountQueryDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<VendorBankAccountEntity>> {
     return await this._queryBus.execute(
-      new GetAllQuery(dto, manager ?? this._readEntityManager),
+      new GetAllQuery(id, dto, manager ?? this._readEntityManager),
     );
   }
 

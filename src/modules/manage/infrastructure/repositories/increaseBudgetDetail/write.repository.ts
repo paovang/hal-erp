@@ -1,0 +1,62 @@
+import { Injectable } from '@nestjs/common';
+import { IWriteIncreaseBudgetDetailRepository } from '@src/modules/manage/domain/ports/output/increase-budget-detail-repository.interface';
+import { IncreaseBudgetDetailDataAccessMapper } from '../../mappers/increase-budget-detail.mapper';
+import { IncreaseBudgetDetailEntity } from '@src/modules/manage/domain/entities/increase-budget-detail.entity';
+import { EntityManager } from 'typeorm';
+import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
+import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { IncreaseBudgetDetailId } from '@src/modules/manage/domain/value-objects/increase-budget-detail-id.vo';
+import { IncreaseBudgetDetailOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget-detail.orm';
+
+@Injectable()
+export class WriteIncreaseBudgetDetailRepository
+  implements IWriteIncreaseBudgetDetailRepository
+{
+  constructor(
+    private readonly _dataAccessMapper: IncreaseBudgetDetailDataAccessMapper,
+  ) {}
+
+  async create(
+    entity: IncreaseBudgetDetailEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>> {
+    return this._dataAccessMapper.toEntity(
+      await manager.save(
+        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+      ),
+    );
+  }
+
+  async update(
+    entity: IncreaseBudgetDetailEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<IncreaseBudgetDetailEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.UPDATE,
+    );
+
+    try {
+      await manager.update(
+        IncreaseBudgetDetailOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async delete(
+    id: IncreaseBudgetDetailId,
+    manager: EntityManager,
+  ): Promise<void> {
+    try {
+      await manager.softDelete(IncreaseBudgetDetailOrmEntity, id.value);
+    } catch (error) {
+      throw error;
+    }
+  }
+}

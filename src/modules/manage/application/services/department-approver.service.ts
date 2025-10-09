@@ -3,15 +3,27 @@ import { IDepartmentApproverServiceInterface } from '../../domain/ports/input/de
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { CreateDepartmentApproverDto } from '../dto/create/departmentApprover/create.dto';
+import {
+  CreateDepartmentApproverByUserDto,
+  CreateDepartmentApproverDto,
+} from '../dto/create/departmentApprover/create.dto';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { DepartmentApproverEntity } from '../../domain/entities/department-approver.entity';
-import { CreateCommand } from '../commands/departmentApprover/create.command';
+import {
+  CreateByUserCommand,
+  CreateCommand,
+} from '../commands/departmentApprover/create.command';
 import { GetAllQuery } from '../queries/departmentApprover/get-all.query';
 import { DepartmentApproverQueryDto } from '../dto/query/department-approver.dto';
 import { GetOneQuery } from '../queries/departmentApprover/get-one.query';
-import { UpdateDepartmentApproverDto } from '../dto/create/departmentApprover/update.dto';
-import { UpdateCommand } from '../commands/departmentApprover/update.command';
+import {
+  UpdateDepartmentApproverByUserDto,
+  UpdateDepartmentApproverDto,
+} from '../dto/create/departmentApprover/update.dto';
+import {
+  UpdateByUserCommand,
+  UpdateCommand,
+} from '../commands/departmentApprover/update.command';
 import { DeleteCommand } from '../commands/departmentApprover/delete.command';
 
 @Injectable()
@@ -31,6 +43,14 @@ export class DepartmentApproverService
   ): Promise<ResponseResult<DepartmentApproverEntity>> {
     return await this._commandBus.execute(
       new CreateCommand(dto, manager ?? this._readEntityManager),
+    );
+  }
+  async createByUser(
+    dto: CreateDepartmentApproverByUserDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentApproverEntity>> {
+    return await this._commandBus.execute(
+      new CreateByUserCommand(dto, manager ?? this._readEntityManager),
     );
   }
 
@@ -59,6 +79,15 @@ export class DepartmentApproverService
   ): Promise<ResponseResult<DepartmentApproverEntity>> {
     return await this._commandBus.execute(
       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+  async updateByUser(
+    id: number,
+    dto: UpdateDepartmentApproverByUserDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentApproverEntity>> {
+    return await this._commandBus.execute(
+      new UpdateByUserCommand(id, dto, manager ?? this._readEntityManager),
     );
   }
 
