@@ -11,5 +11,7 @@ export interface CurrencyTotal {
   id: number;
   code: string;
   name?: string | null;
+  total?: number | null;
+  vat?: number | null;
   amount: number;
 }

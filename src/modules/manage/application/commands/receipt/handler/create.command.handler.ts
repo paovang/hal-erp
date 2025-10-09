@@ -42,7 +42,6 @@ import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/databa
 import {
   EnumPaymentType,
   EnumRequestApprovalType,
-  SelectStatus,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
 import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
@@ -65,6 +64,7 @@ import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
 import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
+import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -98,6 +98,10 @@ interface CustomApprovalDto
   requires_file_upload: boolean;
   step_number: number;
   is_otp: boolean;
+}
+interface CustomDocumentApprover {
+  user_approval_step_id: number;
+  user_id: number;
 }
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
@@ -160,15 +164,32 @@ export class CreateCommandHandler
           {
             id: department_id,
           },
+          `department id: ${department_id}`,
         );
+
+        const check_po = await findOneOrFail(
+          manager,
+          PurchaseOrderOrmEntity,
+          {
+            id: query.dto.purchase_order_id,
+          },
+          `purchase order id: ${query.dto.purchase_order_id}`,
+        );
+
+        const po_code = (check_po as any).po_number;
+        const poRest = (po_code ?? '').replace(/^\d{4}\//, '');
 
         const department_name = (get_department_name as any).name;
 
-        const document_number = await this.generateDocumentNumber(
-          query.manager,
+        const document_number = await this.generateDocumentNumber(manager);
+        // const code = po?.purchase_requests?.documents?.departments?.code;
+
+        const receipt_number = await this.generateReceiptNumber(
+          manager,
+          poRest,
         );
 
-        const receipt_number = await this.generateReceiptNumber(query.manager);
+        console.log('receipt_number', receipt_number);
 
         const document_id = await this.createDocument(
           query,
@@ -186,7 +207,6 @@ export class CreateCommandHandler
         );
         const responseReceipt = await this._write.create(entity, manager);
         const receipt_id = (responseReceipt as any)._id._value;
-        console.log('object', receipt_id);
 
         await this.saveItem(query, manager, receipt_id);
 
@@ -241,13 +261,23 @@ export class CreateCommandHandler
           titles,
         );
 
-        await this.handleApprovalStepCall(
-          a_w_s,
-          total,
-          user_id,
+        // await this.handleApprovalStepCall(
+        //   a_w_s,
+        //   total,
+        //   user_id,
+        //   user_approval_step_id,
+        //   manager,
+        // );
+
+        const d_approver: CustomDocumentApprover = {
           user_approval_step_id,
-          manager,
-        );
+          user_id: user_id ?? 0,
+        };
+
+        const d_approver_entity =
+          await this._dataDocumentApproverMapper.toEntity(d_approver);
+
+        await this._writeDocumentApprover.create(d_approver_entity, manager);
 
         // return responseReceipt;
         return await this._readRepo.findOne(new ReceiptId(receipt_id), manager);
@@ -259,9 +289,14 @@ export class CreateCommandHandler
     manager: EntityManager,
     user_id: number,
   ): Promise<number> {
-    const department = await findOneOrFail(manager, DepartmentUserOrmEntity, {
-      user_id,
-    });
+    const department = await findOneOrFail(
+      manager,
+      DepartmentUserOrmEntity,
+      {
+        user_id,
+      },
+      `department user id: ${user_id}`,
+    );
     return (department as any).department_id;
   }
 
@@ -284,8 +319,11 @@ export class CreateCommandHandler
     );
   }
 
-  private async generateReceiptNumber(manager: EntityManager): Promise<string> {
-    return await this._codeGeneratorUtil.generateUniqueCode(
+  private async generateReceiptNumber(
+    manager: EntityManager,
+    poRest: string,
+  ): Promise<string> {
+    return await this._codeGeneratorUtil.generateSequentialUniqueCode(
       LENGTH_RECEIPT_CODE,
       async (generatedCode: string) => {
         try {
@@ -297,7 +335,7 @@ export class CreateCommandHandler
           return true;
         }
       },
-      'RN',
+      poRest,
     );
   }
 
@@ -353,6 +391,7 @@ export class CreateCommandHandler
       {
         document_type_id: documentTypeId,
       },
+      `document type id: ${documentTypeId}`,
     );
     const aw_id = (approval_workflow as any).id;
     const a_w_s = await manager.findOne(ApprovalWorkflowStepOrmEntity, {
@@ -385,10 +424,11 @@ export class CreateCommandHandler
   ): Promise<number> {
     const pendingDto: CustomApprovalDto = {
       user_approval_id: ua_id,
-      step_number: a_w_s?.step_number ?? 1,
+      step_number: 0,
+      // step_number: a_w_s?.step_number ?? 1,
       statusId: STATUS_KEY.PENDING,
       requires_file_upload: a_w_s!.requires_file_upload!,
-      is_otp: a_w_s!.is_otp!,
+      is_otp: true,
       remark: null,
     };
     const aw_step =
@@ -476,7 +516,7 @@ export class CreateCommandHandler
     for (const item of query.dto.receipt_items) {
       // await this.checkCurrency(item.currency_id, manager);
       await this.checkCurrency(item.payment_currency_id, manager);
-      const amount = await this.getVat(manager);
+      // const amount = await this.getVat(manager);
 
       const purchase_order_item = await manager.findOne(
         PurchaseOrderItemOrmEntity,
@@ -540,51 +580,52 @@ export class CreateCommandHandler
         'exchange rate',
       );
 
-      const currency = await this.getCurrency(
-        exchange_rate!.from_currency_id,
-        manager,
-      );
-      const payment_currency = await this.getCurrency(
-        exchange_rate!.to_currency_id,
-        manager,
-      );
+      // const currency = await this.getCurrency(
+      //   exchange_rate!.from_currency_id,
+      //   manager,
+      // );
+      // const payment_currency = await this.getCurrency(
+      //   exchange_rate!.to_currency_id,
+      //   manager,
+      // );
 
       let payment_total = 0;
-      let vat = 0;
       let sum_total = 0;
-      const quantity = purchase_order_item?.quantity ?? 0;
-      const price = purchase_order_item?.price ?? 0;
-      const get_total = purchase_order_item?.total ?? 0;
-      const rate = exchange_rate?.rate ?? 0;
+      const vat = Number(purchase_order_item?.vat ?? 0);
+      const quantity = Number(purchase_order_item?.quantity ?? 0);
+      const price = Number(purchase_order_item?.price ?? 0);
+      const get_total = Number(purchase_order_item?.total ?? 0);
+      // const rate = Number(exchange_rate?.rate ?? 0);
 
-      if (purchase_order_item?.is_vat === SelectStatus.TRUE) {
-        vat = amount ?? 0;
-        const vat_total = get_total * (vat / 100);
-        sum_total = get_total + vat_total;
-      } else {
-        vat = 0;
-        sum_total = get_total;
-      }
+      // if (purchase_order_item?.is_vat === SelectStatus.TRUE) {
+      //   vat = Number(purchase_order_item?.vat) ?? 0;
+      //   const vat_total = get_total * (vat / 100);
+      //   sum_total = get_total + vat_total;
+      // } else {
+      //   vat = 0;
+      // }
+      sum_total = get_total;
+      payment_total = sum_total;
 
-      if (currency.code === 'USD' && payment_currency.code === 'LAK') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
-        payment_total = sum_total * rate;
-      }
+      // if (currency.code === 'USD' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total * rate;
+      // }
 
       const interface_item: ReceiptInterItemInterface = {
         receipt_id: receipt_id,
@@ -594,7 +635,7 @@ export class CreateCommandHandler
         total: get_total,
         currency_id: vendor_bank_account?.currency_id ?? 0,
         payment_currency_id: item.payment_currency_id,
-        exchange_rate: rate,
+        exchange_rate: 1,
         vat: vat,
         payment_total: payment_total,
         payment_type: item.payment_type,

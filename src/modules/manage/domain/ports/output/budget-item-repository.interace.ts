@@ -19,6 +19,11 @@ export interface IReadBudgetItemRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetItemEntity>>;
 
+  getBudgetItem(
+    query: BudgetItemQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>>;
+
   report(
     dto: BudgetItemQueryDto,
     manager: EntityManager,

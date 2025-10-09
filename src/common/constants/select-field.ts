@@ -9,6 +9,7 @@ export const selectPurchaseOrderItems = [
   'purchase_order_items.quantity',
   'purchase_order_items.total',
   'purchase_order_items.is_vat',
+  'purchase_order_items.vat',
   'purchase_order_items.created_at',
   'purchase_order_items.updated_at',
 ];
@@ -207,9 +208,17 @@ export const selectBudgetItems = [
   'budget_items.id',
   'budget_items.budget_account_id',
   'budget_items.name',
-  'budget_items.allocated_amount',
+  // 'budget_items.allocated_amount',
   'budget_items.created_at',
   'budget_items.updated_at',
+];
+
+// select purchase orders
+export const selectPurchaseOrders = [
+  'purchase_orders.id',
+  'purchase_orders.po_number',
+  'purchase_orders.document_id',
+  'purchase_orders.purchase_request_id',
 ];
 
 // select provinces
@@ -463,6 +472,20 @@ export const selectPoDocumentTypes = [
   'po_document_types.name',
   'po_document_types.created_at',
   'po_document_types.updated_at',
+];
+
+// pr_document_types
+export const selectPrDocumentTypes = [
+  'pr_document_types.id',
+  'pr_document_types.code',
+  'pr_document_types.name',
+];
+
+// pr_documents
+export const selectPrDocuments = [
+  'pr_documents.id',
+  'pr_documents.title',
+  'pr_documents.document_type_id',
 ];
 
 // po_user_signatures

@@ -15,6 +15,7 @@ import { BudgetItemQueryDto } from '../dto/query/budget-item.dto';
 import { UpdateBudgetItemDto } from '../dto/create/BudgetItem/update.dto';
 import { GetReportQuery } from '../queries/BudgetItem/report.query';
 import { GetItemIdQuery } from '../queries/BudgetItem/get-item-id.query';
+import { GetBudgetItemQuery } from '../queries/BudgetItem/get-budget-item.query';
 
 @Injectable()
 export class BudgetItemService implements IBudgetItemServiceInterface {
@@ -82,6 +83,15 @@ export class BudgetItemService implements IBudgetItemServiceInterface {
   ): Promise<ResponseResult<BudgetItemEntity>> {
     return await this._queryBus.execute(
       new GetReportQuery(query, manager ?? this._readEntityManager),
+    );
+  }
+
+  async GetBudgetItem(
+    query: BudgetItemQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>> {
+    return await this._queryBus.execute(
+      new GetBudgetItemQuery(query, manager ?? this._readEntityManager),
     );
   }
 }

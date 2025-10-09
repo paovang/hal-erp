@@ -1,8 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CreateDepartmentApproverByUserDto,
-  CreateDepartmentApproverDto,
-} from '../dto/create/departmentApprover/create.dto';
 import { DepartmentApproverEntity } from '../../domain/entities/department-approver.entity';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
@@ -20,11 +16,12 @@ export class DepartmentApproverDataMapper {
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
-    dto:
-      | CreateDepartmentApproverDto
-      | UpdateDepartmentApproverDto
-      | CreateDepartmentApproverByUserDto,
+    dto: UpdateDepartmentApproverDto,
+    // | CreateDepartmentApproverDto
+    // | UpdateDepartmentApproverDto
+    // | CreateDepartmentApproverByUserDto,
     departmentId?: number,
+    // user_id?: number,
   ): DepartmentApproverEntity {
     const builder = DepartmentApproverEntity.builder();
 
@@ -34,6 +31,23 @@ export class DepartmentApproverDataMapper {
 
     if (dto.user_id) {
       builder.setUserId(dto.user_id);
+    }
+
+    return builder.build();
+  }
+
+  toEntityArray(
+    departmentId?: number,
+    user_id?: number,
+  ): DepartmentApproverEntity {
+    const builder = DepartmentApproverEntity.builder();
+
+    if (departmentId) {
+      builder.setDepartmentId(departmentId);
+    }
+
+    if (user_id) {
+      builder.setUserId(user_id);
     }
 
     return builder.build();

@@ -10,4 +10,12 @@ export class ReceiptQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  department_id?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  order_date?: string;
 }

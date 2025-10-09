@@ -21,6 +21,8 @@ import {
   selectApproverUserSignatures,
   selectBankAccountCurrencies,
   selectBanks,
+  selectBudgetAccounts,
+  selectBudgetItems,
   selectCreatedBy,
   selectCurrencies,
   selectCurrency,
@@ -35,11 +37,17 @@ import {
   selectDocuments,
   selectDocumentStatuses,
   selectDocumentTypes,
+  selectPoDocuments,
+  selectPoDocumentTypes,
   selectPositionApprover,
   selectPositions,
+  selectPrDocuments,
+  selectPrDocumentTypes,
   selectPurchaseOrderItems,
+  selectPurchaseOrders,
   selectPurchaseOrderSelectedVendors,
   selectPurchaseRequestItems,
+  selectPurchaseRequests,
   selectReceiptBy,
   selectReceiptItems,
   selectSelectedVendors,
@@ -51,8 +59,8 @@ import {
 } from '@src/common/constants/select-field';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
 import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
-import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
+import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
 
 @Injectable()
 export class ReadReceiptRepository implements IReadReceiptRepository {
@@ -69,8 +77,16 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     user_id?: number,
     roles?: string[],
   ): Promise<ResponseResult<ReceiptEntity>> {
+    const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(manager, user_id, roles);
     query.sort_by = 'receipts.id';
+
+    // Date filtering (single date)
+    this.applyDateFilter(
+      queryBuilder,
+      filterOptions.dateColumn,
+      query.order_date,
+    );
 
     const status = await countStatusAmounts(
       manager,
@@ -128,10 +144,24 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectDocApproverUser,
       ...selectDocDeptUser,
       ...selectDepartmentsApprover,
+      ...selectBudgetItems,
+      ...selectPurchaseOrders,
+      ...selectPoDocuments,
+      ...selectPoDocumentTypes,
+      ...selectPurchaseRequests,
+      ...selectPrDocuments,
+      ...selectPrDocumentTypes,
+      ...selectBudgetAccounts,
     ];
 
     const query = manager
       .createQueryBuilder(ReceiptOrmEntity, 'receipts')
+      .innerJoin('receipts.purchase_orders', 'purchase_orders')
+      .innerJoin('purchase_orders.documents', 'po_documents')
+      .innerJoin('po_documents.document_types', 'po_document_types')
+      .innerJoin('purchase_orders.purchase_requests', 'purchase_requests')
+      .innerJoin('purchase_requests.documents', 'pr_documents')
+      .innerJoin('pr_documents.document_types', 'pr_document_types')
       .innerJoin('receipts.documents', 'documents')
       .innerJoin('documents.departments', 'departments')
       .innerJoin('documents.users', 'users')
@@ -147,6 +177,8 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
         'purchase_order_items.purchase_request_items',
         'purchase_request_items',
       )
+      .leftJoin('purchase_order_items.budget_item', 'budget_items')
+      .leftJoin('budget_items.budget_accounts', 'budget_accounts')
       .innerJoin(
         'purchase_order_items.purchase_order_selected_vendors',
         'purchase_order_selected_vendors',
@@ -193,10 +225,26 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
 
   private getFilterOptions(): FilterOptions {
     return {
-      searchColumns: ['receipts.pr_number'],
-      dateColumn: '',
-      filterByColumns: ['receipts.receipt_date', 'documents.department_id'],
+      searchColumns: ['receipts.receipt_number'],
+      dateColumn: 'receipts.receipt_date',
+      filterByColumns: ['documents.department_id'],
     };
+  }
+
+  /**
+   * ==> Applies date filter to the query builder if dateColumn and date are provided.
+   */
+  private applyDateFilter(
+    queryBuilder: any, // Replace 'any' with your actual QueryBuilder type
+    dateColumn: string | undefined,
+    date?: string,
+  ) {
+    if (dateColumn && date) {
+      queryBuilder.andWhere(`${dateColumn} BETWEEN :dateStart AND :dateEnd`, {
+        dateStart: `${date} 00:00:00`,
+        dateEnd: `${date} 23:59:59`,
+      });
+    }
   }
 
   async findOne(
@@ -208,7 +256,8 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .getOneOrFail();
 
     const user_approval_step = await manager
-      .createQueryBuilder(UserApprovalOrmEntity, 'user_approvals')
+      .createQueryBuilder(UserApprovalStepOrmEntity, 'steps')
+      .innerJoin('steps.user_approvals', 'user_approvals')
       .where('user_approvals.document_id = :id', { id: item.document_id })
       .getCount();
 
@@ -223,5 +272,31 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     const step = workflow_step - user_approval_step;
 
     return this._dataAccessMapper.toEntity(item, step);
+  }
+
+  async countItem(
+    user_id: number,
+    manager: EntityManager,
+  ): Promise<ResponseResult<{ amount: number }>> {
+    const result = await manager
+      .createQueryBuilder(ReceiptOrmEntity, 'receipts')
+      .innerJoin('receipts.documents', 'documents')
+      .innerJoin('documents.user_approvals', 'user_approvals')
+      .innerJoin('user_approvals.user_approval_steps', 'user_approval_steps')
+      .innerJoin(
+        'user_approval_steps.document_approvers',
+        'document_approver',
+        'document_approver.user_approval_step_id = user_approval_steps.id',
+      )
+      .leftJoin('user_approval_steps.status', 'status')
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
+      .where('document_approver.user_id = :user_id', { user_id })
+      .andWhere('status.id = :id', { id: 1 })
+      .select('COUNT(user_approval_steps.id)', 'amount')
+      .getRawOne<{ amount: string }>();
+
+    return { amount: Number(result?.amount) };
   }
 }

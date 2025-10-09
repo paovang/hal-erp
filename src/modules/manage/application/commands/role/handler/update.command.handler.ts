@@ -5,6 +5,7 @@ import { RoleEntity } from '@src/modules/manage/domain/entities/role.entity';
 import { HttpStatus, Inject } from '@nestjs/common';
 import {
   GUARD_NAME,
+  WRITE_ROLE_GROUP_REPOSITORY,
   WRITE_ROLE_REPOSITORY,
 } from '../../../constants/inject-key.const';
 import { IWriteRoleRepository } from '@src/modules/manage/domain/ports/output/role-repository.interface';
@@ -19,6 +20,10 @@ import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.co
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { IWriteRoleGroupRepository } from '@src/modules/manage/domain/ports/output/role-group-repository.interface';
+import { RoleGroupDataMapper } from '../../../mappers/role-group.mapper';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { RoleGroupOrmEntity } from '@src/common/infrastructure/database/typeorm/role-group.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -28,6 +33,9 @@ export class UpdateCommandHandler
     @Inject(WRITE_ROLE_REPOSITORY)
     private readonly _write: IWriteRoleRepository,
     private readonly _dataMapper: RoleDataMapper,
+    @Inject(WRITE_ROLE_GROUP_REPOSITORY)
+    private readonly _writeRoleGroup: IWriteRoleGroupRepository,
+    private readonly _dataRoleGroupMapper: RoleGroupDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -64,6 +72,17 @@ export class UpdateCommandHandler
           }
         }
 
+        const department = await findOneOrFail(
+          manager,
+          DepartmentOrmEntity,
+          {
+            id: query.dto.department_id,
+          },
+          `department id ${query.dto.department_id}`,
+        );
+
+        const department_id = department.id;
+
         const entity = this._dataMapper.toEntity(query.dto, GUARD_NAME);
 
         await entity.initializeUpdateSetId(new RoleId(query.id));
@@ -72,6 +91,21 @@ export class UpdateCommandHandler
         await findOneOrFail(manager, RoleOrmEntity, {
           id: entity.getId().value,
         });
+
+        await findOneOrFail(manager, RoleGroupOrmEntity, {
+          role_id: query.id,
+        });
+
+        await this._writeRoleGroup.deleteByRoleId(
+          new RoleId(query.id),
+          manager,
+        );
+
+        const roleGroupEntity = this._dataRoleGroupMapper.toEntity(
+          query.id,
+          department_id,
+        );
+        await this._writeRoleGroup.create(roleGroupEntity, manager);
 
         return this._write.update(entity, manager, query.dto.permissions);
       },

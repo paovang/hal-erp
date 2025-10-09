@@ -230,6 +230,7 @@ export class UpdateCommandHandler
       {
         document_id: document_id,
       },
+      `document id: ${document_id}`,
     );
 
     const user_approval_id = (user_approval as any).id;

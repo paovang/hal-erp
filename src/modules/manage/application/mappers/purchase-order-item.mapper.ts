@@ -16,6 +16,7 @@ interface CustomPurchaseOrderItemDto {
   quantity: number;
   total: number;
   is_vat: boolean;
+  vat?: number;
 }
 
 @Injectable()
@@ -60,6 +61,10 @@ export class PurchaseOrderItemDataMapper {
       builder.setIsVat(dto.is_vat);
     }
 
+    if (dto?.vat) {
+      builder.setVat(dto.vat);
+    }
+
     if (budget_item_id) {
       builder.setBudgetItemId(budget_item_id);
     }
@@ -88,10 +93,10 @@ export class PurchaseOrderItemDataMapper {
     response.budget_item_id = Number(entity.budget_item_id);
     response.remark = entity.remark;
     response.quantity = entity.quantity;
-    response.price = entity.price;
-    response.total = entity.total;
-    response.vat_total = entity.vat_total;
-    response.total_with_vat = entity.total_with_vat;
+    response.price = Number(entity.price);
+    response.total = Number(entity.total);
+    response.vat_total = Number(entity.vat_total);
+    response.total_with_vat = Number(entity.total_with_vat);
     response.is_vat = entity.is_vat;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

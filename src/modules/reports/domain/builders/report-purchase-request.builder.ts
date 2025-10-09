@@ -1,3 +1,4 @@
+import { DocumentEntity } from '@src/modules/manage/domain/entities/document.entity';
 import { ReportPurchaseRequestItemEntity } from '../entities/report-purchase-request-item.entity';
 import { ReportPurchaseRequestEntity } from '../entities/report-purchase-request.entity.';
 import { ReportPurchaseRequestId } from '../value-objects/report-purchase-request-id.vo';
@@ -14,10 +15,11 @@ export class ReportPurchaseRequestBuilder {
   deletedAt!: Date | null;
   total: number | 0;
   purchaseRequestItem: ReportPurchaseRequestItemEntity[] | null;
-  //   document: DocumentEntity | null;
+  document: DocumentEntity | null;
   //   user_approval: UserApprovalEntity | null;
   workflow_step_total: number | 0;
   step: number | 0;
+  itemCount: number | 0;
 
   setPurchaseRequestId(value: ReportPurchaseRequestId): this {
     this.purchaseRequestId = value;
@@ -64,6 +66,11 @@ export class ReportPurchaseRequestBuilder {
     return this;
   }
 
+  setItemCount(itemCount: number | 0): this {
+    this.itemCount = itemCount;
+    return this;
+  }
+
   setTotal(total: number | 0): this {
     this.total = total;
     return this;
@@ -91,10 +98,10 @@ export class ReportPurchaseRequestBuilder {
     return this;
   }
 
-  //   setDocument(document: DocumentEntity | null): this {
-  //     this.document = document;
-  //     return this;
-  //   }
+  setDocument(document: DocumentEntity | null): this {
+    this.document = document;
+    return this;
+  }
 
   build(): ReportPurchaseRequestEntity {
     return ReportPurchaseRequestEntity.create(this);

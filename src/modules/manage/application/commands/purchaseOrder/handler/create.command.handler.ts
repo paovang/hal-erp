@@ -8,6 +8,7 @@ import {
   LENGTH_DOCUMENT_CODE,
   LENGTH_PURCHASE_ORDER_CODE,
   PO_FILE_NAME_FOLDER,
+  READ_PURCHASE_ORDER_REPOSITORY,
   WRITE_DOCUMENT_APPROVER_REPOSITORY,
   WRITE_DOCUMENT_REPOSITORY,
   WRITE_PURCHASE_ORDER_ITEM_REPOSITORY,
@@ -18,7 +19,10 @@ import {
 } from '../../../constants/inject-key.const';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
-import { IWritePurchaseOrderRepository } from '@src/modules/manage/domain/ports/output/purchase-order-repository.interface';
+import {
+  IReadPurchaseOrderRepository,
+  IWritePurchaseOrderRepository,
+} from '@src/modules/manage/domain/ports/output/purchase-order-repository.interface';
 import { IWriteDocumentRepository } from '@src/modules/manage/domain/ports/output/document-repository.interface';
 import { DocumentDataMapper } from '../../../mappers/document.mapper';
 import { CodeGeneratorUtil } from '@src/common/utils/code-generator.util';
@@ -59,7 +63,6 @@ import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
-import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
 import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
 import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
@@ -68,6 +71,9 @@ import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/
 import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
+import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purchase-order-id.vo';
+import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -76,6 +82,7 @@ interface CustomPurchaseOrderItemDto {
   quantity: number;
   total: number;
   is_vat: boolean;
+  vat: number;
 }
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
@@ -93,6 +100,11 @@ interface CustomApprovalDto
   is_otp: boolean;
 }
 
+interface CustomDocumentApprover {
+  user_approval_step_id: number;
+  user_id: number;
+}
+
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
   implements IQueryHandler<CreateCommand, ResponseResult<PurchaseOrderEntity>>
@@ -101,6 +113,8 @@ export class CreateCommandHandler
     @Inject(WRITE_PURCHASE_ORDER_REPOSITORY)
     private readonly _write: IWritePurchaseOrderRepository,
     private readonly _dataMapper: PurchaseOrderDataMapper,
+    @Inject(READ_PURCHASE_ORDER_REPOSITORY)
+    private readonly _read: IReadPurchaseOrderRepository,
     // item
     @Inject(WRITE_PURCHASE_ORDER_ITEM_REPOSITORY)
     private readonly _writeItem: IWritePurchaseOrderItemRepository,
@@ -157,6 +171,16 @@ export class CreateCommandHandler
           {
             user_id: user_id,
           },
+          `department user id: ${user_id}`,
+        );
+
+        await findOneOrFail(
+          manager,
+          DocumentTypeOrmEntity,
+          {
+            id: query.dto.document.documentTypeId,
+          },
+          `document type id: ${query.dto.document.documentTypeId}`,
         );
 
         const pr = await manager.findOne(PurchaseRequestOrmEntity, {
@@ -164,6 +188,32 @@ export class CreateCommandHandler
             id: query.dto.purchase_request_id,
           },
         });
+        const pr_doc = await findOneOrFail(
+          manager,
+          DocumentOrmEntity,
+          {
+            id: pr?.document_id,
+          },
+          `purchase request document id: ${pr?.document_id}`,
+        );
+
+        const doc_department_id = (pr_doc as any).department_id;
+        if (!doc_department_id) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.NOT_FOUND,
+            { property: 'department id' },
+          );
+        }
+
+        const pr_department = await findOneOrFail(
+          manager,
+          DepartmentOrmEntity,
+          {
+            id: doc_department_id,
+          },
+          `department id: ${doc_department_id}`,
+        );
 
         assertOrThrow(
           pr,
@@ -190,6 +240,13 @@ export class CreateCommandHandler
         );
 
         const department_id = (department as any).department_id;
+        const get_department_name = await findOneOrFail(
+          manager,
+          DepartmentOrmEntity,
+          {
+            id: department_id,
+          },
+        );
 
         const document_number =
           await this._codeGeneratorUtil.generateUniqueCode(
@@ -207,7 +264,27 @@ export class CreateCommandHandler
             'D',
           );
 
-        const po_number = await this._codeGeneratorUtil.generateUniqueCode(
+        // const po_number = await this._codeGeneratorUtil.generateUniqueCode(
+        //   LENGTH_PURCHASE_ORDER_CODE,
+        //   async (generatedCode: string) => {
+        //     try {
+        //       await findOneOrFail(manager, PurchaseOrderOrmEntity, {
+        //         po_number: generatedCode,
+        //       });
+        //       return false;
+        //     } catch {
+        //       return true;
+        //     }
+        //   },
+        //   'PO',
+        // );
+
+        const department_code = (get_department_name as any).code;
+        const pr_department_code = (pr_department as any).code;
+
+        const prefix = department_code + '/' + pr_department_code;
+
+        const code = await this._codeGeneratorUtil.generateSequentialUniqueCode(
           LENGTH_PURCHASE_ORDER_CODE,
           async (generatedCode: string) => {
             try {
@@ -219,8 +296,9 @@ export class CreateCommandHandler
               return true;
             }
           },
-          'PO',
+          prefix,
         );
+        console.log('po_number', code);
 
         const DEntity = this._dataDMapper.toEntity(
           query.dto.document,
@@ -238,7 +316,7 @@ export class CreateCommandHandler
           query.dto,
           document_id,
           pr!,
-          po_number,
+          code,
         );
 
         const po_result = await this._write.create(entity, manager);
@@ -259,7 +337,8 @@ export class CreateCommandHandler
           user,
         );
 
-        return po_result;
+        // return po_result;
+        return await this._read.findOne(new PurchaseOrderId(po_id), manager);
       },
     );
   }
@@ -319,10 +398,11 @@ export class CreateCommandHandler
     const pendingDto: CustomApprovalDto = {
       user_approval_id: ua_id,
       statusId: STATUS_KEY.PENDING,
-      step_number: a_w_s?.step_number ?? 1,
+      step_number: 0,
+      // step_number: a_w_s?.step_number ?? 1,
       remark: null,
       requires_file_upload: a_w_s!.requires_file_upload,
-      is_otp: a_w_s!.is_otp,
+      is_otp: true,
     };
     const aw_step =
       this._dataUserApprovalMapperStep.toEntityForInsert(pendingDto);
@@ -355,16 +435,26 @@ export class CreateCommandHandler
       titles,
     );
 
-    await handleApprovalStep({
-      a_w_s,
-      total,
-      user_id,
+    const d_approver: CustomDocumentApprover = {
       user_approval_step_id,
-      manager,
-      dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-      writeDocumentApprover: this._writeDocumentApprover,
-      getApprover: this.getApprover.bind(this),
-    });
+      user_id: user_id ?? 0,
+    };
+
+    const d_approver_entity =
+      await this._dataDocumentApproverMapper.toEntity(d_approver);
+
+    await this._writeDocumentApprover.create(d_approver_entity, manager);
+
+    // await handleApprovalStep({
+    //   a_w_s,
+    //   total,
+    //   user_id,
+    //   user_approval_step_id,
+    //   manager,
+    //   dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+    //   writeDocumentApprover: this._writeDocumentApprover,
+    //   getApprover: this.getApprover.bind(this),
+    // });
   }
 
   private async saveSelectedVendor(
@@ -448,14 +538,11 @@ export class CreateCommandHandler
     po_id: number,
   ): Promise<void> {
     for (const item of query.dto.items) {
-      const pr_item = await query.manager.findOne(
-        PurchaseRequestItemOrmEntity,
-        {
-          where: {
-            id: item.purchase_request_item_id,
-          },
+      const pr_item = await manager.findOne(PurchaseRequestItemOrmEntity, {
+        where: {
+          id: item.purchase_request_item_id,
         },
-      );
+      });
 
       assertOrThrow(
         pr_item,
@@ -464,13 +551,28 @@ export class CreateCommandHandler
         'purchase request item',
       );
 
+      let vat_total = 0;
+      if (item.is_vat === true) {
+        const vat = await manager.find(VatOrmEntity, {
+          take: 1,
+        });
+        const vat_rate = vat[0]?.amount ?? 0;
+        vat_total =
+          Number(pr_item?.quantity ?? 0) *
+          Number(item.price ?? 0) *
+          Number(vat_rate / 100);
+      } else {
+        vat_total = 0;
+      }
+
       const itemDto: CustomPurchaseOrderItemDto = {
         purchase_request_item_id: item.purchase_request_item_id,
         remark: pr_item?.remark ?? '',
         quantity: pr_item?.quantity ?? 0,
         price: item.price ?? 0,
-        total: (pr_item?.quantity ?? 0) * (item.price ?? 0),
+        total: Number(pr_item?.quantity ?? 0) * Number(item.price ?? 0),
         is_vat: item?.is_vat ?? false,
+        vat: vat_total,
       };
       const itemEntity = this._dataItemMapper.toEntity(itemDto, po_id);
       const po_item = await this._writeItem.create(itemEntity, manager);

@@ -39,6 +39,8 @@ import { UserTypeProvider } from './user-type';
 import { IncreaseBudgetProvider } from './increaseBudget';
 import { IncreaseBudgetDetailProvider } from './increaseBudgetDetail';
 import { IncreaseBudgetFileProvider } from './increaseBudgetFile';
+import { RolePermissionProvider } from './rolePermission';
+import { RoleGroupProvider } from './roleGroup';
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
   ...DocumentTypeProvider,
@@ -80,4 +82,6 @@ export const AllRegisterProviders: Provider[] = [
   ...IncreaseBudgetDetailProvider,
   ...IncreaseBudgetFileProvider,
   ...UserTypeProvider,
+  ...RoleGroupProvider,
+  ...RolePermissionProvider,
 ];

@@ -18,6 +18,8 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _sub_total: number | 0;
+  private readonly _vat: number | 0;
   private readonly _total: number | 0;
   private readonly _purchaseRequest: PurchaseRequestEntity | null;
   private readonly _orderItem: PurchaseOrderItemEntity[] | null;
@@ -38,6 +40,8 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._sub_total = builder.sub_total ?? 0;
+    this._vat = builder.vat ?? 0;
     this._total = builder.total;
     this._purchaseRequest = builder.purchaseRequest ?? null;
     this._orderItem = builder.orderItem ?? null;
@@ -81,6 +85,14 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get sub_total(): number | 0 {
+    return this._sub_total;
+  }
+
+  get vat(): number | 0 {
+    return this._vat;
   }
 
   get total(): number | 0 {

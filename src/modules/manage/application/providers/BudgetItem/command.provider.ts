@@ -6,6 +6,7 @@ import { UpdateCommandHandler } from '../../commands/BudgetItem/handler/update-c
 import { DeleteCommandHandler } from '../../commands/BudgetItem/handler/delete-command.handler';
 import { GetReportQueryHandler } from '../../queries/BudgetItem/handler/report.command.query';
 import { GetItemIdQueryHandler } from '../../queries/BudgetItem/handler/get-item-id.command.query';
+import { GetBudgetItemQueryHandler } from '../../queries/BudgetItem/handler/get-budget-item-command.query';
 
 export const BudgetItemHandlersProviders: Provider[] = [
   GetAllQueryHandler,
@@ -15,4 +16,5 @@ export const BudgetItemHandlersProviders: Provider[] = [
   DeleteCommandHandler,
   GetReportQueryHandler,
   GetItemIdQueryHandler,
+  GetBudgetItemQueryHandler,
 ];

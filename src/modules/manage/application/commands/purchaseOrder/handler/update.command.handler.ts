@@ -37,6 +37,7 @@ import { IWritePurchaseOrderItemRepository } from '@src/modules/manage/domain/po
 import { PurchaseOrderItemDataMapper } from '../../../mappers/purchase-order-item.mapper';
 import { PurchaseOrderItemId } from '@src/modules/manage/domain/value-objects/purchase-order-item-id.vo';
 import { PurchaseOrderItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-item.orm';
+import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -45,6 +46,7 @@ interface CustomPurchaseOrderItemDto {
   quantity: number;
   total: number;
   is_vat: boolean;
+  vat: number;
 }
 
 @CommandHandler(UpdateCommand)
@@ -124,13 +126,30 @@ export class UpdateCommandHandler
         );
       }
 
+      const vat = await manager.find(VatOrmEntity, {
+        take: 1,
+      });
+      if (!vat || vat.length === 0) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.BAD_REQUEST,
+          { property: 'vat' },
+        );
+      }
+      const vat_rate = vat[0]?.amount ?? 0;
+      const vat_total =
+        Number(pr_item?.quantity ?? 0) *
+        Number(item.price ?? 0) *
+        Number(vat_rate / 100);
+
       const customItem: CustomPurchaseOrderItemDto = {
         purchase_request_item_id: pr_item?.purchase_request_item_id ?? 0,
         remark: pr_item.remark ?? '', // or some default value
         quantity: pr_item.quantity ?? 0, // or some default value
         price: item.price, // assuming this property exists
-        total: (pr_item?.quantity ?? 0) * (item.price ?? 0),
+        total: Number(pr_item?.quantity ?? 0) * Number(item.price ?? 0),
         is_vat: item?.is_vat ?? false,
+        vat: vat_total,
       };
       const itemEntity = this._dataItemMapper.toEntity(customItem, query.id);
 

@@ -17,8 +17,12 @@ import {
   selectApprover,
   selectApproverUserSignatures,
   selectDepartments,
+  selectDepartmentsApprover,
   selectDepartmentUserApprovers,
   selectDepartmentUsers,
+  selectDocApproverUser,
+  selectDocDeptUser,
+  selectDocumentApprover,
   selectDocuments,
   selectDocumentStatuses,
   selectDocumentTypes,
@@ -38,8 +42,8 @@ import {
   EligiblePersons,
   EnumPrOrPo,
 } from '@src/modules/manage/application/constants/status-key.const';
-import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
+import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
 
 @Injectable()
 export class ReadPurchaseRequestRepository
@@ -132,6 +136,10 @@ export class ReadPurchaseRequestRepository
       ...selectStatus,
       ...selectDepartmentUserApprovers,
       ...selectPositionApprover,
+      ...selectDocumentApprover,
+      ...selectDocApproverUser,
+      ...selectDocDeptUser,
+      ...selectDepartmentsApprover,
     ];
 
     const query = manager
@@ -161,6 +169,9 @@ export class ReadPurchaseRequestRepository
         'document_approver',
         'document_approver.user_approval_step_id = user_approval_steps.id',
       )
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
       .addSelect(selectFields);
 
     if (
@@ -221,7 +232,8 @@ export class ReadPurchaseRequestRepository
       .getOneOrFail();
 
     const user_approval_step = await manager
-      .createQueryBuilder(UserApprovalOrmEntity, 'user_approvals')
+      .createQueryBuilder(UserApprovalStepOrmEntity, 'steps')
+      .innerJoin('steps.user_approvals', 'user_approvals')
       .where('user_approvals.document_id = :id', { id: item.document_id })
       .getCount();
 
@@ -236,5 +248,36 @@ export class ReadPurchaseRequestRepository
     const step = workflow_step - user_approval_step;
 
     return this._dataAccessMapper.toEntity(item, step);
+  }
+
+  async countItem(
+    user_id: number,
+    manager: EntityManager,
+  ): Promise<ResponseResult<{ amount: number }>> {
+    // const count = await this.createBaseQuery(manager, undefined, user_id)
+    //   .where('status.id = :id', { id: 1 })
+    //   .getCount();
+    // return { amount: count };
+
+    const result = await manager
+      .createQueryBuilder(PurchaseRequestOrmEntity, 'purchase_requests')
+      .innerJoin('purchase_requests.documents', 'documents')
+      .innerJoin('documents.user_approvals', 'user_approvals')
+      .innerJoin('user_approvals.user_approval_steps', 'user_approval_steps')
+      .innerJoin(
+        'user_approval_steps.document_approvers',
+        'document_approver',
+        'document_approver.user_approval_step_id = user_approval_steps.id',
+      )
+      .leftJoin('user_approval_steps.status', 'status')
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
+      .where('document_approver.user_id = :user_id', { user_id })
+      .andWhere('status.id = :id', { id: 1 })
+      .select('COUNT(user_approval_steps.id)', 'amount')
+      .getRawOne<{ amount: string }>();
+
+    return { amount: Number(result?.amount) };
   }
 }

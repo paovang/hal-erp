@@ -16,6 +16,21 @@ export class ReceiptResponse {
   purchase_order_id: number;
 
   @ApiProperty()
+  po_number: string;
+
+  @ApiProperty()
+  po_doc_type: string;
+
+  @ApiProperty()
+  purchase_request_id: number;
+
+  @ApiProperty()
+  pr_number: string;
+
+  @ApiProperty()
+  pr_doc_type: string;
+
+  @ApiProperty()
   document_id: number;
 
   @ApiProperty()
@@ -28,6 +43,9 @@ export class ReceiptResponse {
   remark: string;
 
   @ApiProperty()
+  account_code: string | null;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()
@@ -35,6 +53,18 @@ export class ReceiptResponse {
 
   @ApiProperty()
   step: boolean;
+
+  @ApiProperty()
+  step_number: number;
+
+  @ApiProperty()
+  sub_total: number | 0;
+
+  @ApiProperty()
+  vat: number | 0;
+
+  @ApiProperty()
+  total: number | 0;
 
   @ApiProperty()
   currency_totals: CurrencyTotal[] | null;

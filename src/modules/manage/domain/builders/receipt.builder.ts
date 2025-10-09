@@ -24,6 +24,14 @@ export class ReceiptBuilder {
   currency_totals?: CurrencyTotal[] | null;
   document_attachments?: DocumentAttachmentEntity[] | null;
   step: number | 0;
+  purchase_request_id: number;
+  po_number: string;
+  po_doc_type: string;
+  pr_number: string;
+  pr_doc_type: string;
+  sub_total: number | 0;
+  vat: number | 0;
+  total: number | 0;
 
   setReceiptId(value: ReceiptId): this {
     this.receiptId = value;
@@ -37,6 +45,46 @@ export class ReceiptBuilder {
 
   setPurchaseOrderId(purchase_order_id: number): this {
     this.purchase_order_id = purchase_order_id;
+    return this;
+  }
+
+  setPoNumber(po_number: string): this {
+    this.po_number = po_number;
+    return this;
+  }
+
+  setPoDocType(po_doc_type: string): this {
+    this.po_doc_type = po_doc_type;
+    return this;
+  }
+
+  setPurchaseRequestId(purchase_request_id: number): this {
+    this.purchase_request_id = purchase_request_id;
+    return this;
+  }
+
+  setPrNumber(pr_number: string): this {
+    this.pr_number = pr_number;
+    return this;
+  }
+
+  setPrDocType(pr_doc_type: string): this {
+    this.pr_doc_type = pr_doc_type;
+    return this;
+  }
+
+  setSubTotal(sub_total: number | 0): this {
+    this.sub_total = sub_total;
+    return this;
+  }
+
+  setVat(vat: number | 0): this {
+    this.vat = vat;
+    return this;
+  }
+
+  setTotal(total: number | 0): this {
+    this.total = total;
     return this;
   }
 

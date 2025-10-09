@@ -33,6 +33,12 @@ export class PurchaseOrderResponse {
   deleted_at: string | null;
 
   @ApiProperty()
+  sub_total: number | 0;
+
+  @ApiProperty()
+  vat: number | 0;
+
+  @ApiProperty()
   total: number | 0;
 
   @ApiProperty()

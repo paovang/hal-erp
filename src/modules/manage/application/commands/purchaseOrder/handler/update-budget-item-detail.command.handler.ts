@@ -71,17 +71,32 @@ export class UpdateBudgetItemDetailCommandHandler
     query: UpdateBudgetItemDetailCommand,
     manager: DataSource['manager'],
   ): Promise<void> {
-    await findOneOrFail(manager, PurchaseOrderOrmEntity, {
-      id: query.id,
-    });
+    await findOneOrFail(
+      manager,
+      PurchaseOrderOrmEntity,
+      {
+        id: query.id,
+      },
+      `purchase order id: ${query.id}`,
+    );
 
-    await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-      id: query.dto.purchase_order_items.id,
-    });
+    await findOneOrFail(
+      manager,
+      PurchaseOrderItemOrmEntity,
+      {
+        id: query.dto.purchase_order_items.id,
+      },
+      `purchase order item id: ${query.dto.purchase_order_items.id}`,
+    );
 
-    await findOneOrFail(manager, BudgetItemOrmEntity, {
-      id: query.dto.purchase_order_items.budget_item_id,
-    });
+    await findOneOrFail(
+      manager,
+      BudgetItemOrmEntity,
+      {
+        id: query.dto.purchase_order_items.budget_item_id,
+      },
+      `budget item id: ${query.dto.purchase_order_items.budget_item_id}`,
+    );
 
     const itemDto = new UpdatePurchaseOrderBudgetItemDto();
     itemDto.id = query.dto.purchase_order_items.id;

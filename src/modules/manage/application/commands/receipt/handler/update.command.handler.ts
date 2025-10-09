@@ -188,8 +188,8 @@ export class UpdateCommandHandler
       );
 
       let payment_total = 0;
-      const get_total = find_currency?.total ?? 0;
-      const rate = exchange_rate?.rate ?? 0;
+      const get_total = Number(find_currency?.total ?? 0);
+      const rate = Number(exchange_rate?.rate ?? 0);
 
       if (currency.code === 'USD' && payment_currency.code === 'LAK') {
         payment_total = get_total * rate;

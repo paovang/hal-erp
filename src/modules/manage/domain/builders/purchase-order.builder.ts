@@ -17,6 +17,8 @@ export class PurchaseOrderBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  sub_total: number | 0;
+  vat: number | 0;
   total: number | 0;
   purchaseRequest: PurchaseRequestEntity | null;
   orderItem: PurchaseOrderItemEntity[] | null;
@@ -72,6 +74,16 @@ export class PurchaseOrderBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setSubTotal(sub_total: number | 0): this {
+    this.sub_total = sub_total;
+    return this;
+  }
+
+  setVat(vat: number | 0): this {
+    this.vat = vat;
     return this;
   }
 

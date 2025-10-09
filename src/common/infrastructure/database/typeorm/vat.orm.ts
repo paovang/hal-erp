@@ -14,7 +14,7 @@ export class VatOrmEntity {
   id: number;
 
   @Index()
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', precision: 15, scale: 8 })
   amount: number;
 
   @CreateDateColumn({ type: 'timestamp' })

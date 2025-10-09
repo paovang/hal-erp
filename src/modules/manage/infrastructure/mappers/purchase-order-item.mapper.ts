@@ -6,10 +6,7 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import moment from 'moment-timezone';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
-import {
-  SelectStatus,
-  VAT_RATE,
-} from '../../application/constants/status-key.const';
+import { SelectStatus } from '../../application/constants/status-key.const';
 import { PurchaseOrderSelectedVendorDataAccessMapper } from './purchase-order-selected-vendor.mapper';
 import { BudgetItemDataAccessMapper } from './budget-item.mapper';
 import { PurchaseRequestItemDataAccessMapper } from './purchase-request-item.mapper';
@@ -47,6 +44,8 @@ export class PurchaseOrderItemDataAccessMapper {
     mediaOrmEntity.is_vat = poItemEntity.is_vat
       ? SelectStatus.TRUE
       : SelectStatus.FALSE;
+    mediaOrmEntity.vat = poItemEntity.vat;
+
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = poItemEntity.createdAt ?? new Date(now);
     }
@@ -58,8 +57,8 @@ export class PurchaseOrderItemDataAccessMapper {
   toEntity(ormData: PurchaseOrderItemOrmEntity): PurchaseOrderItemEntity {
     const isVat = (ormData.is_vat as SelectStatus) === SelectStatus.TRUE;
 
-    const total = ormData.total ?? 0;
-    const vatAmount = isVat ? total * (VAT_RATE / 100) : 0;
+    const total = Number(ormData.total ?? 0);
+    const vatAmount = isVat ? Number(ormData.vat ?? 0) : 0;
     const totalWithVat = total + vatAmount;
 
     const builder = PurchaseOrderItemEntity.builder()

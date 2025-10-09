@@ -48,4 +48,33 @@ export class CodeGeneratorUtil {
       .toUpperCase()
       .substring(0, length);
   }
+
+  async generateSequentialUniqueCode(
+    length: number,
+    checkUniqueness: (code: string) => Promise<boolean>,
+    prefix?: string,
+    startAt = 1,
+  ): Promise<string> {
+    let n = Math.max(0, startAt - 1);
+
+    // Try next numbers until we find a free code
+    while (true) {
+      n += 1;
+      const candidate = this.formatNumericCode(n, length, prefix);
+      if (await checkUniqueness(candidate)) {
+        return candidate;
+      }
+      // Loop continues until a unique code is found
+    }
+  }
+
+  /**
+   * Formats a number as zero-padded string with optional prefix.
+   * Example: formatNumericCode(12, 4, 'DT') => 'DT-0012'
+   */
+  formatNumericCode(n: number, length: number, prefix?: string): string {
+    const numeric = Math.max(0, Math.floor(n)).toString().padStart(length, '0');
+    return prefix ? `${numeric}/${prefix}` : numeric;
+    // return prefix ? `${prefix}-${numeric}` : numeric;
+  }
 }

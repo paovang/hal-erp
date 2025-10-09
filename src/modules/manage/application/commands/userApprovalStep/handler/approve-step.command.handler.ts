@@ -81,6 +81,12 @@ import { verifyOtp } from '@src/common/utils/server/verify-otp.util';
 import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
+import { assertOrThrow } from '@src/common/utils/assert.util';
+import { ExchangeRateOrmEntity } from '@src/common/infrastructure/database/typeorm/exchange-rate.orm';
+import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
+import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
+import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
+import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 
 interface CustomApprovalDto
   extends Omit<
@@ -150,7 +156,7 @@ export class ApproveStepCommandHandler
   async execute(
     query: ApproveStepCommand,
   ): Promise<ResponseResult<UserApprovalStepEntity>> {
-    const result = await this._transactionManagerService.runInTransaction(
+    return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
@@ -165,25 +171,40 @@ export class ApproveStepCommandHandler
           );
         }
 
-        const department = await findOneOrFail(
-          manager,
-          DepartmentUserOrmEntity,
-          {
-            user_id: user_id,
-          },
-        );
+        let department_name = '';
 
-        const department_id = (department as any).department_id;
+        const department = await manager.findOne(DepartmentUserOrmEntity, {
+          where: { user_id: user_id },
+        });
 
-        const get_department_name = await findOneOrFail(
-          manager,
-          DepartmentOrmEntity,
-          {
-            id: department_id,
-          },
-        );
+        // const department = await findOneOrFail(
+        //   manager,
+        //   DepartmentUserOrmEntity,
+        //   {
+        //     user_id: user_id,
+        //   },
+        //   `department user id: ${user_id}`,
+        // );
 
-        const department_name = (get_department_name as any).name;
+        if (department) {
+          console.log('1');
+          const department_id = (department as any).department_id;
+
+          const get_department_name = await findOneOrFail(
+            manager,
+            DepartmentOrmEntity,
+            {
+              id: department_id,
+            },
+            `department id: ${department_id}`,
+          );
+
+          department_name = (get_department_name as any).name;
+        } else {
+          console.log('2', user.username);
+
+          department_name = user.username || '';
+        }
 
         const DocumentStatus = await findOneOrFail(
           manager,
@@ -191,6 +212,7 @@ export class ApproveStepCommandHandler
           {
             id: query.dto.statusId,
           },
+          `document status id: ${query.dto.statusId}`,
         );
 
         const status = (DocumentStatus as any).name;
@@ -224,11 +246,6 @@ export class ApproveStepCommandHandler
           );
         }
 
-        if (step.is_otp === true) {
-          // Verify OTP
-          await verifyOtp(query, status, tel);
-        }
-
         if (step.requires_file_upload === true) {
           const document_id = step.user_approvals.document_id;
           await this.uploadFile(query, manager, document_id!, user_id);
@@ -249,7 +266,479 @@ export class ApproveStepCommandHandler
           );
         }
 
-        // Update current step to APPROVED
+        if (query.dto.statusId === STATUS_KEY.APPROVED) {
+          // Update current step to APPROVED
+          const approvedStepEntity = this._dataMapper.toEntity(
+            query.dto,
+            user_id,
+            query.stepId,
+          );
+          await approvedStepEntity.initializeUpdateSetId(
+            new UserApprovalStepId(step.id),
+          );
+          await approvedStepEntity.validateExistingIdForUpdate();
+
+          await findOneOrFail(query.manager, UserApprovalStepOrmEntity, {
+            id: approvedStepEntity.getId().value,
+          });
+
+          await this._write.update(approvedStepEntity, manager, query.stepId);
+
+          const document = await manager.findOne(DocumentOrmEntity, {
+            where: { id: step.user_approvals.document_id },
+          });
+
+          if (!document) {
+            throw new ManageDomainException(
+              'errors.not_found',
+              HttpStatus.NOT_FOUND,
+              { property: 'document' },
+            );
+          }
+
+          const approvalWorkflow = await manager.findOne(
+            ApprovalWorkflowOrmEntity,
+            {
+              where: { document_type_id: document.document_type_id },
+            },
+          );
+
+          if (!approvalWorkflow) {
+            throw new ManageDomainException(
+              'errors.not_found',
+              HttpStatus.NOT_FOUND,
+              { property: 'approval workflow' },
+            );
+          }
+
+          // Determine current step number safely
+          const currentStepNumber = step?.step_number ?? 0;
+
+          let a_w_s = await manager.findOne(ApprovalWorkflowStepOrmEntity, {
+            where: {
+              approval_workflow_id: approvalWorkflow.id,
+              step_number: currentStepNumber + 1,
+            },
+          });
+
+          if (!a_w_s) {
+            a_w_s = await manager.findOne(ApprovalWorkflowStepOrmEntity, {
+              where: {
+                approval_workflow_id: approvalWorkflow.id,
+                step_number: currentStepNumber + 2,
+              },
+            });
+          }
+
+          if (a_w_s) {
+            const pendingDto: CustomApprovalDto = {
+              user_approval_id: step.user_approvals.id,
+              approval_workflow_step_id: a_w_s.id,
+              statusId: STATUS_KEY.PENDING,
+              remark: null,
+              step_number: a_w_s.step_number ?? 0,
+              requires_file_upload: a_w_s.requires_file_upload,
+              is_otp: a_w_s.is_otp,
+            };
+
+            const pendingEntity =
+              this._dataMapper.toEntityForInsert(pendingDto);
+            const userApprovalStep = await this._write.create(
+              pendingEntity,
+              manager,
+            );
+
+            const user_approval_step_id = (userApprovalStep as any)._id._value;
+            let total = 0;
+
+            if (query.dto.type === EnumPrOrPo.PR) {
+              // get pr data
+              const purchase_request = await manager.findOne(
+                PurchaseRequestOrmEntity,
+                {
+                  where: { document_id: step.user_approvals.document_id },
+                  relations: ['purchase_request_items'],
+                },
+              );
+
+              if (!purchase_request) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'purchase request' },
+                );
+              }
+
+              const titles = purchase_request.purchase_request_items
+                .map((item) => item.title)
+                .filter(Boolean);
+
+              const titlesString = titles.join(', ');
+              // end
+
+              total = purchase_request.purchase_request_items.reduce(
+                (sum, item) => sum + Number(item.total_price || 0),
+                0,
+              );
+
+              if (a_w_s.is_otp === true) {
+                // send approval request server to server
+                await sendApprovalRequest(
+                  user_approval_step_id,
+                  total,
+                  user,
+                  user_id,
+                  department_name,
+                  EnumRequestApprovalType.PR,
+                  titlesString,
+                );
+              }
+            } else if (query.dto.type === EnumPrOrPo.PO) {
+              const po = await manager.findOne(PurchaseOrderOrmEntity, {
+                where: { document_id: step.user_approvals.document_id },
+                relations: [
+                  'purchase_order_items',
+                  'purchase_order_items.purchase_request_items',
+                ],
+              });
+              if (!po) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'purchase order' },
+                );
+              }
+
+              const titlesString = po.purchase_order_items
+                .flatMap((item) => item.purchase_request_items)
+                .map((prItem) => prItem.title)
+                .join(', ');
+
+              if (
+                roles.includes('budget-admin') ||
+                roles.includes('budget-user')
+              ) {
+                let sum_total = 0;
+                for (const item of query.dto.purchase_order_items) {
+                  await findOneOrFail(
+                    manager,
+                    PurchaseOrderItemOrmEntity,
+                    {
+                      id: item.id,
+                    },
+                    `purchase order item id: ${item.id}`,
+                  );
+
+                  await findOneOrFail(
+                    manager,
+                    BudgetItemOrmEntity,
+                    {
+                      id: item.budget_item_id,
+                    },
+                    `budget item id: ${item.budget_item_id}`,
+                  );
+
+                  const allBudgetItemIds = query.dto.purchase_order_items.map(
+                    (item) => item.budget_item_id,
+                  );
+
+                  // Check if all values in the array are the same
+                  const [firstBudgetItemId, ...rest] = allBudgetItemIds;
+                  if (rest.every((id) => id === firstBudgetItemId)) {
+                    const get_total = await this._readBudget.getTotal(
+                      item.id,
+                      manager,
+                    );
+
+                    sum_total += Number(get_total);
+                  } else {
+                    const get_total = await this._readBudget.getTotal(
+                      item.id,
+                      manager,
+                    );
+
+                    sum_total = Number(get_total);
+                  }
+
+                  const check_budget = await this._readBudget.calculate(
+                    item.budget_item_id,
+                    manager,
+                  );
+
+                  if (sum_total > check_budget) {
+                    throw new ManageDomainException(
+                      'errors.insufficient_budget',
+                      HttpStatus.BAD_REQUEST,
+                      { property: `${check_budget}` },
+                    );
+                  }
+                  const itemId = item.id;
+
+                  const POEntity =
+                    this._dataPoItemMapper.toEntityForUpdate(item);
+
+                  // Set and validate ID
+                  await POEntity.initializeUpdateSetId(
+                    new PurchaseOrderItemId(itemId),
+                  );
+                  await POEntity.validateExistingIdForUpdate();
+
+                  // Final existence check for ID before update
+                  await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                    id: POEntity.getId().value,
+                  });
+
+                  await this._writePoItem.update(POEntity, manager);
+                }
+                if (a_w_s.is_otp === true) {
+                  // send approval request server to server
+                  await sendApprovalRequest(
+                    user_approval_step_id,
+                    total,
+                    user,
+                    user_id,
+                    department_name,
+                    EnumRequestApprovalType.PO,
+                    titlesString,
+                  );
+                }
+              }
+
+              if (a_w_s.is_otp === true) {
+                // send approval request server to server
+                await sendApprovalRequest(
+                  user_approval_step_id,
+                  total,
+                  user,
+                  user_id,
+                  department_name,
+                  EnumRequestApprovalType.PO,
+                  titlesString,
+                );
+              }
+
+              total = po.purchase_order_items.reduce(
+                (sum, item) => sum + Number(item.total || 0),
+                0,
+              );
+            } else if (query.dto.type === EnumPrOrPo.R) {
+              const receipt = await manager.findOne(ReceiptOrmEntity, {
+                where: { document_id: step.user_approvals.document_id },
+                relations: [
+                  'receipt_items',
+                  'receipt_items.purchase_order_items.purchase_request_items',
+                ],
+              });
+
+              if (!receipt) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'receipt' },
+                );
+              }
+
+              const titlesString = receipt.receipt_items
+                .flatMap((receiptItem) => receiptItem.purchase_order_items)
+                .flatMap((poItem) => poItem.purchase_request_items)
+                .map((prItem) => prItem.title)
+                .join(', ');
+
+              if (
+                roles.includes('account-admin') ||
+                roles.includes('account-user')
+              ) {
+                if (!receipt.account_code) {
+                  if (!query.dto.account_code) {
+                    throw new ManageDomainException(
+                      'errors.account_code_required',
+                      HttpStatus.BAD_REQUEST,
+                    );
+                  }
+
+                  await this.registerAccount(query, manager, receipt.id);
+                } else {
+                  await this.insertDataInTransaction(manager, receipt);
+                }
+              }
+
+              total = receipt.receipt_items.reduce(
+                (sum, item) => sum + Number(item.total || 0),
+                0,
+              );
+
+              if (a_w_s.is_otp === true) {
+                // send approval request server to server
+                await sendApprovalRequest(
+                  user_approval_step_id,
+                  total,
+                  user,
+                  user_id,
+                  department_name,
+                  EnumRequestApprovalType.RC,
+                  titlesString,
+                );
+              }
+            } else {
+              throw new ManageDomainException(
+                'errors.not_found',
+                HttpStatus.NOT_FOUND,
+                { property: 'type' },
+              );
+            }
+
+            await handleApprovalStep({
+              a_w_s,
+              total,
+              user_id,
+              user_approval_step_id,
+              manager,
+              dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+              writeDocumentApprover: this._writeDocumentApprover,
+              getApprover: this.getApprover.bind(this),
+            });
+          }
+
+          if (!a_w_s) {
+            // ກໍລະນິບໍ່ມິ step ຕໍ່ໄປແລ້ວ
+            if (query.dto.type === EnumPrOrPo.PO) {
+              const po = await manager.findOne(PurchaseOrderOrmEntity, {
+                where: { document_id: step.user_approvals.document_id },
+                relations: [
+                  'purchase_order_items',
+                  'purchase_order_items.purchase_request_items',
+                ],
+              });
+              if (!po) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'purchase order' },
+                );
+              }
+
+              if (
+                roles.includes('budget-admin') ||
+                roles.includes('budget-user')
+              ) {
+                let sum_total = 0;
+                for (const item of query.dto.purchase_order_items) {
+                  await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                    id: item.id,
+                  });
+
+                  await findOneOrFail(manager, BudgetItemOrmEntity, {
+                    id: item.budget_item_id,
+                  });
+
+                  const allBudgetItemIds = query.dto.purchase_order_items.map(
+                    (item) => item.budget_item_id,
+                  );
+
+                  // Check if all values in the array are the same
+                  const [firstBudgetItemId, ...rest] = allBudgetItemIds;
+                  if (rest.every((id) => id === firstBudgetItemId)) {
+                    const get_total = await this._readBudget.getTotal(
+                      item.id,
+                      manager,
+                    );
+
+                    sum_total += Number(get_total);
+                  } else {
+                    const get_total = await this._readBudget.getTotal(
+                      item.id,
+                      manager,
+                    );
+
+                    sum_total = Number(get_total);
+                  }
+
+                  const check_budget = await this._readBudget.calculate(
+                    item.budget_item_id,
+                    manager,
+                  );
+
+                  if (sum_total > check_budget) {
+                    throw new ManageDomainException(
+                      'errors.insufficient_budget',
+                      HttpStatus.BAD_REQUEST,
+                      { property: `${check_budget}` },
+                    );
+                  }
+                  const itemId = item.id;
+
+                  const POEntity =
+                    this._dataPoItemMapper.toEntityForUpdate(item);
+
+                  // Set and validate ID
+                  await POEntity.initializeUpdateSetId(
+                    new PurchaseOrderItemId(itemId),
+                  );
+                  await POEntity.validateExistingIdForUpdate();
+
+                  // Final existence check for ID before update
+                  await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                    id: POEntity.getId().value,
+                  });
+
+                  await this._writePoItem.update(POEntity, manager);
+                }
+              }
+            } else if (query.dto.type === EnumPrOrPo.R) {
+              const receipt = await manager.findOne(ReceiptOrmEntity, {
+                where: { document_id: step.user_approvals.document_id },
+                relations: [
+                  'receipt_items',
+                  'receipt_items.purchase_order_items.purchase_request_items',
+                ],
+              });
+
+              if (!receipt) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'receipt' },
+                );
+              }
+
+              if (
+                roles.includes('account-admin') ||
+                roles.includes('account-user')
+              ) {
+                if (!receipt.account_code) {
+                  if (!query.dto.account_code) {
+                    throw new ManageDomainException(
+                      'errors.account_code_required',
+                      HttpStatus.BAD_REQUEST,
+                    );
+                  }
+
+                  await this.registerAccount(query, manager, receipt.id);
+                }
+              }
+
+              if (receipt.account_code) {
+                await this.insertDataInTransaction(manager, receipt);
+              }
+            }
+          }
+
+          await this.checkDataAndUpdateUserApproval(query, manager);
+          try {
+            if (step.is_otp === true) {
+              // Verify OTP
+              await verifyOtp(query, status, tel);
+            }
+          } catch (error) {
+            throw new DomainException(
+              'errors.otp_verification_failed',
+              HttpStatus.BAD_REQUEST,
+              { details: (error as Error).message },
+            );
+          }
+          return approvedStepEntity;
+        }
+
         const approvedStepEntity = this._dataMapper.toEntity(
           query.dto,
           user_id,
@@ -266,316 +755,61 @@ export class ApproveStepCommandHandler
 
         await this._write.update(approvedStepEntity, manager, query.stepId);
 
-        const document = await manager.findOne(DocumentOrmEntity, {
-          where: { id: step.user_approvals.document_id },
-        });
+        await this.RejectUserApproval(query, manager);
 
-        if (!document) {
-          throw new ManageDomainException(
-            'errors.not_found',
-            HttpStatus.NOT_FOUND,
-            { property: 'document' },
-          );
-        }
-
-        const approvalWorkflow = await manager.findOne(
-          ApprovalWorkflowOrmEntity,
-          {
-            where: { document_type_id: document.document_type_id },
-          },
-        );
-
-        if (!approvalWorkflow) {
-          throw new ManageDomainException(
-            'errors.not_found',
-            HttpStatus.NOT_FOUND,
-            { property: 'approval workflow' },
-          );
-        }
-
-        // Determine current step number safely
-        const currentStepNumber = step?.step_number ?? 0;
-
-        let a_w_s = await manager.findOne(ApprovalWorkflowStepOrmEntity, {
-          where: {
-            approval_workflow_id: approvalWorkflow.id,
-            step_number: currentStepNumber + 1,
-          },
-        });
-
-        if (!a_w_s) {
-          a_w_s = await manager.findOne(ApprovalWorkflowStepOrmEntity, {
-            where: {
-              approval_workflow_id: approvalWorkflow.id,
-              step_number: currentStepNumber + 2,
-            },
-          });
-        }
-
-        if (a_w_s) {
-          const pendingDto: CustomApprovalDto = {
-            user_approval_id: step.user_approvals.id,
-            approval_workflow_step_id: a_w_s.id,
-            statusId: STATUS_KEY.PENDING,
-            remark: null,
-            step_number: a_w_s.step_number ?? 0,
-            requires_file_upload: a_w_s.requires_file_upload,
-            is_otp: a_w_s.is_otp,
-          };
-
-          const pendingEntity = this._dataMapper.toEntityForInsert(pendingDto);
-          const userApprovalStep = await this._write.create(
-            pendingEntity,
-            manager,
-          );
-
-          const user_approval_step_id = (userApprovalStep as any)._id._value;
-          let total = 0;
-          if (query.dto.type === EnumPrOrPo.PR) {
-            // get pr data
-            const purchase_request = await manager.findOne(
-              PurchaseRequestOrmEntity,
-              {
-                where: { document_id: step.user_approvals.document_id },
-                relations: ['purchase_request_items'],
-              },
-            );
-
-            if (!purchase_request) {
-              throw new ManageDomainException(
-                'errors.not_found',
-                HttpStatus.NOT_FOUND,
-                { property: 'purchase request' },
-              );
-            }
-
-            const titles = purchase_request.purchase_request_items
-              .map((item) => item.title)
-              .filter(Boolean);
-
-            const titlesString = titles.join(', ');
-            // end
-
-            total = purchase_request.purchase_request_items.reduce(
-              (sum, item) => sum + (item.total_price || 0),
-              0,
-            );
-
-            if (step.is_otp === true) {
-              // send approval request server to server
-              await sendApprovalRequest(
-                user_approval_step_id,
-                total,
-                user,
-                user_id,
-                department_name,
-                EnumRequestApprovalType.PR,
-                titlesString,
-              );
-            }
-          } else if (query.dto.type === EnumPrOrPo.PO) {
-            const po = await manager.findOne(PurchaseOrderOrmEntity, {
-              where: { document_id: step.user_approvals.document_id },
-              relations: [
-                'purchase_order_items',
-                'purchase_order_items.purchase_request_items',
-              ],
-            });
-            if (!po) {
-              throw new ManageDomainException(
-                'errors.not_found',
-                HttpStatus.NOT_FOUND,
-                { property: 'purchase order' },
-              );
-            }
-
-            const titlesString = po.purchase_order_items
-              .flatMap((item) => item.purchase_request_items)
-              .map((prItem) => prItem.title)
-              .join(', ');
-
-            if (
-              roles.includes('budget-admin') ||
-              roles.includes('budget-user')
-            ) {
-              let sum_total = 0;
-              for (const item of query.dto.purchase_order_items) {
-                await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-                  id: item.id,
-                });
-
-                await findOneOrFail(manager, BudgetItemOrmEntity, {
-                  id: item.budget_item_id,
-                });
-
-                const allBudgetItemIds = query.dto.purchase_order_items.map(
-                  (item) => item.budget_item_id,
-                );
-
-                // Check if all values in the array are the same
-                const [firstBudgetItemId, ...rest] = allBudgetItemIds;
-                if (rest.every((id) => id === firstBudgetItemId)) {
-                  const get_total = await this._readBudget.getTotal(
-                    item.id,
-                    manager,
-                  );
-
-                  sum_total += get_total;
-                } else {
-                  const get_total = await this._readBudget.getTotal(
-                    item.id,
-                    manager,
-                  );
-
-                  sum_total = get_total;
-                }
-
-                const check_budget = await this._readBudget.calculate(
-                  item.budget_item_id,
-                  manager,
-                );
-
-                if (sum_total > check_budget) {
-                  throw new ManageDomainException(
-                    'errors.insufficient_budget',
-                    HttpStatus.BAD_REQUEST,
-                    { property: 'budget' },
-                  );
-                }
-                const itemId = item.id;
-
-                const POEntity = this._dataPoItemMapper.toEntityForUpdate(item);
-
-                // Set and validate ID
-                await POEntity.initializeUpdateSetId(
-                  new PurchaseOrderItemId(itemId),
-                );
-                await POEntity.validateExistingIdForUpdate();
-
-                // Final existence check for ID before update
-                await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-                  id: POEntity.getId().value,
-                });
-
-                await this._writePoItem.update(POEntity, manager);
-              }
-
-              if (step.is_otp === true) {
-                // send approval request server to server
-                await sendApprovalRequest(
-                  user_approval_step_id,
-                  total,
-                  user,
-                  user_id,
-                  department_name,
-                  EnumRequestApprovalType.PO,
-                  titlesString,
-                );
-              }
-            }
-
-            if (step.is_otp === true) {
-              // send approval request server to server
-              await sendApprovalRequest(
-                user_approval_step_id,
-                total,
-                user,
-                user_id,
-                department_name,
-                EnumRequestApprovalType.PO,
-                titlesString,
-              );
-            }
-
-            total = po.purchase_order_items.reduce(
-              (sum, item) => sum + (item.total || 0),
-              0,
-            );
-          } else if (query.dto.type === EnumPrOrPo.R) {
-            const receipt = await manager.findOne(ReceiptOrmEntity, {
-              where: { document_id: step.user_approvals.document_id },
-              relations: [
-                'receipt_items',
-                'receipt_items.purchase_order_items.purchase_request_items',
-              ],
-            });
-
-            if (!receipt) {
-              throw new ManageDomainException(
-                'errors.not_found',
-                HttpStatus.NOT_FOUND,
-                { property: 'receipt' },
-              );
-            }
-
-            const titlesString = receipt.receipt_items
-              .flatMap((receiptItem) => receiptItem.purchase_order_items)
-              .flatMap((poItem) => poItem.purchase_request_items)
-              .map((prItem) => prItem.title)
-              .join(', ');
-
-            if (
-              roles.includes('account-admin') ||
-              roles.includes('account-user')
-            ) {
-              if (!receipt.account_code) {
-                if (!query.dto.account_code) {
-                  throw new ManageDomainException(
-                    'errors.account_code_required',
-                    HttpStatus.BAD_REQUEST,
-                  );
-                }
-
-                await this.registerAccount(query, manager, receipt.id);
-              } else {
-                await this.insertDataInTransaction(manager, receipt);
-              }
-            }
-
-            total = receipt.receipt_items.reduce(
-              (sum, item) => sum + (item.total || 0),
-              0,
-            );
-
-            if (step.is_otp === true) {
-              // send approval request server to server
-              await sendApprovalRequest(
-                user_approval_step_id,
-                total,
-                user,
-                user_id,
-                department_name,
-                EnumRequestApprovalType.RC,
-                titlesString,
-              );
-            }
-          } else {
-            throw new ManageDomainException(
-              'errors.not_found',
-              HttpStatus.NOT_FOUND,
-              { property: 'type' },
-            );
+        try {
+          if (step.is_otp === true) {
+            // Verify OTP
+            await verifyOtp(query, status, tel);
           }
-
-          await handleApprovalStep({
-            a_w_s,
-            total,
-            user_id,
-            user_approval_step_id,
-            manager,
-            dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-            writeDocumentApprover: this._writeDocumentApprover,
-            getApprover: this.getApprover.bind(this),
-          });
+        } catch (error: any) {
+          console.log('error', error.message);
+          throw new ManageDomainException(
+            'errors.otp_verification_failed',
+            HttpStatus.BAD_REQUEST,
+            { property: `${error.message}` },
+          );
         }
 
         return approvedStepEntity;
       },
     );
+  }
 
-    await this.checkDataAndUpdateUserApproval(query);
+  private async RejectUserApproval(
+    query: ApproveStepCommand,
+    manager: EntityManager,
+  ): Promise<void> {
+    const PendingStep = await manager.findOne(UserApprovalStepOrmEntity, {
+      where: {
+        id: query.stepId,
+      },
+    });
 
-    return result;
+    if (!PendingStep) {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        { property: 'user approval step' },
+      );
+    }
+
+    const updateStatusDto: UpdateUserApprovalStatusDto = {
+      status: STATUS_KEY.REJECTED,
+    };
+
+    const finalApprovalEntity =
+      this._dataUAMapper.toEntityUpdate(updateStatusDto);
+    await finalApprovalEntity.initializeUpdateSetId(
+      new UserApprovalId(PendingStep.user_approval_id!),
+    );
+    await finalApprovalEntity.validateExistingIdForUpdate();
+
+    await findOneOrFail(manager, UserApprovalOrmEntity, {
+      id: finalApprovalEntity.getId().value,
+    });
+
+    await this._writeUA.update(finalApprovalEntity, manager);
   }
 
   private async getApprover(
@@ -602,14 +836,23 @@ export class ApproveStepCommandHandler
 
   private async checkDataAndUpdateUserApproval(
     query: ApproveStepCommand,
+    manager: EntityManager,
   ): Promise<void> {
-    const PendingStep = await query.manager.findOne(UserApprovalStepOrmEntity, {
+    const PendingStep = await manager.findOne(UserApprovalStepOrmEntity, {
       where: {
         id: query.stepId,
       },
     });
 
-    const remainingPendingStep = await query.manager.findOne(
+    if (!PendingStep) {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        { property: 'user approval step' },
+      );
+    }
+
+    const remainingPendingStep = await manager.findOne(
       UserApprovalStepOrmEntity,
       {
         where: {
@@ -631,11 +874,11 @@ export class ApproveStepCommandHandler
       );
       await finalApprovalEntity.validateExistingIdForUpdate();
 
-      await findOneOrFail(query.manager, UserApprovalOrmEntity, {
+      await findOneOrFail(manager, UserApprovalOrmEntity, {
         id: finalApprovalEntity.getId().value,
       });
 
-      await this._writeUA.update(finalApprovalEntity, query.manager);
+      await this._writeUA.update(finalApprovalEntity, manager);
     }
   }
 
@@ -736,25 +979,31 @@ export class ApproveStepCommandHandler
     manager: EntityManager,
     receipt: ReceiptOrmEntity,
   ): Promise<void> {
+    // Group receipt_items by budget_item_id
+    const grouped: Record<string, any[]> = {};
     for (const item of receipt.receipt_items) {
       const poItem = item.purchase_order_items;
+      if (!poItem || !poItem.budget_item_id) continue;
+      const key = String(poItem.budget_item_id);
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(item);
+    }
 
-      // Ensure purchase order item exists
-      if (!poItem || !poItem.budget_item_id) {
-        throw new ManageDomainException(
-          `errors.invalid_budget_item`,
-          HttpStatus.BAD_REQUEST,
-          { property: 'budget_item_detail_id' },
-        );
-      }
+    for (const budgetItemId in grouped) {
+      const items = grouped[budgetItemId];
+      // Check if transaction already exists for this budget_item_id
+      const exists = await manager.exists(DocumentTransactionOrmEntity, {
+        where: {
+          document_id: receipt.document_id,
+          budget_item_id: Number(budgetItemId),
+        },
+      });
+      if (exists) continue;
 
       // Find budget item detail
       const find_budget_item = await manager.findOne(BudgetItemOrmEntity, {
-        where: {
-          id: poItem.budget_item_id,
-        },
+        where: { id: Number(budgetItemId) },
       });
-
       if (!find_budget_item) {
         throw new ManageDomainException(
           'errors.not_found',
@@ -763,23 +1012,104 @@ export class ApproveStepCommandHandler
         );
       }
 
+      // Use the first item for PO/vendor/currency lookup
+      const firstItem = items[0];
+      // const poItem = firstItem.purchase_order_items;
+      const purchase_order_item = await manager.findOne(
+        PurchaseOrderItemOrmEntity,
+        { where: { id: firstItem.purchase_order_item_id } },
+      );
+      assertOrThrow(
+        purchase_order_item,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'purchase order item',
+      );
+      const order_item_select_vendor = await manager.findOne(
+        PurchaseOrderSelectedVendorOrmEntity,
+        { where: { purchase_order_item_id: firstItem.purchase_order_item_id } },
+      );
+      assertOrThrow(
+        order_item_select_vendor,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'purchase order selected vendor',
+      );
+      const vendor_bank_account = await manager.findOne(
+        VendorBankAccountOrmEntity,
+        { where: { id: order_item_select_vendor?.vendor_bank_account_id } },
+      );
+      assertOrThrow(
+        vendor_bank_account,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'vendor bank account',
+      );
+      const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
+        where: {
+          from_currency_id: vendor_bank_account?.currency_id,
+          to_currency_id: firstItem.payment_currency_id,
+          is_active: true,
+        },
+      });
+      assertOrThrow(
+        exchange_rate,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'exchange rate',
+      );
+      const currency = await this.getCurrency(
+        exchange_rate!.from_currency_id,
+        manager,
+      );
+      const payment_currency = await this.getCurrency(
+        exchange_rate!.to_currency_id,
+        manager,
+      );
+
+      // Sum total for all items in this group
+      let sum_total = 0;
+      for (const item of items) {
+        const purchase_order_item = await manager.findOne(
+          PurchaseOrderItemOrmEntity,
+          { where: { id: item.purchase_order_item_id } },
+        );
+        const vat = Number(purchase_order_item?.vat ?? 0);
+        const get_total = Number(purchase_order_item?.total ?? 0);
+        sum_total += get_total + vat;
+      }
+      const rate = Number(exchange_rate?.rate ?? 0);
+      let payment_total = 0;
+      if (currency.code === 'USD' && payment_currency.code === 'LAK') {
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
+        payment_total = sum_total * rate;
+      } else {
+        payment_total = sum_total * 1;
+      }
+
       // Generate transaction number
       const transactionNumber =
         await this.generateDocumentTransactionNumber(manager);
-
-      // Prepare transaction data
       const transactionData: DocumentTransactionInterface = {
         document_id: receipt.document_id!,
         budget_item_detail_id: find_budget_item.id,
         transaction_number: transactionNumber,
-        amount: item.total ?? 0,
+        amount: Number(payment_total) ?? 0,
         transaction_type: EnumDocumentTransactionType.COMMIT,
       };
-
-      // Map and save transaction entity
       const transactionEntity =
         this._dataTransactionMapper.toEntity(transactionData);
       await this._writeTransaction.create(transactionEntity, manager);
     }
+  }
+
+  private async getCurrency(
+    currency: number,
+    manager: EntityManager,
+  ): Promise<CurrencyOrmEntity> {
+    return await findOneOrFail(manager, CurrencyOrmEntity, {
+      id: currency,
+    });
   }
 }

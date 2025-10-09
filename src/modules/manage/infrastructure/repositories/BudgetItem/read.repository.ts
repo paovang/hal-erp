@@ -22,35 +22,57 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     private readonly _paginationService: IPaginationService,
   ) {}
 
+  // async findAll(
+  //   query: BudgetItemQueryDto,
+  //   manager: EntityManager,
+  // ): Promise<ResponseResult<BudgetItemEntity>> {
+  //   const budget_account_id = Number(query.budget_account_id);
+  //   const queryBuilder = await this.createBaseQuery(manager, budget_account_id);
+  //   query.sort_by = 'budget_items.id';
+
+  //   const data = await this._paginationService.paginate(
+  //     queryBuilder,
+  //     query,
+  //     this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+  //     this.getFilterOptions(),
+  //   );
+  //   return data;
+  // }
   async findAll(
     query: BudgetItemQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetItemEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const budget_account_id = Number(query.budget_account_id);
+    const queryBuilder = this.createBaseQuery(manager, budget_account_id);
+
+    // Ensure sorting
     query.sort_by = 'budget_items.id';
 
+    // Use pagination service
     const data = await this._paginationService.paginate(
       queryBuilder,
       query,
-      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+      this._dataAccessMapper.toEntityReport.bind(this._dataAccessMapper),
       this.getFilterOptions(),
     );
+
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager) {
-    return manager
+  private createBaseQuery(manager: EntityManager, budget_account_id?: number) {
+    const query = manager
       .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
       .select([
         'budget_items.id',
         'budget_items.name',
         'budget_items.budget_account_id',
-        'budget_items.allocated_amount',
         'budget_items.created_at',
         'budget_items.updated_at',
       ])
       .innerJoin('budget_items.budget_accounts', 'budget_accounts')
       .leftJoin('budget_accounts.departments', 'departments')
+      .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
+      .leftJoin('budget_items.document_transactions', 'document_transactions')
       .addSelect([
         'budget_accounts.id',
         'budget_accounts.name',
@@ -65,8 +87,43 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'departments.department_head_id',
         'departments.created_at',
         'departments.updated_at',
+        'increase_budget_detail.id',
+        'increase_budget_detail.allocated_amount',
+        'document_transactions.id',
+        'document_transactions.amount',
+        'document_transactions.document_id',
+        'document_transactions.transaction_type',
+        'document_transactions.budget_item_id',
       ]);
+
+    // Add a subquery to get the total used amount per budget item to avoid duplication
+    // query.addSelect(
+    //   (subQuery) =>
+    //     subQuery
+    //       .select('COALESCE(SUM(document_transactions.amount), 0)')
+    //       .from('document_transactions', 'document_transactions')
+    //       .where('document_transactions.budget_item_id = budget_items.id'),
+    //   'used_amount',
+    // );
+
+    // // Add a subquery to get the total allocated amount per budget item
+    // query.addSelect(
+    //   (subQuery) =>
+    //     subQuery
+    //       .select('COALESCE(SUM(increase_budget_detail.allocated_amount), 0)')
+    //       .from('increase_budget_details', 'increase_budget_detail')
+    //       .where('increase_budget_detail.budget_item_id = budget_items.id'),
+    //   'allocated_amount_total',
+    // );
+
+    if (budget_account_id) {
+      query.where('budget_accounts.id = :budget_account_id', {
+        budget_account_id: budget_account_id,
+      });
+    }
+    return query;
   }
+
   private getFilterOptions(): FilterOptions {
     return {
       searchColumns: ['budget_items.name'],
@@ -74,6 +131,26 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       filterByColumns: [],
     };
   }
+
+  // private async getTotalAllocatedForAccount(
+  //   manager: EntityManager,
+  //   budget_account_id?: number,
+  // ): Promise<number> {
+  //   const query = manager
+  //     .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
+  //     .leftJoin('budget_accounts.departments', 'departments')
+  //     .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
+  //     .leftJoin('budget_items.document_transactions', 'document_transactions')
+  //     .addSelect([
+  //       'increase_budget_detail.allocated_amount',
+  //       'document_transactions.amount',
+  //       'document_transactions.document_id',
+  //       'document_transactions.transaction_type',
+  //       'document_transactions.budget_item_id',
+  //     ]);
+
+  //     return query.getRawOne();
+  // }
 
   async findOne(
     id: BudgetItemId,
@@ -96,7 +173,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     const data = await this._paginationService.paginate(
       queryBuilder,
       query,
-      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+      this._dataAccessMapper.toEntityReport.bind(this._dataAccessMapper),
       this.getReportFilterOptions(),
     );
     return data;
@@ -118,6 +195,8 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .innerJoin('budget_items.budget_accounts', 'budget_accounts')
       .leftJoin('budget_accounts.departments', 'departments')
       .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
+      .leftJoin('budget_items.document_transactions', 'document_transactions')
+
       // .leftJoinAndSelect(
       //   'budget_items.increase_budget_detail',
       //   'increase_budget_detail',
@@ -137,11 +216,16 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'departments.department_head_id',
         'departments.created_at',
         'departments.updated_at',
+        'increase_budget_detail.id',
         'increase_budget_detail.allocated_amount',
+        'document_transactions.amount',
+        'document_transactions.id',
+        'document_transactions.budget_item_id',
       ])
       .groupBy('budget_items.id')
       .addGroupBy('increase_budget_detail.id')
       .addGroupBy('budget_accounts.id')
+      .addGroupBy('document_transactions.id')
       .addGroupBy('departments.id');
 
     if (query?.budget_account_id) {
@@ -207,8 +291,11 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'departments.department_head_id',
         'departments.created_at',
         'departments.updated_at',
+        'increase_budget_detail.id',
         'increase_budget_detail.allocated_amount',
         'document_transactions.amount',
+        'document_transactions.id',
+        'document_transactions.budget_item_id',
       ])
       .where('budget_items.id = :id', { id: id.value })
       .getOne();
@@ -217,7 +304,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND);
     }
 
-    return this._dataAccessMapper.toEntity(item);
+    return this._dataAccessMapper.toEntityReport(item);
   }
 
   async calculate(id: number, manager: EntityManager): Promise<number> {
@@ -235,7 +322,6 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .select('SUM(increase_budget_detail.allocated_amount)', 'total')
       .from('increase_budget_details', 'increase_budget_detail')
       .where('increase_budget_detail.budget_item_id = :id', { id })
-
       .getRawOne();
 
     const total =
@@ -258,5 +344,61 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     }
 
     return Number(result.total);
+  }
+
+  async getBudgetItem(
+    query: BudgetItemQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<BudgetItemEntity>> {
+    const queryBuilder = await this.createBaseQueryBudgetItem(manager, query);
+    query.sort_by = 'budget_items.id';
+
+    const data = await this._paginationService.paginate(
+      queryBuilder,
+      query,
+      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+      this.getFilterOptions(),
+    );
+    return data;
+  }
+
+  private createBaseQueryBudgetItem(
+    manager: EntityManager,
+    query: BudgetItemQueryDto,
+  ) {
+    const queryBuilder = manager
+      .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
+      .select([
+        'budget_items.id',
+        'budget_items.name',
+        'budget_items.budget_account_id',
+        'budget_items.created_at',
+        'budget_items.updated_at',
+      ])
+      .innerJoin('budget_items.budget_accounts', 'budget_accounts')
+      .leftJoin('budget_accounts.departments', 'departments')
+      .addSelect([
+        'budget_accounts.id',
+        'budget_accounts.name',
+        'budget_accounts.code',
+        'budget_accounts.fiscal_year',
+        'budget_accounts.department_id',
+        'budget_accounts.created_at',
+        'budget_accounts.updated_at',
+        'departments.id',
+        'departments.name',
+        'departments.code',
+        'departments.department_head_id',
+        'departments.created_at',
+        'departments.updated_at',
+      ]);
+
+    if (query?.budget_account_id) {
+      queryBuilder.where('budget_accounts.id = :budget_account_id', {
+        budget_account_id: query.budget_account_id,
+      });
+    }
+
+    return queryBuilder;
   }
 }

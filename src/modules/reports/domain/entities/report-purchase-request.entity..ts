@@ -7,6 +7,7 @@ import { BadRequestException } from '@nestjs/common';
 import { ReportPurchaseRequestId } from '../value-objects/report-purchase-request-id.vo';
 import { ReportPurchaseRequestBuilder } from '../builders/report-purchase-request.builder';
 import { ReportPurchaseRequestItemEntity } from './report-purchase-request-item.entity';
+import { DocumentEntity } from '@src/modules/manage/domain/entities/document.entity';
 
 export class ReportPurchaseRequestEntity extends Entity<ReportPurchaseRequestId> {
   private readonly _document_id: number;
@@ -21,10 +22,11 @@ export class ReportPurchaseRequestEntity extends Entity<ReportPurchaseRequestId>
   private readonly _purchaseRequestItems:
     | ReportPurchaseRequestItemEntity[]
     | null;
-  //   private readonly _document: DocumentEntity | null;
+  private readonly _document: DocumentEntity | null;
   //   private readonly _user_approval: UserApprovalEntity | null;
   private _workflow_step_total: number | 0;
   private _step: number | 0;
+  private readonly _itemCount: number | 0;
 
   private constructor(builder: ReportPurchaseRequestBuilder) {
     super();
@@ -39,10 +41,11 @@ export class ReportPurchaseRequestEntity extends Entity<ReportPurchaseRequestId>
     this._deletedAt = builder.deletedAt ?? null;
     this._total = builder.total;
     this._purchaseRequestItems = builder.purchaseRequestItem ?? null;
-    // this._document = builder.document ?? null;
+    this._document = builder.document ?? null;
     // this._user_approval = builder.user_approval ?? null;
     this._workflow_step_total = builder.workflow_step_total;
     this._step = builder.step;
+    this._itemCount = builder.itemCount;
   }
 
   get document_id(): number {
@@ -77,13 +80,17 @@ export class ReportPurchaseRequestEntity extends Entity<ReportPurchaseRequestId>
     return this._deletedAt;
   }
 
+  get itemCount(): number | 0 {
+    return this._itemCount;
+  }
+
   get total(): number | 0 {
     return this._total;
   }
 
-  //   get document(): DocumentEntity | null {
-  //     return this._document;
-  //   }
+  get document(): DocumentEntity | null {
+    return this._document;
+  }
 
   get step(): number | 0 {
     return this._step;

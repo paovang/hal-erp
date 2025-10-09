@@ -29,4 +29,6 @@ export interface IReadPurchaseRequestRepository {
     id: PurchaseRequestId,
     manager: EntityManager,
   ): Promise<ResponseResult<PurchaseRequestEntity>>;
+
+  countItem(user_id: number, manager: EntityManager): Promise<any>;
 }

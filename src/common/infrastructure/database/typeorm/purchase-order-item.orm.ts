@@ -70,11 +70,11 @@ export class PurchaseOrderItemOrmEntity {
   quantity?: number;
 
   @Index()
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
   price?: number;
 
   @Index()
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
   total?: number;
 
   @Index()
@@ -88,6 +88,9 @@ export class PurchaseOrderItemOrmEntity {
     default: SelectStatus.TRUE,
   })
   is_vat?: SelectStatus;
+
+  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
+  vat?: number;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

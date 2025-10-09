@@ -73,12 +73,18 @@ export class ReceiptDataMapper {
     response.id = Number(entity.getId().value);
     response.receipt_number = entity.receipt_number;
     response.purchase_order_id = Number(entity.purchase_order_id);
+    response.po_number = entity.po_number;
+    response.po_doc_type = entity.po_doc_type;
+    response.purchase_request_id = Number(entity.purchase_request_id);
+    response.pr_number = entity.pr_number;
+    response.pr_doc_type = entity.pr_doc_type;
     response.document_id = Number(entity.document_id);
     response.receipt_date = moment
       .tz(entity.receipt_date, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.received_by = Number(entity.received_by);
     response.remark = entity.remark;
+    response.account_code = entity.account_code;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
@@ -86,13 +92,19 @@ export class ReceiptDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.step = isStepPending;
+    response.step_number = entity.step;
+    response.sub_total = Number(entity.sub_total);
+    response.vat = Number(entity.vat);
+    response.total = Number(entity.total);
 
     response.currency_totals = entity.currencyTotals?.length
       ? entity.currencyTotals.map((total) => ({
           id: +total.id,
           code: total.code || '',
           name: total.name || null,
-          amount: +total.amount || 0,
+          total: Number(total.total) || 0,
+          vat: Number(total.vat) || 0,
+          amount: Number(total.amount) || 0,
         }))
       : [];
 

@@ -38,6 +38,10 @@ export class RoleDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
 
+    response.department_id = Number(entity.department_id);
+    response.department_code = entity.department_code;
+    response.department_name = entity.department_name;
+
     response.permissions = entity.permissions
       ? entity.permissions.map((permission) =>
           this.permissionDataMapper.toResponsePermissionEntity(permission),

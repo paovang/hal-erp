@@ -21,6 +21,6 @@ export class GetReportQueryHandler
   async execute(
     query: GetReportQuery,
   ): Promise<ResponseResult<ReportPurchaseRequestEntity>> {
-    return await this._readRepo.report(query, query.manager);
+    return await this._readRepo.report(query.dto, query.manager);
   }
 }

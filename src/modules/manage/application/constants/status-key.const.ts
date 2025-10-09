@@ -3,8 +3,8 @@ export const VAT_RATE = 10;
 
 export const STATUS_KEY = {
   CANCELLED: 4,
-  APPROVED: 2,
   REJECTED: 3,
+  APPROVED: 2,
   PENDING: 1,
 };
 

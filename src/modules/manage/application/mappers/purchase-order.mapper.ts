@@ -75,7 +75,9 @@ export class PurchaseOrderDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
-    response.total = entity.total;
+    response.sub_total = Number(entity.sub_total);
+    response.vat = Number(entity.vat);
+    response.total = Number(entity.total);
     response.step = isStepPending;
 
     response.purchase_request = entity.purchaseRequest
