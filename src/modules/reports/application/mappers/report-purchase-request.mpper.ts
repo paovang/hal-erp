@@ -5,46 +5,18 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { ReportPurchaseRequestResponse } from '../dto/response/report-purchase-request.response';
 import { ReportPurchaseRequestItemDataMapper } from './report-purchase-request-item.mapper';
+import { DocumentDataMapper } from '@src/modules/manage/application/mappers/document.mapper';
 
 @Injectable()
 export class ReportPurchaseRequestDataMapper {
   constructor(
     private readonly purchaseRequestItemDataMapper: ReportPurchaseRequestItemDataMapper,
-    //     private readonly documentMapper: DocumentDataMapper,
-    //     private readonly userApprovalMapper: UserApprovalDataMapper,
+    private readonly documentMapper: DocumentDataMapper,
   ) {}
-  /** Mapper Dto To Entity */
-  //   toEntity(
-  //     dto: any,
-  //     pr_code?: string,
-  //     document_id?: number,
-  //   ): PurchaseRequestEntity {
-  //     const builder = PurchaseRequestEntity.builder();
-  //     if (document_id) {
-  //       builder.setDocumentId(document_id);
-  //     }
-  //     if (pr_code) {
-  //       builder.setPrNumber(pr_code);
-  //     }
-  //     // if (dto.expired_date) {
-  //     //   builder.setExpiredDate(dto.expired_date);
-  //     // }
-  //     if ('expired_date' in dto && dto.expired_date) {
-  //       builder.setExpiredDate(dto.expired_date);
-  //     }
-  //     // if (dto.purposes) {
-  //     //   builder.setPurposes(dto.purposes);
-  //     // }
-  //     if ('purposes' in dto && dto.purposes) {
-  //       builder.setPurposes(dto.purposes);
-  //     }
-  //     return builder.build();
-  //   }
   /** Mapper Entity To Response */
   toResponse(
     entity: ReportPurchaseRequestEntity,
   ): ReportPurchaseRequestResponse {
-    console.log('entity', entity);
     const isStepPending = entity.step > 0 ? true : false;
     const response = new ReportPurchaseRequestResponse();
     response.id = Number(entity.getId().value);
@@ -63,14 +35,12 @@ export class ReportPurchaseRequestDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.itemCount = entity.itemCount;
     response.total = entity.total;
     response.step = isStepPending;
-    // response.document = entity.document
-    //   ? this.documentMapper.toResponse(entity.document)
-    //   : null;
-    // response.user_approval = entity.user_approval
-    //   ? this.userApprovalMapper.toResponse(entity.user_approval)
-    //   : null;
+    response.document = entity.document
+      ? this.documentMapper.toResponse(entity.document)
+      : null;
     response.purchase_request_item =
       entity.purchaseRequestItems?.map((item) => {
         return this.purchaseRequestItemDataMapper.toResponse(item);

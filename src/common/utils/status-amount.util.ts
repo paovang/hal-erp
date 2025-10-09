@@ -82,41 +82,6 @@ export async function countStatusAmounts(
       amount: Number(row.amount),
     }));
   } else if (type === EnumPrOrPo.PR) {
-    // const query = manager
-    //   .createQueryBuilder('user_approvals', 'ua')
-    //   .select('ua.status_id', 'id')
-    //   .addSelect('ds.name', 'status')
-    //   .addSelect('COUNT(*)', 'amount')
-    //   .innerJoin('ua.document_statuses', 'ds')
-    //   .innerJoin('ua.user_approval_steps', 'uas')
-    //   .innerJoin('ua.documents', 'doc')
-    //   // .leftJoin('doc.departments', 'departments')
-    //   .innerJoin(
-    //     'uas.document_approvers',
-    //     'document_approver',
-    //     'document_approver.user_approval_step_id = uas.id',
-    //   );
-    // // Join เฉพาะ PR
-    // query.innerJoin('purchase_requests', 'pr', 'doc.id = pr.document_id');
-    // if (
-    //   roles &&
-    //   !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-    //   !roles.includes(EligiblePersons.ADMIN)
-    // ) {
-    //   query.andWhere('document_approver.user_id = :user_id', {
-    //     user_id,
-    //   });
-    // }
-    // query.groupBy('ua.status_id').addGroupBy('ds.name');
-
-    // const result = await query.getRawMany();
-
-    // return result.map((row) => ({
-    //   id: Number(row.id),
-    //   status: row.status,
-    //   amount: Number(row.amount),
-    // }));
-
     const query = manager
       .createQueryBuilder(PurchaseRequestOrmEntity, 'pr')
       .innerJoin('pr.documents', 'doc')
@@ -156,42 +121,6 @@ export async function countStatusAmounts(
       amount: Number(row.amount),
     }));
   } else if (type === EnumPrOrPo.R) {
-    // const query = manager
-    //   .createQueryBuilder('user_approvals', 'ua')
-    //   .select('ua.status_id', 'id')
-    //   .addSelect('ds.name', 'status')
-    //   .addSelect('COUNT(*)', 'amount')
-    //   .innerJoin('ua.document_statuses', 'ds')
-    //   .innerJoin('ua.user_approval_steps', 'uas')
-    //   .innerJoin('ua.documents', 'doc')
-    //   // .leftJoin('doc.departments', 'departments')
-    //   .innerJoin(
-    //     'uas.document_approvers',
-    //     'document_approver',
-    //     'document_approver.user_approval_step_id = uas.id',
-    //   );
-    // // Join เฉพาะ R
-    // query.innerJoin('receipts', 'r', 'doc.id = r.document_id');
-    // if (
-    //   roles &&
-    //   !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-    //   !roles.includes(EligiblePersons.ADMIN)
-    // ) {
-    //   query.andWhere('document_approver.user_id = :user_id', {
-    //     user_id,
-    //   });
-    // }
-
-    // query.groupBy('ua.status_id').addGroupBy('ds.name');
-
-    // const result = await query.getRawMany();
-
-    // return result.map((row) => ({
-    //   id: Number(row.id),
-    //   status: row.status,
-    //   amount: Number(row.amount),
-    // }));
-
     const query = manager
       .createQueryBuilder(ReceiptOrmEntity, 'r')
       .innerJoin('r.documents', 'doc')

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UnitResponse } from '@src/modules/manage/application/dto/response/unit.response';
 
 export class ReportPurchaseRequestItemResponse {
   @ApiProperty()
@@ -40,6 +41,6 @@ export class ReportPurchaseRequestItemResponse {
   @ApiProperty()
   deleted_at: string | null;
 
-  // @ApiProperty()
-  // unit: UnitResponse | null;
+  @ApiProperty()
+  unit: UnitResponse | null;
 }

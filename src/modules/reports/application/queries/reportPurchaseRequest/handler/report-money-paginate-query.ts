@@ -1,16 +1,14 @@
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
-import { ReportPurchaseRequestEntity } from '@src/modules/reports/domain/entities/report-purchase-request.entity.';
-import { REPORT_PURCHASE_REQUEST_REPOSITORY } from '../../../constants/inject-key.const';
-import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
-import { GetReportQuery } from '../report.query';
 import { Inject } from '@nestjs/common';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { GetReportMoneyByPaginationQuery } from '../report-money-paginate.query';
+import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
+import { REPORT_PURCHASE_REQUEST_REPOSITORY } from '../../../constants/inject-key.const';
 import { IReportPurchaseRequestRepository } from '@src/modules/reports/domain/ports/output/purchase-request-repository.interface';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 
-@QueryHandler(GetReportQuery)
-export class GetReportQueryHandler
-  implements
-    IQueryHandler<GetReportQuery, ResponseResult<ReportPurchaseRequestEntity>>
+@QueryHandler(GetReportMoneyByPaginationQuery)
+export class GetReportMoneyByPaginationQueryHandler
+  implements IQueryHandler<GetReportMoneyByPaginationQuery, ResponseResult<any>>
 {
   constructor(
     @Inject(REPORT_PURCHASE_REQUEST_REPOSITORY)
@@ -19,8 +17,11 @@ export class GetReportQueryHandler
   ) {}
 
   async execute(
-    query: GetReportQuery,
-  ): Promise<ResponseResult<ReportPurchaseRequestEntity>> {
-    return await this._readRepo.report(query.dto, query.manager);
+    query: GetReportMoneyByPaginationQuery,
+  ): Promise<ResponseResult<any>> {
+    return await this._readRepo.reportMoneyByPagination(
+      query.dto,
+      query.manager,
+    );
   }
 }
