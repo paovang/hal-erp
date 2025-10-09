@@ -35,4 +35,13 @@ export class ReportPurchaseRequestController {
     const result = await this._service.reportMoney();
     return result;
   }
+
+  @Get('money-by-pagination')
+  async reportMoneyByPagination(
+    @Query() dto: PurchaseRequestReportQueryDto,
+  ): Promise<ResponseResult<any>> {
+    const result = await this._service.reportMoneyByPagination(dto);
+
+    return result;
+  }
 }

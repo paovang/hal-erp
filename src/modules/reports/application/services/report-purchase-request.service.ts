@@ -8,6 +8,7 @@ import { ReportPurchaseRequestEntity } from '../../domain/entities/report-purcha
 import { GetReportQuery } from '../queries/reportPurchaseRequest/report.query';
 import { PurchaseRequestReportQueryDto } from '../dto/query/purchase-request-report.query.dto';
 import { GetReportMoneyQuery } from '../queries/reportPurchaseRequest/report-money.query';
+import { GetReportMoneyByPaginationQuery } from '../queries/reportPurchaseRequest/report-money-paginate.query';
 
 @Injectable()
 export class ReportPurchaseRequestService
@@ -33,5 +34,18 @@ export class ReportPurchaseRequestService
     return await this._queryBus.execute(
       new GetReportMoneyQuery(manager ?? this._readEntityManager),
     );
+  }
+
+  async reportMoneyByPagination(
+    dto: PurchaseRequestReportQueryDto,
+    manager?: EntityManager,
+  ): Promise<any> {
+    const result = await this._queryBus.execute(
+      new GetReportMoneyByPaginationQuery(
+        dto,
+        manager ?? this._readEntityManager,
+      ),
+    );
+    return result;
   }
 }

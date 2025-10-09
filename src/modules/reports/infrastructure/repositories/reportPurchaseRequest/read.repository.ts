@@ -226,4 +226,36 @@ export class ReportReadPurchaseRequestRepository
 
     return data;
   }
+
+  async reportMoneyByPagination(
+    query: PurchaseRequestReportQueryDto,
+    manager: EntityManager,
+  ): Promise<any> {
+    const departmentId = Number(query.department_id);
+    const status_id = Number(query.status_id);
+    const filterOptions = this.getFilterOptions();
+    const queryBuilder = await this.createBaseQuery(
+      manager,
+      departmentId,
+      status_id,
+    );
+    query.sort_by = 'purchase_requests.id';
+
+    // Date filtering (single date)
+    this.applyDateFilter(
+      queryBuilder,
+      filterOptions.dateColumn,
+      query.requested_date_start,
+      query.requested_date_end,
+    );
+
+    const data = await this._paginationService.paginate(
+      queryBuilder,
+      query,
+      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+      filterOptions,
+    );
+
+    return data;
+  }
 }

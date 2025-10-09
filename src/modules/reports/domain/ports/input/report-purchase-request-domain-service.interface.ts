@@ -10,4 +10,9 @@ export interface IReportPurchaseRequestServiceInterface {
   ): Promise<ResponseResult<ReportPurchaseRequestEntity>>;
 
   reportMoney(manager?: EntityManager): Promise<any>;
+
+  reportMoneyByPagination(
+    dto: PurchaseRequestReportQueryDto,
+    manager?: EntityManager,
+  ): Promise<any>;
 }

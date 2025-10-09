@@ -4,14 +4,10 @@ import { ReportPurchaseRequestEntity } from '../../entities/report-purchase-requ
 import { PurchaseRequestReportQueryDto } from '@src/modules/reports/application/dto/query/purchase-request-report.query.dto';
 
 export interface IReportPurchaseRequestRepository {
-  // findAll(
-  //   query: PurchaseRequestQueryDto,
-  //   manager: EntityManager,
-  //   departmentId?: number,
-  //   user_id?: number,
-  //   roles?: string[],
-  // ): Promise<ResponseResult<ReportPurchaseRequestEntity>>;
-
+  reportMoneyByPagination(
+    dto: PurchaseRequestReportQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<any>>;
   report(
     query: PurchaseRequestReportQueryDto,
     manager: EntityManager,
