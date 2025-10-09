@@ -12,6 +12,8 @@ export async function countStatusAmounts(
   type?: EnumPrOrPo,
   user_id?: number,
   roles?: string[],
+  start_date?: string,
+  end_date?: string,
 ): Promise<{ id: number; status: string; amount: number }[]> {
   // เงื่อนไข type
   if (type === EnumPrOrPo.PO) {
@@ -99,6 +101,13 @@ export async function countStatusAmounts(
       // ถ้าต้องการนับจำนวน PO ให้ใช้ COUNT(DISTINCT po.id)
       // ถ้าต้องการนับจำนวน document ให้ใช้ COUNT(DISTINCT doc.id)
       .addSelect('COUNT(DISTINCT doc.id)', 'amount');
+
+    if (start_date && end_date) {
+      query.andWhere(`pr.expected_date BETWEEN :dateStart AND :dateEnd`, {
+        dateStart: `${start_date} 00:00:00`,
+        dateEnd: `${end_date} 23:59:59`,
+      });
+    }
 
     if (
       roles &&

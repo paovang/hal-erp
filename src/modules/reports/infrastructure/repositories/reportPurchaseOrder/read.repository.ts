@@ -4,23 +4,45 @@ import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import {
   selectApprover,
   selectApproverUserSignatures,
+  selectBanks,
+  selectBudgetAccounts,
+  selectBudgetItems,
+  selectCurrency,
   selectDepartments,
+  selectDepartmentsApprover,
   selectDepartmentUserApprovers,
   selectDepartmentUsers,
+  selectDocApproverUser,
+  selectDocDeptUser,
+  selectDocumentApprover,
   selectDocuments,
   selectDocumentStatuses,
   selectDocumentTypes,
+  selectPoDepartments,
+  selectPoDepartmentUsers,
+  selectPoDocuments,
+  selectPoDocumentTypes,
+  selectPoPositions,
   selectPositionApprover,
   selectPositions,
+  selectPoUsers,
+  selectPoUserSignatures,
+  selectPurchaseOrderItems,
+  selectPurchaseOrderSelectedVendors,
   selectPurchaseRequestItems,
+  selectPurchaseRequests,
+  selectRequestItems,
+  selectRequestItemUnits,
+  selectSelectedVendors,
   selectStatus,
   selectUnits,
   selectUserApprovals,
   selectUserApprovalSteps,
   selectUsers,
   selectUserSignatures,
+  selectVendorBankAccounts,
 } from '@src/common/constants/select-field';
-import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
+import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
 import {
   FilterOptions,
   IPaginationService,
@@ -31,30 +53,30 @@ import {
   EligiblePersons,
   EnumPrOrPo,
 } from '@src/modules/manage/application/constants/status-key.const';
-import { ReportPurchaseRequestEntity } from '@src/modules/reports/domain/entities/report-purchase-request.entity.';
-import { IReportPurchaseRequestRepository } from '@src/modules/reports/domain/ports/output/purchase-request-repository.interface';
+import { ReportPurchaseOrderEntity } from '@src/modules/reports/domain/entities/report-purchase-order.entity';
+import { IReportPurchaseOrderRepository } from '@src/modules/reports/domain/ports/output/purchase-order-repository.interface';
 import { EntityManager, Repository } from 'typeorm';
-import { ReportPurchaseRequestDataAccessMapper } from '../../mappers/report-purchase-request.mapper';
-import { PurchaseRequestReportQueryDto } from '@src/modules/reports/application/dto/query/purchase-request-report.query.dto';
+import { ReportPurchaseOrderDataAccessMapper } from '../../mappers/report-purchase-order.mapper';
+import { PurchaseOrderReportQueryDto } from '@src/modules/reports/application/dto/query/purchase-order-report.query.dto';
 
 @Injectable()
-export class ReportReadPurchaseRequestRepository
-  implements IReportPurchaseRequestRepository
+export class ReportReadPurchaseOrderRepository
+  implements IReportPurchaseOrderRepository
 {
   constructor(
-    @InjectRepository(PurchaseRequestOrmEntity)
-    private readonly _purchaseRequestOrm: Repository<PurchaseRequestOrmEntity>,
-    private readonly _dataAccessMapper: ReportPurchaseRequestDataAccessMapper,
+    @InjectRepository(PurchaseOrderOrmEntity)
+    private readonly _purchaseOrderOrm: Repository<PurchaseOrderOrmEntity>,
+    private readonly _dataAccessMapper: ReportPurchaseOrderDataAccessMapper,
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
   ) {}
 
   async report(
-    query: PurchaseRequestReportQueryDto,
+    query: PurchaseOrderReportQueryDto,
     manager: EntityManager,
     user_id?: number,
     roles?: string[],
-  ): Promise<ResponseResult<ReportPurchaseRequestEntity>> {
+  ): Promise<ResponseResult<ReportPurchaseOrderEntity>> {
     const departmentId = Number(query.department_id);
     const status_id = Number(query.status_id);
     const filterOptions = this.getFilterOptions();
@@ -62,24 +84,24 @@ export class ReportReadPurchaseRequestRepository
       manager,
       departmentId,
       status_id,
+      user_id,
+      roles,
     );
-    query.sort_by = 'purchase_requests.id';
+    query.sort_by = 'purchase_orders.id';
 
-    // Date filtering (single date)
+    // Date filtering for delivery date
     this.applyDateFilter(
       queryBuilder,
-      filterOptions.dateColumn,
-      query.requested_date_start,
-      query.requested_date_end,
+      'purchase_orders.expired_date',
+      query.start_date,
+      query.end_date,
     );
 
     const status = await countStatusAmounts(
       manager,
-      EnumPrOrPo.PR,
+      EnumPrOrPo.PO,
       user_id,
       roles,
-      query.requested_date_start,
-      query.requested_date_end,
     );
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -102,52 +124,109 @@ export class ReportReadPurchaseRequestRepository
     roles?: string[],
   ) {
     const selectFields = [
-      ...selectUnits,
-      ...selectDepartments,
-      ...selectUsers,
+      ...selectPurchaseOrderItems,
+      ...selectPurchaseOrderSelectedVendors,
+      ...selectPurchaseRequests,
       ...selectDocuments,
       ...selectDocumentTypes,
-      ...selectPurchaseRequestItems,
+      ...selectUsers,
       ...selectUserSignatures,
+      ...selectDepartments,
       ...selectDepartmentUsers,
       ...selectPositions,
+      ...selectPurchaseRequestItems,
+      ...selectUnits,
+      ...selectRequestItems,
+      ...selectRequestItemUnits,
+      ...selectSelectedVendors,
+      ...selectCurrency,
+      ...selectVendorBankAccounts,
+      ...selectPoDocuments,
+      ...selectPoDepartments,
+      ...selectPoUsers,
+      ...selectPoDocumentTypes,
+      ...selectPoUserSignatures,
+      ...selectPoDepartmentUsers,
+      ...selectPoPositions,
+      ...selectPurchaseRequestItems,
+
       ...selectUserApprovals,
       ...selectDocumentStatuses,
       ...selectUserApprovalSteps,
       ...selectApprover,
       ...selectApproverUserSignatures,
       ...selectStatus,
+      ...selectBanks,
+      ...selectBudgetItems,
       ...selectDepartmentUserApprovers,
       ...selectPositionApprover,
+      ...selectBudgetAccounts,
+      ...selectDocumentApprover,
+      ...selectDocApproverUser,
+      ...selectDocDeptUser,
+      ...selectDepartmentsApprover,
     ];
 
     const query = manager
-      .createQueryBuilder(PurchaseRequestOrmEntity, 'purchase_requests')
+      .createQueryBuilder(PurchaseOrderOrmEntity, 'purchase_orders')
+      .innerJoin('purchase_orders.purchase_order_items', 'purchase_order_items')
+      .innerJoin(
+        'purchase_order_items.purchase_order_selected_vendors',
+        'purchase_order_selected_vendors',
+      )
+      .innerJoin('purchase_orders.purchase_requests', 'purchase_requests')
       .innerJoin(
         'purchase_requests.purchase_request_items',
         'purchase_request_items',
       )
       .innerJoin('purchase_requests.documents', 'documents')
-      .leftJoin('documents.departments', 'departments')
-      .leftJoin('documents.users', 'users')
+      .innerJoin('documents.departments', 'departments')
+      .innerJoin('documents.users', 'users')
       .innerJoin('documents.document_types', 'document_types')
       .leftJoin('users.user_signatures', 'user_signatures')
-      .leftJoin('users.department_users', 'department_users')
+      .innerJoin('users.department_users', 'department_users')
+      .innerJoin('department_users.positions', 'positions')
+
       .innerJoin('purchase_request_items.units', 'units')
-      .leftJoin('department_users.positions', 'positions')
-      .innerJoin('documents.user_approvals', 'user_approvals')
+      // purchase_order_items join with purchase request
+      .innerJoin('purchase_order_items.purchase_request_items', 'request_items')
+      .innerJoin('request_items.units', 'request_item_unit')
+      .leftJoin('purchase_order_items.budget_item', 'budget_items')
+      .leftJoin('budget_items.budget_accounts', 'budget_accounts')
+      .innerJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
+      // .leftJoin('selected_vendors.vendor_bank_accounts', 'vendor_bank_accounts')
+      .leftJoin(
+        'purchase_order_selected_vendors.vendor_bank_account',
+        'vendor_bank_accounts',
+      )
+      .leftJoin('vendor_bank_accounts.banks', 'bank')
+      .leftJoin('vendor_bank_accounts.currencies', 'currency')
+
+      .innerJoin('purchase_orders.documents', 'po_documents')
+      .innerJoin('po_documents.departments', 'po_departments')
+      .innerJoin('po_documents.users', 'po_users')
+      .innerJoin('po_documents.document_types', 'po_document_types')
+      .leftJoin('po_users.user_signatures', 'po_user_signatures')
+      .innerJoin('po_users.department_users', 'po_department_users')
+      .innerJoin('po_department_users.positions', 'po_positions')
+
+      .innerJoin('po_documents.user_approvals', 'user_approvals')
       .innerJoin('user_approvals.document_statuses', 'document_statuses')
       .innerJoin('user_approvals.user_approval_steps', 'user_approval_steps')
       .leftJoin('user_approval_steps.approver', 'approver')
       .leftJoin('approver.department_users', 'department_user_approver')
       .leftJoin('department_user_approver.positions', 'position_approver')
-      .leftJoin('user_approval_steps.status', 'status')
+      .innerJoin('user_approval_steps.status', 'status')
       .leftJoin('approver.user_signatures', 'approver_user_signatures')
       .innerJoin(
         'user_approval_steps.document_approvers',
         'document_approver',
         'document_approver.user_approval_step_id = user_approval_steps.id',
       )
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
+      // add select
       .addSelect(selectFields);
 
     if (
@@ -177,14 +256,14 @@ export class ReportReadPurchaseRequestRepository
   private getFilterOptions(): FilterOptions {
     return {
       searchColumns: [
-        'purchase_requests.pr_number',
+        'purchase_orders.po_number',
         'documents.title',
         'users.name',
         'users.email',
         'departments.name',
         'departments.code',
       ],
-      dateColumn: 'purchase_requests.requested_date',
+      dateColumn: 'purchase_orders.expired_date',
       filterByColumns: ['documents.department_id', 'user_approvals.status_id'],
     };
   }
@@ -193,8 +272,8 @@ export class ReportReadPurchaseRequestRepository
    * ==> Applies date filter to the query builder if dateColumn and date are provided.
    */
   private applyDateFilter(
-    queryBuilder: any, // Replace 'any' with your actual QueryBuilder type
-    dateColumn: string | undefined,
+    queryBuilder: any,
+    dateColumn: string,
     start_date?: string,
     end_date?: string,
   ) {
@@ -208,14 +287,11 @@ export class ReportReadPurchaseRequestRepository
 
   async reportMoney(manager: EntityManager): Promise<any> {
     const item = await manager
-      .createQueryBuilder(PurchaseRequestOrmEntity, 'purchase_requests')
-      .innerJoin(
-        'purchase_requests.purchase_request_items',
-        'purchase_request_items',
-      )
+      .createQueryBuilder(PurchaseOrderOrmEntity, 'purchase_orders')
+      .innerJoin('purchase_orders.purchase_order_items', 'purchase_order_items')
       .select('document_statuses.name', 'status')
-      .addSelect('SUM(purchase_request_items.total_price)', 'total')
-      .innerJoin('purchase_requests.documents', 'documents')
+      .addSelect('SUM(purchase_order_items.total_price)', 'total')
+      .innerJoin('purchase_orders.documents', 'documents')
       .innerJoin('documents.user_approvals', 'user_approvals')
       .innerJoin('user_approvals.document_statuses', 'document_statuses')
       .groupBy('document_statuses.name')
@@ -230,7 +306,7 @@ export class ReportReadPurchaseRequestRepository
   }
 
   async reportMoneyByPagination(
-    query: PurchaseRequestReportQueryDto,
+    query: PurchaseOrderReportQueryDto,
     manager: EntityManager,
   ): Promise<any> {
     const departmentId = Number(query.department_id);
@@ -241,14 +317,14 @@ export class ReportReadPurchaseRequestRepository
       departmentId,
       status_id,
     );
-    query.sort_by = 'purchase_requests.id';
+    query.sort_by = 'purchase_orders.id';
 
-    // Date filtering (single date)
+    // Date filtering for PO date
     this.applyDateFilter(
       queryBuilder,
-      filterOptions.dateColumn,
-      query.requested_date_start,
-      query.requested_date_end,
+      'purchase_orders.po_date',
+      query.start_date,
+      query.end_date,
     );
 
     const data = await this._paginationService.paginate(

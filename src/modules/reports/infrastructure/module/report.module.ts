@@ -5,6 +5,7 @@ import { UserModule } from '@src/common/infrastructure/auth/user.module';
 import { UserService } from '@src/common/infrastructure/auth/user.service';
 import { ReportRegisterProviders } from '../../application/providers';
 import { ReportPurchaseRequestController } from '../../controllers/report-purchase-request.controller';
+import { ReportPurchaseOrderController } from '../../controllers/report-purchase-order.controller';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ReportPurchaseRequestController } from '../../controllers/report-purcha
       imports: [UserModule],
     }),
   ],
-  controllers: [ReportPurchaseRequestController],
+  controllers: [ReportPurchaseRequestController, ReportPurchaseOrderController],
   providers: [...ReportRegisterProviders],
   exports: [...ReportRegisterProviders],
 })

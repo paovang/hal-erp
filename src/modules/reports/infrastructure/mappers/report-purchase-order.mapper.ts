@@ -1,0 +1,71 @@
+import { Injectable } from '@nestjs/common';
+import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
+import { ReportPurchaseOrderEntity } from '../../domain/entities/report-purchase-order.entity';
+import { ReportPurchaseOrderId } from '../../domain/value-objects/report-purchase-order-id.vo';
+import { PurchaseOrderItemDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/purchase-order-item.mapper';
+import { DocumentDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document.mapper';
+
+@Injectable()
+export class ReportPurchaseOrderDataAccessMapper {
+  constructor(
+    private readonly purchaseOrderItemMapper: PurchaseOrderItemDataAccessMapper,
+    private readonly documentMapper: DocumentDataAccessMapper,
+  ) {}
+
+  toEntity(
+    ormData: PurchaseOrderOrmEntity,
+    step: number = 0,
+  ): ReportPurchaseOrderEntity {
+    const items = ormData.purchase_order_items || [];
+
+    interface PurchaseOrderItemLike {
+      total_price?: number;
+      sub_total?: number;
+      vat?: number;
+      [key: string]: any;
+    }
+
+    const sub_total: number = items.reduce(
+      (sum: number, item: PurchaseOrderItemLike) =>
+        sum + Number(item.sub_total || item.total_price || 0),
+      0,
+    );
+
+    const vat: number = items.reduce(
+      (sum: number, item: PurchaseOrderItemLike) => sum + Number(item.vat || 0),
+      0,
+    );
+
+    const total: number = sub_total + vat;
+
+    const builder = ReportPurchaseOrderEntity.builder()
+      .setPurchaseOrderId(new ReportPurchaseOrderId(ormData.id))
+      .setDocumentId(ormData.document_id ?? 0)
+      .setPurchaseRequestId(ormData.purchase_request_id ?? 0)
+      .setPoNumber(ormData.po_number)
+      .setPurposes(ormData.purposes ?? '')
+      .setOrderDate(ormData.order_date ?? new Date())
+      .setExpiredDate(ormData.expired_date ?? new Date())
+      .setSubTotal(sub_total)
+      .setVat(vat)
+      .setTotal(total)
+      .setCreatedAt(ormData.created_at)
+      .setUpdatedAt(ormData.updated_at)
+      .setDeletedAt(ormData.deleted_at)
+      .setStep(step);
+
+    if (ormData.documents) {
+      builder.setDocument(this.documentMapper.toEntity(ormData.documents));
+    }
+
+    if (ormData.purchase_order_items) {
+      builder.setOrderItem(
+        ormData.purchase_order_items.map((item) =>
+          this.purchaseOrderItemMapper.toEntity(item),
+        ),
+      );
+    }
+
+    return builder.build();
+  }
+}
