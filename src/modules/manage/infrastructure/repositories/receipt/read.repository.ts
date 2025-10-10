@@ -77,8 +77,22 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     user_id?: number,
     roles?: string[],
   ): Promise<ResponseResult<ReceiptEntity>> {
+    const department_id = Number(query.department_id);
+    const status_id = Number(query.status_id);
+    const start_date = query.start_date;
+    const end_date = query.end_date;
+    const payment_type = query.payment_type;
     const filterOptions = this.getFilterOptions();
-    const queryBuilder = await this.createBaseQuery(manager, user_id, roles);
+    const queryBuilder = await this.createBaseQuery(
+      manager,
+      user_id,
+      roles,
+      department_id,
+      status_id,
+      start_date,
+      end_date,
+      payment_type,
+    );
     query.sort_by = 'receipts.id';
 
     // Date filtering (single date)
@@ -111,6 +125,11 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     manager: EntityManager,
     user_id?: number,
     roles?: string[],
+    department_id?: number,
+    status_id?: number,
+    start_date?: string,
+    end_date?: string,
+    payment_type?: string,
   ) {
     const selectFields = [
       ...selectReceiptItems,
@@ -220,12 +239,36 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       query.andWhere('document_approver.user_id = :user_id', { user_id });
     }
 
+    if (department_id) {
+      query.andWhere('departments.id = :department_id', { department_id });
+    }
+
+    if (status_id) {
+      query.andWhere('user_approvals.status_id = :status_id', { status_id });
+    }
+
+    if (start_date && end_date) {
+      query.andWhere(
+        'receipts.receipt_date BETWEEN :start_date AND :end_date',
+        {
+          start_date: `${start_date} 00:00:00`,
+          end_date: `${end_date} 23:59:59`,
+        },
+      );
+    }
+
+    if (payment_type) {
+      query.andWhere('receipt_items.payment_type = :payment_type', {
+        payment_type,
+      });
+    }
+
     return query;
   }
 
   private getFilterOptions(): FilterOptions {
     return {
-      searchColumns: ['receipts.receipt_number'],
+      searchColumns: ['receipts.receipt_number', 'receipts.account_code'],
       dateColumn: 'receipts.receipt_date',
       filterByColumns: ['documents.department_id'],
     };
