@@ -53,9 +53,9 @@ export class ReportPurchaseOrderDataMapper {
       ? this.documentMapper.toResponse(entity.document)
       : null;
 
-    // response.user_approval = entity.user_approval
-    //   ? this.userApprovalMapper.toResponse(entity.user_approval)
-    //   : null;
+    response.user_approval = entity.user_approval
+      ? this.userApprovalMapper.toResponse(entity.user_approval)
+      : null;
 
     response.purchase_order_item =
       entity.orderItem?.map((item) => {

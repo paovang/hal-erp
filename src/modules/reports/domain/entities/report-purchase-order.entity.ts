@@ -5,6 +5,7 @@ import { PurchaseOrderItemEntity } from '@src/modules/manage/domain/entities/pur
 import { DocumentEntity } from '@src/modules/manage/domain/entities/document.entity';
 import { ReportPurchaseOrderBuilder } from '../builders/report-purchase-order.builder';
 import { BadRequestException } from '@nestjs/common';
+import { UserApprovalEntity } from '@src/modules/manage/domain/entities/user-approval.entity';
 
 export class ReportPurchaseOrderEntity extends Entity<ReportPurchaseOrderId> {
   private readonly _purchase_request_id: number;
@@ -23,7 +24,7 @@ export class ReportPurchaseOrderEntity extends Entity<ReportPurchaseOrderId> {
   private readonly _orderItem: PurchaseOrderItemEntity[] | null;
   // private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
   private readonly _document: DocumentEntity | null;
-  // private readonly _user_approval: UserApprovalEntity | null;
+  private readonly _user_approval: UserApprovalEntity | null;
   private _step: number | 0;
 
   private constructor(builder: ReportPurchaseOrderBuilder) {
@@ -45,7 +46,7 @@ export class ReportPurchaseOrderEntity extends Entity<ReportPurchaseOrderId> {
     this._orderItem = builder.orderItem ?? null;
     // this._selectedVendor = builder.selectedVendor ?? null;
     this._document = builder.document ?? null;
-    // this._user_approval = builder.user_approval ?? null;
+    this._user_approval = builder.user_approval ?? null;
     this._step = builder.step;
   }
 
@@ -117,9 +118,9 @@ export class ReportPurchaseOrderEntity extends Entity<ReportPurchaseOrderId> {
     return this._document;
   }
 
-  // get user_approval(): UserApprovalEntity | null {
-  //   return this._user_approval;
-  // }
+  get user_approval(): UserApprovalEntity | null {
+    return this._user_approval;
+  }
 
   public static builder(): ReportPurchaseOrderBuilder {
     return new ReportPurchaseOrderBuilder();

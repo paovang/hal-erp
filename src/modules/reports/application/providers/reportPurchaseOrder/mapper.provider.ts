@@ -50,6 +50,10 @@ import { BankDataMapper } from '@src/modules/manage/application/mappers/bank.map
 import { ProvinceDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/province.mapper';
 import { CurrencyDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/currency.mapper';
 import { BankDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/bank.mapper';
+import { UserApprovalDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user-approval.mapper';
+import { UserApprovalStepDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user-approval-step.mapper';
+import { DocumentStatusDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document-status.mapper';
+import { DocumentApproverDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document-approver.mapper';
 
 export const ReportPurchaseOrderMapperProviders: Provider[] = [
   ReportPurchaseOrderDataAccessMapper,
@@ -103,4 +107,8 @@ export const ReportPurchaseOrderMapperProviders: Provider[] = [
   ProvinceDataAccessMapper,
   CurrencyDataAccessMapper,
   BankDataAccessMapper,
+  UserApprovalDataAccessMapper,
+  UserApprovalStepDataAccessMapper,
+  DocumentStatusDataAccessMapper,
+  DocumentApproverDataAccessMapper,
 ];

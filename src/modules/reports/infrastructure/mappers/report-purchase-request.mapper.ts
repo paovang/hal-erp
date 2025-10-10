@@ -4,6 +4,7 @@ import { ReportPurchaseRequestEntity } from '../../domain/entities/report-purcha
 import { ReportPurchaseRequestId } from '../../domain/value-objects/report-purchase-request-id.vo';
 import { ReportPurchaseRequestItemDataAccessMapper } from './report-purchase-request-item.mapper';
 import { DocumentDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document.mapper';
+import { UserApprovalDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user-approval.mapper';
 // import { ReportPurchaseRequestItemDataAccessMapper } from './report-purchase-request-item.mapper';
 
 @Injectable()
@@ -11,9 +12,8 @@ export class ReportPurchaseRequestDataAccessMapper {
   constructor(
     private readonly purchaseRequestItemMapper: ReportPurchaseRequestItemDataAccessMapper,
     private readonly documentMapper: DocumentDataAccessMapper,
+    private readonly userApprovalMapper: UserApprovalDataAccessMapper,
   ) {}
-  // private readonly purchaseRequestItemMapper: ReportPurchaseRequestItemDataAccessMapper, // private readonly userApprovalMapper: ReportUserApprovalDataAccessMapper, // private readonly documentMapper: ReportDocumentDataAccessMapper, // private readonly purchaseRequestItemMapper: ReportPurchaseRequestItemDataAccessMapper,
-
   toEntity(
     ormData: PurchaseRequestOrmEntity,
     step: number = 0,
@@ -51,11 +51,11 @@ export class ReportPurchaseRequestDataAccessMapper {
       builder.setDocument(this.documentMapper.toEntity(ormData.documents));
     }
 
-    // if (ormData.documents && ormData.documents.user_approvals) {
-    //   builder.setUserApproval(
-    //     this.userApprovalMapper.toEntity(ormData.documents.user_approvals),
-    //   );
-    // }
+    if (ormData.documents && ormData.documents.user_approvals) {
+      builder.setUserApproval(
+        this.userApprovalMapper.toEntity(ormData.documents.user_approvals),
+      );
+    }
 
     if (ormData.purchase_request_items) {
       builder.setPurchaseRequestItem(
