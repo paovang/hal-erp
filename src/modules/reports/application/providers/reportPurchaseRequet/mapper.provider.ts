@@ -23,6 +23,10 @@ import { DocumentTypeDataMapper } from '@src/modules/manage/application/mappers/
 import { PermissionDataMapper } from '@src/modules/manage/application/mappers/permission.mapper';
 import { UnitDataMapper } from '@src/modules/manage/application/mappers/unit.mapper';
 import { UnitDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/unit.mapper';
+import { UserApprovalDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user-approval.mapper';
+import { UserApprovalStepDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user-approval-step.mapper';
+import { DocumentStatusDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document-status.mapper';
+import { DocumentApproverDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document-approver.mapper';
 
 export const ReportPurchaseRequestMapperProviders: Provider[] = [
   ReportPurchaseRequestDataAccessMapper,
@@ -49,4 +53,8 @@ export const ReportPurchaseRequestMapperProviders: Provider[] = [
   UserSignatureDataMapper,
   UnitDataMapper,
   UnitDataAccessMapper,
+  UserApprovalDataAccessMapper,
+  UserApprovalStepDataAccessMapper,
+  DocumentStatusDataAccessMapper,
+  DocumentApproverDataAccessMapper,
 ];

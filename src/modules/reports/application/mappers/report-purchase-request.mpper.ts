@@ -6,12 +6,14 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { ReportPurchaseRequestResponse } from '../dto/response/report-purchase-request.response';
 import { ReportPurchaseRequestItemDataMapper } from './report-purchase-request-item.mapper';
 import { DocumentDataMapper } from '@src/modules/manage/application/mappers/document.mapper';
+import { UserApprovalDataMapper } from '@src/modules/manage/application/mappers/user-approval.mapper';
 
 @Injectable()
 export class ReportPurchaseRequestDataMapper {
   constructor(
     private readonly purchaseRequestItemDataMapper: ReportPurchaseRequestItemDataMapper,
     private readonly documentMapper: DocumentDataMapper,
+    private readonly userApprovalMapper: UserApprovalDataMapper,
   ) {}
   /** Mapper Entity To Response */
   toResponse(
@@ -40,6 +42,9 @@ export class ReportPurchaseRequestDataMapper {
     response.step = isStepPending;
     response.document = entity.document
       ? this.documentMapper.toResponse(entity.document)
+      : null;
+    response.user_approval = entity.user_approval
+      ? this.userApprovalMapper.toResponse(entity.user_approval)
       : null;
     response.purchase_request_item =
       entity.purchaseRequestItems?.map((item) => {

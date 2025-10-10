@@ -4,12 +4,14 @@ import { ReportPurchaseOrderEntity } from '../../domain/entities/report-purchase
 import { ReportPurchaseOrderId } from '../../domain/value-objects/report-purchase-order-id.vo';
 import { PurchaseOrderItemDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/purchase-order-item.mapper';
 import { DocumentDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document.mapper';
+import { UserApprovalDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user-approval.mapper';
 
 @Injectable()
 export class ReportPurchaseOrderDataAccessMapper {
   constructor(
     private readonly purchaseOrderItemMapper: PurchaseOrderItemDataAccessMapper,
     private readonly documentMapper: DocumentDataAccessMapper,
+    private readonly userApprovalMapper: UserApprovalDataAccessMapper,
   ) {}
 
   toEntity(
@@ -64,6 +66,12 @@ export class ReportPurchaseOrderDataAccessMapper {
         ormData.purchase_order_items.map((item) =>
           this.purchaseOrderItemMapper.toEntity(item),
         ),
+      );
+    }
+
+    if (ormData.documents && ormData.documents.user_approvals) {
+      builder.setUserApproval(
+        this.userApprovalMapper.toEntity(ormData.documents.user_approvals),
       );
     }
 

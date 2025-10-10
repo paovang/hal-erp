@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ReportPurchaseRequestItemResponse } from './report-purchase-request-item.response';
 import { DocumentResponse } from '@src/modules/manage/application/dto/response/document.response';
+import { UserApprovalResponse } from '@src/modules/manage/application/dto/response/user-approval.response';
 
 export class ReportPurchaseRequestResponse {
   @ApiProperty()
@@ -42,8 +43,8 @@ export class ReportPurchaseRequestResponse {
   @ApiProperty()
   document: DocumentResponse | null;
 
-  // @ApiProperty()
-  // user_approval: UserApprovalResponse | null;
+  @ApiProperty()
+  user_approval: UserApprovalResponse | null;
 
   @ApiProperty()
   purchase_request_item: ReportPurchaseRequestItemResponse[] | null;
