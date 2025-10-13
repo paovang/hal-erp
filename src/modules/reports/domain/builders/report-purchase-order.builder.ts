@@ -24,6 +24,7 @@ export class ReportPurchaseOrderBuilder {
   document: DocumentEntity | null;
   user_approval: UserApprovalEntity | null;
   step: number | 0;
+  countItem: number | 0;
 
   setPurchaseOrderId(value: ReportPurchaseOrderId): this {
     this.purchaseOrderId = value;
@@ -52,6 +53,11 @@ export class ReportPurchaseOrderBuilder {
 
   setExpiredDate(expired_date: Date): this {
     this.expired_date = expired_date;
+    return this;
+  }
+
+  setCountItem(countItem: number | 0): this {
+    this.countItem = countItem;
     return this;
   }
 

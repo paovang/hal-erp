@@ -40,6 +40,7 @@ export class ReportPurchaseOrderDataAccessMapper {
     );
 
     const total = sub_total + vat;
+    const count = items.length;
 
     const builder = ReportPurchaseOrderEntity.builder()
       .setPurchaseOrderId(new ReportPurchaseOrderId(ormData.id))
@@ -55,6 +56,7 @@ export class ReportPurchaseOrderDataAccessMapper {
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .setDeletedAt(ormData.deleted_at)
+      .setCountItem(count)
       .setStep(step);
 
     if (ormData.documents) {

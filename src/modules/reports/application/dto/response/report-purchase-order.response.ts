@@ -33,6 +33,9 @@ export class ReportPurchaseOrderResponse {
   deleted_at: string | null;
 
   @ApiProperty()
+  itemCount: number | 0;
+
+  @ApiProperty()
   sub_total: number | 0;
 
   @ApiProperty()

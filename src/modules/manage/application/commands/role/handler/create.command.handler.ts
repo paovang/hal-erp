@@ -57,14 +57,16 @@ export class CreateCommandHandler
           'errors.name_already_exists',
         );
 
-        await findOneOrFail(
-          manager,
-          DepartmentOrmEntity,
-          {
-            id: query.dto.department_id,
-          },
-          `department id ${query.dto.department_id}`,
-        );
+        if (query.dto.department_id) {
+          await findOneOrFail(
+            manager,
+            DepartmentOrmEntity,
+            {
+              id: query.dto.department_id,
+            },
+            `department id ${query.dto.department_id}`,
+          );
+        }
 
         if (query.dto.permissions) {
           for (const permission_id of query.dto.permissions) {
@@ -84,12 +86,14 @@ export class CreateCommandHandler
 
         const role_id = (result as any)._id._value;
 
-        const roleGroupEntity = this._dataRoleGroupMapper.toEntity(
-          role_id,
-          query.dto.department_id,
-        );
+        if (query.dto.department_id) {
+          const roleGroupEntity = this._dataRoleGroupMapper.toEntity(
+            role_id,
+            query.dto.department_id,
+          );
 
-        await this._writeRoleGroup.create(roleGroupEntity, manager);
+          await this._writeRoleGroup.create(roleGroupEntity, manager);
+        }
 
         return result;
       },

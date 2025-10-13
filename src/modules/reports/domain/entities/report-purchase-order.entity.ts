@@ -26,6 +26,7 @@ export class ReportPurchaseOrderEntity extends Entity<ReportPurchaseOrderId> {
   private readonly _document: DocumentEntity | null;
   private readonly _user_approval: UserApprovalEntity | null;
   private _step: number | 0;
+  private readonly _countItem: number | 0;
 
   private constructor(builder: ReportPurchaseOrderBuilder) {
     super();
@@ -48,6 +49,7 @@ export class ReportPurchaseOrderEntity extends Entity<ReportPurchaseOrderId> {
     this._document = builder.document ?? null;
     this._user_approval = builder.user_approval ?? null;
     this._step = builder.step;
+    this._countItem = builder.countItem ?? 0;
   }
 
   get purchase_request_id(): number {
@@ -84,6 +86,10 @@ export class ReportPurchaseOrderEntity extends Entity<ReportPurchaseOrderId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get countItem(): number | 0 {
+    return this._countItem;
   }
 
   get sub_total(): number | 0 {

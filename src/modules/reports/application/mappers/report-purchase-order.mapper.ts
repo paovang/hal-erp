@@ -40,6 +40,7 @@ export class ReportPurchaseOrderDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.itemCount = entity.countItem;
     response.sub_total = Number(entity.sub_total);
     response.vat = Number(entity.vat);
     response.total = Number(entity.total);
