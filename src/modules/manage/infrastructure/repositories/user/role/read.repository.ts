@@ -63,7 +63,6 @@ export class ReadRoleRepository implements IReadRoleRepository {
       .leftJoin('roles.rolesGroups', 'roleGroups') // use rolesGroups (matches entity)
       .leftJoin('roleGroups.department', 'departments') // use the alias roleGroups here
       .leftJoinAndSelect('roles.permissions', 'permissions')
-      // .leftJoin('permissions.permission_groups', 'permissionGroups')
       .where('roles.name NOT IN (:...roleName)', { roleName })
       .addSelect([
         'roleGroups.id',
@@ -72,8 +71,6 @@ export class ReadRoleRepository implements IReadRoleRepository {
         'departments.id',
         'departments.name',
         'departments.code',
-        'permissionGroups.id',
-        'permissionGroups.name',
       ]);
 
     if (department_id) {
