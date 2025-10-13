@@ -2,6 +2,7 @@ import { Entity } from '@src/common/domain/entities/entity';
 import { DepartmentBuilder } from '@src/modules/manage/domain/builders/department.builder';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 import { UserEntity } from './user.entity';
+import { DepartmentType } from '@src/common/enums/department.enum';
 
 export class DepartmentEntity extends Entity<DepartmentId> {
   private readonly _name: string;
@@ -12,6 +13,7 @@ export class DepartmentEntity extends Entity<DepartmentId> {
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _department_head: UserEntity | null;
+  private readonly _type: DepartmentType;
 
   private constructor(builder: DepartmentBuilder) {
     super();
@@ -24,6 +26,7 @@ export class DepartmentEntity extends Entity<DepartmentId> {
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._department_head = builder.department_head ?? null;
+    this._type = builder.type;
   }
 
   get name(): string {
@@ -40,6 +43,10 @@ export class DepartmentEntity extends Entity<DepartmentId> {
 
   get department_head_id(): number {
     return this._department_head_id;
+  }
+
+  get type(): DepartmentType {
+    return this._type;
   }
 
   get createdAt(): Date {

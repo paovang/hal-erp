@@ -15,6 +15,7 @@ import { DepartmentUserOrmEntity } from './department-user.orm';
 import { DepartmentApproverOrmEntity } from './department-approver.orm';
 import { BudgetApprovalRuleOrmEntity } from './budget-approval-rule.orm';
 import { BudgetAccountOrmEntity } from './budget-account.orm';
+import { DepartmentType } from '../../../enums/department.enum';
 import { DocumentOrmEntity } from './document.orm';
 import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 import { UserOrmEntity } from './user.orm';
@@ -37,6 +38,14 @@ export class DepartmentOrmEntity {
   @Index()
   @Column({ type: 'boolean', default: false })
   is_line_manager: boolean;
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: DepartmentType,
+    default: DepartmentType.IN_THE_OFFICE,
+  })
+  type: DepartmentType;
 
   @Index()
   @Column({ nullable: true })
