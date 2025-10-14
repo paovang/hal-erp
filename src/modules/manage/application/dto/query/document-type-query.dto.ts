@@ -10,4 +10,8 @@ export class DocumentTypeQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: string;
 }

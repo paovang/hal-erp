@@ -74,6 +74,7 @@ import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purchase-order-id.vo';
 import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
+import { StatusEnum } from '@src/common/enums/status.enum';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -164,6 +165,40 @@ export class CreateCommandHandler
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user.id;
+
+        const check_document_type = await findOneOrFail(
+          manager,
+          DocumentTypeOrmEntity,
+          {
+            id: query.dto.document.documentTypeId,
+          },
+          `Document Type ID: ${query.dto.document.documentTypeId}`,
+        );
+
+        const document_type_id = (check_document_type as any).id;
+        const check_workflow_status = await manager.findOne(
+          ApprovalWorkflowOrmEntity,
+          {
+            where: { document_type_id: document_type_id },
+          },
+        );
+
+        if (
+          check_workflow_status &&
+          check_workflow_status.status === StatusEnum.PENDING
+        ) {
+          throw new ManageDomainException(
+            'errors.not_approve_workflow_yet',
+            HttpStatus.BAD_REQUEST,
+            { property: 'Approval Workflow' },
+          );
+        } else if (!check_workflow_status) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.BAD_REQUEST,
+            { property: 'Approval Workflow' },
+          );
+        }
 
         const department = await findOneOrFail(
           query.manager,

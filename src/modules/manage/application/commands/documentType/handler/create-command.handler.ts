@@ -71,6 +71,7 @@ export class CreateCommandHandler
     }
 
     const entity = this._dataMapper.toEntity(query.dto, code);
+    console.log('object', entity);
     return await this._write.create(entity, query.manager);
   }
 }

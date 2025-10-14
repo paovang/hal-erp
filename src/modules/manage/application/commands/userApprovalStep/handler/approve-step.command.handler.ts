@@ -187,7 +187,6 @@ export class ApproveStepCommandHandler
         // );
 
         if (department) {
-          console.log('1');
           const department_id = (department as any).department_id;
 
           const get_department_name = await findOneOrFail(
@@ -201,8 +200,6 @@ export class ApproveStepCommandHandler
 
           department_name = (get_department_name as any).name;
         } else {
-          console.log('2', user.username);
-
           department_name = user.username || '';
         }
 
