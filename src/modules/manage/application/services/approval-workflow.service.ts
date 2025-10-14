@@ -13,6 +13,8 @@ import { DeleteCommand } from '../commands/ApprovalWorkflow/delete.command';
 import { CreateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/create.dto';
 import { ApprovalWorkflowQueryDto } from '../dto/query/approval-workflow.dto';
 import { UpdateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/update.dto';
+import { ApproveDto } from '../dto/create/ApprovalWorkflow/approve.dto';
+import { ApproveCommand } from '../commands/ApprovalWorkflow/approve.command';
 
 @Injectable()
 export class ApprovalWorkflowService
@@ -65,6 +67,16 @@ export class ApprovalWorkflowService
   async delete(id: number, manager?: EntityManager): Promise<void> {
     return await this._commandBus.execute(
       new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  async approve(
+    id: number,
+    dto: ApproveDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
+    return await this._commandBus.execute(
+      new ApproveCommand(id, dto, manager ?? this._readEntityManager),
     );
   }
 }

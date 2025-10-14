@@ -1,3 +1,4 @@
+import { StatusEnum } from '@src/common/enums/status.enum';
 import { ApprovalWorkflowStepEntity } from '../entities/approval-workflow-step.entity';
 import { ApprovalWorkflowEntity } from '../entities/approval-workflow.entity';
 import { DocumentTypeEntity } from '../entities/document-type.entity';
@@ -12,6 +13,7 @@ export class ApprovalWorkflowBuilder {
   deletedAt!: Date | null;
   document_type: DocumentTypeEntity;
   steps: ApprovalWorkflowStepEntity[] | null;
+  status: StatusEnum;
 
   setApprovalWorkflowId(value: ApprovalWorkflowId): this {
     this.approvalWorkflowId = value;
@@ -25,6 +27,11 @@ export class ApprovalWorkflowBuilder {
 
   setName(name: string): this {
     this.name = name;
+    return this;
+  }
+
+  setStatus(status: StatusEnum): this {
+    this.status = status;
     return this;
   }
 

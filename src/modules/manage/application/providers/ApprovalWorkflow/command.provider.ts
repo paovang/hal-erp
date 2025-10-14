@@ -4,6 +4,7 @@ import { GetAllQueryHandler } from '../../queries/ApprovalWorkflow/handler/get-a
 import { GetOneQueryHandler } from '../../queries/ApprovalWorkflow/handler/get-one.command.query';
 import { UpdateCommandHandler } from '../../commands/ApprovalWorkflow/handler/update-command.handler';
 import { DeleteCommandHandler } from '../../commands/ApprovalWorkflow/handler/delete-command.handler';
+import { ApproveCommandHandler } from '../../commands/ApprovalWorkflow/handler/approve-command.handler';
 
 export const ApprovalWorkflowHandlersProviders: Provider[] = [
   GetAllQueryHandler,
@@ -11,4 +12,5 @@ export const ApprovalWorkflowHandlersProviders: Provider[] = [
   CreateCommandHandler,
   UpdateCommandHandler,
   DeleteCommandHandler,
+  ApproveCommandHandler,
 ];

@@ -4,6 +4,7 @@ import { EntityManager } from 'typeorm';
 import { ApprovalWorkflowQueryDto } from '@src/modules/manage/application/dto/query/approval-workflow.dto';
 import { CreateApprovalWorkflowDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/create.dto';
 import { UpdateApprovalWorkflowDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/update.dto';
+import { ApproveDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/approve.dto';
 
 export interface IApprovalWorkflowServiceInterface {
   getAll(
@@ -28,4 +29,10 @@ export interface IApprovalWorkflowServiceInterface {
   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 
   delete(id: number, manager?: EntityManager): Promise<void>;
+
+  approve(
+    id: number,
+    dto: ApproveDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 }

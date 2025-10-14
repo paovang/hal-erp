@@ -8,6 +8,7 @@ import { DocumentTypeDataMapper } from './document-type.mapper';
 import { ApprovalWorkflowStepDataMapper } from './approval-workflow-step.mapper';
 import { CreateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/create.dto';
 import { UpdateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/update.dto';
+import { ApproveDto } from '../dto/create/ApprovalWorkflow/approve.dto';
 
 @Injectable()
 export class ApprovalWorkflowDataMapper {
@@ -25,11 +26,17 @@ export class ApprovalWorkflowDataMapper {
       builder.setName(dto.name);
     }
 
-    console.log('object', dto.documentTypeId);
     if (dto.documentTypeId) {
       builder.setDocumentTypeId(dto.documentTypeId);
     }
 
+    return builder.build();
+  }
+
+  /** Mapper Dto To Entity */
+  toEntityApprove(dto: ApproveDto): ApprovalWorkflowEntity {
+    const builder = ApprovalWorkflowEntity.builder();
+    builder.setStatus(dto.status);
     return builder.build();
   }
 
@@ -38,6 +45,8 @@ export class ApprovalWorkflowDataMapper {
     const response = new ApprovalWorkflowResponse();
     response.id = entity.getId().value;
     response.name = entity.name;
+    response.document_type_id = entity.documentTypeId;
+    response.status = entity.status;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
