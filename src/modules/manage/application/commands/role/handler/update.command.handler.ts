@@ -82,8 +82,8 @@ export class UpdateCommandHandler
         });
 
         if (query.dto.department_id) {
-          await findOneOrFail(manager, RoleGroupOrmEntity, {
-            role_id: query.id,
+          const roleGroup = await manager.findOne(RoleGroupOrmEntity, {
+            where: { role_id: query.id },
           });
           const department = await findOneOrFail(
             manager,
@@ -94,10 +94,12 @@ export class UpdateCommandHandler
             `department id ${query.dto.department_id}`,
           );
 
-          await this._writeRoleGroup.deleteByRoleId(
-            new RoleId(query.id),
-            manager,
-          );
+          if (roleGroup) {
+            await this._writeRoleGroup.deleteByRoleId(
+              new RoleId(query.id),
+              manager,
+            );
+          }
 
           const department_id = department.id;
 
