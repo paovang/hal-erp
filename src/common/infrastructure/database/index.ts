@@ -44,6 +44,8 @@ import { VendorBankAccountOrmEntity } from './typeorm/vendor_bank_account.orm';
 import { IncreaseBudgetOrmEntity } from './typeorm/increase-budget.orm';
 import { RoleGroupOrmEntity } from './typeorm/role-group.orm';
 import { RolePermissionOrmEntity } from './typeorm/role-permission.orm';
+import { ProductTypeOrmEntity } from './typeorm/product-type.orm';
+import { ProductOrmEntity } from './typeorm/product.orm';
 
 export const models = [
   DepartmentOrmEntity,
@@ -92,4 +94,6 @@ export const models = [
   UserTypeOrmEntity,
   RoleGroupOrmEntity,
   RolePermissionOrmEntity,
+  ProductTypeOrmEntity,
+  ProductOrmEntity,
 ];
