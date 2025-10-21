@@ -12,7 +12,10 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { PURCHASE_ORDER_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
+import {
+  BUDGET_ITEM_APPLICATION_SERVICE,
+  PURCHASE_ORDER_APPLICATION_SERVICE,
+} from '../application/constants/inject-key.const';
 import { IPurchaseOrderServiceInterface } from '../domain/ports/input/purchase-order-domain-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
@@ -24,15 +27,20 @@ import { CreatePurchaseOrderDto } from '../application/dto/create/purchaseOrder/
 import { UpdatePurchaseOrderDto } from '../application/dto/create/purchaseOrder/update.dto';
 import { EnumType } from '../application/constants/status-key.const';
 import { ExcelExportService } from '@common/utils/excel-export.service';
+import { IBudgetItemServiceInterface } from '../domain/ports/input/budget-item-domain-service.interface';
+import { BudgetItemDataMapper } from '../application/mappers/budget-item.mapper';
 
 @Controller('purchase-orders')
 export class PurchaseOrderController {
   constructor(
     @Inject(PURCHASE_ORDER_APPLICATION_SERVICE)
     private readonly _purchaseOrderService: IPurchaseOrderServiceInterface,
+    @Inject(BUDGET_ITEM_APPLICATION_SERVICE)
+    private readonly _budgetItemService: IBudgetItemServiceInterface,
     @Inject(TRANSFORM_RESULT_SERVICE)
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: PurchaseOrderDataMapper,
+    private readonly _dataBudgetMapper: BudgetItemDataMapper,
     private readonly _excelExportService: ExcelExportService,
   ) {}
 
@@ -107,6 +115,35 @@ export class PurchaseOrderController {
         result,
       );
 
+      let purchaseOrderItem: any = null;
+
+      if (Array.isArray(purchaseOrderResponse)) {
+        // Case 1: Response is an array
+        purchaseOrderItem =
+          purchaseOrderResponse[0]?.purchase_order_item?.[0] || null;
+      } else if (
+        purchaseOrderResponse &&
+        typeof purchaseOrderResponse === 'object' &&
+        'data' in purchaseOrderResponse // ✅ Type narrowing check
+      ) {
+        // Case 2: Paginated or wrapped object with `.data`
+        const data = (purchaseOrderResponse as any).data;
+        purchaseOrderItem = data?.purchase_order_item?.[0] || null;
+      } else {
+        // Case 3: Direct PurchaseOrderResponse object
+        purchaseOrderItem =
+          (purchaseOrderResponse as any)?.purchase_order_item?.[0] || null;
+      }
+
+      const result_budget = await this._budgetItemService.GetItemId(
+        purchaseOrderItem.budget_item_id,
+      );
+      const budget = this._transformResultService.execute(
+        this._dataBudgetMapper.toResponse.bind(this._dataBudgetMapper),
+        result_budget,
+      );
+      // console.log('budget:', budget);
+
       // Handle different response types
       let purchaseOrderData: PurchaseOrderResponse | null = null;
 
@@ -130,6 +167,7 @@ export class PurchaseOrderController {
       const excelBuffer =
         await this._excelExportService.exportPurchaseOrderToExcel(
           purchaseOrderData,
+          budget,
         );
       const fileName = this._excelExportService.generateFileName(
         purchaseOrderData.po_number || `PO-${id}`,
