@@ -3,11 +3,13 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Inject,
   Param,
   Post,
   Put,
   Query,
+  Res,
 } from '@nestjs/common';
 import { RECEIPT_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
@@ -19,6 +21,8 @@ import { ReceiptResponse } from '../application/dto/response/receipt.response';
 import { CreateReceiptDto } from '../application/dto/create/receipt/create.dto';
 import { ReceiptQueryDto } from '../application/dto/query/receipt.dto';
 import { UpdateReceiptDto } from '../application/dto/create/receipt/update.dto';
+import { ExcelExportService } from '@src/common/utils/excel-export.service';
+import { Response } from 'express';
 
 @Controller('receipts')
 export class ReceiptController {
@@ -28,6 +32,7 @@ export class ReceiptController {
     @Inject(TRANSFORM_RESULT_SERVICE)
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: ReceiptDataMapper,
+    private readonly _excelExportService: ExcelExportService,
   ) {}
 
   @Post('')
@@ -64,6 +69,66 @@ export class ReceiptController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  @Get('export/:id')
+  async exportToExcel(
+    @Param('id') id: number,
+    @Res() res: Response,
+  ): Promise<void> {
+    try {
+      // Get purchase order data
+      const result = await this._receiptService.getOne(id);
+      const receiptResponse = this._transformResultService.execute(
+        this._dataMapper.toResponse.bind(this._dataMapper),
+        result,
+      );
+
+      // Handle different response types
+      let receiptData: ReceiptResponse | null = null;
+
+      if (Array.isArray(receiptResponse)) {
+        receiptData = receiptResponse.length > 0 ? receiptResponse[0] : null;
+      } else if (receiptResponse && 'data' in receiptResponse) {
+        receiptData = (receiptResponse as any).data || null;
+      } else if (receiptResponse) {
+        receiptData = receiptResponse as ReceiptResponse;
+      }
+
+      if (!receiptData) {
+        res.status(HttpStatus.NOT_FOUND).json({
+          message: 'Receipt not found',
+        });
+        return;
+      }
+
+      // Generate Excel file
+      const excelBuffer =
+        await this._excelExportService.exportReceiptToExcel(receiptData);
+      const fileName = this._excelExportService.generateFileName(
+        receiptData.receipt_number || `Receipt-${id}`,
+        'Receipt',
+      );
+
+      // Set response headers
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${fileName}"`,
+      );
+      res.setHeader('Content-Length', excelBuffer.length);
+
+      // Send the file
+      res.send(excelBuffer);
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Failed to export Receipt',
+        error: error.message,
+      });
+    }
   }
 
   @Put(':id')

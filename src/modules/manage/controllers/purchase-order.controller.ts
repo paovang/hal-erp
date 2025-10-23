@@ -171,6 +171,7 @@ export class PurchaseOrderController {
         );
       const fileName = this._excelExportService.generateFileName(
         purchaseOrderData.po_number || `PO-${id}`,
+        'PO',
       );
 
       // Set response headers

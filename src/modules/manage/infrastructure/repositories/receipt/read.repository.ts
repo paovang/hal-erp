@@ -52,6 +52,7 @@ import {
   selectReceiptItems,
   selectSelectedVendors,
   selectStatus,
+  selectUnits,
   selectUserApprovals,
   selectUserApprovalSteps,
   selectUsers,
@@ -171,6 +172,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectPrDocuments,
       ...selectPrDocumentTypes,
       ...selectBudgetAccounts,
+      ...selectUnits,
     ];
 
     const query = manager
@@ -196,6 +198,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
         'purchase_order_items.purchase_request_items',
         'purchase_request_items',
       )
+      .innerJoin('purchase_request_items.units', 'units')
       .leftJoin('purchase_order_items.budget_item', 'budget_items')
       .leftJoin('budget_items.budget_accounts', 'budget_accounts')
       .innerJoin(

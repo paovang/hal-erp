@@ -724,6 +724,7 @@ export class ApproveStepCommandHandler
           try {
             if (step.is_otp === true) {
               // Verify OTP
+              console.log('test step is opt', step.is_otp);
               await verifyOtp(query, status, tel);
             }
           } catch (error) {
@@ -757,6 +758,7 @@ export class ApproveStepCommandHandler
         try {
           if (step.is_otp === true) {
             // Verify OTP
+            console.log('test step is opt not approval', step.is_otp);
             await verifyOtp(query, status, tel);
           }
         } catch (error: any) {
