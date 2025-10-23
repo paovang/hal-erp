@@ -487,18 +487,18 @@ export class ApproveStepCommandHandler
 
                   await this._writePoItem.update(POEntity, manager);
                 }
-                if (a_w_s.is_otp === true) {
-                  // send approval request server to server
-                  await sendApprovalRequest(
-                    user_approval_step_id,
-                    total,
-                    user,
-                    user_id,
-                    department_name,
-                    EnumRequestApprovalType.PO,
-                    titlesString,
-                  );
-                }
+                // if (a_w_s.is_otp === true) {
+                //   // send approval request server to server
+                //   await sendApprovalRequest(
+                //     user_approval_step_id,
+                //     total,
+                //     user,
+                //     user_id,
+                //     department_name,
+                //     EnumRequestApprovalType.PO,
+                //     titlesString,
+                //   );
+                // }
               }
 
               if (a_w_s.is_otp === true) {
