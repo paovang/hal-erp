@@ -714,38 +714,33 @@ export class ExcelExportService {
               timeout: 10000,
             });
 
-            // 2️⃣ Ensure we have a proper ArrayBuffer
-            let arrayBuffer: ArrayBuffer;
-            if (response.data instanceof ArrayBuffer) {
-              arrayBuffer = response.data;
-            } else if ('buffer' in response.data) {
-              arrayBuffer = response.data.buffer;
-            } else {
-              throw new Error('Invalid image buffer type');
-            }
+            // 2️⃣ Convert to proper Node.js Buffer (ensure it's normal ArrayBuffer, not SharedArrayBuffer)
+            const dataArray =
+              response.data instanceof ArrayBuffer
+                ? new Uint8Array(response.data)
+                : new Uint8Array(response.data.buffer);
 
-            // 3️⃣ Convert to Node.js Buffer
-            const imageBuffer = Buffer.from(arrayBuffer);
+            const imageBuffer = Buffer.from(dataArray); // ✅ Type-safe Node.js Buffer
 
-            // 4️⃣ Resize with Sharp (TypeScript-safe)
-            const finalBuffer = await sharp(imageBuffer)
-              .resize({ width: 120, height: 80 }) // adjust pixel size
+            // 3️⃣ Resize image with Sharp
+            const finalBuffer: Buffer = await sharp(imageBuffer)
+              .resize({ width: 120, height: 80 }) // adjust size
               .toBuffer();
 
-            // 5️⃣ Determine extension
+            // 4️⃣ Determine extension
             const extension =
               signatureUrl.toLowerCase().includes('.jpg') ||
               signatureUrl.toLowerCase().includes('.jpeg')
                 ? 'jpeg'
                 : 'png';
 
-            // 6️⃣ Add image to workbook
+            // 5️⃣ Add image to workbook
             const imageId = worksheet.workbook.addImage({
-              buffer: finalBuffer as any,
+              buffer: finalBuffer,
               extension,
             });
 
-            // 7️⃣ Center image inside merged cell area
+            // 6️⃣ Center image inside merged cells
             const mergedCols = colEnd - colStart + 1;
             const mergedRows = imgEndRow - imgStartRow + 1;
 
@@ -1364,38 +1359,33 @@ export class ExcelExportService {
               timeout: 10000,
             });
 
-            // 2️⃣ Ensure we have a proper ArrayBuffer
-            let arrayBuffer: ArrayBuffer;
-            if (response.data instanceof ArrayBuffer) {
-              arrayBuffer = response.data;
-            } else if ('buffer' in response.data) {
-              arrayBuffer = response.data.buffer;
-            } else {
-              throw new Error('Invalid image buffer type');
-            }
+            // 2️⃣ Convert to proper Node.js Buffer (ensure it's normal ArrayBuffer, not SharedArrayBuffer)
+            const dataArray =
+              response.data instanceof ArrayBuffer
+                ? new Uint8Array(response.data)
+                : new Uint8Array(response.data.buffer);
 
-            // 3️⃣ Convert to Node.js Buffer
-            const imageBuffer = Buffer.from(arrayBuffer);
+            const imageBuffer = Buffer.from(dataArray); // ✅ Type-safe Node.js Buffer
 
-            // 4️⃣ Resize with Sharp (TypeScript-safe)
-            const finalBuffer = await sharp(imageBuffer)
-              .resize({ width: 120, height: 80 }) // adjust pixel size
+            // 3️⃣ Resize image with Sharp
+            const finalBuffer: Buffer = await sharp(imageBuffer)
+              .resize({ width: 120, height: 80 }) // adjust size
               .toBuffer();
 
-            // 5️⃣ Determine extension
+            // 4️⃣ Determine extension
             const extension =
               signatureUrl.toLowerCase().includes('.jpg') ||
               signatureUrl.toLowerCase().includes('.jpeg')
                 ? 'jpeg'
                 : 'png';
 
-            // 6️⃣ Add image to workbook
+            // 5️⃣ Add image to workbook
             const imageId = worksheet.workbook.addImage({
-              buffer: finalBuffer as any,
+              buffer: finalBuffer,
               extension,
             });
 
-            // 7️⃣ Center image inside merged cell area
+            // 6️⃣ Center image inside merged cells
             const mergedCols = colEnd - colStart + 1;
             const mergedRows = imgEndRow - imgStartRow + 1;
 
@@ -2015,38 +2005,33 @@ export class ExcelExportService {
               timeout: 10000,
             });
 
-            // 2️⃣ Ensure we have a proper ArrayBuffer
-            let arrayBuffer: ArrayBuffer;
-            if (response.data instanceof ArrayBuffer) {
-              arrayBuffer = response.data;
-            } else if ('buffer' in response.data) {
-              arrayBuffer = response.data.buffer;
-            } else {
-              throw new Error('Invalid image buffer type');
-            }
+            // 2️⃣ Convert to proper Node.js Buffer (ensure it's normal ArrayBuffer, not SharedArrayBuffer)
+            const dataArray =
+              response.data instanceof ArrayBuffer
+                ? new Uint8Array(response.data)
+                : new Uint8Array(response.data.buffer);
 
-            // 3️⃣ Convert to Node.js Buffer
-            const imageBuffer = Buffer.from(arrayBuffer);
+            const imageBuffer = Buffer.from(dataArray); // ✅ Type-safe Node.js Buffer
 
-            // 4️⃣ Resize with Sharp (TypeScript-safe)
-            const finalBuffer = await sharp(imageBuffer)
-              .resize({ width: 120, height: 80 }) // adjust pixel size
+            // 3️⃣ Resize image with Sharp
+            const finalBuffer: Buffer = await sharp(imageBuffer)
+              .resize({ width: 120, height: 80 }) // adjust size
               .toBuffer();
 
-            // 5️⃣ Determine extension
+            // 4️⃣ Determine extension
             const extension =
               signatureUrl.toLowerCase().includes('.jpg') ||
               signatureUrl.toLowerCase().includes('.jpeg')
                 ? 'jpeg'
                 : 'png';
 
-            // 6️⃣ Add image to workbook
+            // 5️⃣ Add image to workbook
             const imageId = worksheet.workbook.addImage({
-              buffer: finalBuffer as any,
+              buffer: finalBuffer,
               extension,
             });
 
-            // 7️⃣ Center image inside merged cell area
+            // 6️⃣ Center image inside merged cells
             const mergedCols = colEnd - colStart + 1;
             const mergedRows = imgEndRow - imgStartRow + 1;
 
