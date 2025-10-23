@@ -125,7 +125,7 @@ devDependencies:
     specifier: ^1.4.12
     version: 1.4.12
   '@types/node':
-    specifier: ^20.17.46
+    specifier: ^20.17.55
     version: 20.17.55
   '@types/supertest':
     specifier: ^6.0.0
