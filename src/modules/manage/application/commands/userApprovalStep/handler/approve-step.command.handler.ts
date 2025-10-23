@@ -721,6 +721,7 @@ export class ApproveStepCommandHandler
           }
 
           await this.checkDataAndUpdateUserApproval(query, manager);
+          console.log('test step is opt', step.is_otp);
           try {
             if (step.is_otp === true) {
               // Verify OTP
@@ -754,6 +755,7 @@ export class ApproveStepCommandHandler
         await this._write.update(approvedStepEntity, manager, query.stepId);
 
         await this.RejectUserApproval(query, manager);
+        console.log('test step is opt', step.is_otp);
 
         try {
           if (step.is_otp === true) {
