@@ -707,32 +707,39 @@ export class ExcelExportService {
 
         if (signatureUrl) {
           try {
+            // 1️⃣ Try to fetch image data from URL
             const response = await axios.get(signatureUrl, {
               responseType: 'arraybuffer',
-              timeout: 10000,
+              timeout: 10000, // timeout 10s
             });
+
+            // 2️⃣ Convert data to buffer
             const imageBuffer = Buffer.from(response.data);
+
+            // 3️⃣ Detect image extension
             const extension =
               signatureUrl.toLowerCase().includes('.jpg') ||
               signatureUrl.toLowerCase().includes('.jpeg')
                 ? 'jpeg'
                 : 'png';
 
+            // 4️⃣ Register the image with ExcelJS
             const imageId = workbook.addImage({
               buffer: imageBuffer as any,
               extension,
             });
 
-            // Approximate pixel sizes for Excel: 1 column ≈ 64px, 1 row ≈ 20px
+            // 5️⃣ Estimate Excel's pixel-to-cell ratio
             const mergedCols = colEnd - colStart + 1;
             const mergedRows = imgEndRow - imgStartRow + 1;
             const colOffset = (mergedCols * 64 - 120) / 2; // 120px image width
             const rowOffset = (mergedRows * 20 - 80) / 2; // 80px image height
 
+            // 6️⃣ Add image centered in merged range
             worksheet.addImage(imageId, {
               tl: {
-                col: colStart - 1 + colOffset / 64, // convert px to Excel column units
-                row: imgStartRow - 1 + rowOffset / 20, // convert px to Excel row units
+                col: colStart - 1 + colOffset / 64,
+                row: imgStartRow - 1 + rowOffset / 20,
               },
               ext: { width: 120, height: 80 },
               editAs: 'oneCell',
@@ -1304,32 +1311,70 @@ export class ExcelExportService {
 
         if (signatureUrl) {
           try {
+            // const response = await axios.get(signatureUrl, {
+            //   responseType: 'arraybuffer',
+            //   timeout: 10000,
+            // });
+            // const imageBuffer = Buffer.from(response.data);
+            // const extension =
+            //   signatureUrl.toLowerCase().includes('.jpg') ||
+            //   signatureUrl.toLowerCase().includes('.jpeg')
+            //     ? 'jpeg'
+            //     : 'png';
+
+            // const imageId = workbook.addImage({
+            //   buffer: imageBuffer as any,
+            //   extension,
+            // });
+
+            // // Approximate pixel sizes for Excel: 1 column ≈ 64px, 1 row ≈ 20px
+            // const mergedCols = colEnd - colStart + 1;
+            // const mergedRows = imgEndRow - imgStartRow + 1;
+            // const colOffset = (mergedCols * 64 - 120) / 2; // 120px image width
+            // const rowOffset = (mergedRows * 20 - 80) / 2; // 80px image height
+
+            // worksheet.addImage(imageId, {
+            //   tl: {
+            //     col: colStart - 1 + colOffset / 64, // convert px to Excel column units
+            //     row: imgStartRow - 1 + rowOffset / 20, // convert px to Excel row units
+            //   },
+            //   ext: { width: 120, height: 80 },
+            //   editAs: 'oneCell',
+            // });
+
+            // 1️⃣ Try to fetch image data from URL
             const response = await axios.get(signatureUrl, {
               responseType: 'arraybuffer',
-              timeout: 10000,
+              timeout: 10000, // timeout 10s
             });
+
+            // 2️⃣ Convert data to buffer
             const imageBuffer = Buffer.from(response.data);
+
+            // 3️⃣ Detect image extension
             const extension =
               signatureUrl.toLowerCase().includes('.jpg') ||
               signatureUrl.toLowerCase().includes('.jpeg')
                 ? 'jpeg'
                 : 'png';
 
+            // 4️⃣ Register the image with ExcelJS
             const imageId = workbook.addImage({
               buffer: imageBuffer as any,
               extension,
             });
 
-            // Approximate pixel sizes for Excel: 1 column ≈ 64px, 1 row ≈ 20px
+            // 5️⃣ Estimate Excel's pixel-to-cell ratio
             const mergedCols = colEnd - colStart + 1;
             const mergedRows = imgEndRow - imgStartRow + 1;
             const colOffset = (mergedCols * 64 - 120) / 2; // 120px image width
             const rowOffset = (mergedRows * 20 - 80) / 2; // 80px image height
 
+            // 6️⃣ Add image centered in merged range
             worksheet.addImage(imageId, {
               tl: {
-                col: colStart - 1 + colOffset / 64, // convert px to Excel column units
-                row: imgStartRow - 1 + rowOffset / 20, // convert px to Excel row units
+                col: colStart - 1 + colOffset / 64,
+                row: imgStartRow - 1 + rowOffset / 20,
               },
               ext: { width: 120, height: 80 },
               editAs: 'oneCell',
@@ -1902,32 +1947,70 @@ export class ExcelExportService {
 
         if (signatureUrl) {
           try {
+            // const response = await axios.get(signatureUrl, {
+            //   responseType: 'arraybuffer',
+            //   timeout: 10000,
+            // });
+            // const imageBuffer = Buffer.from(response.data);
+            // const extension =
+            //   signatureUrl.toLowerCase().includes('.jpg') ||
+            //   signatureUrl.toLowerCase().includes('.jpeg')
+            //     ? 'jpeg'
+            //     : 'png';
+
+            // const imageId = workbook.addImage({
+            //   buffer: imageBuffer as any,
+            //   extension,
+            // });
+
+            // // Approximate pixel sizes for Excel: 1 column ≈ 64px, 1 row ≈ 20px
+            // const mergedCols = colEnd - colStart + 1;
+            // const mergedRows = imgEndRow - imgStartRow + 1;
+            // const colOffset = (mergedCols * 64 - 120) / 2; // 120px image width
+            // const rowOffset = (mergedRows * 20 - 80) / 2; // 80px image height
+
+            // worksheet.addImage(imageId, {
+            //   tl: {
+            //     col: colStart - 1 + colOffset / 64, // convert px to Excel column units
+            //     row: imgStartRow - 1 + rowOffset / 20, // convert px to Excel row units
+            //   },
+            //   ext: { width: 120, height: 80 },
+            //   editAs: 'oneCell',
+            // });
+
+            // 1️⃣ Try to fetch image data from URL
             const response = await axios.get(signatureUrl, {
               responseType: 'arraybuffer',
-              timeout: 10000,
+              timeout: 10000, // timeout 10s
             });
+
+            // 2️⃣ Convert data to buffer
             const imageBuffer = Buffer.from(response.data);
+
+            // 3️⃣ Detect image extension
             const extension =
               signatureUrl.toLowerCase().includes('.jpg') ||
               signatureUrl.toLowerCase().includes('.jpeg')
                 ? 'jpeg'
                 : 'png';
 
+            // 4️⃣ Register the image with ExcelJS
             const imageId = workbook.addImage({
               buffer: imageBuffer as any,
               extension,
             });
 
-            // Approximate pixel sizes for Excel: 1 column ≈ 64px, 1 row ≈ 20px
+            // 5️⃣ Estimate Excel's pixel-to-cell ratio
             const mergedCols = colEnd - colStart + 1;
             const mergedRows = imgEndRow - imgStartRow + 1;
             const colOffset = (mergedCols * 64 - 120) / 2; // 120px image width
             const rowOffset = (mergedRows * 20 - 80) / 2; // 80px image height
 
+            // 6️⃣ Add image centered in merged range
             worksheet.addImage(imageId, {
               tl: {
-                col: colStart - 1 + colOffset / 64, // convert px to Excel column units
-                row: imgStartRow - 1 + rowOffset / 20, // convert px to Excel row units
+                col: colStart - 1 + colOffset / 64,
+                row: imgStartRow - 1 + rowOffset / 20,
               },
               ext: { width: 120, height: 80 },
               editAs: 'oneCell',
