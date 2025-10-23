@@ -715,13 +715,17 @@ export class ExcelExportService {
             });
 
             // 2️⃣ Convert to proper Node.js Buffer
-            const arrayBuffer = response.data as ArrayBuffer; // ensure it's ArrayBuffer
+            // Ensure it's a true ArrayBuffer, not SharedArrayBuffer
+            const arrayBuffer =
+              response.data instanceof ArrayBuffer
+                ? response.data
+                : response.data.buffer;
             const imageBuffer = Buffer.from(arrayBuffer);
 
             // 3️⃣ Resize image with Sharp (optional)
             const finalBuffer = await sharp(imageBuffer)
               .resize({ width: 120, height: 80 }) // adjust pixel size
-              .toBuffer();
+              .toBuffer(); // ✅ TypeScript-safe Buffer
 
             // 4️⃣ Determine extension
             const extension =
@@ -1356,13 +1360,17 @@ export class ExcelExportService {
             });
 
             // 2️⃣ Convert to proper Node.js Buffer
-            const arrayBuffer = response.data as ArrayBuffer; // ensure it's ArrayBuffer
+            // Ensure it's a true ArrayBuffer, not SharedArrayBuffer
+            const arrayBuffer =
+              response.data instanceof ArrayBuffer
+                ? response.data
+                : response.data.buffer;
             const imageBuffer = Buffer.from(arrayBuffer);
 
             // 3️⃣ Resize image with Sharp (optional)
             const finalBuffer = await sharp(imageBuffer)
               .resize({ width: 120, height: 80 }) // adjust pixel size
-              .toBuffer();
+              .toBuffer(); // ✅ TypeScript-safe Buffer
 
             // 4️⃣ Determine extension
             const extension =
@@ -1998,13 +2006,17 @@ export class ExcelExportService {
             });
 
             // 2️⃣ Convert to proper Node.js Buffer
-            const arrayBuffer = response.data as ArrayBuffer; // ensure it's ArrayBuffer
+            // Ensure it's a true ArrayBuffer, not SharedArrayBuffer
+            const arrayBuffer =
+              response.data instanceof ArrayBuffer
+                ? response.data
+                : response.data.buffer;
             const imageBuffer = Buffer.from(arrayBuffer);
 
             // 3️⃣ Resize image with Sharp (optional)
             const finalBuffer = await sharp(imageBuffer)
               .resize({ width: 120, height: 80 }) // adjust pixel size
-              .toBuffer();
+              .toBuffer(); // ✅ TypeScript-safe Buffer
 
             // 4️⃣ Determine extension
             const extension =
