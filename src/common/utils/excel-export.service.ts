@@ -120,7 +120,7 @@ export class ExcelExportService {
 
     // 2️⃣ Add image to workbook
     const logoImageId = workbook.addImage({
-      buffer: imageBuffer as Buffer,
+      buffer: imageBuffer as any,
       extension: 'jpeg', // 'png' or 'jpeg'
     });
 
@@ -719,7 +719,7 @@ export class ExcelExportService {
                 : 'png';
 
             const imageId = workbook.addImage({
-              buffer: imageBuffer as Buffer,
+              buffer: imageBuffer as any,
               extension,
             });
 
@@ -871,7 +871,7 @@ export class ExcelExportService {
 
     // 2️⃣ Add image to workbook
     const logoImageId = workbook.addImage({
-      buffer: imageBuffer as Buffer,
+      buffer: imageBuffer as any,
       extension: 'jpeg', // 'png' or 'jpeg'
     });
 
@@ -1316,7 +1316,7 @@ export class ExcelExportService {
                 : 'png';
 
             const imageId = workbook.addImage({
-              buffer: imageBuffer as Buffer,
+              buffer: imageBuffer as any,
               extension,
             });
 
@@ -1914,7 +1914,7 @@ export class ExcelExportService {
                 : 'png';
 
             const imageId = workbook.addImage({
-              buffer: imageBuffer as Buffer,
+              buffer: imageBuffer as any,
               extension,
             });
 
