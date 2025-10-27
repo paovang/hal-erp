@@ -20,6 +20,7 @@ import { DocumentOrmEntity } from './document.orm';
 import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 import { UserOrmEntity } from './user.orm';
 import { RoleGroupOrmEntity } from './role-group.orm';
+import { CompanyOrmEntity } from './company.orm';
 // import { BudgetAccountOrmEntity } from './budget-account.orm';
 
 @Entity('departments')
@@ -38,6 +39,15 @@ export class DepartmentOrmEntity {
   @Index()
   @Column({ type: 'boolean', default: false })
   is_line_manager: boolean;
+
+  @Column({ nullable: true })
+  company_id?: number;
+  @ManyToOne(() => CompanyOrmEntity, (company) => company.departments, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'company_id' })
+  company: Relation<CompanyOrmEntity>;
 
   @Index()
   @Column({

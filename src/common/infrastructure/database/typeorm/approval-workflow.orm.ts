@@ -14,6 +14,7 @@ import {
 import { DocumentTypeOrmEntity } from './document-type.orm';
 import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 import { StatusEnum } from '@src/common/enums/status.enum';
+import { CompanyOrmEntity } from './company.orm';
 
 @Entity('approval_workflows')
 export class ApprovalWorkflowOrmEntity {
@@ -33,6 +34,15 @@ export class ApprovalWorkflowOrmEntity {
   @Index()
   @Column({ type: 'varchar', nullable: true })
   name?: string;
+
+  @Column({ nullable: true })
+  company_id?: number;
+  @ManyToOne(() => CompanyOrmEntity, (company) => company.approval_workflows, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'company_id' })
+  company: Relation<CompanyOrmEntity>;
 
   @Index()
   @Column({

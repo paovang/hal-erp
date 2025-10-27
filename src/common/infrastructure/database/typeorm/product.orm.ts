@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { ProductTypeOrmEntity } from './product-type.orm';
 import { VendorOrmEntity } from './vendor.orm';
+import { CategoryOrmEntity } from './category.orm';
 
 @Entity('products')
 export class ProductOrmEntity {
@@ -37,6 +38,15 @@ export class ProductOrmEntity {
   )
   @JoinColumn({ name: 'product_type_id' })
   product_type: Relation<ProductTypeOrmEntity>;
+
+  @Column({ nullable: true })
+  category_id?: number;
+  @ManyToOne(() => CategoryOrmEntity, (category) => category.products, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'category_id' })
+  category: Relation<CategoryOrmEntity>;
 
   @Column({ nullable: true })
   vendor_id?: number;

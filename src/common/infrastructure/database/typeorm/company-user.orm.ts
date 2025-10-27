@@ -3,34 +3,37 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { DepartmentUserOrmEntity } from './department-user.orm';
 import { CompanyOrmEntity } from './company.orm';
+import { UserOrmEntity } from './user.orm';
 
-@Entity('positions')
-export class PositionOrmEntity {
+@Entity('company_users')
+export class CompanyUserOrmEntity {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
-  @Index()
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  name?: string;
-
   @Column({ nullable: true })
   company_id?: number;
-  @ManyToOne(() => CompanyOrmEntity, (company) => company.positions, {
+  @ManyToOne(() => CompanyOrmEntity, (company) => company.company_users, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'company_id' })
   company: Relation<CompanyOrmEntity>;
+
+  @Column({ nullable: true })
+  user_id?: number;
+  @ManyToOne(() => UserOrmEntity, (user) => user.company_users, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: Relation<UserOrmEntity>;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
@@ -42,10 +45,4 @@ export class PositionOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
-
-  @OneToMany(
-    () => DepartmentUserOrmEntity,
-    (department_users) => department_users.positions,
-  )
-  department_users: Relation<DepartmentUserOrmEntity[]>;
 }

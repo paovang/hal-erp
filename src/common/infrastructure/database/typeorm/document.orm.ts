@@ -22,6 +22,7 @@ import { ReceiptOrmEntity } from './receipt.orm';
 import { DocumentAttachmentOrmEntity } from './document-attachment.orm';
 import { DocumentTransactionOrmEntity } from './document-transaction.orm';
 import { EnumDocumentStatus } from '@src/modules/manage/application/constants/status-key.const';
+import { CompanyOrmEntity } from './company.orm';
 
 @Entity('documents')
 export class DocumentOrmEntity {
@@ -81,6 +82,15 @@ export class DocumentOrmEntity {
   })
   @JoinColumn({ name: 'requester_id' })
   users: Relation<UserOrmEntity>;
+
+  @Column({ nullable: true })
+  company_id?: number;
+  @ManyToOne(() => CompanyOrmEntity, (company) => company.documents, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'company_id' })
+  company: Relation<CompanyOrmEntity>;
 
   @Index()
   @Column({

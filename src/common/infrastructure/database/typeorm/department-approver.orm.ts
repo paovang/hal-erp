@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { DepartmentOrmEntity } from './department.orm';
 import { UserOrmEntity } from './user.orm';
+import { CompanyOrmEntity } from './company.orm';
 
 @Entity('department_approvers')
 export class DepartmentApproverOrmEntity {
@@ -38,6 +39,19 @@ export class DepartmentApproverOrmEntity {
   })
   @JoinColumn({ name: 'user_id' })
   users: Relation<UserOrmEntity>;
+
+  @Column({ nullable: true })
+  company_id?: number;
+  @ManyToOne(
+    () => CompanyOrmEntity,
+    (company) => company.department_approvers,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'company_id' })
+  company: Relation<CompanyOrmEntity>;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
