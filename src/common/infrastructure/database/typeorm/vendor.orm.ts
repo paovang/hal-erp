@@ -52,6 +52,6 @@ export class VendorOrmEntity {
     PurchaseOrderSelectedVendorOrmEntity[]
   >;
 
-  @OneToMany(() => ProductOrmEntity, (products) => products.vendor)
-  products: Relation<ProductOrmEntity[]>;
+  // @OneToMany(() => ProductOrmEntity, (products) => products.vendor)
+  // products: Relation<ProductOrmEntity[]>;
 }

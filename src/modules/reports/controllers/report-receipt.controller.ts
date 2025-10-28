@@ -12,6 +12,7 @@ export class ReportReceiptController {
     @Inject(TRANSFORM_RESULT_SERVICE)
     private readonly _transformResultService: ITransformResultService,
   ) {}
+
   @Get('money')
   async reportMoney(): Promise<any> {
     const result = await this._service.reportMoney();
