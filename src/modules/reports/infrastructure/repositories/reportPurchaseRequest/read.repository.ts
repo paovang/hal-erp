@@ -263,4 +263,46 @@ export class ReportReadPurchaseRequestRepository
 
     return data;
   }
+
+  async getProcurementStatistics(manager: EntityManager): Promise<any> {
+    // Get PR statistics
+    const prStats = await this.getDocumentStatistics(manager, 'PR');
+
+    // Get PO statistics
+    const poStats = await this.getDocumentStatistics(manager, 'PO');
+
+    // Get Receipt statistics
+    const receiptStats = await this.getDocumentStatistics(manager, 'RC');
+
+    return {
+      pr: prStats,
+      po: poStats,
+      receipt: receiptStats,
+    };
+  }
+
+  private async getDocumentStatistics(manager: EntityManager, documentType: string): Promise<any> {
+    const queryBuilder = manager
+      .createQueryBuilder('documents', 'documents')
+      .innerJoin('documents.document_types', 'document_types')
+      .select('document_types.type', 'type')
+      .addSelect('COUNT(documents.id)', 'all')
+      .addSelect('SUM(CASE WHEN documents.status = :pending THEN 1 ELSE 0 END)', 'pending')
+      .addSelect('SUM(CASE WHEN documents.status = :success THEN 1 ELSE 0 END)', 'approved')
+      .addSelect('SUM(CASE WHEN documents.status = :rejected THEN 1 ELSE 0 END)', 'rejected')
+      .where('document_types.type = :documentType', { documentType })
+      .setParameter('pending', 'pending')
+      .setParameter('success', 'success')
+      .setParameter('rejected', 'rejected')
+      .groupBy('document_types.type');
+
+    const result = await queryBuilder.getRawOne();
+
+    return {
+      all: parseInt(result?.all || '0'),
+      pending: parseInt(result?.pending || '0'),
+      approved: parseInt(result?.approved || '0'),
+      rejected: parseInt(result?.rejected || '0'),
+    };
+  }
 }

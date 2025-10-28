@@ -9,6 +9,7 @@ import { GetReportQuery } from '../queries/reportPurchaseRequest/report.query';
 import { PurchaseRequestReportQueryDto } from '../dto/query/purchase-request-report.query.dto';
 import { GetReportMoneyQuery } from '../queries/reportPurchaseRequest/report-money.query';
 import { GetReportMoneyByPaginationQuery } from '../queries/reportPurchaseRequest/report-money-paginate.query';
+import { GetProcurementStatisticsQuery } from '../queries/procurement-statistics/procurement-statistics.query';
 
 @Injectable()
 export class ReportPurchaseRequestService
@@ -47,5 +48,11 @@ export class ReportPurchaseRequestService
       ),
     );
     return result;
+  }
+
+  async getProcurementStatistics(manager?: EntityManager): Promise<any> {
+    return await this._queryBus.execute(
+      new GetProcurementStatisticsQuery(manager ?? this._readEntityManager),
+    );
   }
 }

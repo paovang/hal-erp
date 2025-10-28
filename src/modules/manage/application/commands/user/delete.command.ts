@@ -1,4 +1,4 @@
-import { EntityManager } from "typeorm";
+import { EntityManager } from 'typeorm';
 
 export class DeleteCommand {
   constructor(

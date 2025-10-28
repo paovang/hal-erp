@@ -1,5 +1,5 @@
-import { EntityManager } from "typeorm";
-import { PermissionQueryDto } from "../../../dto/query/permission-query.dto";
+import { EntityManager } from 'typeorm';
+import { PermissionQueryDto } from '../../../dto/query/permission-query.dto';
 
 export class GetAllQuery {
   constructor(

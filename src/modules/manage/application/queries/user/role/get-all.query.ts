@@ -1,5 +1,5 @@
-import { EntityManager } from "typeorm";
-import { RoleQueryDto } from "../../../dto/query/role-query.dto";
+import { EntityManager } from 'typeorm';
+import { RoleQueryDto } from '../../../dto/query/role-query.dto';
 
 export class GetAllQuery {
   constructor(

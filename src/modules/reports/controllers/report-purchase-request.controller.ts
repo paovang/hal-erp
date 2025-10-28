@@ -44,4 +44,10 @@ export class ReportPurchaseRequestController {
 
     return result;
   }
+  
+  @Get('statistics')
+  async getProcurementStatistics(): Promise<any> {
+    const result = await this._service.getProcurementStatistics();
+    return result;
+  }
 }

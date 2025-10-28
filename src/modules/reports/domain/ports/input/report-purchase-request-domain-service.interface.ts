@@ -15,4 +15,6 @@ export interface IReportPurchaseRequestServiceInterface {
     dto: PurchaseRequestReportQueryDto,
     manager?: EntityManager,
   ): Promise<any>;
+
+  getProcurementStatistics(manager?: EntityManager): Promise<any>;
 }

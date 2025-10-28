@@ -14,4 +14,6 @@ export interface IReportPurchaseRequestRepository {
   ): Promise<ResponseResult<ReportPurchaseRequestEntity>>;
 
   reportMoney(manager: EntityManager): Promise<any>;
+
+  getProcurementStatistics(manager: EntityManager): Promise<any>;
 }
