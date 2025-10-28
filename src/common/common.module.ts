@@ -16,6 +16,7 @@ import { PaginationModule } from '@common/infrastructure/pagination/pagination.m
 import { AmazonS3Module } from '@common/infrastructure/aws3/config/aws3.module';
 import { ClsAuthModule } from '@common/infrastructure/cls/cls.module';
 import { PermissionGuard } from './guards/permission.guard';
+import { ExcelExportService } from './utils/excel-export.service';
 
 @Global()
 @Module({
@@ -52,7 +53,8 @@ import { PermissionGuard } from './guards/permission.guard';
       provide: APP_GUARD,
       useClass: PermissionGuard,
     },
+    ExcelExportService,
   ],
-  exports: [],
+  exports: [ExcelExportService],
 })
 export class CommonModule {}

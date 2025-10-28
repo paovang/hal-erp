@@ -33,6 +33,7 @@ export class DepartmentDataAccessMapper {
     mediaOrmEntity.code = departmentEntity.code;
     mediaOrmEntity.name = departmentEntity.name;
     mediaOrmEntity.is_line_manager = departmentEntity.is_line_manager;
+    mediaOrmEntity.type = departmentEntity.type;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = departmentEntity.createdAt ?? new Date(now);
     }
@@ -48,6 +49,7 @@ export class DepartmentDataAccessMapper {
       .setCode(ormData.code)
       .setIsLineManager(ormData.is_line_manager)
       .setDepartmentHeadId(ormData.department_head_id ?? 0)
+      .setType(ormData.type)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 

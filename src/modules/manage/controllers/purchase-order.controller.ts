@@ -8,8 +8,14 @@ import {
   Post,
   Put,
   Query,
+  Res,
+  HttpStatus,
 } from '@nestjs/common';
-import { PURCHASE_ORDER_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
+import { Response } from 'express';
+import {
+  BUDGET_ITEM_APPLICATION_SERVICE,
+  PURCHASE_ORDER_APPLICATION_SERVICE,
+} from '../application/constants/inject-key.const';
 import { IPurchaseOrderServiceInterface } from '../domain/ports/input/purchase-order-domain-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
@@ -20,15 +26,22 @@ import { PurchaseOrderResponse } from '../application/dto/response/purchase-orde
 import { CreatePurchaseOrderDto } from '../application/dto/create/purchaseOrder/create.dto';
 import { UpdatePurchaseOrderDto } from '../application/dto/create/purchaseOrder/update.dto';
 import { EnumType } from '../application/constants/status-key.const';
+import { ExcelExportService } from '@common/utils/excel-export.service';
+import { IBudgetItemServiceInterface } from '../domain/ports/input/budget-item-domain-service.interface';
+import { BudgetItemDataMapper } from '../application/mappers/budget-item.mapper';
 
 @Controller('purchase-orders')
 export class PurchaseOrderController {
   constructor(
     @Inject(PURCHASE_ORDER_APPLICATION_SERVICE)
     private readonly _purchaseOrderService: IPurchaseOrderServiceInterface,
+    @Inject(BUDGET_ITEM_APPLICATION_SERVICE)
+    private readonly _budgetItemService: IBudgetItemServiceInterface,
     @Inject(TRANSFORM_RESULT_SERVICE)
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: PurchaseOrderDataMapper,
+    private readonly _dataBudgetMapper: BudgetItemDataMapper,
+    private readonly _excelExportService: ExcelExportService,
   ) {}
 
   @Get('')
@@ -87,5 +100,98 @@ export class PurchaseOrderController {
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._purchaseOrderService.delete(id);
+  }
+
+  @Get('export/:id')
+  async exportToExcel(
+    @Param('id') id: number,
+    @Res() res: Response,
+  ): Promise<void> {
+    try {
+      // Get purchase order data
+      const result = await this._purchaseOrderService.getOne(id);
+      const purchaseOrderResponse = this._transformResultService.execute(
+        this._dataMapper.toResponse.bind(this._dataMapper),
+        result,
+      );
+
+      let purchaseOrderItem: any = null;
+
+      if (Array.isArray(purchaseOrderResponse)) {
+        // Case 1: Response is an array
+        purchaseOrderItem =
+          purchaseOrderResponse[0]?.purchase_order_item?.[0] || null;
+      } else if (
+        purchaseOrderResponse &&
+        typeof purchaseOrderResponse === 'object' &&
+        'data' in purchaseOrderResponse // ✅ Type narrowing check
+      ) {
+        // Case 2: Paginated or wrapped object with `.data`
+        const data = (purchaseOrderResponse as any).data;
+        purchaseOrderItem = data?.purchase_order_item?.[0] || null;
+      } else {
+        // Case 3: Direct PurchaseOrderResponse object
+        purchaseOrderItem =
+          (purchaseOrderResponse as any)?.purchase_order_item?.[0] || null;
+      }
+
+      const result_budget = await this._budgetItemService.GetItemId(
+        purchaseOrderItem.budget_item_id,
+      );
+      const budget = this._transformResultService.execute(
+        this._dataBudgetMapper.toResponse.bind(this._dataBudgetMapper),
+        result_budget,
+      );
+      // console.log('budget:', budget);
+
+      // Handle different response types
+      let purchaseOrderData: PurchaseOrderResponse | null = null;
+
+      if (Array.isArray(purchaseOrderResponse)) {
+        purchaseOrderData =
+          purchaseOrderResponse.length > 0 ? purchaseOrderResponse[0] : null;
+      } else if (purchaseOrderResponse && 'data' in purchaseOrderResponse) {
+        purchaseOrderData = (purchaseOrderResponse as any).data || null;
+      } else if (purchaseOrderResponse) {
+        purchaseOrderData = purchaseOrderResponse as PurchaseOrderResponse;
+      }
+
+      if (!purchaseOrderData) {
+        res.status(HttpStatus.NOT_FOUND).json({
+          message: 'Purchase Order not found',
+        });
+        return;
+      }
+
+      // Generate Excel file
+      const excelBuffer =
+        await this._excelExportService.exportPurchaseOrderToExcel(
+          purchaseOrderData,
+          budget,
+        );
+      const fileName = this._excelExportService.generateFileName(
+        purchaseOrderData.po_number || `PO-${id}`,
+        'PO',
+      );
+
+      // Set response headers
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${fileName}"`,
+      );
+      res.setHeader('Content-Length', excelBuffer.length);
+
+      // Send the file
+      res.send(excelBuffer);
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Failed to export purchase order',
+        error: error.message,
+      });
+    }
   }
 }

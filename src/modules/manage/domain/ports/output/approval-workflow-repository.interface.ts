@@ -28,4 +28,9 @@ export interface IWriteApprovalWorkflowRepository {
   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 
   delete(id: ApprovalWorkflowId, manager: EntityManager): Promise<void>;
+
+  approved(
+    entity: ApprovalWorkflowEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 }

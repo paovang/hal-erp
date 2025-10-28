@@ -24,6 +24,8 @@ export async function verifyOtp(
     );
   }
 
+  console.log('test');
+
   // Build the playLoad object here inside the util function
   const playLoad = {
     approval_id: query.dto.approval_id,

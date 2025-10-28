@@ -19,6 +19,7 @@ import { ApprovalWorkflowResponse } from '../application/dto/response/approval-w
 import { CreateApprovalWorkflowDto } from '../application/dto/create/ApprovalWorkflow/create.dto';
 import { ApprovalWorkflowQueryDto } from '../application/dto/query/approval-workflow.dto';
 import { UpdateApprovalWorkflowDto } from '../application/dto/create/ApprovalWorkflow/update.dto';
+import { ApproveDto } from '../application/dto/create/ApprovalWorkflow/approve.dto';
 
 @Controller('approval-workflows')
 export class ApprovalWorkflowController {
@@ -73,6 +74,18 @@ export class ApprovalWorkflowController {
   ): Promise<ResponseResult<ApprovalWorkflowResponse>> {
     const result = await this._approvalWorkflowService.update(id, dto);
 
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Put('/approve/:id')
+  async approve(
+    @Param('id') id: number,
+    @Body() dto: ApproveDto,
+  ): Promise<ResponseResult<ApprovalWorkflowResponse>> {
+    const result = await this._approvalWorkflowService.approve(id, dto);
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,

@@ -22,6 +22,9 @@ export class DepartmentResponse {
   department_head_id: number;
 
   @ApiProperty()
+  type: string;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()

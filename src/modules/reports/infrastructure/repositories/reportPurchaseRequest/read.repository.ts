@@ -182,7 +182,7 @@ export class ReportReadPurchaseRequestRepository
       searchColumns: [
         'purchase_requests.pr_number',
         'documents.title',
-        'users.name',
+        'users.username',
         'users.email',
         'departments.name',
         'departments.code',

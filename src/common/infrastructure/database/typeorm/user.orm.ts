@@ -25,6 +25,7 @@ import { ReceiptOrmEntity } from './receipt.orm';
 import { DocumentAttachmentOrmEntity } from './document-attachment.orm';
 import { IncreaseBudgetOrmEntity } from './increase-budget.orm';
 import { UserTypeOrmEntity } from './user-type.orm';
+import { CompanyUserOrmEntity } from './company-user.orm';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -154,4 +155,7 @@ export class UserOrmEntity {
     (increase_budgets) => increase_budgets.users,
   )
   increase_budgets: Relation<IncreaseBudgetOrmEntity[]>;
+
+  @OneToMany(() => CompanyUserOrmEntity, (company_users) => company_users.user)
+  company_users: Relation<CompanyUserOrmEntity[]>;
 }

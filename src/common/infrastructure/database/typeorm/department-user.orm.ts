@@ -13,6 +13,7 @@ import {
 import { DepartmentOrmEntity } from './department.orm';
 import { PositionOrmEntity } from './position.orm';
 import { UserOrmEntity } from './user.orm';
+import { CompanyOrmEntity } from './company.orm';
 
 @Entity('department_users')
 export class DepartmentUserOrmEntity {
@@ -53,9 +54,18 @@ export class DepartmentUserOrmEntity {
   @JoinColumn({ name: 'user_id' })
   users: Relation<UserOrmEntity>;
 
-  // @Index()
-  // @Column({ type: 'varchar', length: 255, nullable: true })
-  // signature_file?: string;
+  @Column({ nullable: true })
+  company_id?: number;
+  @ManyToOne(
+    () => CompanyOrmEntity,
+    (company) => company.department_approvers,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'company_id' })
+  company: Relation<CompanyOrmEntity>;
 
   @Index()
   @Column({ nullable: true })

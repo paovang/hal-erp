@@ -187,7 +187,6 @@ export class ApproveStepCommandHandler
         // );
 
         if (department) {
-          console.log('1');
           const department_id = (department as any).department_id;
 
           const get_department_name = await findOneOrFail(
@@ -201,8 +200,6 @@ export class ApproveStepCommandHandler
 
           department_name = (get_department_name as any).name;
         } else {
-          console.log('2', user.username);
-
           department_name = user.username || '';
         }
 
@@ -490,18 +487,18 @@ export class ApproveStepCommandHandler
 
                   await this._writePoItem.update(POEntity, manager);
                 }
-                if (a_w_s.is_otp === true) {
-                  // send approval request server to server
-                  await sendApprovalRequest(
-                    user_approval_step_id,
-                    total,
-                    user,
-                    user_id,
-                    department_name,
-                    EnumRequestApprovalType.PO,
-                    titlesString,
-                  );
-                }
+                // if (a_w_s.is_otp === true) {
+                //   // send approval request server to server
+                //   await sendApprovalRequest(
+                //     user_approval_step_id,
+                //     total,
+                //     user,
+                //     user_id,
+                //     department_name,
+                //     EnumRequestApprovalType.PO,
+                //     titlesString,
+                //   );
+                // }
               }
 
               if (a_w_s.is_otp === true) {
@@ -724,9 +721,11 @@ export class ApproveStepCommandHandler
           }
 
           await this.checkDataAndUpdateUserApproval(query, manager);
+          console.log('test step is opt', step.is_otp);
           try {
             if (step.is_otp === true) {
               // Verify OTP
+              console.log('test step is opt', step.is_otp);
               await verifyOtp(query, status, tel);
             }
           } catch (error) {
@@ -756,10 +755,12 @@ export class ApproveStepCommandHandler
         await this._write.update(approvedStepEntity, manager, query.stepId);
 
         await this.RejectUserApproval(query, manager);
+        console.log('test step is opt', step.is_otp);
 
         try {
           if (step.is_otp === true) {
             // Verify OTP
+            console.log('test step is opt not approval', step.is_otp);
             await verifyOtp(query, status, tel);
           }
         } catch (error: any) {

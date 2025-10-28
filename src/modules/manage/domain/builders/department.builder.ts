@@ -1,6 +1,7 @@
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 import { UserEntity } from '../entities/user.entity';
+import { DepartmentType } from '@src/common/enums/department.enum';
 
 export class DepartmentBuilder {
   departmentId: DepartmentId;
@@ -12,6 +13,7 @@ export class DepartmentBuilder {
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   department_head: UserEntity | null;
+  type: DepartmentType;
 
   setDepartmentId(value: DepartmentId): this {
     this.departmentId = value;
@@ -35,6 +37,11 @@ export class DepartmentBuilder {
 
   setDepartmentHeadId(value: number): this {
     this.department_head_id = value;
+    return this;
+  }
+
+  setType(value: DepartmentType): this {
+    this.type = value;
     return this;
   }
 

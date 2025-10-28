@@ -68,6 +68,8 @@ export class ReceiptDataAccessMapper {
       0,
     );
 
+    const count = items.length ?? 0;
+
     const total = sub_total + vat;
 
     const builder = ReceiptEntity.builder()
@@ -95,6 +97,7 @@ export class ReceiptDataAccessMapper {
       .setSubTotal(sub_total ?? 0)
       .setVat(vat ?? 0)
       .setTotal(total ?? 0)
+      .setCountItem(count)
       .setStep(step);
 
     if (ormData.documents) {

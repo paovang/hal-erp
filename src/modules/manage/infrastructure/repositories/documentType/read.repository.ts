@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
@@ -14,6 +14,7 @@ import { DocumentTypeEntity } from '@src/modules/manage/domain/entities/document
 import { DocumentTypeQueryDto } from '@src/modules/manage/application/dto/query/document-type-query.dto';
 import { DocumentTypeId } from '@src/modules/manage/domain/value-objects/document-type-id.vo';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { StatusEnum } from '@src/common/enums/status.enum';
 
 @Injectable()
 export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
@@ -29,7 +30,8 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
     query: DocumentTypeQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<DocumentTypeEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const status = query.status as StatusEnum;
+    const queryBuilder = await this.createBaseQuery(manager, status);
     query.sort_by = 'document_types.id';
 
     const data = await this._paginationService.paginate(
@@ -38,9 +40,6 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
       this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
       this.getFilterOptions(),
     );
-    if (!data) {
-      throw new NotFoundException('No document_types found.');
-    }
     return data;
   }
 
@@ -55,8 +54,14 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
     return this._dataAccessMapper.toEntity(item);
   }
 
-  private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(DocumentTypeOrmEntity, 'document_types');
+  private createBaseQuery(manager: EntityManager, status?: StatusEnum) {
+    const query = manager
+      .createQueryBuilder(DocumentTypeOrmEntity, 'document_types')
+      .leftJoin('document_types.approval_workflows', 'approval_workflows');
+    if (status) {
+      query.andWhere('approval_workflows.status = :status', { status });
+    }
+    return query;
   }
 
   private getFilterOptions(): FilterOptions {

@@ -18,4 +18,20 @@ export class ReceiptQueryDto extends PaginationDto {
   @ApiProperty()
   @IsOptional()
   order_date?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  start_date?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  end_date?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  status_id?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  payment_type?: string;
 }
