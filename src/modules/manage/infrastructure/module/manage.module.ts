@@ -10,6 +10,7 @@ import { UnitController } from '../../controllers/unit.controller';
 import { DepartmentUserController } from '../../controllers/department-user.controller';
 import { PositionController } from '../../controllers/position.controller';
 import { CategoryController } from '../../controllers/category.controller';
+import { ProductTypeController } from '../../controllers/product-type.controller';
 import { DepartmentApproverController } from '../../controllers/department-approver.controller';
 import { CurrencyController } from '../../controllers/currency.controller';
 import { VendorController } from '../../controllers/vendor.controller';
@@ -58,6 +59,7 @@ import { CompanyController } from '../../controllers/company.controller';
     DepartmentUserController,
     PositionController,
     CategoryController,
+    ProductTypeController,
     DepartmentApproverController,
     CurrencyController,
     VendorController,
