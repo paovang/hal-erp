@@ -33,6 +33,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
   private readonly _sub_total: number | 0;
   private readonly _vat: number | 0;
   private readonly _total: number | 0;
+  private readonly _countItem: number | 0;
 
   private constructor(builder: ReceiptBuilder) {
     super();
@@ -61,6 +62,7 @@ export class ReceiptEntity extends Entity<ReceiptId> {
     this._sub_total = builder.sub_total ?? 0;
     this._vat = builder.vat ?? 0;
     this._total = builder.total;
+    this._countItem = builder.countItem ?? 0;
   }
 
   get receipt_number(): string {
@@ -101,6 +103,10 @@ export class ReceiptEntity extends Entity<ReceiptId> {
 
   get account_code(): string | null {
     return this._account_code;
+  }
+
+  get countItem(): number | 0 {
+    return this._countItem;
   }
 
   get sub_total(): number | 0 {

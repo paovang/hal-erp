@@ -58,6 +58,9 @@ export class ReceiptResponse {
   step_number: number;
 
   @ApiProperty()
+  itemCount: number;
+
+  @ApiProperty()
   sub_total: number | 0;
 
   @ApiProperty()

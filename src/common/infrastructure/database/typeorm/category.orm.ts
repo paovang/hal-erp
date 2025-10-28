@@ -4,9 +4,12 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProductOrmEntity } from './product.orm';
 
 @Entity('categories')
 export class CategoryOrmEntity {
@@ -27,4 +30,7 @@ export class CategoryOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  @OneToMany(() => ProductOrmEntity, (products) => products.category)
+  products: Relation<ProductOrmEntity[]>;
 }

@@ -72,17 +72,6 @@ export class UpdateCommandHandler
           }
         }
 
-        const department = await findOneOrFail(
-          manager,
-          DepartmentOrmEntity,
-          {
-            id: query.dto.department_id,
-          },
-          `department id ${query.dto.department_id}`,
-        );
-
-        const department_id = department.id;
-
         const entity = this._dataMapper.toEntity(query.dto, GUARD_NAME);
 
         await entity.initializeUpdateSetId(new RoleId(query.id));
@@ -92,20 +81,34 @@ export class UpdateCommandHandler
           id: entity.getId().value,
         });
 
-        await findOneOrFail(manager, RoleGroupOrmEntity, {
-          role_id: query.id,
-        });
+        if (query.dto.department_id) {
+          const roleGroup = await manager.findOne(RoleGroupOrmEntity, {
+            where: { role_id: query.id },
+          });
+          const department = await findOneOrFail(
+            manager,
+            DepartmentOrmEntity,
+            {
+              id: query.dto.department_id,
+            },
+            `department id ${query.dto.department_id}`,
+          );
 
-        await this._writeRoleGroup.deleteByRoleId(
-          new RoleId(query.id),
-          manager,
-        );
+          if (roleGroup) {
+            await this._writeRoleGroup.deleteByRoleId(
+              new RoleId(query.id),
+              manager,
+            );
+          }
 
-        const roleGroupEntity = this._dataRoleGroupMapper.toEntity(
-          query.id,
-          department_id,
-        );
-        await this._writeRoleGroup.create(roleGroupEntity, manager);
+          const department_id = department.id;
+
+          const roleGroupEntity = this._dataRoleGroupMapper.toEntity(
+            query.id,
+            department_id,
+          );
+          await this._writeRoleGroup.create(roleGroupEntity, manager);
+        }
 
         return this._write.update(entity, manager, query.dto.permissions);
       },

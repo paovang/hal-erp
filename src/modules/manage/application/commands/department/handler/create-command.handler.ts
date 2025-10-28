@@ -39,7 +39,12 @@ export class CreateCommandHandler
       this._dataSource,
       async (manager) => {
         let isLineManager: boolean;
-        const code = await this.generateUniqueDepartmentCode(query);
+        let code: string;
+        if (!query.dto.code) {
+          code = await this.generateUniqueDepartmentCode(query);
+        } else {
+          code = query.dto.code;
+        }
 
         if (
           query.dto.department_head_id &&

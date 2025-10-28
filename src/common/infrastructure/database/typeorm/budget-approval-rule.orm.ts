@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { DepartmentOrmEntity } from './department.orm';
 import { UserOrmEntity } from './user.orm';
+import { CompanyOrmEntity } from './company.orm';
 
 @Entity('budget_approval_rules')
 export class BudgetApprovalRuleOrmEntity {
@@ -49,6 +50,19 @@ export class BudgetApprovalRuleOrmEntity {
   @Index()
   @Column({ type: 'double precision', nullable: true })
   max_amount?: number;
+
+  @Column({ nullable: true })
+  company_id?: number;
+  @ManyToOne(
+    () => CompanyOrmEntity,
+    (company) => company.budget_approval_rules,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'company_id' })
+  company: Relation<CompanyOrmEntity>;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

@@ -15,10 +15,12 @@ import { DepartmentUserOrmEntity } from './department-user.orm';
 import { DepartmentApproverOrmEntity } from './department-approver.orm';
 import { BudgetApprovalRuleOrmEntity } from './budget-approval-rule.orm';
 import { BudgetAccountOrmEntity } from './budget-account.orm';
+import { DepartmentType } from '../../../enums/department.enum';
 import { DocumentOrmEntity } from './document.orm';
 import { ApprovalWorkflowStepOrmEntity } from './approval-workflow-step.orm';
 import { UserOrmEntity } from './user.orm';
 import { RoleGroupOrmEntity } from './role-group.orm';
+import { CompanyOrmEntity } from './company.orm';
 // import { BudgetAccountOrmEntity } from './budget-account.orm';
 
 @Entity('departments')
@@ -37,6 +39,23 @@ export class DepartmentOrmEntity {
   @Index()
   @Column({ type: 'boolean', default: false })
   is_line_manager: boolean;
+
+  @Column({ nullable: true })
+  company_id?: number;
+  @ManyToOne(() => CompanyOrmEntity, (company) => company.departments, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'company_id' })
+  company: Relation<CompanyOrmEntity>;
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: DepartmentType,
+    default: DepartmentType.IN_THE_OFFICE,
+  })
+  type: DepartmentType;
 
   @Index()
   @Column({ nullable: true })

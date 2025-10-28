@@ -15,6 +15,7 @@ import { DepartmentOrmEntity } from './department.orm';
 import { BudgetItemOrmEntity } from './budget-item.orm';
 import { EnumBudgetType } from '@src/modules/manage/application/constants/status-key.const';
 import { IncreaseBudgetOrmEntity } from './increase-budget.orm';
+import { CompanyOrmEntity } from './company.orm';
 
 @Entity('budget_accounts')
 export class BudgetAccountOrmEntity {
@@ -33,9 +34,14 @@ export class BudgetAccountOrmEntity {
   @Column({ type: 'integer', nullable: true })
   fiscal_year?: number;
 
-  // @Index()
-  // @Column({ type: 'double precision', nullable: true })
-  // allocated_amount?: number;
+  @Column({ nullable: true })
+  company_id?: number;
+  @ManyToOne(() => CompanyOrmEntity, (company) => company.budget_accounts, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'company_id' })
+  company: Relation<CompanyOrmEntity>;
 
   @Index()
   @Column({ nullable: true })

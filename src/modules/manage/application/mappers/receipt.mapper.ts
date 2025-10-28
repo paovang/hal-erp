@@ -93,6 +93,7 @@ export class ReceiptDataMapper {
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.step = isStepPending;
     response.step_number = entity.step;
+    response.itemCount = entity.countItem;
     response.sub_total = Number(entity.sub_total);
     response.vat = Number(entity.vat);
     response.total = Number(entity.total);

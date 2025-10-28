@@ -8,6 +8,7 @@ import { ApprovalWorkflowId } from '../../domain/value-objects/approval-workflow
 import { Injectable } from '@nestjs/common';
 import { DocumentTypeDataAccessMapper } from './document-type.mapper';
 import { ApprovalWorkflowStepDataAccessMapper } from './approval-workflow-step.mapper';
+import { StatusEnum } from '@src/common/enums/status.enum';
 
 @Injectable()
 export class ApprovalWorkflowDataAccessMapper {
@@ -30,9 +31,11 @@ export class ApprovalWorkflowDataAccessMapper {
     mediaOrmEntity.document_type_id = approvalWorkflowEntity.documentTypeId;
     mediaOrmEntity.name = approvalWorkflowEntity.name;
     if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.status = StatusEnum.PENDING;
       mediaOrmEntity.created_at =
         approvalWorkflowEntity.createdAt ?? new Date(now);
     }
+    mediaOrmEntity.status = approvalWorkflowEntity.status;
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;
@@ -43,6 +46,7 @@ export class ApprovalWorkflowDataAccessMapper {
       .setApprovalWorkflowId(new ApprovalWorkflowId(ormData.id))
       .setDocumentTypeId(ormData.document_type_id!)
       .setName(ormData.name ?? '')
+      .setStatus(ormData.status)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 

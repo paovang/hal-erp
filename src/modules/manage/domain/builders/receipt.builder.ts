@@ -32,6 +32,7 @@ export class ReceiptBuilder {
   sub_total: number | 0;
   vat: number | 0;
   total: number | 0;
+  countItem: number | 0;
 
   setReceiptId(value: ReceiptId): this {
     this.receiptId = value;
@@ -70,6 +71,11 @@ export class ReceiptBuilder {
 
   setPrDocType(pr_doc_type: string): this {
     this.pr_doc_type = pr_doc_type;
+    return this;
+  }
+
+  setCountItem(countItem: number | 0): this {
+    this.countItem = countItem;
     return this;
   }
 

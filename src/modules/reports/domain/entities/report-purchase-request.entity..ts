@@ -8,6 +8,7 @@ import { ReportPurchaseRequestId } from '../value-objects/report-purchase-reques
 import { ReportPurchaseRequestBuilder } from '../builders/report-purchase-request.builder';
 import { ReportPurchaseRequestItemEntity } from './report-purchase-request-item.entity';
 import { DocumentEntity } from '@src/modules/manage/domain/entities/document.entity';
+import { UserApprovalEntity } from '@src/modules/manage/domain/entities/user-approval.entity';
 
 export class ReportPurchaseRequestEntity extends Entity<ReportPurchaseRequestId> {
   private readonly _document_id: number;
@@ -23,7 +24,7 @@ export class ReportPurchaseRequestEntity extends Entity<ReportPurchaseRequestId>
     | ReportPurchaseRequestItemEntity[]
     | null;
   private readonly _document: DocumentEntity | null;
-  //   private readonly _user_approval: UserApprovalEntity | null;
+  private readonly _user_approval: UserApprovalEntity | null;
   private _workflow_step_total: number | 0;
   private _step: number | 0;
   private readonly _itemCount: number | 0;
@@ -42,7 +43,7 @@ export class ReportPurchaseRequestEntity extends Entity<ReportPurchaseRequestId>
     this._total = builder.total;
     this._purchaseRequestItems = builder.purchaseRequestItem ?? null;
     this._document = builder.document ?? null;
-    // this._user_approval = builder.user_approval ?? null;
+    this._user_approval = builder.user_approval ?? null;
     this._workflow_step_total = builder.workflow_step_total;
     this._step = builder.step;
     this._itemCount = builder.itemCount;
@@ -96,9 +97,9 @@ export class ReportPurchaseRequestEntity extends Entity<ReportPurchaseRequestId>
     return this._step;
   }
 
-  //   get user_approval(): UserApprovalEntity | null {
-  //     return this._user_approval;
-  //   }
+  get user_approval(): UserApprovalEntity | null {
+    return this._user_approval;
+  }
 
   get workflow_step_total(): number | 0 {
     return this._workflow_step_total;

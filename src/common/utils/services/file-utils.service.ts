@@ -48,7 +48,8 @@ export async function createMockMulterFile(
   // Only process image files (optional)
   if (SUPPORTED_IMAGE_MIME_TYPES.includes(mimeType)) {
     try {
-      finalBuffer = await sharp(buffer).resize(300).toBuffer();
+      // finalBuffer = await sharp(buffer).resize(300).toBuffer();
+      finalBuffer = Buffer.from(await sharp(buffer).resize(300).toBuffer());
     } catch (err) {
       console.error('🛑 Sharp failed to process image:', err.message);
       throw new ManageDomainException(

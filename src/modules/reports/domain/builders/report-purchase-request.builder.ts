@@ -2,6 +2,7 @@ import { DocumentEntity } from '@src/modules/manage/domain/entities/document.ent
 import { ReportPurchaseRequestItemEntity } from '../entities/report-purchase-request-item.entity';
 import { ReportPurchaseRequestEntity } from '../entities/report-purchase-request.entity.';
 import { ReportPurchaseRequestId } from '../value-objects/report-purchase-request-id.vo';
+import { UserApprovalEntity } from '@src/modules/manage/domain/entities/user-approval.entity';
 
 export class ReportPurchaseRequestBuilder {
   purchaseRequestId: ReportPurchaseRequestId;
@@ -16,7 +17,7 @@ export class ReportPurchaseRequestBuilder {
   total: number | 0;
   purchaseRequestItem: ReportPurchaseRequestItemEntity[] | null;
   document: DocumentEntity | null;
-  //   user_approval: UserApprovalEntity | null;
+  user_approval: UserApprovalEntity | null;
   workflow_step_total: number | 0;
   step: number | 0;
   itemCount: number | 0;
@@ -86,10 +87,10 @@ export class ReportPurchaseRequestBuilder {
     return this;
   }
 
-  //   setUserApproval(user_approval: UserApprovalEntity | null): this {
-  //     this.user_approval = user_approval;
-  //     return this;
-  //   }
+  setUserApproval(user_approval: UserApprovalEntity | null): this {
+    this.user_approval = user_approval;
+    return this;
+  }
 
   setPurchaseRequestItem(
     purchaseRequestItem: ReportPurchaseRequestItemEntity[] | null,

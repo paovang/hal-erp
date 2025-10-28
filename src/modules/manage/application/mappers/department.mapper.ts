@@ -36,6 +36,10 @@ export class DepartmentDataMapper {
       builder.setDepartmentHeadId(dto.department_head_id);
     }
 
+    if (dto.type) {
+      builder.setType(dto.type);
+    }
+
     return builder.build();
   }
 
@@ -47,6 +51,7 @@ export class DepartmentDataMapper {
     response.name = entity.name;
     response.is_line_manager = entity.is_line_manager;
     response.department_head_id = entity.department_head_id;
+    response.type = entity.type;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);

@@ -67,5 +67,6 @@
   "send_request": "Send request failed. {property}",
   "send_otp": "Send OTP failed. {property}",
   "insufficient_budget": "Insufficient budget in account {property}",
-  "otp_verification_failed": "OTP not found or expired. {property}"
+  "otp_verification_failed": "OTP not found or expired. {property}",
+  "not_approve_workflow_yet": "{property} not approved workflow yet"
 }
