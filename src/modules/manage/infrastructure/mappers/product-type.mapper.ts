@@ -21,6 +21,7 @@ export class ProductTypeDataAccessMapper {
       ormEntity.id = id.value;
     }
     ormEntity.name = productTypeEntity.name;
+    ormEntity.category_id = productTypeEntity.categoryId;
 
     if (method === OrmEntityMethod.CREATE) {
       ormEntity.created_at = productTypeEntity.createdAt ?? new Date(now);
@@ -31,11 +32,21 @@ export class ProductTypeDataAccessMapper {
   }
 
   toEntity(ormData: ProductTypeOrmEntity): ProductTypeEntity {
-    return ProductTypeEntity.builder()
+    const builder = ProductTypeEntity.builder()
       .setProductTypeId(new ProductTypeId(ormData.id))
       .setName(ormData.name || '')
+      .setCategoryId(ormData.category_id || 0)
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at)
-      .build();
+      .setUpdatedAt(ormData.updated_at);
+
+    // Add category if relation is loaded
+    if (ormData.category) {
+      builder.setCategory({
+        id: ormData.category.id,
+        name: ormData.category.name || '',
+      });
+    }
+
+    return builder.build();
   }
 }

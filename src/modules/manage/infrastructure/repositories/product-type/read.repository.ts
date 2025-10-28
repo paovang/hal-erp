@@ -49,7 +49,7 @@ export class ReadProductTypeRepository implements IReadProductTypeRepository {
     return {
       searchColumns: ['product_types.name'],
       dateColumn: '',
-      filterByColumns: [],
+      filterByColumns: ['product_types.category_id'],
     };
   }
 

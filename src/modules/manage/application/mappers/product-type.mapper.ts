@@ -17,6 +17,10 @@ export class ProductTypeDataMapper {
       builder.setName(dto.name);
     }
 
+    if ('category_id' in dto && dto.category_id) {
+      builder.setCategoryId(dto.category_id);
+    }
+
     return builder.build();
   }
 
@@ -25,6 +29,8 @@ export class ProductTypeDataMapper {
     const response = new ProductTypeResponse();
     response.id = entity.getId().value;
     response.name = entity.name;
+    response.category_id = entity.categoryId;
+    response.category = entity.category;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);

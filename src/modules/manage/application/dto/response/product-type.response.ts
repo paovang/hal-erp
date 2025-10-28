@@ -8,6 +8,15 @@ export class ProductTypeResponse {
   name: string;
 
   @ApiProperty()
+  category_id: number;
+
+  @ApiProperty({ required: false })
+  category?: {
+    id: number;
+    name: string;
+  };
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()

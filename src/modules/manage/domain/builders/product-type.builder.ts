@@ -4,6 +4,8 @@ import { ProductTypeId } from '../value-objects/product-type-id.vo';
 export class ProductTypeBuilder {
   productTypeId: ProductTypeId;
   name: string;
+  categoryId: number;
+  category?: { id: number; name: string };
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -15,6 +17,16 @@ export class ProductTypeBuilder {
 
   setName(name: string): this {
     this.name = name;
+    return this;
+  }
+
+  setCategoryId(categoryId: number): this {
+    this.categoryId = categoryId;
+    return this;
+  }
+
+  setCategory(category: { id: number; name: string }): this {
+    this.category = category;
     return this;
   }
 
