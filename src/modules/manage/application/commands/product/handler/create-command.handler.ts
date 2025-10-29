@@ -1,37 +1,35 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '../create.command';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
-import { ProductTypeEntity } from '@src/modules/manage/domain/entities/product-type.entity';
-import { WRITE_PRODUCT_TYPE_REPOSITORY } from '../../../constants/inject-key.const';
+import { ProductEntity } from '@src/modules/manage/domain/entities/product.entity';
+import { WRITE_PRODUCT_REPOSITORY } from '../../../constants/inject-key.const';
 import { Inject } from '@nestjs/common';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { ProductTypeDataMapper } from '../../../mappers/product-type.mapper';
-import { IWriteProductTypeRepository } from '@src/modules/manage/domain/ports/output/product-type-repository.interface';
+import { ProductDataMapper } from '../../../mappers/product.mapper';
+import { IWriteProductRepository } from '@src/modules/manage/domain/ports/output/product-repository.interface';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
-import { ProductTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/product-type.orm';
+import { ProductOrmEntity } from '@src/common/infrastructure/database/typeorm/product.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
-  implements IQueryHandler<CreateCommand, ResponseResult<ProductTypeEntity>>
+  implements IQueryHandler<CreateCommand, ResponseResult<ProductEntity>>
 {
   constructor(
-    @Inject(WRITE_PRODUCT_TYPE_REPOSITORY)
-    private readonly _write: IWriteProductTypeRepository,
-    private readonly _dataMapper: ProductTypeDataMapper,
+    @Inject(WRITE_PRODUCT_REPOSITORY)
+    private readonly _write: IWriteProductRepository,
+    private readonly _dataMapper: ProductDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
   ) {}
 
-  async execute(
-    query: CreateCommand,
-  ): Promise<ResponseResult<ProductTypeEntity>> {
+  async execute(query: CreateCommand): Promise<ResponseResult<ProductEntity>> {
     await _checkColumnDuplicate(
-      ProductTypeOrmEntity,
+      ProductOrmEntity,
       'name',
       query.dto.name,
       query.manager,
