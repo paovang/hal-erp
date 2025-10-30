@@ -58,6 +58,25 @@ export class WriteUserRepository implements IWriteUserRepository {
     return this._dataAccessMapper.toEntity(savedUser);
   }
 
+  async createWithCompany(
+    entity: UserEntity,
+    manager: EntityManager,
+    role_id: number,
+  ): Promise<ResponseResult<UserEntity>> {
+    const ormEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.CREATE,
+    );
+
+    const roles = await manager.findBy(RoleOrmEntity, {
+      id: role_id,
+    });
+
+    ormEntity.roles = roles;
+
+    return this._dataAccessMapper.toEntity(await manager.save(ormEntity));
+  }
+
   async update(
     entity: UserEntity,
     manager: EntityManager,

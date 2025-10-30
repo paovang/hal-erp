@@ -11,6 +11,7 @@ import { SendMailDto } from '../dto/create/user/send-email.dto';
 import { RoleDataMapper } from './role.mapper';
 import { PermissionResponse } from '../dto/response/permission.response';
 import { UserSignatureDataMapper } from './user-signature.mapper';
+import { CompanyUserDto } from '../dto/create/company/create.dto';
 
 @Injectable()
 export class UserDataMapper {
@@ -46,6 +47,28 @@ export class UserDataMapper {
 
     if (dto.permissionIds) {
       builder.setPermissionIds(dto.permissionIds);
+    }
+
+    return builder.build();
+  }
+
+  toEntityCompany(dto: CompanyUserDto): UserEntity {
+    const builder = UserEntity.builder();
+
+    if (dto.username) {
+      builder.setUsername(dto.username);
+    }
+
+    if (dto.email) {
+      builder.setEmail(dto.email);
+    }
+
+    if (dto.tel) {
+      builder.setTel(dto.tel);
+    }
+
+    if (dto.password) {
+      builder.setPassword(dto.password);
     }
 
     return builder.build();

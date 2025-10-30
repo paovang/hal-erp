@@ -20,5 +20,7 @@
   "INVALID_ENUM": "{property} Invalid enum value.",
   "IS_ENUM": "Must be a valid {property} value.",
   "ARRAY_UNIQUE": "{property} each value in the array must be unique.",
-  "ARRAY_MIN_SIZE": "{property} must contain at least {constraint1} item(s)."
+  "ARRAY_MIN_SIZE": "{property} must contain at least {constraint1} item(s).",
+  "INVALID_USER_OBJECT": "Invalid user object.",
+  "PASSWORD_MISMATCH": "Password and confirm password mismatch"
 }

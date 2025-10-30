@@ -37,6 +37,7 @@ import { DocumentStatusController } from '../../controllers/document-status.cont
 import { IncreaseBudgetController } from '../../controllers/increase-budget.controller';
 import { IncreaseBudgetDetailController } from '../../controllers/increase-budget-detail.controller';
 import { CompanyController } from '../../controllers/company.controller';
+import { CompanyUserController } from '../../controllers/company-user.controller';
 
 @Module({
   imports: [
@@ -82,6 +83,7 @@ import { CompanyController } from '../../controllers/company.controller';
     IncreaseBudgetController,
     IncreaseBudgetDetailController,
     CompanyController,
+    CompanyUserController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

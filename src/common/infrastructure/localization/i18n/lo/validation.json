@@ -20,5 +20,7 @@
   "INVALID_ENUM": "{property} ປະເພດຊຳລະບໍ່ມີໃນລະບົບ.",
   "IS_ENUM": "ຕ້ອງເປັນຄ່າ {property} ທີ່ຖືກຕ້ອງ.",
   "ARRAY_UNIQUE": "{property} ຄ່າແຕ່ລະຄ່າໃນອາເຣຕ້ອງບໍ່ຊ້ຳກັນ.",
-  "ARRAY_MIN_SIZE": "{property} ຕ້ອງມີຢ່າງນ້ອຍ {constraint1} ລາຍການ."
+  "ARRAY_MIN_SIZE": "{property} ຕ້ອງມີຢ່າງນ້ອຍ {constraint1} ລາຍການ.",
+  "INVALID_USER_OBJECT": "ກະລຸນາປ້ອນຂໍ້ມູນຜູ້ໃຊ້ງານກ່ອນ",
+  "PASSWORD_MISMATCH": "ລະຫັດຜ່ານບໍ່ກົງກັນ"
 }
