@@ -44,6 +44,7 @@ import { RolePermissionProvider } from './rolePermission';
 import { RoleGroupProvider } from './roleGroup';
 import { CompanyProvider } from './company';
 import { ProductProviders } from './product';
+import { CompanyUserProvider } from './companyUser';
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
   ...DocumentTypeProvider,
@@ -90,4 +91,5 @@ export const AllRegisterProviders: Provider[] = [
   ...RolePermissionProvider,
   ...CompanyProvider,
   ...ProductProviders,
+  ...CompanyUserProvider,
 ];

@@ -15,10 +15,11 @@ import { CompanyDataMapper } from '@src/modules/manage/application/mappers/compa
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { CompanyId } from '@src/modules/manage/domain/value-objects/company-id.vo';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { CompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/company.orm';
+import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -42,14 +43,8 @@ export class UpdateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        await findOneOrFail(
-          manager,
-          CompanyOrmEntity,
-          {
-            id: command.id,
-          },
-          `id ${command.id}`,
-        );
+        await this.checkData(command, manager);
+
         const companyId = new CompanyId(command.id);
 
         const mapToEntity = this._dataMapper.toEntity(command.dto);
@@ -57,6 +52,44 @@ export class UpdateCommandHandler
 
         return await this._write.update(mapToEntity, manager);
       },
+    );
+  }
+
+  private async checkData(
+    command: UpdateCommand,
+    manager: EntityManager,
+  ): Promise<void> {
+    await findOneOrFail(
+      manager,
+      CompanyOrmEntity,
+      {
+        id: command.id,
+      },
+      `id ${command.id}`,
+    );
+    await _checkColumnDuplicate(
+      CompanyOrmEntity,
+      'name',
+      command.dto.name,
+      manager,
+      'errors.name_already_exists',
+      command.id,
+    );
+    await _checkColumnDuplicate(
+      CompanyOrmEntity,
+      'email',
+      command.dto.email,
+      manager,
+      'errors.email_already_exists',
+      command.id,
+    );
+    await _checkColumnDuplicate(
+      CompanyOrmEntity,
+      'tel',
+      command.dto.tel,
+      manager,
+      'errors.tel_already_exists',
+      command.id,
     );
   }
 }

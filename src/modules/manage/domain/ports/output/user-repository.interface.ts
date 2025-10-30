@@ -12,6 +12,12 @@ export interface IWriteUserRepository {
     permissionIds?: number[],
   ): Promise<ResponseResult<UserEntity>>;
 
+  createWithCompany(
+    entity: UserEntity,
+    manager: EntityManager,
+    role_id: number,
+  ): Promise<ResponseResult<UserEntity>>;
+
   update(
     entity: UserEntity,
     manager: EntityManager,

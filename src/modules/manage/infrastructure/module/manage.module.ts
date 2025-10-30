@@ -39,6 +39,7 @@ import { IncreaseBudgetController } from '../../controllers/increase-budget.cont
 import { IncreaseBudgetDetailController } from '../../controllers/increase-budget-detail.controller';
 import { CompanyController } from '../../controllers/company.controller';
 import { ProductController } from '../../controllers/product.controller';
+import { CompanyUserController } from '../../controllers/company-user.controller';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { ProductController } from '../../controllers/product.controller';
     IncreaseBudgetDetailController,
     CompanyController,
     ProductController,
+    CompanyUserController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

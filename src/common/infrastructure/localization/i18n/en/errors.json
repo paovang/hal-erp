@@ -68,5 +68,7 @@
   "send_otp": "Send OTP failed. {property}",
   "insufficient_budget": "Insufficient budget in account {property}",
   "otp_verification_failed": "OTP not found or expired. {property}",
-  "not_approve_workflow_yet": "{property} not approved workflow yet"
+  "not_approve_workflow_yet": "{property} not approved workflow yet",
+  "user_email_already_exists": "User email already exists",
+  "user_tel_already_exists": "User tel already exists"
 }

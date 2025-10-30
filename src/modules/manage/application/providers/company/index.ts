@@ -3,6 +3,7 @@ import {
   COMPANY_APPLICATION_SERVICE,
   READ_COMPANY_REPOSITORY,
   WRITE_COMPANY_REPOSITORY,
+  WRITE_COMPANY_USER_REPOSITORY,
 } from '@src/modules/manage/application/constants/inject-key.const';
 import { Provider } from '@nestjs/common';
 import { ReadCompanyRepository } from '@src/modules/manage/infrastructure/repositories/company/read.repository';
@@ -15,6 +16,7 @@ import { CompanyMapperProviders } from '@src/modules/manage/application/provider
 import { CompanyHandlersProviders } from '@src/modules/manage/application/providers/company/command.provider';
 import { TransactionManagerService } from '@src/common/infrastructure/transaction/transaction.service';
 import { LocalizationService } from '@src/common/infrastructure/localization/localization.service';
+import { WriteCompanyUserRepository } from '@src/modules/manage/infrastructure/repositories/CompnayUser/write.repository';
 
 export const CompanyProvider: Provider[] = [
   ...CompanyHandlersProviders,
@@ -38,5 +40,9 @@ export const CompanyProvider: Provider[] = [
   {
     provide: READ_COMPANY_REPOSITORY,
     useClass: ReadCompanyRepository,
+  },
+  {
+    provide: WRITE_COMPANY_USER_REPOSITORY,
+    useClass: WriteCompanyUserRepository,
   },
 ];

@@ -6,12 +6,13 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import moment from 'moment-timezone';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { UpdateUserDto } from '../dto/create/user/update.dto';
+import { CompanyUserDto } from '../dto/create/company/create.dto';
 
 @Injectable()
 export class UserSignatureDataMapper {
   /** Mapper Dto To Entity */
   toEntity(
-    dto: CreateUserDto | UpdateUserDto,
+    dto: CreateUserDto | UpdateUserDto | CompanyUserDto,
     user_id?: number,
   ): UserSignatureEntity {
     const builder = UserSignatureEntity.builder();
