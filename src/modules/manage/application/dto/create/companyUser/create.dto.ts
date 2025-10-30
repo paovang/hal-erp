@@ -1,8 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEqualTo } from '@src/common/decorators/is-equal-to.decorator';
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsString,
   Length,
   Matches,
@@ -50,4 +53,24 @@ export class CreateCompanyUserDto {
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
   readonly signature: string;
+
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  @IsNumber(
+    {},
+    { each: true, message: i18nValidationMessage('validation.IS_NUMBER') },
+  )
+  roleIds: number[];
+
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ArrayNotEmpty({
+    message: i18nValidationMessage('validation.ARRAY_NOT_EMPTY'),
+  })
+  @IsNumber(
+    {},
+    { each: true, message: i18nValidationMessage('validation.IS_NUMBER') },
+  )
+  permissionIds: number[];
 }

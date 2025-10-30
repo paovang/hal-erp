@@ -20,12 +20,6 @@ export class GetAllQueryHandler
   async execute(
     query: GetAllQuery,
   ): Promise<ResponseResult<CompanyUserEntity>> {
-    const user = this._userContextService.getAuthUser()?.user;
-    const departmentUser =
-      this._userContextService.getAuthUser()?.departmentUser;
-    console.log('Auth User:', user);
-    console.log('Auth Department User:', departmentUser);
-
     return await this._readRepo.findAll(query.dto, query.manager);
   }
 }

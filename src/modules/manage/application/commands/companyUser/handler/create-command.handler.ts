@@ -3,6 +3,7 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { CompanyUserEntity } from '@src/modules/manage/domain/entities/company-user.entity';
 import { CreateCompanyUserCommand } from '../create.command';
 import {
+  USER_TYPE_APPLICATION_SERVICE,
   WRITE_COMPANY_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
   WRITE_USER_SIGNATURE_REPOSITORY,
@@ -25,6 +26,10 @@ import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeor
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import * as bcrypt from 'bcrypt';
+import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/permission.orm';
+import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
+import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
+import { UserTypeEnum } from '@src/common/constants/user-type.enum';
 
 @CommandHandler(CreateCompanyUserCommand)
 export class CreateCompanyUserCommandHandler
@@ -41,6 +46,9 @@ export class CreateCompanyUserCommandHandler
     @Inject(WRITE_COMPANY_USER_REPOSITORY)
     private readonly _writeCompanyUser: IWriteCompanyUserRepository,
     private readonly _dataCompanyUserMapper: CompanyUserDataMapper,
+    @Inject(USER_TYPE_APPLICATION_SERVICE)
+    private readonly _userTypeRepo: IWriteUserTypeRepository,
+    private readonly _userTypeDataMapper: UserTypeDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -68,6 +76,18 @@ export class CreateCompanyUserCommandHandler
           `company user id ${user_id}`,
         );
 
+        for (const roleId of command.dto.roleIds) {
+          await findOneOrFail(manager, RoleOrmEntity, {
+            id: roleId,
+          });
+        }
+
+        for (const permissionId of command.dto.permissionIds) {
+          await findOneOrFail(manager, PermissionOrmEntity, {
+            id: permissionId,
+          });
+        }
+
         const company_id = (company_user as any).company_id;
         const hashedPassword = await bcrypt.hash(command.dto.password, 10);
         const dtoWithHashedPassword = {
@@ -75,28 +95,28 @@ export class CreateCompanyUserCommandHandler
           password: hashedPassword,
         };
 
-        const mapUserEntity = await this._dataUserMapper.toEntityCompany(
+        const mapUserEntity = await this._dataUserMapper.toEntity(
           dtoWithHashedPassword,
         );
 
-        const role = await findOneOrFail(
-          manager,
-          RoleOrmEntity,
-          {
-            name: 'company-user',
-          },
-          `role company-user`,
-        );
-
-        const role_id = (role as any).id;
-
-        const companyUser = await this._writeUser.createWithCompany(
+        const companyUser = await this._writeUser.create(
           mapUserEntity,
           manager,
-          role_id,
+          command.dto.roleIds,
+          command.dto.permissionIds,
         );
 
         const companyUserId = (companyUser as any)._id._value;
+
+        const entity = this._userTypeDataMapper.toEntity(
+          {
+            name: UserTypeEnum.ADMIN, // Cast to enum
+          },
+          companyUserId,
+        );
+
+        // Save the mapped user types
+        await this._userTypeRepo.create(entity, manager);
 
         const mapToEntityUserSignature = this._dataUserSignatureMapper.toEntity(
           command.dto,

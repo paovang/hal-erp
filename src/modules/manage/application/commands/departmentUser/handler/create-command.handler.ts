@@ -47,7 +47,6 @@ export class CreateCommandHandler
     @Inject(WRITE_DEPARTMENT_USER_REPOSITORY)
     private readonly _write: IWriteDepartmentUserRepository,
     private readonly _dataMapper: DepartmentUserDataMapper,
-    private readonly _userTypeDataMapper: UserTypeDataMapper,
     private readonly _dataUserMapper: UserDataMapper,
     @Inject(WRITE_USER_REPOSITORY)
     private readonly _writeUser: IWriteUserRepository,
@@ -61,6 +60,7 @@ export class CreateCommandHandler
     private readonly _userContextService: UserContextService,
     @Inject(USER_TYPE_APPLICATION_SERVICE)
     private readonly _userTypeRepo: IWriteUserTypeRepository,
+    private readonly _userTypeDataMapper: UserTypeDataMapper,
     @Inject(USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY)
     private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)

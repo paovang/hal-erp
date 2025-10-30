@@ -1,6 +1,7 @@
 import { CreateCommand } from '@src/modules/manage/application/commands/company/create.command';
 import { IQueryHandler, CommandHandler } from '@nestjs/cqrs';
 import {
+  USER_TYPE_APPLICATION_SERVICE,
   WRITE_COMPANY_REPOSITORY,
   WRITE_COMPANY_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
@@ -27,6 +28,9 @@ import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.
 import { IWriteUserSignatureRepository } from '@src/modules/manage/domain/ports/output/user-signature-repository.interface';
 import { UserSignatureDataMapper } from '../../../mappers/user-signature.mapper';
 import * as bcrypt from 'bcrypt';
+import { UserTypeEnum } from '@src/common/constants/user-type.enum';
+import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
+import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -45,6 +49,9 @@ export class CreateCommandHandler
     @Inject(WRITE_COMPANY_USER_REPOSITORY)
     private readonly _writeCompanyUser: IWriteCompanyUserRepository,
     private readonly _dataCompanyUserMapper: CompanyUserDataMapper,
+    @Inject(USER_TYPE_APPLICATION_SERVICE)
+    private readonly _userTypeRepo: IWriteUserTypeRepository,
+    private readonly _userTypeDataMapper: UserTypeDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
@@ -91,6 +98,15 @@ export class CreateCommandHandler
         );
 
         const companyUserId = (companyUser as any)._id._value;
+        const entity = this._userTypeDataMapper.toEntity(
+          {
+            name: UserTypeEnum.ADMIN, // Cast to enum
+          },
+          companyUserId,
+        );
+
+        // Save the mapped user types
+        await this._userTypeRepo.create(entity, manager);
 
         const mapToEntityUserSignature = this._dataUserSignatureMapper.toEntity(
           command.dto.user,
