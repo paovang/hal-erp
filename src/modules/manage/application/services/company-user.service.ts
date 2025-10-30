@@ -9,6 +9,10 @@ import { CreateCompanyUserDto } from '../dto/create/companyUser/create.dto';
 import { CreateCompanyUserCommand } from '../commands/companyUser/create.command';
 import { CompanyUserQueryDto } from '../dto/query/company-user-query.dto';
 import { GetAllQuery } from '../queries/companyUser/get-all.query';
+import { GetOneQuery } from '../queries/companyUser/get-one.query';
+import { UpdateCompanyUserDto } from '../dto/create/companyUser/update.dto';
+import { UpdateCompanyUserCommand } from '../commands/companyUser/update.command';
+import { DeleteCompanyUserCommand } from '../commands/companyUser/delete.command';
 
 @Injectable()
 export class CompanyUserService implements ICompanyUserServiceInterface {
@@ -19,21 +23,50 @@ export class CompanyUserService implements ICompanyUserServiceInterface {
     private readonly _readEntityManager: EntityManager,
   ) {}
 
-  create(
+  async create(
     body: CreateCompanyUserDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<CompanyUserEntity>> {
-    return this._commandBus.execute(
+    return await this._commandBus.execute(
       new CreateCompanyUserCommand(body, manager ?? this._readEntityManager),
     );
   }
 
-  getAll(
+  async getAll(
     dto: CompanyUserQueryDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<CompanyUserEntity>> {
-    return this._queryBus.execute(
+    return await this._queryBus.execute(
       new GetAllQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getOne(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<CompanyUserEntity>> {
+    return await this._queryBus.execute(
+      new GetOneQuery(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  async update(
+    id: number,
+    body: UpdateCompanyUserDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<CompanyUserEntity>> {
+    return await this._commandBus.execute(
+      new UpdateCompanyUserCommand(
+        id,
+        body,
+        manager ?? this._readEntityManager,
+      ),
+    );
+  }
+
+  async delete(id: number, manager?: EntityManager): Promise<void> {
+    return await this._commandBus.execute(
+      new DeleteCompanyUserCommand(id, manager ?? this._readEntityManager),
     );
   }
 }
