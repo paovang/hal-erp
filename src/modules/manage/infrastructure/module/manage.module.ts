@@ -40,6 +40,7 @@ import { IncreaseBudgetDetailController } from '../../controllers/increase-budge
 import { CompanyController } from '../../controllers/company.controller';
 import { ProductController } from '../../controllers/product.controller';
 import { CompanyUserController } from '../../controllers/company-user.controller';
+import { VendorProductController } from '../../controllers/vendor-product.controller';
 
 @Module({
   imports: [
@@ -88,6 +89,7 @@ import { CompanyUserController } from '../../controllers/company-user.controller
     CompanyController,
     ProductController,
     CompanyUserController,
+    VendorProductController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

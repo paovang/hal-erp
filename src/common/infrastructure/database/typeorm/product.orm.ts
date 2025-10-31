@@ -6,12 +6,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { ProductTypeOrmEntity } from './product-type.orm';
-import { VendorOrmEntity } from './vendor.orm';
+import { VendorProductOrmEntity } from './vendor-product.orm';
 
 @Entity('products')
 export class ProductOrmEntity {
@@ -45,15 +46,6 @@ export class ProductOrmEntity {
   })
   status: 'active' | 'inactive';
 
-  // @Column({ nullable: true })
-  // vendor_id?: number;
-  // @ManyToOne(() => VendorOrmEntity, (vendor) => vendor.products, {
-  //   onDelete: 'CASCADE',
-  //   onUpdate: 'CASCADE',
-  // })
-  // @JoinColumn({ name: 'vendor_id' })
-  // vendor: Relation<VendorOrmEntity>;
-
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
@@ -64,4 +56,11 @@ export class ProductOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  /** Relation */
+  @OneToMany(
+    () => VendorProductOrmEntity,
+    (vendor_products) => vendor_products.products,
+  )
+  vendor_products: Relation<VendorProductOrmEntity[]>;
 }
