@@ -116,6 +116,7 @@ export class RoleSeeder {
       const existingItem = await _respository.findOne({
         where: { name: item.name },
       });
+      //
       if (!existingItem) {
         const items = _respository.create(item);
         await _respository.save(items);
