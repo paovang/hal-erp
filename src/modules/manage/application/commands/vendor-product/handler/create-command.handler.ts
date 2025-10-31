@@ -4,12 +4,13 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { Inject } from '@nestjs/common';
 import {
   WRITE_VENDOR_PRODUCT_REPOSITORY,
-  VENDOR_PRODUCT_APPLICATION_SERVICE,
+  READ_VENDOR_PRODUCT_REPOSITORY,
 } from '../../../constants/inject-key.const';
 import { VendorProductEntity } from '@src/modules/manage/domain/entities/vendor-product.entity';
 import { IWriteVendorProductRepository } from '@src/modules/manage/domain/ports/output/vendor-product-repository.interface';
+import { IReadVendorProductRepository } from '@src/modules/manage/domain/ports/output/vendor-product-repository.interface';
 import { VendorProductDataMapper } from '../../../mappers/vendor-product.mapper';
-import { IVendorProductServiceInterface } from '@src/modules/manage/domain/ports/input/vendor-product-domain-service.interface';
+import { VendorProductQueryDto } from '../../../dto/query/vendor-product-query.dto';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -18,9 +19,9 @@ export class CreateCommandHandler
   constructor(
     @Inject(WRITE_VENDOR_PRODUCT_REPOSITORY)
     private readonly _write: IWriteVendorProductRepository,
+    @Inject(READ_VENDOR_PRODUCT_REPOSITORY)
+    private readonly _read: IReadVendorProductRepository,
     private readonly _dataMapper: VendorProductDataMapper,
-    @Inject(VENDOR_PRODUCT_APPLICATION_SERVICE)
-    private readonly _vendorProductService: IVendorProductServiceInterface,
   ) {}
 
   async execute(query: CreateCommand): Promise<ResponseResult<VendorProductEntity>> {

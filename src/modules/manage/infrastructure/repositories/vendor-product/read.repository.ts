@@ -29,6 +29,26 @@ export class ReadVendorProductRepository implements IReadVendorProductRepository
     manager: EntityManager,
   ): Promise<ResponseResult<VendorProductEntity>> {
     const queryBuilder = await this.createBaseQuery(manager);
+
+    // Apply vendor_id filter if provided
+    if (query.vendor_id) {
+      queryBuilder.andWhere('vendor_products.vendor_id = :vendorId', { vendorId: query.vendor_id });
+    }
+
+    // Apply product_id filter if provided
+    if (query.product_id) {
+      queryBuilder.andWhere('vendor_products.product_id = :productId', { productId: query.product_id });
+    }
+
+    // Apply price filters if provided
+    if (query.min_price !== undefined) {
+      queryBuilder.andWhere('vendor_products.price >= :minPrice', { minPrice: query.min_price });
+    }
+
+    if (query.max_price !== undefined) {
+      queryBuilder.andWhere('vendor_products.price <= :maxPrice', { maxPrice: query.max_price });
+    }
+
     query.sort_by = 'vendor_products.id';
 
     const data = await this._paginationService.paginate(
@@ -50,7 +70,7 @@ export class ReadVendorProductRepository implements IReadVendorProductRepository
     return {
       searchColumns: ['vendors.name', 'products.name'],
       dateColumn: '',
-      filterByColumns: [],
+      filterByColumns: ['vendor_products.vendor_id', 'vendor_products.product_id', 'vendor_products.price'],
     };
   }
 
