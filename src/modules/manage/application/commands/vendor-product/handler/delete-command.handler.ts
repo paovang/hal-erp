@@ -1,12 +1,12 @@
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { DeleteCommand } from '../delete.command';
-import { Inject } from '@nestjs/common';
-import {
-  WRITE_VENDOR_PRODUCT_REPOSITORY,
-  VENDOR_PRODUCT_APPLICATION_SERVICE,
-} from '../../../constants/inject-key.const';
+import { HttpStatus, Inject } from '@nestjs/common';
+import { WRITE_VENDOR_PRODUCT_REPOSITORY } from '../../../constants/inject-key.const';
 import { IWriteVendorProductRepository } from '@src/modules/manage/domain/ports/output/vendor-product-repository.interface';
-import { IVendorProductServiceInterface } from '@src/modules/manage/domain/ports/input/vendor-product-domain-service.interface';
+import { VendorProductId } from '@src/modules/manage/domain/value-objects/vendor-product-id.vo';
+import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { VendorProductOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor-product.orm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -15,11 +15,28 @@ export class DeleteCommandHandler
   constructor(
     @Inject(WRITE_VENDOR_PRODUCT_REPOSITORY)
     private readonly _write: IWriteVendorProductRepository,
-    @Inject(VENDOR_PRODUCT_APPLICATION_SERVICE)
-    private readonly _vendorProductService: IVendorProductServiceInterface,
+    // @Inject(VENDOR_PRODUCT_APPLICATION_SERVICE)
+    // private readonly _vendorProductService: IVendorProductServiceInterface,
   ) {}
 
   async execute(query: DeleteCommand): Promise<void> {
-    await this._vendorProductService.delete(query.id, query.manager);
+    if (isNaN(query.id)) {
+      throw new ManageDomainException(
+        'errors.must_be_number',
+        HttpStatus.BAD_REQUEST,
+        { property: `${query.id}` },
+      );
+    }
+
+    await findOneOrFail(
+      query.manager,
+      VendorProductOrmEntity,
+      {
+        id: query.id,
+      },
+      `${query.id}`,
+    );
+    const id = new VendorProductId(query.id);
+    await this._write.delete(id, query.manager);
   }
 }

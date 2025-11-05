@@ -10,7 +10,9 @@ import { UpdateVendorProductDto } from '../dto/create/vendor-product/update.dto'
 @Injectable()
 export class VendorProductDataMapper {
   /** Mapper Dto To Entity */
-  toEntity(dto: CreateVendorProductDto | UpdateVendorProductDto): VendorProductEntity {
+  toEntity(
+    dto: CreateVendorProductDto | UpdateVendorProductDto,
+  ): VendorProductEntity {
     const builder = VendorProductEntity.builder();
 
     if ('vendor_id' in dto && dto.vendor_id) {
