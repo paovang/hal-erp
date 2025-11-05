@@ -45,6 +45,7 @@ import { RoleGroupProvider } from './roleGroup';
 import { CompanyProvider } from './company';
 import { ProductProviders } from './product';
 import { CompanyUserProvider } from './companyUser';
+import { VendorProductProvider } from './vendor-product';
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
   ...DocumentTypeProvider,
@@ -92,4 +93,5 @@ export const AllRegisterProviders: Provider[] = [
   ...CompanyProvider,
   ...ProductProviders,
   ...CompanyUserProvider,
+  ...VendorProductProvider,
 ];
