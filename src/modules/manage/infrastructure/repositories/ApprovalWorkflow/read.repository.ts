@@ -14,10 +14,12 @@ import { ApprovalWorkflowDataAccessMapper } from '../../mappers/approval-workflo
 import { ApprovalWorkflowId } from '@src/modules/manage/domain/value-objects/approval-workflow-id.vo';
 import {
   selectApprovalWorkflowSteps,
+  selectCompany,
   selectDepartments,
   selectDocumentTypes,
   selectUsers,
 } from '@src/common/constants/select-field';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadApprovalWorkflowRepository
@@ -32,8 +34,10 @@ export class ReadApprovalWorkflowRepository
   async findAll(
     query: ApprovalWorkflowQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const queryBuilder = await this.createBaseQuery(manager, company_id, roles);
     query.sort_by = 'approval_workflows.id';
 
     const data = await this._paginationService.paginate(
@@ -45,16 +49,22 @@ export class ReadApprovalWorkflowRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager) {
+  private createBaseQuery(
+    manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+  ) {
     const selectFields = [
       ...selectApprovalWorkflowSteps,
       ...selectDocumentTypes,
       ...selectDepartments,
       ...selectUsers,
+      ...selectCompany,
     ];
-    return manager
+    const query = manager
       .createQueryBuilder(ApprovalWorkflowOrmEntity, 'approval_workflows')
       .leftJoin('approval_workflows.document_types', 'document_types')
+      .leftJoin('approval_workflows.company', 'company')
       .leftJoin(
         'approval_workflows.approval_workflow_steps',
         'approval_workflow_steps',
@@ -62,6 +72,20 @@ export class ReadApprovalWorkflowRepository
       .leftJoin('approval_workflow_steps.departments', 'departments')
       .leftJoin('approval_workflow_steps.users', 'users')
       .addSelect(selectFields);
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (company_id) {
+        query.where('approval_workflows.company_id = :company_id', {
+          company_id,
+        });
+      }
+    }
+
+    return query;
   }
 
   private getFilterOptions(): FilterOptions {

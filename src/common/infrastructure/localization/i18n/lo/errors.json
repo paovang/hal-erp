@@ -70,5 +70,7 @@
   "otp_verification_failed": "OTP ບໍ່ຖືກຕ້ອງ ຫຼື ໝົດເວລາແລ້ວ. {property}",
   "not_approve_workflow_yet": "{property} ນີ້ຍັງບໍ່ໄດ້ຖືກອະນຸມັດເທື່ອ",
   "user_email_already_exists": "ອີເມວຜູ້ໃຊ້ມີໃນລະບົບແລ້ວ",
-  "user_tel_already_exists": "ເບີໂທຜູ້ໃຊ້ມີໃນລະບົບແລ້ວ"
+  "user_tel_already_exists": "ເບີໂທຜູ້ໃຊ້ມີໃນລະບົບແລ້ວ",
+  "cannot_delete_role": "ບໍ່ສາມາດລຶບບົດບາດນີ້ {property} ໄດ້",
+  "select_budget": "ກະລຸນາເລືອກງົບປະມານ."
 }

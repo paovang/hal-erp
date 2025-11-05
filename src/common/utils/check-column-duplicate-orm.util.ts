@@ -9,11 +9,16 @@ export async function _checkColumnDuplicate<T>(
   manager: any,
   errorMessage = '',
   excludeId?: number,
+  companyId?: number,
 ): Promise<void> {
   const where: any = { [field]: value };
 
   if (excludeId) {
     where.id = Not(excludeId);
+  }
+
+  if (companyId) {
+    where.company_id = companyId;
   }
 
   const existing = await manager.findOne(entity, { where });

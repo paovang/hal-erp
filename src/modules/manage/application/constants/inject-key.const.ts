@@ -98,6 +98,7 @@ export const USER_PROFILE_IMAGE_FOLDER = 'department_signature';
 export const USER_SIGNATURE_IMAGE_FOLDER = 'user_signature';
 export const PR_FILE_NAME_FOLDER = 'pr_file_name';
 export const PO_FILE_NAME_FOLDER = 'po_file_name';
+export const COMPANY_LOGO_FOLDER = 'company_logo';
 export const FILE_FOLDER = 'file';
 export const IMAGE_FOLDER = process.env.IMAGE_FOLDER || 'assets/uploads';
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;

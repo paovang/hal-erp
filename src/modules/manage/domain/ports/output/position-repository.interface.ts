@@ -22,6 +22,8 @@ export interface IReadPositionRepository {
   findAll(
     query: PositionQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<PositionEntity>>;
 
   findOne(

@@ -2,6 +2,7 @@ import { DepartmentEntity } from '@src/modules/manage/domain/entities/department
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 import { UserEntity } from '../entities/user.entity';
 import { DepartmentType } from '@src/common/enums/department.enum';
+import { CompanyEntity } from '../entities/company.entity';
 
 export class DepartmentBuilder {
   departmentId: DepartmentId;
@@ -9,11 +10,13 @@ export class DepartmentBuilder {
   code: string;
   is_line_manager: boolean;
   department_head_id: number;
+  company_id: number;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   department_head: UserEntity | null;
   type: DepartmentType;
+  company: CompanyEntity | null;
 
   setDepartmentId(value: DepartmentId): this {
     this.departmentId = value;
@@ -40,6 +43,11 @@ export class DepartmentBuilder {
     return this;
   }
 
+  setCompanyId(value: number): this {
+    this.company_id = value;
+    return this;
+  }
+
   setType(value: DepartmentType): this {
     this.type = value;
     return this;
@@ -62,6 +70,11 @@ export class DepartmentBuilder {
 
   setDepartmentHead(department_head: UserEntity | null): this {
     this.department_head = department_head;
+    return this;
+  }
+
+  setCompany(company: CompanyEntity | null): this {
+    this.company = company;
     return this;
   }
 

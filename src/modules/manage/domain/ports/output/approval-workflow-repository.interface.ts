@@ -8,6 +8,8 @@ export interface IReadApprovalWorkflowRepository {
   findAll(
     query: ApprovalWorkflowQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 
   findOne(

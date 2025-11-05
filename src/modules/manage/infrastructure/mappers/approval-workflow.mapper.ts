@@ -9,12 +9,14 @@ import { Injectable } from '@nestjs/common';
 import { DocumentTypeDataAccessMapper } from './document-type.mapper';
 import { ApprovalWorkflowStepDataAccessMapper } from './approval-workflow-step.mapper';
 import { StatusEnum } from '@src/common/enums/status.enum';
+import { CompanyDataAccessMapper } from './company.mapper';
 
 @Injectable()
 export class ApprovalWorkflowDataAccessMapper {
   constructor(
     private readonly _documentTypeMapper: DocumentTypeDataAccessMapper,
     private readonly _step: ApprovalWorkflowStepDataAccessMapper,
+    private readonly _company: CompanyDataAccessMapper,
   ) {}
   toOrmEntity(
     approvalWorkflowEntity: ApprovalWorkflowEntity,
@@ -30,6 +32,7 @@ export class ApprovalWorkflowDataAccessMapper {
 
     mediaOrmEntity.document_type_id = approvalWorkflowEntity.documentTypeId;
     mediaOrmEntity.name = approvalWorkflowEntity.name;
+    mediaOrmEntity.company_id = approvalWorkflowEntity.company_id;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.status = StatusEnum.PENDING;
       mediaOrmEntity.created_at =
@@ -44,7 +47,8 @@ export class ApprovalWorkflowDataAccessMapper {
   toEntity(ormData: ApprovalWorkflowOrmEntity): ApprovalWorkflowEntity {
     const build = ApprovalWorkflowEntity.builder()
       .setApprovalWorkflowId(new ApprovalWorkflowId(ormData.id))
-      .setDocumentTypeId(ormData.document_type_id!)
+      .setDocumentTypeId(ormData.document_type_id ?? 0)
+      .setCompanyId(ormData.company_id ?? 0)
       .setName(ormData.name ?? '')
       .setStatus(ormData.status)
       .setCreatedAt(ormData.created_at)
@@ -54,6 +58,10 @@ export class ApprovalWorkflowDataAccessMapper {
       build.setDocumentType(
         this._documentTypeMapper.toEntity(ormData.document_types),
       );
+    }
+
+    if (ormData.company) {
+      build.setCompany(this._company.toEntity(ormData.company));
     }
 
     if (ormData.approval_workflow_steps) {
