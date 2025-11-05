@@ -3,6 +3,7 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { CompanyUserEntity } from '@src/modules/manage/domain/entities/company-user.entity';
 import { CreateCompanyUserCommand } from '../create.command';
 import {
+  USER_SIGNATURE_IMAGE_FOLDER,
   USER_TYPE_APPLICATION_SERVICE,
   WRITE_COMPANY_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
@@ -15,7 +16,10 @@ import { IWriteUserSignatureRepository } from '@src/modules/manage/domain/ports/
 import { UserSignatureDataMapper } from '../../../mappers/user-signature.mapper';
 import { IWriteCompanyUserRepository } from '@src/modules/manage/domain/ports/output/company-user-repository.interface';
 import { CompanyUserDataMapper } from '../../../mappers/company-user.mapper';
-import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
+import {
+  TRANSACTION_MANAGER_SERVICE,
+  USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
+} from '@src/common/constants/inject-key.const';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { DataSource, EntityManager } from 'typeorm';
@@ -30,6 +34,11 @@ import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm
 import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
 import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
 import { UserTypeEnum } from '@src/common/constants/user-type.enum';
+import path from 'path';
+import { createMockMulterFile } from '@src/common/utils/services/file-utils.service';
+import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
+import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
+import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
 
 @CommandHandler(CreateCompanyUserCommand)
 export class CreateCompanyUserCommandHandler
@@ -54,6 +63,10 @@ export class CreateCompanyUserCommandHandler
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
     private readonly _userContextService: UserContextService,
+    @Inject(USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY)
+    private readonly _optimizeService: IImageOptimizeService,
+    @Inject(AMAZON_S3_SERVICE_KEY)
+    private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
   ) {}
 
   async execute(
@@ -77,15 +90,25 @@ export class CreateCompanyUserCommandHandler
         );
 
         for (const roleId of command.dto.roleIds) {
-          await findOneOrFail(manager, RoleOrmEntity, {
-            id: roleId,
-          });
+          await findOneOrFail(
+            manager,
+            RoleOrmEntity,
+            {
+              id: roleId,
+            },
+            `${roleId}`,
+          );
         }
 
         for (const permissionId of command.dto.permissionIds) {
-          await findOneOrFail(manager, PermissionOrmEntity, {
-            id: permissionId,
-          });
+          await findOneOrFail(
+            manager,
+            PermissionOrmEntity,
+            {
+              id: permissionId,
+            },
+            `${permissionId}`,
+          );
         }
 
         const company_id = (company_user as any).company_id;
@@ -118,14 +141,41 @@ export class CreateCompanyUserCommandHandler
         // Save the mapped user types
         await this._userTypeRepo.create(entity, manager);
 
+        // user signature
+        let processedItems = null;
+        const baseFolder = path.join(
+          __dirname,
+          '../../../../../../../assets/uploads/',
+        );
+        let fileKey = null;
+        if (command.dto.signature) {
+          const mockFile = await createMockMulterFile(
+            baseFolder,
+            command.dto.signature,
+          );
+          const optimizedImage =
+            await this._optimizeService.optimizeImage(mockFile);
+          const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+            optimizedImage,
+            USER_SIGNATURE_IMAGE_FOLDER,
+          );
+          fileKey = s3ImageResponse.fileKey;
+        }
+
+        processedItems = {
+          ...command.dto,
+          signature: fileKey ?? undefined,
+        };
+
         const mapToEntityUserSignature = this._dataUserSignatureMapper.toEntity(
-          command.dto,
+          processedItems,
           companyUserId,
         );
         await this._writeUserSignature.create(
           mapToEntityUserSignature,
           manager,
         );
+        // end
 
         const mapToEntityCompanyUser = this._dataCompanyUserMapper.toEntity(
           company_id,
