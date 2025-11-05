@@ -70,5 +70,7 @@
   "otp_verification_failed": "OTP not found or expired. {property}",
   "not_approve_workflow_yet": "{property} not approved workflow yet",
   "user_email_already_exists": "User email already exists",
-  "user_tel_already_exists": "User tel already exists"
+  "user_tel_already_exists": "User tel already exists",
+  "cannot_delete_role": "Cannot delete role {property}",
+  "select_budget": "Please select budget"
 }

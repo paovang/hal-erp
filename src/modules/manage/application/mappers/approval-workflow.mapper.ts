@@ -9,16 +9,19 @@ import { ApprovalWorkflowStepDataMapper } from './approval-workflow-step.mapper'
 import { CreateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/create.dto';
 import { UpdateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/update.dto';
 import { ApproveDto } from '../dto/create/ApprovalWorkflow/approve.dto';
+import { CompanyDataMapper } from './company.mapper';
 
 @Injectable()
 export class ApprovalWorkflowDataMapper {
   constructor(
     private readonly _documentTypeDataMapper: DocumentTypeDataMapper,
     private readonly _step: ApprovalWorkflowStepDataMapper,
+    private readonly _company: CompanyDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateApprovalWorkflowDto | UpdateApprovalWorkflowDto,
+    company_id?: number,
   ): ApprovalWorkflowEntity {
     const builder = ApprovalWorkflowEntity.builder();
 
@@ -28,6 +31,10 @@ export class ApprovalWorkflowDataMapper {
 
     if (dto.documentTypeId) {
       builder.setDocumentTypeId(dto.documentTypeId);
+    }
+
+    if (company_id) {
+      builder.setCompanyId(company_id);
     }
 
     return builder.build();
@@ -46,6 +53,7 @@ export class ApprovalWorkflowDataMapper {
     response.id = entity.getId().value;
     response.name = entity.name;
     response.document_type_id = entity.documentTypeId;
+    response.company_id = entity.company_id;
     response.status = entity.status;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
@@ -56,6 +64,10 @@ export class ApprovalWorkflowDataMapper {
 
     response.document_type = entity.documentType
       ? this._documentTypeDataMapper.toResponse(entity.documentType)
+      : null;
+
+    response.company = entity.company
+      ? this._company.toResponse(entity.company)
       : null;
 
     response.steps =

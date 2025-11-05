@@ -85,6 +85,18 @@ export const selectUsers = [
   'users.deleted_at',
 ];
 
+// company
+export const selectCompany = [
+  'company.id',
+  'company.name',
+  'company.logo',
+  'company.tel',
+  'company.email',
+  'company.address',
+  'company.created_at',
+  'company.updated_at',
+];
+
 // increase_budget_details
 export const selectIncreaseBudgetDetails = [
   'details.id',

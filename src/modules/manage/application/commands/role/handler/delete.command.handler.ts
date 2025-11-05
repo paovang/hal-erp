@@ -27,9 +27,22 @@ export class DeleteCommandHandler
     }
 
     /** Check Exits Document Type Id */
-    await findOneOrFail(query.manager, RoleOrmEntity, {
+    const role = await findOneOrFail(query.manager, RoleOrmEntity, {
       id: query.id,
     });
+
+    if (
+      (role && role.name === 'super-admin') ||
+      role.name === 'admin' ||
+      role.name === 'company-admin' ||
+      role.name === 'company-user'
+    ) {
+      throw new ManageDomainException(
+        'errors.cannot_delete_role',
+        HttpStatus.BAD_REQUEST,
+        { property: `${role.name}` },
+      );
+    }
 
     return await this._write.delete(new RoleId(query.id), query.manager);
   }

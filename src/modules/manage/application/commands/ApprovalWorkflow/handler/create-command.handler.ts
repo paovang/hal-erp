@@ -11,7 +11,7 @@ import { ApprovalWorkflowDataMapper } from '../../../mappers/approval-workflow.m
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, IsNull } from 'typeorm';
 import { IWriteApprovalWorkflowRepository } from '@src/modules/manage/domain/ports/output/approval-workflow-repository.interface';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
@@ -19,10 +19,15 @@ import { IWriteApprovalWorkflowStepRepository } from '@src/modules/manage/domain
 import { ApprovalWorkflowStepDataMapper } from '../../../mappers/approval-workflow-step.mapper';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
-import { EnumWorkflowStep } from '../../../constants/status-key.const';
+import {
+  EligiblePersons,
+  EnumWorkflowStep,
+} from '../../../constants/status-key.const';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -40,6 +45,7 @@ export class CreateCommandHandler
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
+    private readonly _userContextService: UserContextService,
   ) {}
 
   async execute(
@@ -52,26 +58,78 @@ export class CreateCommandHandler
       id: query.dto.documentTypeId,
     });
 
-    const documentType = await query.manager.findOne(
-      ApprovalWorkflowOrmEntity,
-      {
-        where: { document_type_id: query.dto.documentTypeId },
-      },
-    );
-
-    if (documentType) {
-      throw new ManageDomainException(
-        'errors.document_type_already_exists',
-        HttpStatus.BAD_REQUEST,
-        { property: 'documentTypeId' },
-      );
-    }
-
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
         let mergeData: any = null;
-        const mapToEntity = this._dataMapper.toEntity(query.dto);
+        let company_id: number | null | undefined = null;
+        const user = this._userContextService.getAuthUser()?.user;
+        const user_id = user.id;
+
+        const roles = user?.roles?.map((r: any) => r.name) ?? [];
+
+        if (
+          roles.includes(EligiblePersons.SUPER_ADMIN) ||
+          roles.includes(EligiblePersons.ADMIN)
+        ) {
+          const documentType = await query.manager.findOne(
+            ApprovalWorkflowOrmEntity,
+            {
+              where: {
+                document_type_id: query.dto.documentTypeId,
+                company_id: IsNull(),
+              },
+            },
+          );
+
+          if (documentType) {
+            throw new ManageDomainException(
+              'errors.document_type_already_exists',
+              HttpStatus.BAD_REQUEST,
+              { property: 'documentTypeId' },
+            );
+          }
+        } else {
+          const company_user = await findOneOrFail(
+            query.manager,
+            CompanyUserOrmEntity,
+            {
+              user_id: user_id,
+            },
+            `company user id ${user_id}`,
+          );
+
+          company_id = company_user.company_id;
+          if (!company_id)
+            throw new ManageDomainException(
+              'errors.not_found',
+              HttpStatus.NOT_FOUND,
+              { property: 'company_id' },
+            );
+
+          const documentType = await query.manager.findOne(
+            ApprovalWorkflowOrmEntity,
+            {
+              where: {
+                document_type_id: query.dto.documentTypeId,
+                company_id: company_id,
+              },
+            },
+          );
+
+          if (documentType) {
+            throw new ManageDomainException(
+              'errors.document_type_already_exists',
+              HttpStatus.BAD_REQUEST,
+              { property: 'documentTypeId' },
+            );
+          }
+        }
+
+        const mapToEntity = this._dataMapper.toEntity(
+          query.dto,
+          company_id || undefined,
+        );
 
         const result = await this._write.create(mapToEntity, manager);
         const workflow_id = (result as any)._id._value;

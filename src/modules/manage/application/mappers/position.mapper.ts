@@ -6,15 +6,24 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { UpdatePositionDto } from '../dto/create/position/update.dto';
+import { CompanyDataMapper } from './company.mapper';
 
 @Injectable()
 export class PositionDataMapper {
+  constructor(private readonly _companyDataMapper: CompanyDataMapper) {}
   /** Mapper Dto To Entity */
-  toEntity(dto: CreatePositionDto | UpdatePositionDto): PositionEntity {
+  toEntity(
+    dto: CreatePositionDto | UpdatePositionDto,
+    company_id?: number,
+  ): PositionEntity {
     const builder = PositionEntity.builder();
 
     if (dto.name) {
       builder.setName(dto.name);
+    }
+
+    if (company_id) {
+      builder.setCompanyId(company_id);
     }
 
     return builder.build();
@@ -31,6 +40,9 @@ export class PositionDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.company = entity.company
+      ? this._companyDataMapper.toResponse(entity.company)
+      : null;
 
     return response;
   }

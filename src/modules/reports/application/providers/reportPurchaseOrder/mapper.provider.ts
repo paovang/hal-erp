@@ -54,6 +54,8 @@ import { UserApprovalDataAccessMapper } from '@src/modules/manage/infrastructure
 import { UserApprovalStepDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user-approval-step.mapper';
 import { DocumentStatusDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document-status.mapper';
 import { DocumentApproverDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document-approver.mapper';
+import { CompanyDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/company.mapper';
+import { CompanyDataMapper } from '@src/modules/manage/application/mappers/company.mapper';
 
 export const ReportPurchaseOrderMapperProviders: Provider[] = [
   ReportPurchaseOrderDataAccessMapper,
@@ -111,4 +113,6 @@ export const ReportPurchaseOrderMapperProviders: Provider[] = [
   UserApprovalStepDataAccessMapper,
   DocumentStatusDataAccessMapper,
   DocumentApproverDataAccessMapper,
+  CompanyDataAccessMapper,
+  CompanyDataMapper,
 ];

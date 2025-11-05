@@ -3,17 +3,20 @@ import { ApprovalWorkflowStepEntity } from '../entities/approval-workflow-step.e
 import { ApprovalWorkflowEntity } from '../entities/approval-workflow.entity';
 import { DocumentTypeEntity } from '../entities/document-type.entity';
 import { ApprovalWorkflowId } from '../value-objects/approval-workflow-id.vo';
+import { CompanyEntity } from '../entities/company.entity';
 
 export class ApprovalWorkflowBuilder {
   approvalWorkflowId: ApprovalWorkflowId;
   documentTypeId: number;
   name: string;
+  company_id: number;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   document_type: DocumentTypeEntity;
   steps: ApprovalWorkflowStepEntity[] | null;
   status: StatusEnum;
+  company: CompanyEntity | null;
 
   setApprovalWorkflowId(value: ApprovalWorkflowId): this {
     this.approvalWorkflowId = value;
@@ -35,6 +38,11 @@ export class ApprovalWorkflowBuilder {
     return this;
   }
 
+  setCompanyId(company_id: number): this {
+    this.company_id = company_id;
+    return this;
+  }
+
   setCreatedAt(createdAt: Date): this {
     this.createdAt = createdAt;
     return this;
@@ -52,6 +60,11 @@ export class ApprovalWorkflowBuilder {
 
   setDocumentType(documentType: DocumentTypeEntity): this {
     this.document_type = documentType;
+    return this;
+  }
+
+  setCompany(company: CompanyEntity | null): this {
+    this.company = company;
     return this;
   }
 

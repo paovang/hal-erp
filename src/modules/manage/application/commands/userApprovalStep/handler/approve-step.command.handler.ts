@@ -614,72 +614,82 @@ export class ApproveStepCommandHandler
                 );
               }
 
-              if (
-                roles.includes('budget-admin') ||
-                roles.includes('budget-user')
-              ) {
-                let sum_total = 0;
-                for (const item of query.dto.purchase_order_items) {
-                  await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-                    id: item.id,
-                  });
+              const check_budget = query.dto.purchase_order_items;
 
-                  await findOneOrFail(manager, BudgetItemOrmEntity, {
-                    id: item.budget_item_id,
-                  });
+              if (Array.isArray(check_budget) && check_budget.length > 0) {
+                if (
+                  roles.includes('budget-admin') ||
+                  roles.includes('budget-user')
+                ) {
+                  let sum_total = 0;
+                  for (const item of query.dto.purchase_order_items) {
+                    await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                      id: item.id,
+                    });
 
-                  const allBudgetItemIds = query.dto.purchase_order_items.map(
-                    (item) => item.budget_item_id,
-                  );
+                    await findOneOrFail(manager, BudgetItemOrmEntity, {
+                      id: item.budget_item_id,
+                    });
 
-                  // Check if all values in the array are the same
-                  const [firstBudgetItemId, ...rest] = allBudgetItemIds;
-                  if (rest.every((id) => id === firstBudgetItemId)) {
-                    const get_total = await this._readBudget.getTotal(
-                      item.id,
+                    const allBudgetItemIds = query.dto.purchase_order_items.map(
+                      (item) => item.budget_item_id,
+                    );
+
+                    // Check if all values in the array are the same
+                    const [firstBudgetItemId, ...rest] = allBudgetItemIds;
+                    if (rest.every((id) => id === firstBudgetItemId)) {
+                      const get_total = await this._readBudget.getTotal(
+                        item.id,
+                        manager,
+                      );
+
+                      sum_total += Number(get_total);
+                    } else {
+                      const get_total = await this._readBudget.getTotal(
+                        item.id,
+                        manager,
+                      );
+
+                      sum_total = Number(get_total);
+                    }
+
+                    const check_budget = await this._readBudget.calculate(
+                      item.budget_item_id,
                       manager,
                     );
 
-                    sum_total += Number(get_total);
-                  } else {
-                    const get_total = await this._readBudget.getTotal(
-                      item.id,
-                      manager,
+                    if (sum_total > check_budget) {
+                      throw new ManageDomainException(
+                        'errors.insufficient_budget',
+                        HttpStatus.BAD_REQUEST,
+                        { property: `${check_budget}` },
+                      );
+                    }
+                    const itemId = item.id;
+
+                    const POEntity =
+                      this._dataPoItemMapper.toEntityForUpdate(item);
+
+                    // Set and validate ID
+                    await POEntity.initializeUpdateSetId(
+                      new PurchaseOrderItemId(itemId),
                     );
+                    await POEntity.validateExistingIdForUpdate();
 
-                    sum_total = Number(get_total);
+                    // Final existence check for ID before update
+                    await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
+                      id: POEntity.getId().value,
+                    });
+
+                    await this._writePoItem.update(POEntity, manager);
                   }
-
-                  const check_budget = await this._readBudget.calculate(
-                    item.budget_item_id,
-                    manager,
-                  );
-
-                  if (sum_total > check_budget) {
-                    throw new ManageDomainException(
-                      'errors.insufficient_budget',
-                      HttpStatus.BAD_REQUEST,
-                      { property: `${check_budget}` },
-                    );
-                  }
-                  const itemId = item.id;
-
-                  const POEntity =
-                    this._dataPoItemMapper.toEntityForUpdate(item);
-
-                  // Set and validate ID
-                  await POEntity.initializeUpdateSetId(
-                    new PurchaseOrderItemId(itemId),
-                  );
-                  await POEntity.validateExistingIdForUpdate();
-
-                  // Final existence check for ID before update
-                  await findOneOrFail(manager, PurchaseOrderItemOrmEntity, {
-                    id: POEntity.getId().value,
-                  });
-
-                  await this._writePoItem.update(POEntity, manager);
                 }
+              } else {
+                throw new ManageDomainException(
+                  'errors.select_budget',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'budget' },
+                );
               }
             } else if (query.dto.type === EnumPrOrPo.R) {
               const receipt = await manager.findOne(ReceiptOrmEntity, {
@@ -721,11 +731,9 @@ export class ApproveStepCommandHandler
           }
 
           await this.checkDataAndUpdateUserApproval(query, manager);
-          console.log('test step is opt', step.is_otp);
           try {
             if (step.is_otp === true) {
               // Verify OTP
-              console.log('test step is opt', step.is_otp);
               await verifyOtp(query, status, tel);
             }
           } catch (error) {
