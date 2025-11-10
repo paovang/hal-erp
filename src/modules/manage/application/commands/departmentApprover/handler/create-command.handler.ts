@@ -12,6 +12,7 @@ import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typ
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { DepartmentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/department-approver.orm';
 import { UserContextService } from '@common/infrastructure/cls/cls.service';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -28,6 +29,16 @@ export class CreateCommandHandler
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<DepartmentApproverEntity>> {
+    const user = this._userContextService.getAuthUser()?.user;
+    const user_id = user.id;
+    const company = await query.manager.findOne(CompanyUserOrmEntity, {
+      where: {
+        user_id: user_id,
+      },
+    });
+
+    const company_id = company?.company_id ?? null;
+
     const departmentUser =
       this._userContextService.getAuthUser()?.departmentUser;
     if (!departmentUser) {
@@ -44,23 +55,41 @@ export class CreateCommandHandler
     const exists_user: number[] = [];
 
     let res: ResponseResult<DepartmentApproverEntity> | null = null;
+    let users: DepartmentApproverOrmEntity | null = null;
     for (const userId of query.dto.user_id) {
-      const user = await query.manager.findOne(DepartmentApproverOrmEntity, {
-        where: { user_id: userId },
-      });
+      console.log('company', company);
+      if (!company_id || company_id === null) {
+        users = await query.manager.findOne(DepartmentApproverOrmEntity, {
+          where: { user_id: userId },
+        });
+      } else {
+        users = await query.manager.findOne(DepartmentApproverOrmEntity, {
+          where: { user_id: userId, company_id: company_id },
+        });
+      }
 
-      if (user) {
+      if (users) {
         exists_user.push(userId);
         continue;
       }
 
-      await findOneOrFail(query.manager, UserOrmEntity, {
-        id: userId,
-      });
+      await findOneOrFail(
+        query.manager,
+        UserOrmEntity,
+        {
+          id: userId,
+        },
+        `user id ${userId}`,
+      );
 
-      const dp = await findOneOrFail(query.manager, DepartmentUserOrmEntity, {
-        user_id: userId,
-      });
+      const dp = await findOneOrFail(
+        query.manager,
+        DepartmentUserOrmEntity,
+        {
+          user_id: userId,
+        },
+        `department user id ${userId}`,
+      );
 
       if (dp.department_id !== departmentId) {
         throw new ManageDomainException(
@@ -72,7 +101,11 @@ export class CreateCommandHandler
         );
       }
 
-      const entity = this._dataMapper.toEntityArray(departmentId, userId);
+      const entity = this._dataMapper.toEntityArray(
+        departmentId,
+        userId,
+        company_id ?? undefined,
+      );
 
       res = await this._write.create(entity, query.manager);
     }

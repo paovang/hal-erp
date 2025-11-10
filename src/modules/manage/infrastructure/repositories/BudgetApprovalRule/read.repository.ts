@@ -12,6 +12,7 @@ import { BudgetApprovalRuleQueryDto } from '@src/modules/manage/application/dto/
 import { BudgetApprovalRuleEntity } from '@src/modules/manage/domain/entities/budget-approval-rule.entity';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 import { BudgetApprovalRuleId } from '@src/modules/manage/domain/value-objects/budget-approval-rule-id.vo';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadBudgetApprovalRuleRepository
@@ -27,8 +28,15 @@ export class ReadBudgetApprovalRuleRepository
     query: BudgetApprovalRuleQueryDto,
     manager: EntityManager,
     departmentId?: number,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager, departmentId);
+    const queryBuilder = await this.createBaseQuery(
+      manager,
+      departmentId,
+      company_id,
+      roles,
+    );
     query.sort_by = 'budget_approval_rules.id';
 
     const data = await this._paginationService.paginate(
@@ -40,16 +48,43 @@ export class ReadBudgetApprovalRuleRepository
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager, departmentId?: number) {
+  private createBaseQuery(
+    manager: EntityManager,
+    department_id?: number,
+    company_id?: number,
+    roles?: string[],
+  ) {
     const qb = manager
       .createQueryBuilder(BudgetApprovalRuleOrmEntity, 'budget_approval_rules')
       .leftJoinAndSelect('budget_approval_rules.departments', 'departments')
+      .leftJoinAndSelect('budget_approval_rules.company', 'company')
       .leftJoinAndSelect('budget_approval_rules.users', 'users');
 
-    if (departmentId) {
-      qb.where('budget_approval_rules.department_id = :departmentId', {
-        departmentId,
-      });
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          qb.where('budget_approval_rules.company_id = :company_id', {
+            company_id,
+          });
+        }
+        if (department_id) {
+          qb.andWhere('budget_approval_rules.department_id = :department_id', {
+            department_id,
+          });
+        }
+      }
+      if (department_id) {
+        qb.andWhere('budget_approval_rules.department_id = :department_id', {
+          department_id,
+        });
+      }
     }
 
     return qb;

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DepartmentResponse } from './department.response';
 import { UserResponse } from './user.response';
+import { CompanyResponse } from './company.response';
 
 export class BudgetApprovalRuleResponse {
   @ApiProperty()
@@ -11,6 +12,9 @@ export class BudgetApprovalRuleResponse {
 
   @ApiProperty()
   approver_id: number;
+
+  @ApiProperty()
+  company_id: number;
 
   @ApiProperty()
   min_amount: number;
@@ -29,4 +33,7 @@ export class BudgetApprovalRuleResponse {
 
   @ApiProperty()
   approver: UserResponse | null;
+
+  @ApiProperty()
+  company: CompanyResponse | null;
 }

@@ -9,7 +9,9 @@ export interface IReadBudgetAccountRepository {
   findAll(
     query: BudgetAccountQueryDto,
     manager: EntityManager,
-    departmentId?: number,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<BudgetAccountEntity>>;
 
   findOne(

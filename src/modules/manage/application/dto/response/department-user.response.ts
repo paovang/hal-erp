@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserResponse } from './user.response';
 import { DepartmentResponse } from './department.response';
 import { PositionResponse } from './position.response';
+import { CompanyResponse } from './company.response';
 
 export class DepartmentUserResponse {
   @ApiProperty()
@@ -18,6 +19,9 @@ export class DepartmentUserResponse {
 
   @ApiProperty()
   line_manager_id: number;
+
+  @ApiProperty()
+  company_id: number;
 
   @ApiProperty()
   signature_file: string | null;
@@ -42,4 +46,7 @@ export class DepartmentUserResponse {
 
   @ApiProperty()
   line_manager: UserResponse | null;
+
+  @ApiProperty()
+  company: CompanyResponse | null;
 }

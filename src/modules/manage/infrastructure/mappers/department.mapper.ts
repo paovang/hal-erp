@@ -7,10 +7,14 @@ import moment from 'moment-timezone';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { UserDataAccessMapper } from './user.mapper';
 import { Injectable } from '@nestjs/common';
+import { CompanyDataAccessMapper } from './company.mapper';
 
 @Injectable()
 export class DepartmentDataAccessMapper {
-  constructor(private readonly userMapper: UserDataAccessMapper) {}
+  constructor(
+    private readonly userMapper: UserDataAccessMapper,
+    private readonly company: CompanyDataAccessMapper,
+  ) {}
   toOrmEntity(
     departmentEntity: DepartmentEntity,
     method: OrmEntityMethod,
@@ -34,6 +38,7 @@ export class DepartmentDataAccessMapper {
     mediaOrmEntity.name = departmentEntity.name;
     mediaOrmEntity.is_line_manager = departmentEntity.is_line_manager;
     mediaOrmEntity.type = departmentEntity.type;
+    mediaOrmEntity.company_id = departmentEntity.company_id;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = departmentEntity.createdAt ?? new Date(now);
     }
@@ -46,15 +51,20 @@ export class DepartmentDataAccessMapper {
     const builder = DepartmentEntity.builder()
       .setDepartmentId(new DepartmentId(ormData.id))
       .setName(ormData.name)
-      .setCode(ormData.code)
+      .setCode(ormData.code ?? '')
       .setIsLineManager(ormData.is_line_manager)
       .setDepartmentHeadId(ormData.department_head_id ?? 0)
       .setType(ormData.type)
+      .setCompanyId(ormData.company_id ?? 0)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 
     if (ormData.users) {
       builder.setDepartmentHead(this.userMapper.toEntity(ormData.users));
+    }
+
+    if (ormData.company) {
+      builder.setCompany(this.company.toEntity(ormData.company));
     }
 
     return builder.build();

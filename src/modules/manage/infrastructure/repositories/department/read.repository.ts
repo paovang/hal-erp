@@ -12,6 +12,7 @@ import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { EntityManager } from 'typeorm';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadDepartmentRepository implements IReadDepartmentRepository {
@@ -24,9 +25,23 @@ export class ReadDepartmentRepository implements IReadDepartmentRepository {
   async findAll(
     query: DepartmentQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<DepartmentEntity>> {
     const queryBuilder = await this.createBaseQuery(manager);
     query.sort_by = 'departments.id';
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (company_id) {
+        queryBuilder.where('departments.company_id = :company_id', {
+          company_id,
+        });
+      }
+    }
 
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -58,6 +73,7 @@ export class ReadDepartmentRepository implements IReadDepartmentRepository {
   private createBaseQuery(manager: EntityManager) {
     return manager
       .createQueryBuilder(DepartmentOrmEntity, 'departments')
+      .leftJoinAndSelect('departments.company', 'company')
       .leftJoinAndSelect('departments.users', 'users');
   }
 

@@ -5,6 +5,7 @@ import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/depart
 import {
   USER_SIGNATURE_IMAGE_FOLDER,
   USER_TYPE_APPLICATION_SERVICE,
+  WRITE_COMPANY_USER_REPOSITORY,
   WRITE_DEPARTMENT_USER_REPOSITORY,
   WRITE_USER_REPOSITORY,
   WRITE_USER_SIGNATURE_REPOSITORY,
@@ -38,6 +39,9 @@ import { IWriteUserSignatureRepository } from '@src/modules/manage/domain/ports/
 import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
 import { UserTypeEnum } from '@src/common/constants/user-type.enum';
 import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { IWriteCompanyUserRepository } from '@src/modules/manage/domain/ports/output/company-user-repository.interface';
+import { CompanyUserDataMapper } from '../../../mappers/company-user.mapper';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -51,6 +55,9 @@ export class CreateCommandHandler
     @Inject(WRITE_USER_REPOSITORY)
     private readonly _writeUser: IWriteUserRepository,
     private readonly _dataUserSignatureMapper: UserSignatureDataMapper,
+    @Inject(WRITE_COMPANY_USER_REPOSITORY)
+    private readonly _writeCompanyUser: IWriteCompanyUserRepository,
+    private readonly _dataCompanyUserMapper: CompanyUserDataMapper,
     @Inject(WRITE_USER_SIGNATURE_REPOSITORY)
     private readonly _writeUserSignature: IWriteUserSignatureRepository,
     @Inject(TRANSACTION_MANAGER_SERVICE)
@@ -73,6 +80,18 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        const user = this._userContextService.getAuthUser()?.user;
+        const userId = user.id;
+        let company_id: number | null | undefined = null;
+
+        const company = await manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: userId,
+          },
+        });
+
+        company_id = company?.company_id ?? null;
+
         const optimizedImageProfile = await this._optimizeService.optimizeImage(
           query.dto.signatureFile,
         );
@@ -131,10 +150,21 @@ export class CreateCommandHandler
           query.dto,
           true,
           id,
+          company_id || undefined,
         );
         // departmentUserEntity.signature_file = s3ImageResponse.fileKey;
         const result = await this._write.create(departmentUserEntity, manager);
         const user_id = (result as any)._userID;
+
+        // company user
+        if (company_id && company_id > 0) {
+          const mapToEntityCompanyUser = this._dataCompanyUserMapper.toEntity(
+            company_id || 0,
+            id,
+          );
+          await this._writeCompanyUser.create(mapToEntityCompanyUser, manager);
+        }
+        //end
 
         const mergeUserType = query.dto.user_type.map((userType) => ({
           name: userType,

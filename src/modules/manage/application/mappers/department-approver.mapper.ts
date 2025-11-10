@@ -39,6 +39,7 @@ export class DepartmentApproverDataMapper {
   toEntityArray(
     departmentId?: number,
     user_id?: number,
+    company_id?: number,
   ): DepartmentApproverEntity {
     const builder = DepartmentApproverEntity.builder();
 
@@ -50,6 +51,10 @@ export class DepartmentApproverDataMapper {
       builder.setUserId(user_id);
     }
 
+    if (company_id) {
+      builder.setCompanyId(company_id);
+    }
+
     return builder.build();
   }
 
@@ -58,6 +63,7 @@ export class DepartmentApproverDataMapper {
     const response = new DepartmentApproverResponse();
     response.id = entity.getId().value;
     response.department_id = entity.departmentId ?? null;
+    response.company_id = entity.companyId ?? null;
     response.user_id = entity.userId ?? null;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

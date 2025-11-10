@@ -21,6 +21,7 @@ import { IWriteIncreaseBudgetRepository } from '@src/modules/manage/domain/ports
 import { IncreaseBudgetDataMapper } from '../../../mappers/increase-budget.mapper';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { CreateIncreaseBudgetDto } from '../../../dto/create/increaseBudget/create.dto';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -68,7 +69,19 @@ export class CreateCommandHandler
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user?.id;
-        const mapToEntity = this._dataMapper.toEntity(query.dto, code);
+        let company_id: number | null | undefined = null;
+        const company = await manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: user_id,
+          },
+        });
+
+        company_id = company?.company_id ?? null;
+        const mapToEntity = this._dataMapper.toEntity(
+          query.dto,
+          code,
+          company_id || undefined,
+        );
 
         const result = await this._write.create(mapToEntity, manager);
 

@@ -10,6 +10,8 @@ export interface IReadDepartmentUserRepository {
     query: DepartmentUserQueryDto,
     manager: EntityManager,
     departmentId?: number | null,
+    userId?: number | null,
+    roles?: string[],
   ): Promise<ResponseResult<DepartmentUserEntity>>;
 
   findOne(

@@ -1,4 +1,5 @@
 import { BudgetApprovalRuleEntity } from '../entities/budget-approval-rule.entity';
+import { CompanyEntity } from '../entities/company.entity';
 import { DepartmentEntity } from '../entities/department.entity';
 import { UserEntity } from '../entities/user.entity';
 import { BudgetApprovalRuleId } from '../value-objects/budget-approval-rule-id.vo';
@@ -8,11 +9,14 @@ export class BudgetApprovalRuleBuilder {
   approver_id: number;
   min_amount: number;
   max_amount: number;
+  company_id: number;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   department: DepartmentEntity;
   user: UserEntity;
+  company: CompanyEntity | null;
+
   setBudgetApprovalRuleId(value: BudgetApprovalRuleId): this {
     this.budgetApprovalRuleId = value;
     return this;
@@ -38,6 +42,11 @@ export class BudgetApprovalRuleBuilder {
     return this;
   }
 
+  setCompanyId(company_id: number): this {
+    this.company_id = company_id;
+    return this;
+  }
+
   setCreatedAt(createdAt: Date): this {
     this.createdAt = createdAt;
     return this;
@@ -60,6 +69,11 @@ export class BudgetApprovalRuleBuilder {
 
   setUser(user: UserEntity): this {
     this.user = user;
+    return this;
+  }
+
+  setCompany(company: CompanyEntity | null): this {
+    this.company = company;
     return this;
   }
 

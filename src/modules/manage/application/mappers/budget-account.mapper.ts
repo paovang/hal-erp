@@ -7,14 +7,19 @@ import { BudgetAccountEntity } from '../../domain/entities/budget-account.entity
 import { DepartmentDataMapper } from './department.mapper';
 import { CreateBudgetAccountDto } from '../dto/create/BudgetAccount/create.dto';
 import { UpdateBudgetAccountDto } from '../dto/create/BudgetAccount/update.dto';
+import { CompanyDataMapper } from './company.mapper';
 
 @Injectable()
 export class BudgetAccountDataMapper {
-  constructor(private readonly departmentDataMapper: DepartmentDataMapper) {}
+  constructor(
+    private readonly departmentDataMapper: DepartmentDataMapper,
+    private readonly company: CompanyDataMapper,
+  ) {}
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateBudgetAccountDto | UpdateBudgetAccountDto,
     code?: string,
+    company_id?: number,
   ): BudgetAccountEntity {
     const builder = BudgetAccountEntity.builder();
     if (code) {
@@ -41,6 +46,10 @@ export class BudgetAccountDataMapper {
       builder.setType(dto.type);
     }
 
+    if (company_id) {
+      builder.setCompanyId(company_id);
+    }
+
     return builder.build();
   }
 
@@ -51,6 +60,7 @@ export class BudgetAccountDataMapper {
     response.code = entity.code;
     response.name = entity.name;
     response.department_id = Number(entity.departmentId);
+    response.company_id = entity.company_id;
     response.fiscal_year = entity.fiscal_year;
     response.allocated_amount = entity.allocated_amount;
     response.total_budget = entity.total_budget;
@@ -67,6 +77,10 @@ export class BudgetAccountDataMapper {
 
     response.department = entity.department
       ? this.departmentDataMapper.toResponse(entity.department)
+      : null;
+
+    response.company = entity.company
+      ? this.company.toResponse(entity.company)
       : null;
 
     return response;

@@ -24,6 +24,7 @@ import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { UpdateIncreaseBudgetDto } from '../../../dto/create/increaseBudget/update.dto';
 import { IncreaseBudgetId } from '@src/modules/manage/domain/value-objects/increase-budget-id.vo';
 import { IncreaseBudgetOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget.orm';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -51,7 +52,20 @@ export class UpdateCommandHandler
         const user_id = user?.id;
         await this.checkData(query);
 
-        const entity = this._dataMapper.toEntity(query.dto);
+        let company_id: number | null | undefined = null;
+        const company = await manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: user_id,
+          },
+        });
+
+        company_id = company?.company_id ?? null;
+
+        const entity = this._dataMapper.toEntity(
+          query.dto,
+          undefined,
+          company_id || undefined,
+        );
         await entity.initializeUpdateSetId(new BudgetAccountId(query.id));
         await entity.validateExistingIdForUpdate();
 
@@ -78,15 +92,12 @@ export class UpdateCommandHandler
           ...increase_dto,
           budget_account_id: query.id,
         };
-        console.log('object', query.dto.allocated_amount);
 
         const entityIncrease = this._dataIncreaseMapper.toEntity(
           merge,
           user_id,
           query.dto.allocated_amount,
         );
-
-        console.log('entityIncrease', entityIncrease);
 
         await entityIncrease.initializeUpdateSetId(
           new IncreaseBudgetId(increase_id),

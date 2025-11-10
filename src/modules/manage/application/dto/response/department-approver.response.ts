@@ -10,6 +10,9 @@ export class DepartmentApproverResponse {
   department_id: number | null;
 
   @ApiProperty()
+  company_id: number | null;
+
+  @ApiProperty()
   user_id: number | null;
 
   @ApiProperty()

@@ -8,6 +8,7 @@ import { IReadDepartmentUserRepository } from '@src/modules/manage/domain/ports/
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler
@@ -33,12 +34,23 @@ export class GetAllQueryHandler
       },
     );
 
+    const company_user = await query.manager.findOne(CompanyUserOrmEntity, {
+      where: {
+        user_id: user_id,
+      },
+    });
+
+    const company_id = company_user?.company_id ?? undefined;
+    const roles = user?.roles?.map((r: any) => r.name) ?? [];
+
     const departmentId = departmentUser?.department_id ?? null;
 
     const data = await this._readRepo.findAll(
       query.dto,
       query.manager,
       departmentId,
+      company_id,
+      roles,
     );
 
     if (!data) {

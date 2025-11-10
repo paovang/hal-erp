@@ -18,6 +18,7 @@ import {
   selectBudgetItems,
   selectDepartments,
 } from '@src/common/constants/select-field';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadBudgetAccountRepository
@@ -32,10 +33,42 @@ export class ReadBudgetAccountRepository
   async findAll(
     query: BudgetAccountQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<BudgetAccountEntity>> {
     const queryBuilder = await this.createBaseQuery(manager);
     query.sort_by = 'budget_accounts.id';
     // Entity
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          queryBuilder.where('budget_accounts.company_id = :company_id', {
+            company_id,
+          });
+        }
+        if (department_id) {
+          queryBuilder.andWhere(
+            'budget_accounts.department_id = :department_id',
+            { department_id },
+          );
+        }
+      }
+      if (department_id) {
+        queryBuilder.andWhere(
+          'budget_accounts.department_id = :department_id',
+          { department_id },
+        );
+      }
+    }
 
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -50,6 +83,7 @@ export class ReadBudgetAccountRepository
     const queryBuilder = manager
       .createQueryBuilder(BudgetAccountOrmEntity, 'budget_accounts')
       .leftJoinAndSelect('budget_accounts.departments', 'departments')
+      .leftJoin('budget_accounts.company', 'company')
       .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
       .leftJoin('budget_accounts.budget_items', 'budget_items')
       .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
@@ -63,6 +97,12 @@ export class ReadBudgetAccountRepository
         'increase_budget_detail.allocated_amount',
         'document_transactions.id',
         'document_transactions.amount',
+        'company.id',
+        'company.name',
+        'company.tel',
+        'company.logo',
+        'company.email',
+        'company.address',
       ]);
 
     // queryBuilder.addSelect(
