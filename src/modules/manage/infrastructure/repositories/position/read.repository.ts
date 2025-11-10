@@ -14,6 +14,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { PositionDataAccessMapper } from '../../mappers/position.mapper';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { PositionId } from '@src/modules/manage/domain/value-objects/position-id.vo';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadPositionRepository implements IReadPositionRepository {
@@ -27,8 +28,10 @@ export class ReadPositionRepository implements IReadPositionRepository {
   async findAll(
     query: PositionQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<PositionEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager);
+    const queryBuilder = await this.createBaseQuery(manager, company_id, roles);
     query.sort_by = 'positions.id';
 
     const data = await this._paginationService.paginate(
@@ -40,8 +43,28 @@ export class ReadPositionRepository implements IReadPositionRepository {
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(PositionOrmEntity, 'positions');
+  private createBaseQuery(
+    manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+  ) {
+    const queryBuilder = manager
+      .createQueryBuilder(PositionOrmEntity, 'positions')
+      .leftJoinAndSelect('positions.company', 'company');
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (company_id) {
+        queryBuilder.where('positions.company_id = :company_id', {
+          company_id,
+        });
+      }
+    }
+
+    return queryBuilder;
   }
 
   private getFilterOptions(): FilterOptions {

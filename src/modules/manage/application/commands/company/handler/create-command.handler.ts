@@ -1,6 +1,7 @@
 import { CreateCommand } from '@src/modules/manage/application/commands/company/create.command';
 import { IQueryHandler, CommandHandler } from '@nestjs/cqrs';
 import {
+  COMPANY_LOGO_FOLDER,
   USER_TYPE_APPLICATION_SERVICE,
   WRITE_COMPANY_REPOSITORY,
   WRITE_COMPANY_USER_REPOSITORY,
@@ -12,7 +13,10 @@ import { CompanyEntity } from '@src/modules/manage/domain/entities/company.entit
 import { IWriteCompanyRepository } from '@src/modules/manage/domain/ports/output/company-repository.interface';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
 import { CompanyDataMapper } from '@src/modules/manage/application/mappers/company.mapper';
-import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
+import {
+  TRANSACTION_MANAGER_SERVICE,
+  USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
+} from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
@@ -31,6 +35,11 @@ import * as bcrypt from 'bcrypt';
 import { UserTypeEnum } from '@src/common/constants/user-type.enum';
 import { IWriteUserTypeRepository } from '@src/modules/manage/domain/ports/output/user-type-repository.interface';
 import { UserTypeDataMapper } from '../../../mappers/user-type.mapper';
+import { createMockMulterFile } from '@src/common/utils/services/file-utils.service';
+import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
+import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
+import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
+import path from 'path';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -56,6 +65,10 @@ export class CreateCommandHandler
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
+    @Inject(USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY)
+    private readonly _optimizeService: IImageOptimizeService,
+    @Inject(AMAZON_S3_SERVICE_KEY)
+    private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
   ) {}
 
   async execute(
@@ -65,7 +78,32 @@ export class CreateCommandHandler
       this._dataSource,
       async (manager) => {
         await this.checkData(command, manager);
-        const mapToEntity = await this._dataMapper.toEntity(command.dto);
+        let processedItems = null;
+        const baseFolder = path.join(
+          __dirname,
+          '../../../../../../../assets/uploads/',
+        );
+        let fileKey = null;
+        if (command.dto.logo) {
+          const mockFile = await createMockMulterFile(
+            baseFolder,
+            command.dto.logo,
+          );
+          const optimizedImage =
+            await this._optimizeService.optimizeImage(mockFile);
+          const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+            optimizedImage,
+            COMPANY_LOGO_FOLDER,
+          );
+          fileKey = s3ImageResponse.fileKey;
+        }
+
+        processedItems = {
+          ...command.dto,
+          logo: fileKey ?? undefined,
+        };
+
+        const mapToEntity = await this._dataMapper.toEntity(processedItems);
 
         const result = await this._write.create(mapToEntity, manager);
 

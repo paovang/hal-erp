@@ -24,7 +24,8 @@ export class VendorProductDataAccessMapper {
     vendorProductOrmEntity.price = vendorProductEntity.price;
 
     if (method === OrmEntityMethod.CREATE) {
-      vendorProductOrmEntity.created_at = vendorProductEntity.createdAt ?? new Date(now);
+      vendorProductOrmEntity.created_at =
+        vendorProductEntity.createdAt ?? new Date(now);
     }
 
     vendorProductOrmEntity.updated_at = new Date(now);
@@ -46,14 +47,14 @@ export class VendorProductDataAccessMapper {
     if (ormData.vendors && ormData.vendors.name) {
       builder.setVendor({
         id: ormData.vendors.id,
-        name: ormData.vendors.name
+        name: ormData.vendors.name,
       });
     }
 
     if (ormData.products && ormData.products.name) {
       builder.setProduct({
         id: ormData.products.id,
-        name: ormData.products.name
+        name: ormData.products.name,
       });
     }
 

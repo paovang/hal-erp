@@ -10,7 +10,9 @@ import { VendorProductEntity } from '@src/modules/manage/domain/entities/vendor-
 import { IWriteVendorProductRepository } from '@src/modules/manage/domain/ports/output/vendor-product-repository.interface';
 import { IReadVendorProductRepository } from '@src/modules/manage/domain/ports/output/vendor-product-repository.interface';
 import { VendorProductDataMapper } from '../../../mappers/vendor-product.mapper';
-import { VendorProductQueryDto } from '../../../dto/query/vendor-product-query.dto';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { ProductOrmEntity } from '@src/common/infrastructure/database/typeorm/product.orm';
+import { VendorOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -24,7 +26,26 @@ export class CreateCommandHandler
     private readonly _dataMapper: VendorProductDataMapper,
   ) {}
 
-  async execute(query: CreateCommand): Promise<ResponseResult<VendorProductEntity>> {
+  async execute(
+    query: CreateCommand,
+  ): Promise<ResponseResult<VendorProductEntity>> {
+    await findOneOrFail(
+      query.manager,
+      ProductOrmEntity,
+      {
+        id: query.dto.product_id,
+      },
+      `${query.dto.product_id}`,
+    );
+    await findOneOrFail(
+      query.manager,
+      VendorOrmEntity,
+      {
+        id: query.dto.vendor_id,
+      },
+      `${query.dto.vendor_id}`,
+    );
+
     const vendorProductEntity = this._dataMapper.toEntity(query.dto);
     return await this._write.create(vendorProductEntity, query.manager);
   }

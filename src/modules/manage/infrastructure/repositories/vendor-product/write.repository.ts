@@ -9,8 +9,12 @@ import { VendorProductId } from '@src/modules/manage/domain/value-objects/vendor
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
-export class WriteVendorProductRepository implements IWriteVendorProductRepository {
-  constructor(private readonly _dataAccessMapper: VendorProductDataAccessMapper) {}
+export class WriteVendorProductRepository
+  implements IWriteVendorProductRepository
+{
+  constructor(
+    private readonly _dataAccessMapper: VendorProductDataAccessMapper,
+  ) {}
 
   async create(
     entity: VendorProductEntity,
@@ -33,7 +37,11 @@ export class WriteVendorProductRepository implements IWriteVendorProductReposito
     );
 
     try {
-      await manager.update(VendorProductOrmEntity, entity.getId().value, OrmEntity);
+      await manager.update(
+        VendorProductOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
 
       return this._dataAccessMapper.toEntity(OrmEntity);
     } catch (error) {

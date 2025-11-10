@@ -3,17 +3,20 @@ import { DepartmentBuilder } from '@src/modules/manage/domain/builders/departmen
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
 import { UserEntity } from './user.entity';
 import { DepartmentType } from '@src/common/enums/department.enum';
+import { CompanyEntity } from './company.entity';
 
 export class DepartmentEntity extends Entity<DepartmentId> {
   private readonly _name: string;
   private readonly _code: string;
   private readonly _is_line_manager: boolean;
   private readonly _department_head_id: number;
+  private readonly _company_id: number;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _department_head: UserEntity | null;
   private readonly _type: DepartmentType;
+  private readonly _company: CompanyEntity | null;
 
   private constructor(builder: DepartmentBuilder) {
     super();
@@ -22,11 +25,13 @@ export class DepartmentEntity extends Entity<DepartmentId> {
     this._code = builder.code;
     this._is_line_manager = builder.is_line_manager;
     this._department_head_id = builder.department_head_id;
+    this._company_id = builder.company_id;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._department_head = builder.department_head ?? null;
     this._type = builder.type;
+    this._company = builder.company ?? null;
   }
 
   get name(): string {
@@ -43,6 +48,10 @@ export class DepartmentEntity extends Entity<DepartmentId> {
 
   get department_head_id(): number {
     return this._department_head_id;
+  }
+
+  get company_id(): number {
+    return this._company_id;
   }
 
   get type(): DepartmentType {
@@ -63,6 +72,10 @@ export class DepartmentEntity extends Entity<DepartmentId> {
 
   get department_head(): UserEntity | null {
     return this._department_head;
+  }
+
+  get company(): CompanyEntity | null {
+    return this._company;
   }
 
   public static builder(): DepartmentBuilder {

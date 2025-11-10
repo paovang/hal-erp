@@ -13,10 +13,11 @@ import { IReadVendorProductRepository } from '@src/modules/manage/domain/ports/o
 import { EntityManager, Repository } from 'typeorm';
 import { VendorProductDataAccessMapper } from '../../mappers/vendor-product.mapper';
 import { VendorProductId } from '@src/modules/manage/domain/value-objects/vendor-product-id.vo';
-import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 
 @Injectable()
-export class ReadVendorProductRepository implements IReadVendorProductRepository {
+export class ReadVendorProductRepository
+  implements IReadVendorProductRepository
+{
   constructor(
     @InjectRepository(VendorProductOrmEntity)
     private readonly _vendorProductOrm: Repository<VendorProductOrmEntity>,
@@ -32,21 +33,29 @@ export class ReadVendorProductRepository implements IReadVendorProductRepository
 
     // Apply vendor_id filter if provided
     if (query.vendor_id) {
-      queryBuilder.andWhere('vendor_products.vendor_id = :vendorId', { vendorId: query.vendor_id });
+      queryBuilder.andWhere('vendor_products.vendor_id = :vendorId', {
+        vendorId: query.vendor_id,
+      });
     }
 
     // Apply product_id filter if provided
     if (query.product_id) {
-      queryBuilder.andWhere('vendor_products.product_id = :productId', { productId: query.product_id });
+      queryBuilder.andWhere('vendor_products.product_id = :productId', {
+        productId: query.product_id,
+      });
     }
 
     // Apply price filters if provided
     if (query.min_price !== undefined) {
-      queryBuilder.andWhere('vendor_products.price >= :minPrice', { minPrice: query.min_price });
+      queryBuilder.andWhere('vendor_products.price >= :minPrice', {
+        minPrice: query.min_price,
+      });
     }
 
     if (query.max_price !== undefined) {
-      queryBuilder.andWhere('vendor_products.price <= :maxPrice', { maxPrice: query.max_price });
+      queryBuilder.andWhere('vendor_products.price <= :maxPrice', {
+        maxPrice: query.max_price,
+      });
     }
 
     query.sort_by = 'vendor_products.id';
@@ -61,7 +70,8 @@ export class ReadVendorProductRepository implements IReadVendorProductRepository
   }
 
   private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(VendorProductOrmEntity, 'vendor_products')
+    return manager
+      .createQueryBuilder(VendorProductOrmEntity, 'vendor_products')
       .leftJoinAndSelect('vendor_products.vendors', 'vendor')
       .leftJoinAndSelect('vendor_products.products', 'product');
   }
@@ -70,7 +80,11 @@ export class ReadVendorProductRepository implements IReadVendorProductRepository
     return {
       searchColumns: ['vendors.name', 'products.name'],
       dateColumn: '',
-      filterByColumns: ['vendor_products.vendor_id', 'vendor_products.product_id', 'vendor_products.price'],
+      filterByColumns: [
+        'vendor_products.vendor_id',
+        'vendor_products.product_id',
+        'vendor_products.price',
+      ],
     };
   }
 
@@ -80,7 +94,7 @@ export class ReadVendorProductRepository implements IReadVendorProductRepository
   ): Promise<ResponseResult<VendorProductEntity>> {
     const item = await manager.findOne(VendorProductOrmEntity, {
       where: { id: id.value },
-      relations: ['vendors', 'products']
+      relations: ['vendors', 'products'],
     });
 
     if (!item) {

@@ -5,8 +5,14 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { PositionId } from '../../domain/value-objects/position-id.vo';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { Injectable } from '@nestjs/common';
+import { CompanyDataAccessMapper } from './company.mapper';
 
+@Injectable()
 export class PositionDataAccessMapper {
+  constructor(
+    private readonly _companyDataAccessMapper: CompanyDataAccessMapper,
+  ) {}
   toOrmEntity(
     positionEntity: PositionEntity,
     method: OrmEntityMethod,
@@ -20,6 +26,7 @@ export class PositionDataAccessMapper {
     }
 
     mediaOrmEntity.name = positionEntity.name;
+    mediaOrmEntity.company_id = positionEntity.company_id;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = positionEntity.createdAt ?? new Date(now);
     }
@@ -29,11 +36,19 @@ export class PositionDataAccessMapper {
   }
 
   toEntity(ormData: PositionOrmEntity): PositionEntity {
-    return PositionEntity.builder()
+    const entity = PositionEntity.builder()
       .setPositionId(new PositionId(ormData.id))
       .setName(ormData.name ?? '')
+      .setCompanyId(ormData.company_id ?? 0)
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at)
-      .build();
+      .setUpdatedAt(ormData.updated_at);
+
+    if (ormData.company) {
+      entity.setCompany(
+        this._companyDataAccessMapper.toEntity(ormData.company),
+      );
+    }
+
+    return entity.build();
   }
 }
