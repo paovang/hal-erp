@@ -1,5 +1,6 @@
 import { EnumBudgetType } from '../../application/constants/status-key.const';
 import { BudgetAccountEntity } from '../entities/budget-account.entity';
+import { CompanyEntity } from '../entities/company.entity';
 import { DepartmentEntity } from '../entities/department.entity';
 import { BudgetAccountId } from '../value-objects/budget-account-id.vo';
 
@@ -15,10 +16,12 @@ export class BudgetAccountBuilder {
   balance_amount: number;
   total_budget: number;
   type: EnumBudgetType;
+  company_id: number;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   department: DepartmentEntity | null;
+  company: CompanyEntity | null;
 
   setBudgetAccountId(value: BudgetAccountId): this {
     this.budgetAccountId = value;
@@ -60,6 +63,11 @@ export class BudgetAccountBuilder {
     return this;
   }
 
+  setCompanyId(company_id: number): this {
+    this.company_id = company_id;
+    return this;
+  }
+
   setBalanceAmount(balance_amount: number): this {
     this.balance_amount = balance_amount;
     return this;
@@ -92,6 +100,11 @@ export class BudgetAccountBuilder {
 
   setDepartment(department: DepartmentEntity | null): this {
     this.department = department;
+    return this;
+  }
+
+  setCompany(company: CompanyEntity | null): this {
+    this.company = company;
     return this;
   }
 

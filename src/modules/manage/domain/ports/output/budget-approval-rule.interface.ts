@@ -9,6 +9,8 @@ export interface IReadBudgetApprovalRuleRepository {
     query: BudgetApprovalRuleQueryDto,
     manager: EntityManager,
     departmentId?: number,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>>;
 
   findOne(

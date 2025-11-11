@@ -8,6 +8,8 @@ export interface IReadDepartmentRepository {
   findAll(
     query: DepartmentQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<DepartmentEntity>>;
 
   findOne(

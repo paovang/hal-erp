@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DepartmentResponse } from './department.response';
 import { EnumBudgetType } from '../../constants/status-key.const';
+import { CompanyResponse } from './company.response';
 
 export class BudgetAccountResponse {
   @ApiProperty()
@@ -14,6 +15,9 @@ export class BudgetAccountResponse {
 
   @ApiProperty()
   department_id: number;
+
+  @ApiProperty()
+  company_id: number;
 
   @ApiProperty()
   fiscal_year: number;
@@ -44,4 +48,7 @@ export class BudgetAccountResponse {
 
   @ApiProperty()
   department: DepartmentResponse | null;
+
+  @ApiProperty()
+  company: CompanyResponse | null;
 }

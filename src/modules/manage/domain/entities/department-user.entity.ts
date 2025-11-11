@@ -5,6 +5,7 @@ import { DepartmentEntity } from './department.entity';
 import { PositionEntity } from './position.entity';
 import { UserEntity } from './user.entity';
 import { UserTypeEntity } from './user-type.entity';
+import { CompanyEntity } from './company.entity';
 
 export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _departmentId: number;
@@ -15,6 +16,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _password: string;
   private readonly _tel: string;
   private readonly _line_manager_id: number;
+  private readonly _company_id: number | null;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -23,6 +25,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
   private readonly _department: DepartmentEntity;
   private readonly _position: PositionEntity;
   private readonly _line_manager: UserEntity | null;
+  private readonly _company: CompanyEntity | null;
 
   private constructor(builder: DepartmentUserBuilder) {
     super();
@@ -35,6 +38,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
     this._password = builder.password;
     this._tel = builder.tel;
     this._line_manager_id = builder.line_manager_id;
+    this._company_id = builder.company_id;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -43,6 +47,7 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
     this._department = builder.department ?? null;
     this._position = builder.position ?? null;
     this._line_manager = builder.line_manager ?? null;
+    this._company = builder.company ?? null;
   }
 
   get departmentId(): number {
@@ -77,6 +82,10 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
     return this._line_manager_id;
   }
 
+  get company_id(): number | null {
+    return this._company_id;
+  }
+
   get createdAt(): Date {
     return this._createdAt;
   }
@@ -107,6 +116,10 @@ export class DepartmentUserEntity extends Entity<DepartmentUserId> {
 
   get line_manager(): UserEntity | null {
     return this._line_manager;
+  }
+
+  get company(): CompanyEntity | null {
+    return this._company;
   }
 
   public static builder(): DepartmentUserBuilder {

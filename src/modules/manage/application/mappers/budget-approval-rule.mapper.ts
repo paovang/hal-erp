@@ -8,17 +8,20 @@ import { DepartmentDataMapper } from './department.mapper';
 import { UserDataMapper } from './user.mapper';
 import { CreateBudgetApprovalRuleDto } from '../dto/create/BudgetApprovalRule/create.dto';
 import { UpdateBudgetApprovalRuleDto } from '../dto/create/BudgetApprovalRule/update.dto';
+import { CompanyDataMapper } from './company.mapper';
 
 @Injectable()
 export class BudgetApprovalRuleDataMapper {
   constructor(
     private readonly departmentDataMapper: DepartmentDataMapper,
     private readonly userDataMapper: UserDataMapper,
+    private readonly company: CompanyDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateBudgetApprovalRuleDto | UpdateBudgetApprovalRuleDto,
     departmentId?: number,
+    company_id?: number,
   ): BudgetApprovalRuleEntity {
     const builder = BudgetApprovalRuleEntity.builder();
 
@@ -38,6 +41,10 @@ export class BudgetApprovalRuleDataMapper {
       builder.setMaxAmount(dto.max_amount);
     }
 
+    if (company_id) {
+      builder.setCompanyId(company_id);
+    }
+
     return builder.build();
   }
 
@@ -47,6 +54,7 @@ export class BudgetApprovalRuleDataMapper {
     response.id = entity.getId().value;
     response.department_id = Number(entity.departmentID);
     response.approver_id = entity.approverID;
+    response.company_id = entity.company_id;
     response.min_amount = entity.minAmount;
     response.max_amount = entity.maxAmount;
     response.created_at = moment
@@ -62,6 +70,10 @@ export class BudgetApprovalRuleDataMapper {
 
     response.approver = entity.user
       ? this.userDataMapper.toResponse(entity.user)
+      : null;
+
+    response.company = entity.company
+      ? this.company.toResponse(entity.company)
       : null;
 
     return response;

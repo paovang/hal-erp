@@ -28,7 +28,7 @@
   "must_be_number": " {property} Must be number",
   "name_already_exists": "Name already exists",
   "email_already_exists": "Email already exists",
-  "code_already_exists": "Code already exists",
+  "code_already_exists": "Code already exists {property}",
   "tel_already_exists": "Tel already exists",
   "incorrect_password": "Incorrect password",
   "min_amount_greater_than_max_amount": "Min amount greater than max amount",

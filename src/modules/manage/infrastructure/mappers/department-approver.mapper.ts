@@ -8,12 +8,14 @@ import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { Injectable } from '@nestjs/common';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { CompanyDataAccessMapper } from './company.mapper';
 
 @Injectable()
 export class DepartmentApproverDataAccessMapper {
   constructor(
     private readonly departmentMapper: DepartmentDataAccessMapper,
     private readonly userMapper: UserDataAccessMapper,
+    private readonly company: CompanyDataAccessMapper,
   ) {}
   toOrmEntity(
     departmentApproverEntity: DepartmentApproverEntity,
@@ -34,6 +36,10 @@ export class DepartmentApproverDataAccessMapper {
       ? Number(departmentApproverEntity.userId)
       : undefined;
 
+    mediaOrmEntity.company_id = departmentApproverEntity.companyId
+      ? Number(departmentApproverEntity.companyId)
+      : undefined;
+
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at =
         departmentApproverEntity.createdAt ?? new Date(now);
@@ -48,6 +54,7 @@ export class DepartmentApproverDataAccessMapper {
       .setDepartmentApproverId(new DepartmentApproverId(ormData.id))
       .setDepartmentId(ormData.department_id ?? null) // corrected (null ?? '')
       .setUserId(ormData.user_id ?? null)
+      .setCompanyId(ormData.company_id ?? null)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 
@@ -58,6 +65,10 @@ export class DepartmentApproverDataAccessMapper {
     }
     if (ormData.users) {
       builder.setUser(this.userMapper.toEntity(ormData.users));
+    }
+
+    if (ormData.company) {
+      builder.setCompany(this.company.toEntity(ormData.company));
     }
 
     return builder.build();

@@ -3,6 +3,7 @@ import { BudgetAccountBuilder } from '../builders/budget-account.builder';
 import { BudgetAccountId } from '../value-objects/budget-account-id.vo';
 import { DepartmentEntity } from './department.entity';
 import { EnumBudgetType } from '../../application/constants/status-key.const';
+import { CompanyEntity } from './company.entity';
 
 export class BudgetAccountEntity extends Entity<BudgetAccountId> {
   private readonly _code: string;
@@ -10,6 +11,7 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
   private readonly _departmentId: number;
   private readonly _fiscal_year: number;
   private readonly _type: EnumBudgetType;
+  private readonly _company_id: number;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -19,6 +21,7 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
   private readonly _used_amount: number;
   private readonly _balance_amount: number;
   private readonly _total_budget: number;
+  private readonly _company: CompanyEntity | null;
 
   private constructor(builder: BudgetAccountBuilder) {
     super();
@@ -28,6 +31,7 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
     this._departmentId = builder.departmentId;
     this._fiscal_year = builder.fiscal_year;
     this._type = builder.type;
+    this._company_id = builder.company_id;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -37,6 +41,7 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
     this._used_amount = builder.used_amount;
     this._balance_amount = builder.balance_amount;
     this._total_budget = builder.total_budget;
+    this._company = builder.company ?? null;
   }
 
   get code(): string {
@@ -53,6 +58,10 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
 
   get fiscal_year(): number {
     return this._fiscal_year;
+  }
+
+  get company_id(): number {
+    return this._company_id;
   }
 
   get allocated_amount(): number {
@@ -93,6 +102,10 @@ export class BudgetAccountEntity extends Entity<BudgetAccountId> {
 
   get department(): DepartmentEntity | null {
     return this._department;
+  }
+
+  get company(): CompanyEntity | null {
+    return this._company;
   }
 
   public static builder(): BudgetAccountBuilder {

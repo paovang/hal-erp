@@ -7,6 +7,8 @@ import { READ_BUDGET_APPROVAL_RULE_REPOSITORY } from '../../../constants/inject-
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { IReadBudgetApprovalRuleRepository } from '@src/modules/manage/domain/ports/output/budget-approval-rule.interface';
 import { UserContextService } from '@common/infrastructure/cls/cls.service';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler
@@ -22,19 +24,32 @@ export class GetAllQueryHandler
   async execute(
     query: GetAllQuery,
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
-    const departmentUser =
-      this._userContextService.getAuthUser()?.departmentUser;
-    if (!departmentUser) {
-      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
-    }
+    const user = this._userContextService.getAuthUser()?.user;
+    const user_id = user?.id;
 
-    // const departmentId = (departmentUser as any).department_id;
-    const departmentId = (departmentUser as any).departments.id;
+    const departmentUser = await query.manager.findOne(
+      DepartmentUserOrmEntity,
+      {
+        where: { user_id: user_id },
+      },
+    );
+
+    const company_user = await query.manager.findOne(CompanyUserOrmEntity, {
+      where: {
+        user_id: user_id,
+      },
+    });
+
+    const company_id = company_user?.company_id ?? undefined;
+    const roles = user?.roles?.map((r: any) => r.name) ?? [];
+    const department_id = departmentUser?.department_id ?? null;
 
     const data = await this._readRepo.findAll(
       query.dto,
       query.manager,
-      departmentId,
+      department_id || undefined,
+      company_id,
+      roles,
     );
 
     if (!data) {

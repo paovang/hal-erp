@@ -1,3 +1,4 @@
+import { CompanyEntity } from '../entities/company.entity';
 import { DepartmentUserEntity } from '../entities/department-user.entity';
 import { DepartmentEntity } from '../entities/department.entity';
 import { PositionEntity } from '../entities/position.entity';
@@ -15,6 +16,7 @@ export class DepartmentUserBuilder {
   password: string;
   tel: string;
   line_manager_id: number;
+  company_id: number | null;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -23,6 +25,7 @@ export class DepartmentUserBuilder {
   user_type: UserTypeEntity[] | null;
   position: PositionEntity;
   line_manager: UserEntity;
+  company: CompanyEntity | null;
 
   setDepartmentUserId(value: DepartmentUserId): this {
     this.departmentUserId = value;
@@ -69,6 +72,11 @@ export class DepartmentUserBuilder {
     return this;
   }
 
+  setCompanyId(company_id: number | null): this {
+    this.company_id = company_id;
+    return this;
+  }
+
   setCreatedAt(createdAt: Date): this {
     this.createdAt = createdAt;
     return this;
@@ -106,6 +114,11 @@ export class DepartmentUserBuilder {
 
   setLineManager(line_manager: UserEntity): this {
     this.line_manager = line_manager;
+    return this;
+  }
+
+  setCompany(company: CompanyEntity | null): this {
+    this.company = company;
     return this;
   }
 

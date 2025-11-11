@@ -1,3 +1,4 @@
+import { CompanyEntity } from '../entities/company.entity';
 import { DepartmentApproverEntity } from '../entities/department-approver.entity';
 import { DepartmentEntity } from '../entities/department.entity';
 import { UserEntity } from '../entities/user.entity';
@@ -7,11 +8,13 @@ export class DepartmentApproverBuilder {
   departmentApproverId: DepartmentApproverId;
   department_id: number | null;
   user_id: number | null;
+  company_id: number | null;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   user: UserEntity;
   department: DepartmentEntity;
+  company: CompanyEntity | null;
 
   setDepartmentApproverId(value: DepartmentApproverId): this {
     this.departmentApproverId = value;
@@ -25,6 +28,11 @@ export class DepartmentApproverBuilder {
 
   setUserId(user_id: number | null): this {
     this.user_id = user_id;
+    return this;
+  }
+
+  setCompanyId(company_id: number | null): this {
+    this.company_id = company_id;
     return this;
   }
 
@@ -50,6 +58,11 @@ export class DepartmentApproverBuilder {
 
   setDepartment(department: DepartmentEntity): this {
     this.department = department;
+    return this;
+  }
+
+  setCompany(company: CompanyEntity | null): this {
+    this.company = company;
     return this;
   }
 

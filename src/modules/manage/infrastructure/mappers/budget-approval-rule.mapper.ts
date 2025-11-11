@@ -8,12 +8,14 @@ import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { Injectable } from '@nestjs/common';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { CompanyDataAccessMapper } from './company.mapper';
 
 @Injectable()
 export class BudgetApprovalRuleDataAccessMapper {
   constructor(
     private readonly departmentMapper: DepartmentDataAccessMapper,
     private readonly userMapper: UserDataAccessMapper,
+    private readonly company: CompanyDataAccessMapper,
   ) {}
   toOrmEntity(
     budgetApprovalRuleEntity: BudgetApprovalRuleEntity,
@@ -28,6 +30,7 @@ export class BudgetApprovalRuleDataAccessMapper {
     }
     mediaOrmEntity.department_id = budgetApprovalRuleEntity.departmentID;
     mediaOrmEntity.approver_id = budgetApprovalRuleEntity.approverID;
+    mediaOrmEntity.company_id = budgetApprovalRuleEntity.company_id;
     mediaOrmEntity.min_amount = budgetApprovalRuleEntity.minAmount;
     mediaOrmEntity.max_amount = budgetApprovalRuleEntity.maxAmount;
 
@@ -46,6 +49,7 @@ export class BudgetApprovalRuleDataAccessMapper {
       .setBudgetApprovalRuleId(new BudgetApprovalRuleId(ormData.id))
       .setDepartmentId(ormData.department_id ?? 0)
       .setApproverId(ormData.approver_id ?? 0)
+      .setCompanyId(ormData.company_id ?? 0)
       .setMinAmount(ormData.min_amount ?? 0)
       .setMaxAmount(ormData.max_amount ?? 0)
       .setCreatedAt(ormData.created_at)
@@ -58,6 +62,10 @@ export class BudgetApprovalRuleDataAccessMapper {
     }
     if (ormData.users) {
       builder.setUser(this.userMapper.toEntity(ormData.users));
+    }
+
+    if (ormData.company) {
+      builder.setCompany(this.company.toEntity(ormData.company));
     }
 
     return builder.build();
