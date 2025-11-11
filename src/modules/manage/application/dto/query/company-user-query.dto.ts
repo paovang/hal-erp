@@ -13,6 +13,6 @@ export class CompanyUserQueryDto extends PaginationDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsString({ message: 'validation.IS_STRING' })
-  company_id: string;
+  @IsString()
+  company_id?: string;
 }

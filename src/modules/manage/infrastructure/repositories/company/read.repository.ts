@@ -12,6 +12,7 @@ import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { EntityManager } from 'typeorm';
 import { CompanyEntity } from '@src/modules/manage/domain/entities/company.entity';
 import { CompanyId } from '@src/modules/manage/domain/value-objects/company-id.vo';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadCompanyRepository implements IReadCompanyRepository {
@@ -24,9 +25,39 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
   async findAll(
     query: CompanyQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<CompanyEntity>> {
     const queryBuilder = await this.createBaseQuery(manager);
     query.sort_by = 'companies.id';
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          queryBuilder.where('companies.id = :company_id', {
+            company_id,
+          });
+        }
+        if (department_id) {
+          queryBuilder.andWhere('departments.id = :department_id', {
+            department_id,
+          });
+        }
+      }
+      if (department_id) {
+        queryBuilder.andWhere('departments.id = :department_id', {
+          department_id,
+        });
+      }
+    }
 
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -49,7 +80,10 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
   }
 
   private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(CompanyOrmEntity, 'companies');
+    return manager
+      .createQueryBuilder(CompanyOrmEntity, 'companies')
+      .leftJoinAndSelect('companies.company_users', 'company_users')
+      .leftJoinAndSelect('companies.departments', 'departments');
   }
 
   private getFilterOptions(): FilterOptions {

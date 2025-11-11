@@ -8,6 +8,9 @@ export interface IReadCompanyRepository {
   findAll(
     query: CompanyQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<CompanyEntity>>;
 
   findOne(

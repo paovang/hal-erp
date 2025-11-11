@@ -50,6 +50,7 @@ export class ReadCompanyUserRepository implements IReadCompanyUserRepository {
   }
 
   private createBaseQuery(manager: EntityManager, company_id?: number) {
+    console.log('object', company_id);
     const queryBuilder = manager
       .createQueryBuilder(CompanyUserOrmEntity, 'company_users')
       .leftJoinAndSelect('company_users.company', 'company')
