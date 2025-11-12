@@ -16,6 +16,7 @@ import { ManageDomainException } from '@src/modules/manage/domain/exceptions/man
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -36,30 +37,58 @@ export class CreateCommandHandler
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
-    const { min_amount, max_amount } = query.dto;
-
-    const departmentUser =
-      this._userContextService.getAuthUser()?.departmentUser;
-    if (!departmentUser) {
-      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND, {
-        property: 'user',
-      });
-    }
-
-    // const departmentId = (departmentUser as any).department_id;
-    const departmentId = (departmentUser as any).departments.id;
-
-    await _checkColumnDuplicate(
-      BudgetApprovalRuleOrmEntity,
-      'approver_id',
-      query.dto.approver_id,
-      query.manager,
-      'errors.already_exists',
-    );
-
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        const { min_amount, max_amount } = query.dto;
+        const user = this._userContextService.getAuthUser()?.user;
+        const user_id = user?.id;
+
+        let company_id: number | null | undefined = null;
+        const company = await query.manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: user_id,
+          },
+        });
+
+        const departmentUser = await query.manager.findOne(
+          DepartmentUserOrmEntity,
+          {
+            where: { user_id: user_id },
+          },
+        );
+        const departmentId = departmentUser?.department_id ?? null;
+
+        company_id = company?.company_id ?? null;
+
+        if (company_id) {
+          const check_budget_approval_rule = await query.manager.findOne(
+            BudgetApprovalRuleOrmEntity,
+            {
+              where: {
+                approver_id: query.dto.approver_id,
+                company_id: company_id,
+              },
+            },
+          );
+
+          if (check_budget_approval_rule) {
+            throw new ManageDomainException(
+              'errors.already_exists',
+              HttpStatus.BAD_REQUEST,
+              { property: `approver id ${query.dto.approver_id}` },
+            );
+          }
+        } else {
+          await _checkColumnDuplicate(
+            BudgetApprovalRuleOrmEntity,
+            'approver_id',
+            query.dto.approver_id,
+            query.manager,
+            'errors.already_exists',
+          );
+        }
+
         if (min_amount >= max_amount) {
           throw new ManageDomainException(
             'errors.min_amount_greater_than_max_amount',
@@ -70,7 +99,12 @@ export class CreateCommandHandler
         await findOneOrFail(manager, DepartmentUserOrmEntity, {
           user_id: query.dto.approver_id,
         });
-        const mapToEntity = this._dataMapper.toEntity(query.dto, departmentId);
+
+        const mapToEntity = this._dataMapper.toEntity(
+          query.dto,
+          departmentId || undefined,
+          company_id || undefined,
+        );
 
         return await this._write.create(mapToEntity, manager);
       },

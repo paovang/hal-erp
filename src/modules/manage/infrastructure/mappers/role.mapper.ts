@@ -58,7 +58,7 @@ export class RoleDataAccessMapper {
             }
             return builder
               .setName(ormData.rolesGroups[0].department?.name)
-              .setCode(ormData.rolesGroups[0].department?.code)
+              .setCode(ormData.rolesGroups[0].department?.code ?? '')
               .build();
           })()
         : undefined;

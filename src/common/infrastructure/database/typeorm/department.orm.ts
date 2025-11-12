@@ -29,8 +29,8 @@ export class DepartmentOrmEntity {
   id: number;
 
   @Index()
-  @Column({ type: 'varchar', length: 255, unique: true })
-  code: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  code?: string;
 
   @Index()
   @Column({ type: 'varchar', length: 255 })

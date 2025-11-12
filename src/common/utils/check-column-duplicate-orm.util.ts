@@ -24,6 +24,8 @@ export async function _checkColumnDuplicate<T>(
   const existing = await manager.findOne(entity, { where });
 
   if (existing) {
-    throw new ManageDomainException(errorMessage, HttpStatus.BAD_REQUEST);
+    throw new ManageDomainException(errorMessage, HttpStatus.BAD_REQUEST, {
+      property: `${value}`,
+    });
   }
 }

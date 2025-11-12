@@ -14,6 +14,7 @@ import { DepartmentUserQueryDto } from '@src/modules/manage/application/dto/quer
 import { DepartmentUserEntity } from '@src/modules/manage/domain/entities/department-user.entity';
 import { DepartmentUserId } from '@src/modules/manage/domain/value-objects/department-user-id.vo';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadDepartmentUserRepository
@@ -31,11 +32,15 @@ export class ReadDepartmentUserRepository
     query: DepartmentUserQueryDto,
     manager: EntityManager,
     departmentId?: number | null,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     const queryBuilder = await this.createBaseQuery(
       manager,
       departmentId,
       query.type,
+      company_id,
+      roles,
     );
 
     query.sort_by = 'department_users.id';
@@ -53,9 +58,12 @@ export class ReadDepartmentUserRepository
     manager: EntityManager,
     departmentId?: number | null,
     type?: string,
+    company_id?: number,
+    roles?: string[],
   ) {
     const qb = manager
       .createQueryBuilder(DepartmentUserOrmEntity, 'department_users')
+      .leftJoin('department_users.company', 'company')
       .leftJoin('department_users.departments', 'departments')
       .leftJoin('department_users.users', 'users')
       .leftJoin('department_users.line_manager', 'line_manager')
@@ -90,15 +98,36 @@ export class ReadDepartmentUserRepository
         'line_manager.username',
         'line_manager.email',
         'line_manager.tel',
+        'company.id',
+        'company.name',
+        'company.email',
+        'company.tel',
+        'company.logo',
 
         // 'user_types.name',
         // 'user_types.user_id',
       ]);
 
-    if (departmentId && departmentId != null) {
-      qb.andWhere('department_users.department_id = :departmentId', {
-        departmentId,
-      });
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          qb.andWhere('department_users.company_id = :company_id', {
+            company_id,
+          });
+        }
+      }
+      if (departmentId && departmentId != null) {
+        qb.andWhere('department_users.department_id = :departmentId', {
+          departmentId,
+        });
+      }
     }
 
     if (departmentId && type === 'approvers') {

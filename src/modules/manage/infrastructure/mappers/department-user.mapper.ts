@@ -10,6 +10,7 @@ import { UserDataAccessMapper } from './user.mapper';
 import { PositionDataAccessMapper } from './position.mapper';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { UserTypeDataAccessMapper } from './user-type.mapper';
+import { CompanyDataAccessMapper } from './company.mapper';
 
 @Injectable()
 export class DepartmentUserDataAccessMapper {
@@ -18,6 +19,7 @@ export class DepartmentUserDataAccessMapper {
     private readonly userMapper: UserDataAccessMapper,
     private readonly userTypeMapper: UserTypeDataAccessMapper,
     private readonly positionMapper: PositionDataAccessMapper,
+    private readonly company: CompanyDataAccessMapper,
   ) {}
 
   toOrmEntity(
@@ -36,6 +38,7 @@ export class DepartmentUserDataAccessMapper {
     mediaOrmEntity.user_id = departmentUserEntity.userId;
     mediaOrmEntity.line_manager_id =
       departmentUserEntity.line_manager_id ?? null;
+    mediaOrmEntity.company_id = departmentUserEntity.company_id ?? undefined;
     // mediaOrmEntity.user_id =
     //   departmentUserEntity.user_type?.map((type) => type.user_id) ?? 0;
     if (method === OrmEntityMethod.CREATE) {
@@ -54,6 +57,7 @@ export class DepartmentUserDataAccessMapper {
       .setUserId(ormData.user_id ?? 0)
       .setPositionId(ormData.position_id ?? 0)
       .setLineManagerId(ormData.line_manager_id ?? 0)
+      .setCompanyId(ormData.company_id ?? 0)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 
@@ -77,6 +81,10 @@ export class DepartmentUserDataAccessMapper {
           this.userTypeMapper.toEntity(type),
         ),
       );
+    }
+
+    if (ormData.company) {
+      builder.setCompany(this.company.toEntity(ormData.company));
     }
 
     return builder.build();

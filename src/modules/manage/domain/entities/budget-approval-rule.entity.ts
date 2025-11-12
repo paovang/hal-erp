@@ -3,17 +3,20 @@ import { BudgetApprovalRuleId } from '../value-objects/budget-approval-rule-id.v
 import { BudgetApprovalRuleBuilder } from '../builders/budget-approval-rule.builder';
 import { DepartmentEntity } from './department.entity';
 import { UserEntity } from './user.entity';
+import { CompanyEntity } from './company.entity';
 
 export class BudgetApprovalRuleEntity extends Entity<BudgetApprovalRuleId> {
   private readonly _departmentID: number;
   private readonly _approverID: number;
   private readonly _minAmount: number;
   private readonly _maxAmount: number;
+  private readonly _company_id: number;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _department: DepartmentEntity;
   private readonly _user: UserEntity;
+  private readonly _company: CompanyEntity | null;
 
   private constructor(builder: BudgetApprovalRuleBuilder) {
     super();
@@ -22,11 +25,13 @@ export class BudgetApprovalRuleEntity extends Entity<BudgetApprovalRuleId> {
     this._approverID = builder.approver_id;
     this._minAmount = builder.min_amount;
     this._maxAmount = builder.max_amount;
+    this._company_id = builder.company_id;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._department = builder.department;
     this._user = builder.user;
+    this._company = builder.company ?? null;
   }
 
   get departmentID(): number {
@@ -35,6 +40,10 @@ export class BudgetApprovalRuleEntity extends Entity<BudgetApprovalRuleId> {
 
   get approverID(): number {
     return this._approverID;
+  }
+
+  get company_id(): number {
+    return this._company_id;
   }
 
   get minAmount(): number {
@@ -59,6 +68,10 @@ export class BudgetApprovalRuleEntity extends Entity<BudgetApprovalRuleId> {
 
   get department(): DepartmentEntity {
     return this._department;
+  }
+
+  get company(): CompanyEntity | null {
+    return this._company;
   }
 
   get user(): UserEntity {

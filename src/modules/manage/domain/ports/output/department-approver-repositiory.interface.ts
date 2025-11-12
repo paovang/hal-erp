@@ -33,6 +33,8 @@ export interface IReadDepartmentApproverRepository {
     query: DepartmentApproverQueryDto,
     manager: EntityManager,
     departmentId?: number,
+    company_id?: number,
+    roles?: string[],
   ): Promise<ResponseResult<DepartmentApproverEntity>>;
 
   findOne(

@@ -52,6 +52,8 @@ export enum EligiblePersons {
   LINE_MANAGER = 'line_manager',
   SUPER_ADMIN = 'super-admin',
   ADMIN = 'admin',
+  COMPANY_ADMIN = 'company-admin',
+  COMPANY_USER = 'company-user',
 }
 
 // document transaction

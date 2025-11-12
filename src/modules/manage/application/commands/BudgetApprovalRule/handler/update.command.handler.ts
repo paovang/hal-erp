@@ -13,6 +13,8 @@ import { ManageDomainException } from '@src/modules/manage/domain/exceptions/man
 import { DepartmentUserOrmEntity } from '@common/infrastructure/database/typeorm/department-user.orm';
 import { _checkColumnDuplicate } from '@common/utils/check-column-duplicate-orm.util';
 import { UserContextService } from '@common/infrastructure/cls/cls.service';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { Not } from 'typeorm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -31,25 +33,55 @@ export class UpdateCommandHandler
   ): Promise<ResponseResult<BudgetApprovalRuleEntity>> {
     const { min_amount, max_amount } = query.dto;
 
-    const departmentUser =
-      this._userContextService.getAuthUser()?.departmentUser;
-    if (!departmentUser) {
-      throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND, {
-        property: 'user',
-      });
-    }
+    const user = this._userContextService.getAuthUser()?.user;
+    const user_id = user?.id;
 
-    await _checkColumnDuplicate(
-      BudgetApprovalRuleOrmEntity,
-      'approver_id',
-      query.dto.approver_id,
-      query.manager,
-      'errors.already_exists',
-      query.id,
+    let company_id: number | null | undefined = null;
+    const company = await query.manager.findOne(CompanyUserOrmEntity, {
+      where: {
+        user_id: user_id,
+      },
+    });
+
+    const departmentUser = await query.manager.findOne(
+      DepartmentUserOrmEntity,
+      {
+        where: { user_id: user_id },
+      },
     );
+    const departmentId = departmentUser?.department_id ?? null;
 
-    // const departmentId = (departmentUser as any).department_id;
-    const departmentId = (departmentUser as any).departments.id;
+    company_id = company?.company_id ?? null;
+
+    if (company_id) {
+      const check_budget_approval_rule = await query.manager.findOne(
+        BudgetApprovalRuleOrmEntity,
+        {
+          where: {
+            id: Not(query.id),
+            approver_id: query.dto.approver_id,
+            company_id: company_id,
+          },
+        },
+      );
+
+      if (check_budget_approval_rule) {
+        throw new ManageDomainException(
+          'errors.already_exists',
+          HttpStatus.BAD_REQUEST,
+          { property: `approver id ${query.dto.approver_id}` },
+        );
+      }
+    } else {
+      await _checkColumnDuplicate(
+        BudgetApprovalRuleOrmEntity,
+        'approver_id',
+        query.dto.approver_id,
+        query.manager,
+        'errors.already_exists',
+        query.id,
+      );
+    }
 
     if (isNaN(query.id)) {
       throw new ManageDomainException(
@@ -74,7 +106,11 @@ export class UpdateCommandHandler
       user_id: query.dto.approver_id,
     });
 
-    const entity = this._dataMapper.toEntity(query.dto, departmentId);
+    const entity = this._dataMapper.toEntity(
+      query.dto,
+      departmentId || undefined,
+      company_id || undefined,
+    );
     await entity.initializeUpdateSetId(new BudgetApprovalRuleId(query.id));
     await entity.validateExistingIdForUpdate();
 

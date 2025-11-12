@@ -10,6 +10,7 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { UserTypeDataMapper } from './user-type.mapper';
+import { CompanyDataMapper } from './company.mapper';
 
 @Injectable()
 export class DepartmentUserDataMapper {
@@ -18,6 +19,7 @@ export class DepartmentUserDataMapper {
     private readonly positionDataMapper: PositionDataMapper,
     private readonly userDataMapper: UserDataMapper,
     private readonly userTypeDataMapper: UserTypeDataMapper,
+    private readonly company: CompanyDataMapper,
   ) {}
 
   /** Mapper Dto To Entity */
@@ -25,6 +27,7 @@ export class DepartmentUserDataMapper {
     dto: Partial<CreateDepartmentUserDto | UpdateDepartmentUserDto>,
     isCreate: boolean,
     userId?: number,
+    company_id?: number,
   ): DepartmentUserEntity {
     const builder = DepartmentUserEntity.builder();
 
@@ -65,6 +68,10 @@ export class DepartmentUserDataMapper {
       builder.setLineManagerId(dto.line_manager_id);
     }
 
+    if (company_id) {
+      builder.setCompanyId(company_id);
+    }
+
     // if (s3ImageResponse) {
     //   builder.setSignatureFile(s3ImageResponse.fileKey);
     // }
@@ -80,6 +87,7 @@ export class DepartmentUserDataMapper {
     response.position_id = entity.positionId;
     response.user_id = entity.userId;
     response.line_manager_id = entity.line_manager_id ?? null;
+    response.company_id = entity.company_id ?? 0;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
@@ -106,6 +114,10 @@ export class DepartmentUserDataMapper {
 
     response.line_manager = entity.line_manager
       ? this.userDataMapper.toResponse(entity.line_manager)
+      : null;
+
+    response.company = entity.company
+      ? this.company.toResponse(entity.company)
       : null;
 
     return response;

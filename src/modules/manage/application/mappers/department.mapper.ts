@@ -7,15 +7,20 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/department/create.dto';
 import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
 import { UserDataMapper } from './user.mapper';
+import { CompanyDataMapper } from './company.mapper';
 
 @Injectable()
 export class DepartmentDataMapper {
-  constructor(private readonly userDataMapper: UserDataMapper) {}
+  constructor(
+    private readonly userDataMapper: UserDataMapper,
+    private readonly company: CompanyDataMapper,
+  ) {}
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateDepartmentDto | UpdateDepartmentDto,
     is_line_manager?: boolean,
     code?: string,
+    company_id?: number,
   ): DepartmentEntity {
     const builder = DepartmentEntity.builder();
     // builder.code = dto.code ?? code ?? '';
@@ -40,6 +45,10 @@ export class DepartmentDataMapper {
       builder.setType(dto.type);
     }
 
+    if (company_id) {
+      builder.setCompanyId(company_id);
+    }
+
     return builder.build();
   }
 
@@ -61,6 +70,10 @@ export class DepartmentDataMapper {
 
     response.department_head = entity.department_head
       ? this.userDataMapper.toResponse(entity.department_head)
+      : null;
+
+    response.company = entity.company
+      ? this.company.toResponse(entity.company)
       : null;
 
     return response;

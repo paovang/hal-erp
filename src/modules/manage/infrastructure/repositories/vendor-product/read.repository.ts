@@ -78,7 +78,7 @@ export class ReadVendorProductRepository
 
   private getFilterOptions(): FilterOptions {
     return {
-      searchColumns: ['vendors.name', 'products.name'],
+      searchColumns: ['vendor.name', 'product.name'],
       dateColumn: '',
       filterByColumns: [
         'vendor_products.vendor_id',

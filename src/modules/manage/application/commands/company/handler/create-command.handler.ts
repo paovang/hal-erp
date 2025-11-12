@@ -2,6 +2,7 @@ import { CreateCommand } from '@src/modules/manage/application/commands/company/
 import { IQueryHandler, CommandHandler } from '@nestjs/cqrs';
 import {
   COMPANY_LOGO_FOLDER,
+  USER_SIGNATURE_IMAGE_FOLDER,
   USER_TYPE_APPLICATION_SERVICE,
   WRITE_COMPANY_REPOSITORY,
   WRITE_COMPANY_USER_REPOSITORY,
@@ -146,14 +147,7 @@ export class CreateCommandHandler
         // Save the mapped user types
         await this._userTypeRepo.create(entity, manager);
 
-        const mapToEntityUserSignature = this._dataUserSignatureMapper.toEntity(
-          command.dto.user,
-          companyUserId,
-        );
-        await this._writeUserSignature.create(
-          mapToEntityUserSignature,
-          manager,
-        );
+        await this.saveUserSignature(command, manager, companyUserId);
 
         const mapToEntityCompanyUser = this._dataCompanyUserMapper.toEntity(
           company_id,
@@ -213,5 +207,43 @@ export class CreateCommandHandler
       manager,
       'errors.user_tel_already_exists',
     );
+  }
+
+  private async saveUserSignature(
+    command: CreateCommand,
+    manager: EntityManager,
+    companyUserId: number,
+  ): Promise<void> {
+    // user signature
+    let processedItems = null;
+    const baseFolder = path.join(
+      __dirname,
+      '../../../../../../../assets/uploads/',
+    );
+    let fileKey = null;
+    if (command.dto.user.signature) {
+      const mockFile = await createMockMulterFile(
+        baseFolder,
+        command.dto.user.signature,
+      );
+      const optimizedImage =
+        await this._optimizeService.optimizeImage(mockFile);
+      const s3ImageResponse = await this._amazonS3ServiceKey.uploadFile(
+        optimizedImage,
+        USER_SIGNATURE_IMAGE_FOLDER,
+      );
+      fileKey = s3ImageResponse.fileKey;
+    }
+
+    processedItems = {
+      ...command.dto.user,
+      signature: fileKey ?? '',
+    };
+
+    const mapToEntityUserSignature = this._dataUserSignatureMapper.toEntity(
+      processedItems,
+      companyUserId,
+    );
+    await this._writeUserSignature.create(mapToEntityUserSignature, manager);
   }
 }
