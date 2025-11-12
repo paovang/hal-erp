@@ -12,6 +12,7 @@ import { EntityManager } from 'typeorm';
 import { CompanyUserEntity } from '@src/modules/manage/domain/entities/company-user.entity';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 import { CompanyUserId } from '@src/modules/manage/domain/value-objects/company-user-id.vo';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadCompanyUserRepository implements IReadCompanyUserRepository {
@@ -50,7 +51,7 @@ export class ReadCompanyUserRepository implements IReadCompanyUserRepository {
   }
 
   private createBaseQuery(manager: EntityManager, company_id?: number) {
-    console.log('object', company_id);
+    const role = [EligiblePersons.COMPANY_ADMIN];
     const queryBuilder = manager
       .createQueryBuilder(CompanyUserOrmEntity, 'company_users')
       .leftJoinAndSelect('company_users.company', 'company')
@@ -59,7 +60,8 @@ export class ReadCompanyUserRepository implements IReadCompanyUserRepository {
       .leftJoinAndSelect('user.roles', 'roles')
       .leftJoinAndSelect('user.userHasPermissions', 'user_has_permissions')
       .leftJoinAndSelect('user_has_permissions.permission', 'permissions')
-      .leftJoinAndSelect('roles.permissions', 'role_permissions');
+      .leftJoinAndSelect('roles.permissions', 'role_permissions')
+      .where('roles.name NOT IN (:...role)', { role });
 
     if (company_id) {
       queryBuilder.where('company_users.company_id = :company_id', {

@@ -49,6 +49,7 @@ import { ProductOrmEntity } from './typeorm/product.orm';
 import { CompanyOrmEntity } from './typeorm/company.orm';
 import { CompanyUserOrmEntity } from './typeorm/company-user.orm';
 import { VendorProductOrmEntity } from './typeorm/vendor-product.orm';
+import { QuotaCompanyOrmEntity } from './typeorm/quota-company.orm';
 
 export const models = [
   DepartmentOrmEntity,
@@ -102,4 +103,5 @@ export const models = [
   CompanyOrmEntity,
   CompanyUserOrmEntity,
   VendorProductOrmEntity,
+  QuotaCompanyOrmEntity,
 ];

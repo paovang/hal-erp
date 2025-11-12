@@ -32,4 +32,17 @@ export class RoleGroupOrmEntity {
   )
   @JoinColumn({ name: 'department_id' })
   department: DepartmentOrmEntity;
+
+  // @Column({
+  //   type: 'bigint',
+  //   unsigned: true,
+  //   nullable: true,
+  // })
+  // company_id?: number;
+  // @ManyToOne(() => CompanyOrmEntity, (company) => company.rolesGroups, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn({ name: 'company_id' })
+  // company: Relation<CompanyOrmEntity>;
 }

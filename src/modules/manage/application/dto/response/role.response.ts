@@ -27,5 +27,26 @@ export class RoleResponse {
   department_name: string;
 
   @ApiProperty()
+  company_id: number;
+
+  @ApiProperty()
+  company_name: string;
+
+  @ApiProperty()
+  company_tel: string;
+
+  @ApiProperty()
+  company_email: string;
+
+  @ApiProperty()
+  company_logo: string;
+
+  @ApiProperty()
+  company_logo_url?: string | null;
+
+  @ApiProperty()
+  company_address: string;
+
+  @ApiProperty()
   permissions: PermissionResponse[];
 }
