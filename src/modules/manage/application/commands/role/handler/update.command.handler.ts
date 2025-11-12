@@ -6,14 +6,13 @@ import { HttpStatus, Inject } from '@nestjs/common';
 import {
   GUARD_NAME,
   WRITE_ROLE_GROUP_REPOSITORY,
+  WRITE_ROLE_PERMISSION_REPOSITORY,
   WRITE_ROLE_REPOSITORY,
 } from '../../../constants/inject-key.const';
 import { IWriteRoleRepository } from '@src/modules/manage/domain/ports/output/role-repository.interface';
-import { RoleDataMapper } from '../../../mappers/role.mapper';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { RoleOrmEntity } from '@src/common/infrastructure/database/typeorm/role.orm';
-import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { RoleId } from '@src/modules/manage/domain/value-objects/role-id.vo';
 import { PermissionOrmEntity } from '@src/common/infrastructure/database/typeorm/permission.orm';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
@@ -24,6 +23,10 @@ import { IWriteRoleGroupRepository } from '@src/modules/manage/domain/ports/outp
 import { RoleGroupDataMapper } from '../../../mappers/role-group.mapper';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { RoleGroupOrmEntity } from '@src/common/infrastructure/database/typeorm/role-group.orm';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
+import { IWriteRolePermissionRepository } from '@src/modules/manage/domain/ports/output/role-permission-repository.interface';
+import { RolePermissionDataMapper } from '../../../mappers/role-permission.mapper';
+import { RoleDataMapper } from '../../../mappers/role.mapper';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -36,10 +39,14 @@ export class UpdateCommandHandler
     @Inject(WRITE_ROLE_GROUP_REPOSITORY)
     private readonly _writeRoleGroup: IWriteRoleGroupRepository,
     private readonly _dataRoleGroupMapper: RoleGroupDataMapper,
+    @Inject(WRITE_ROLE_PERMISSION_REPOSITORY)
+    private readonly _writeRolePermission: IWriteRolePermissionRepository,
+    private readonly _dataRolePermissionMapper: RolePermissionDataMapper,
     @Inject(TRANSACTION_MANAGER_SERVICE)
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
+    private readonly _userContextService: UserContextService,
   ) {}
   async execute(query: UpdateCommand): Promise<any> {
     return await this._transactionManagerService.runInTransaction(
@@ -57,14 +64,14 @@ export class UpdateCommandHandler
           id: query.id,
         });
 
-        await _checkColumnDuplicate(
-          RoleOrmEntity,
-          'name',
-          query.dto.name,
-          manager,
-          'errors.name_already_exists',
-          query.id,
-        );
+        // await _checkColumnDuplicate(
+        //   RoleOrmEntity,
+        //   'name',
+        //   query.dto.name,
+        //   manager,
+        //   'errors.name_already_exists',
+        //   query.id,
+        // );
 
         if (query.dto.permissions) {
           for (const id of query.dto.permissions) {

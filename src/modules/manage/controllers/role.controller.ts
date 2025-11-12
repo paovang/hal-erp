@@ -42,7 +42,7 @@ export class RoleController {
     );
   }
 
-  @Post('')
+  @Post('department')
   async create(
     @Body() dto: CreateRoleDto,
   ): Promise<ResponseResult<RoleResponse>> {
@@ -54,7 +54,7 @@ export class RoleController {
     );
   }
 
-  @Put(':id')
+  @Put('department/:id')
   async update(
     @Param('id') id: number,
     @Body() dto: UpdateRoleDto,
