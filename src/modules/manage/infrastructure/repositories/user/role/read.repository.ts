@@ -13,7 +13,6 @@ import { RoleDataAccessMapper } from '../../../mappers/role.mapper';
 import { RoleQueryDto } from '@src/modules/manage/application/dto/query/role-query.dto';
 import { RoleEntity } from '@src/modules/manage/domain/entities/role.entity';
 import { RoleId } from '@src/modules/manage/domain/value-objects/role-id.vo';
-import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadRoleRepository implements IReadRoleRepository {
@@ -29,14 +28,12 @@ export class ReadRoleRepository implements IReadRoleRepository {
     query: RoleQueryDto,
     manager: EntityManager,
     roles?: string[],
-    company_id?: number,
   ): Promise<ResponseResult<RoleEntity>> {
     const department_id = Number(query.department_id);
     const companyId = Number(query.company_id);
     const queryBuilder = await this.createBaseQuery(
       manager,
       department_id,
-      company_id,
       roles,
       companyId,
     );
@@ -65,7 +62,6 @@ export class ReadRoleRepository implements IReadRoleRepository {
   private createBaseQuery(
     manager: EntityManager,
     department_id?: number,
-    company_id?: number,
     roles?: string[],
     companyId?: number,
   ) {
@@ -85,29 +81,6 @@ export class ReadRoleRepository implements IReadRoleRepository {
         'departments.code',
         'departments.company_id',
       ]);
-
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.ADMIN)
-    ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          queryBuilder.where('departments.company_id = :company_id', {
-            company_id,
-          });
-        }
-
-        if (department_id) {
-          queryBuilder.andWhere('departments.id = :department_id', {
-            department_id,
-          });
-        }
-      }
-    }
 
     if (companyId) {
       queryBuilder.andWhere('departments.company_id = :companyId', {

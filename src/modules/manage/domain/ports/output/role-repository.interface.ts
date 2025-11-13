@@ -9,7 +9,6 @@ export interface IReadRoleRepository {
     query: RoleQueryDto,
     manager: EntityManager,
     roles?: string[],
-    company_id?: number,
     department_id?: number,
   ): Promise<ResponseResult<RoleEntity>>;
 

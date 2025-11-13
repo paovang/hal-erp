@@ -87,6 +87,7 @@ import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/
 import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
 import { DomainException } from '@src/common/domain/exceptions/domain.exception';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 interface CustomApprovalDto
   extends Omit<
@@ -162,6 +163,14 @@ export class ApproveStepCommandHandler
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user?.id;
         const roles = user?.roles?.map((r: any) => r.name) ?? [];
+        let company_id: number | null | undefined = null;
+        const company = await manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: user_id,
+          },
+        });
+
+        company_id = company?.company_id ?? null;
 
         if (isNaN(query.stepId)) {
           throw new ManageDomainException(
@@ -176,15 +185,6 @@ export class ApproveStepCommandHandler
         const department = await manager.findOne(DepartmentUserOrmEntity, {
           where: { user_id: user_id },
         });
-
-        // const department = await findOneOrFail(
-        //   manager,
-        //   DepartmentUserOrmEntity,
-        //   {
-        //     user_id: user_id,
-        //   },
-        //   `department user id: ${user_id}`,
-        // );
 
         if (department) {
           const department_id = (department as any).department_id;
@@ -763,12 +763,10 @@ export class ApproveStepCommandHandler
         await this._write.update(approvedStepEntity, manager, query.stepId);
 
         await this.RejectUserApproval(query, manager);
-        console.log('test step is opt', step.is_otp);
 
         try {
           if (step.is_otp === true) {
             // Verify OTP
-            console.log('test step is opt not approval', step.is_otp);
             await verifyOtp(query, status, tel);
           }
         } catch (error: any) {
@@ -824,6 +822,7 @@ export class ApproveStepCommandHandler
   private async getApprover(
     sum_total: number,
     manager: EntityManager,
+    company_id?: number,
   ): Promise<BudgetApprovalRuleOrmEntity[]> {
     const budgetApprovalRule = await manager
       .getRepository(BudgetApprovalRuleOrmEntity)
@@ -831,6 +830,7 @@ export class ApproveStepCommandHandler
       .where(':sum_total BETWEEN rule.min_amount AND rule.max_amount', {
         sum_total,
       })
+      .andWhere('rule.company_id = :company_id', { company_id })
       .getMany();
 
     if (budgetApprovalRule.length > 0) {

@@ -26,6 +26,7 @@ interface ApprovalStepHandlerParams {
   getApprover: (
     sum_total: number,
     manager: EntityManager,
+    company_id?: number,
   ) => Promise<BudgetApprovalRuleOrmEntity[]>;
 }
 
