@@ -1,16 +1,21 @@
 import { Entity } from '@src/common/domain/entities/entity';
 import { RoleGroupId } from '../value-objects/role-group-id.vo';
 import { RoleGroupBuilder } from '../builders/role-group.builder';
+import { CompanyEntity } from './company.entity';
 
 export class RoleGroupEntity extends Entity<RoleGroupId> {
   private readonly _role_id: number;
   private readonly _department_id: number;
+  private readonly _company_id: number;
+  private readonly _company: CompanyEntity | null;
 
   private constructor(builder: RoleGroupBuilder) {
     super();
     this.setId(builder.roleGroupId);
     this._role_id = builder.role_id;
     this._department_id = builder.department_id;
+    this._company_id = builder.company_id;
+    this._company = builder.company ?? null;
   }
 
   get role_id(): number {
@@ -19,6 +24,14 @@ export class RoleGroupEntity extends Entity<RoleGroupId> {
 
   get department_id(): number {
     return this._department_id;
+  }
+
+  get company_id(): number {
+    return this._company_id;
+  }
+
+  get company(): CompanyEntity | null {
+    return this._company;
   }
 
   public static builder(): RoleGroupBuilder {

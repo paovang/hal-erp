@@ -5,12 +5,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { VendorOrmEntity } from './vendor.orm';
 import { ProductOrmEntity } from './product.orm';
+import { QuotaCompanyOrmEntity } from './quota-company.orm';
 
 @Entity('vendor_products')
 export class VendorProductOrmEntity {
@@ -45,4 +47,10 @@ export class VendorProductOrmEntity {
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   deleted_at: Date | null;
+
+  @OneToMany(
+    () => QuotaCompanyOrmEntity,
+    (quota_company) => quota_company.vendor_product,
+  )
+  quota_company: Relation<QuotaCompanyOrmEntity[]>;
 }

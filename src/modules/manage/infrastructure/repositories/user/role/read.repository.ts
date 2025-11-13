@@ -13,6 +13,7 @@ import { RoleDataAccessMapper } from '../../../mappers/role.mapper';
 import { RoleQueryDto } from '@src/modules/manage/application/dto/query/role-query.dto';
 import { RoleEntity } from '@src/modules/manage/domain/entities/role.entity';
 import { RoleId } from '@src/modules/manage/domain/value-objects/role-id.vo';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadRoleRepository implements IReadRoleRepository {
@@ -27,9 +28,16 @@ export class ReadRoleRepository implements IReadRoleRepository {
   async findAll(
     query: RoleQueryDto,
     manager: EntityManager,
+    roles?: string[],
+    company_id?: number,
   ): Promise<ResponseResult<RoleEntity>> {
     const department_id = Number(query.department_id);
-    const queryBuilder = await this.createBaseQuery(manager, department_id);
+    const queryBuilder = await this.createBaseQuery(
+      manager,
+      department_id,
+      company_id,
+      roles,
+    );
     query.sort_by = 'roles.id';
 
     const data = await this._paginationService.paginate(
@@ -45,10 +53,6 @@ export class ReadRoleRepository implements IReadRoleRepository {
     id: RoleId,
     manager: EntityManager,
   ): Promise<ResponseResult<RoleEntity>> {
-    // const item = await findOneOrFail(manager, RoleOrmEntity, {
-    //   id: id.value,
-    // });
-
     const item = await this.createBaseQuery(manager)
       .where('roles.id = :id', { id: id.value })
       .getOneOrFail();
@@ -56,7 +60,12 @@ export class ReadRoleRepository implements IReadRoleRepository {
     return this._dataAccessMapper.toEntity(item);
   }
 
-  private createBaseQuery(manager: EntityManager, department_id?: number) {
+  private createBaseQuery(
+    manager: EntityManager,
+    department_id?: number,
+    company_id?: number,
+    roles?: string[],
+  ) {
     const roleName = ['super-admin', 'admin'];
     const queryBuilder = manager
       .createQueryBuilder(RoleOrmEntity, 'roles')
@@ -72,6 +81,23 @@ export class ReadRoleRepository implements IReadRoleRepository {
         'departments.name',
         'departments.code',
       ]);
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          queryBuilder.where('roleGroups.company_id = :company_id', {
+            company_id,
+          });
+        }
+      }
+    }
 
     if (department_id) {
       queryBuilder.andWhere('departments.id = :department_id', {

@@ -13,6 +13,12 @@ export class RoleBuilder {
   department_id: number;
   department_code: string;
   department_name: string;
+  company_id: number;
+  company_name: string;
+  company_tel: string;
+  company_email: string;
+  company_logo: string;
+  company_address: string;
 
   setId(value: RoleId): this {
     this.roleId = value;
@@ -61,6 +67,36 @@ export class RoleBuilder {
 
   setDepartmentName(department_name: string): this {
     this.department_name = department_name;
+    return this;
+  }
+
+  setCompanyId(company_id: number): this {
+    this.company_id = company_id;
+    return this;
+  }
+
+  setCompanyName(company_name: string): this {
+    this.company_name = company_name;
+    return this;
+  }
+
+  setCompanyTel(company_tel: string): this {
+    this.company_tel = company_tel;
+    return this;
+  }
+
+  setCompanyEmail(company_email: string): this {
+    this.company_email = company_email;
+    return this;
+  }
+
+  setCompanyLogo(company_logo: string): this {
+    this.company_logo = company_logo;
+    return this;
+  }
+
+  setCompanyAddress(company_address: string): this {
+    this.company_address = company_address;
     return this;
   }
 

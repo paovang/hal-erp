@@ -13,6 +13,12 @@ export class RoleEntity extends Entity<RoleId> {
   private readonly _department_id: number;
   private readonly _department_code: string;
   private readonly _department_name: string;
+  private readonly _company_id: number;
+  private readonly _company_name: string;
+  private readonly _company_tel: string;
+  private readonly _company_email: string;
+  private readonly _company_logo: string;
+  private readonly _company_address: string;
 
   private constructor(builder: RoleBuilder) {
     super();
@@ -26,6 +32,12 @@ export class RoleEntity extends Entity<RoleId> {
     this._department_id = builder.department_id;
     this._department_code = builder.department_code;
     this._department_name = builder.department_name;
+    this._company_id = builder.company_id;
+    this._company_name = builder.company_name;
+    this._company_tel = builder.company_tel;
+    this._company_email = builder.company_email;
+    this._company_logo = builder.company_logo;
+    this._company_address = builder.company_address;
   }
 
   get name(): string {
@@ -62,6 +74,30 @@ export class RoleEntity extends Entity<RoleId> {
 
   get department_name(): string {
     return this._department_name;
+  }
+
+  get company_id(): number {
+    return this._company_id;
+  }
+
+  get company_name(): string {
+    return this._company_name;
+  }
+
+  get company_tel(): string {
+    return this._company_tel;
+  }
+
+  get company_email(): string {
+    return this._company_email;
+  }
+
+  get company_logo(): string {
+    return this._company_logo;
+  }
+
+  get company_address(): string {
+    return this._company_address;
   }
 
   public static builder(): RoleBuilder {
