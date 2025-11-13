@@ -11,6 +11,7 @@ import { ProductTypeOrmEntity } from '@src/common/infrastructure/database/typeor
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { CategoryOrmEntity } from '@src/common/infrastructure/database/typeorm/category.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -41,6 +42,15 @@ export class UpdateCommandHandler
         query.id,
       );
     }
+
+    await findOneOrFail(
+      query.manager,
+      CategoryOrmEntity,
+      {
+        id: query.dto.category_id,
+      },
+      `category id ${query.dto.category_id}`,
+    );
 
     const entity = this._dataMapper.toEntity(query.dto);
     await entity.initializeUpdateSetId(new ProductTypeId(query.id));
