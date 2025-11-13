@@ -7,6 +7,8 @@ export class ProductBuilder {
   description: string;
   productTypeId: number;
   productType?: { id: number; name: string };
+  unitId: number;
+  unit?: { id: number; name: string };
   status: 'active' | 'inactive';
   createdAt!: Date;
   updatedAt!: Date | null;
@@ -37,10 +39,21 @@ export class ProductBuilder {
     return this;
   }
 
+  setUnitId(unitId: number): this {
+    this.unitId = unitId;
+    return this;
+  }
+
+  setUnit(unit: { id: number; name: string }): this {
+    this.unit = unit;
+    return this;
+  }
+
   setStatus(status: 'active' | 'inactive'): this {
     this.status = status;
     return this;
   }
+
 
   setCreatedAt(createdAt: Date): this {
     this.createdAt = createdAt;
@@ -56,6 +69,8 @@ export class ProductBuilder {
     this.deletedAt = deletedAt;
     return this;
   }
+
+
 
   build(): ProductEntity {
     return ProductEntity.create(this);

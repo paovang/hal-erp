@@ -23,6 +23,7 @@ export class ProductDataAccessMapper {
     ormEntity.name = productEntity.name;
     ormEntity.description = productEntity.description;
     ormEntity.product_type_id = productEntity.productTypeId;
+    ormEntity.unit_id = productEntity.unitId;
     ormEntity.status = productEntity.status;
 
     if (method === OrmEntityMethod.CREATE) {
@@ -39,6 +40,7 @@ export class ProductDataAccessMapper {
       .setName(ormData.name || '')
       .setDescription(ormData.description || '')
       .setProductTypeId(ormData.product_type_id || 0)
+      .setUnitId(ormData.unit_id || 0)
       .setStatus(ormData.status || 'active')
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
