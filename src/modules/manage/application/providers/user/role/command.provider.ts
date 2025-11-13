@@ -4,6 +4,8 @@ import { GetOneQueryHandler } from '../../../queries/user/role/handler/get-one.c
 import { CreateCommandHandler } from '../../../commands/role/handler/create.command.handler';
 import { UpdateCommandHandler } from '../../../commands/role/handler/update.command.handler';
 import { DeleteCommandHandler } from '../../../commands/role/handler/delete.command.handler';
+import { CreateRoleCommandHandler } from '../../../commands/role/handler/create-role-command.handler';
+import { UpdateRoleCommandHandler } from '../../../commands/role/handler/update-role-command.handler';
 
 export const RoleHandlersProviders: Provider[] = [
   GetAllQueryHandler,
@@ -11,4 +13,6 @@ export const RoleHandlersProviders: Provider[] = [
   CreateCommandHandler,
   UpdateCommandHandler,
   DeleteCommandHandler,
+  CreateRoleCommandHandler,
+  UpdateRoleCommandHandler,
 ];

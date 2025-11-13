@@ -32,11 +32,13 @@ export class ReadRoleRepository implements IReadRoleRepository {
     company_id?: number,
   ): Promise<ResponseResult<RoleEntity>> {
     const department_id = Number(query.department_id);
+    const companyId = Number(query.company_id);
     const queryBuilder = await this.createBaseQuery(
       manager,
       department_id,
       company_id,
       roles,
+      companyId,
     );
     query.sort_by = 'roles.id';
 
@@ -65,6 +67,7 @@ export class ReadRoleRepository implements IReadRoleRepository {
     department_id?: number,
     company_id?: number,
     roles?: string[],
+    companyId?: number,
   ) {
     const roleName = ['super-admin', 'admin'];
     const queryBuilder = manager
@@ -80,6 +83,7 @@ export class ReadRoleRepository implements IReadRoleRepository {
         'departments.id',
         'departments.name',
         'departments.code',
+        'departments.company_id',
       ]);
 
     if (
@@ -92,11 +96,23 @@ export class ReadRoleRepository implements IReadRoleRepository {
         roles.includes(EligiblePersons.COMPANY_USER)
       ) {
         if (company_id) {
-          queryBuilder.where('roleGroups.company_id = :company_id', {
+          queryBuilder.where('departments.company_id = :company_id', {
             company_id,
           });
         }
+
+        if (department_id) {
+          queryBuilder.andWhere('departments.id = :department_id', {
+            department_id,
+          });
+        }
       }
+    }
+
+    if (companyId) {
+      queryBuilder.andWhere('departments.company_id = :companyId', {
+        companyId,
+      });
     }
 
     if (department_id) {

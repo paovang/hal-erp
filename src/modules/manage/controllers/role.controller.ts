@@ -19,6 +19,8 @@ import { ResponseResult } from '@common/infrastructure/pagination/pagination.int
 import { RoleResponse } from '../application/dto/response/role.response';
 import { CreateRoleDto } from '../application/dto/create/user/role/create.dto';
 import { UpdateRoleDto } from '../application/dto/create/user/role/update.dto';
+import { CreateDto } from '../application/dto/create/user/role/create-role.dto';
+import { UpdateDto } from '../application/dto/create/user/role/update-role.dto';
 
 @Controller('roles')
 export class RoleController {
@@ -55,11 +57,36 @@ export class RoleController {
   }
 
   @Put('department/:id')
-  async update(
+  async updateRole(
     @Param('id') id: number,
     @Body() dto: UpdateRoleDto,
   ): Promise<ResponseResult<RoleResponse>> {
     const result = await this._roleService.update(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Post('')
+  async createRole(
+    @Body() dto: CreateDto,
+  ): Promise<ResponseResult<RoleResponse>> {
+    const result = await this._roleService.createRole(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateDto,
+  ): Promise<ResponseResult<RoleResponse>> {
+    const result = await this._roleService.updateRole(id, dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

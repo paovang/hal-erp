@@ -7,6 +7,8 @@ import moment from 'moment-timezone';
 import { PermissionDataMapper } from './permission.mapper';
 import { CreateRoleDto } from '../dto/create/user/role/create.dto';
 import { UpdateRoleDto } from '../dto/create/user/role/update.dto';
+import { CreateDto } from '../dto/create/user/role/create-role.dto';
+import { UpdateDto } from '../dto/create/user/role/update-role.dto';
 
 @Injectable()
 export class RoleDataMapper {
@@ -18,6 +20,20 @@ export class RoleDataMapper {
     // if (dto.name) {
     //   builder.setName(dto.name);
     // }
+
+    if (GUARD_NAME) {
+      builder.setGuardName(GUARD_NAME);
+    }
+
+    return builder.build();
+  }
+
+  toEntityRole(dto: CreateDto | UpdateDto, GUARD_NAME: string): RoleEntity {
+    const builder = RoleEntity.builder();
+
+    if (dto.name) {
+      builder.setName(dto.name);
+    }
 
     if (GUARD_NAME) {
       builder.setGuardName(GUARD_NAME);
