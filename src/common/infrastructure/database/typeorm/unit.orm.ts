@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { PurchaseRequestItemOrmEntity } from './purchase-request-item.orm';
+import { ProductOrmEntity } from './product.orm';
 
 @Entity('units')
 export class UnitOrmEntity {
@@ -36,4 +37,7 @@ export class UnitOrmEntity {
     (purchase_request_items) => purchase_request_items.units,
   )
   purchase_request_items: Relation<PurchaseRequestItemOrmEntity[]>;
+
+  @OneToMany(() => ProductOrmEntity, (products) => products.unit)
+  products: Relation<ProductOrmEntity[]>;
 }

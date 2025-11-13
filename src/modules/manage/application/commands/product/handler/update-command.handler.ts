@@ -15,6 +15,8 @@ import { ManageDomainException } from '@src/modules/manage/domain/exceptions/man
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { ProductOrmEntity } from '@src/common/infrastructure/database/typeorm/product.orm';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { ProductTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/product-type.orm';
+import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -53,6 +55,27 @@ export class UpdateCommandHandler
     await findOneOrFail(query.manager, ProductOrmEntity, {
       id: query.id,
     });
+
+    if (query.dto.product_type_id) {
+      await findOneOrFail(
+        query.manager,
+        ProductTypeOrmEntity,
+        {
+          id: query.dto.product_type_id,
+        },
+        `product type id ${query.dto.product_type_id}`,
+      );
+    }
+    if (query.dto.unit_id) {
+      await findOneOrFail(
+        query.manager,
+        UnitOrmEntity,
+        {
+          id: query.dto.unit_id,
+        },
+        `unit id ${query.dto.unit_id}`,
+      )
+    }
 
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,

@@ -6,6 +6,8 @@ export class ProductEntity extends Entity<ProductId> {
   private readonly _name: string;
   private readonly _description: string;
   private readonly _productTypeId: number;
+  private readonly _unitId: number;
+  private readonly _unit?: { id: number; name: string };
   private readonly _productType?: { id: number; name: string };
   private readonly _status: 'active' | 'inactive';
   private readonly _createdAt: Date;
@@ -19,6 +21,8 @@ export class ProductEntity extends Entity<ProductId> {
     this._description = builder.description;
     this._productTypeId = builder.productTypeId;
     this._productType = builder.productType;
+    this._unitId = builder.unitId;
+    this._unit = builder.unit;
     this._status = builder.status;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
@@ -39,6 +43,14 @@ export class ProductEntity extends Entity<ProductId> {
 
   get productType(): { id: number; name: string } | undefined {
     return this._productType;
+  }
+
+  get unitId(): number {
+    return this._unitId;
+  }
+
+  get unit(): { id: number; name: string } | undefined {
+    return this._unit;
   }
 
   get status(): 'active' | 'inactive' {

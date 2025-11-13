@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsNumber, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { i18nValidationMessage } from 'nestjs-i18n';
 
@@ -21,6 +27,14 @@ export class CreateProductDto {
   readonly product_type_id: number;
 
   @ApiProperty({ enum: ['active', 'inactive'], default: 'active' })
-  @IsEnum(['active', 'inactive'], { message: i18nValidationMessage('validation.IS_ENUM') })
+  @IsEnum(['active', 'inactive'], {
+    message: i18nValidationMessage('validation.IS_ENUM'),
+  })
   readonly status: 'active' | 'inactive' = 'active';
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  @Type(() => Number)
+  readonly unit_id: number;
 }

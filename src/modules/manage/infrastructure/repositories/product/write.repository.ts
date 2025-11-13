@@ -16,6 +16,7 @@ export class WriteProductRepository implements IWriteProductRepository {
     entity: ProductEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<ProductEntity>> {
+    console.log('object', entity);
     return this._dataAccessMapper.toEntity(
       await manager.save(
         this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),

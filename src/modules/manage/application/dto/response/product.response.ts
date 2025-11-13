@@ -19,6 +19,15 @@ export class ProductResponse {
     name: string;
   };
 
+  @ApiProperty()
+  unit_id: number;
+
+  @ApiProperty({ required: false })
+  unit?: {
+    id: number;
+    name: string;
+  };
+
   @ApiProperty({ enum: ['active', 'inactive'] })
   status: 'active' | 'inactive';
 

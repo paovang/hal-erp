@@ -12,6 +12,9 @@ import { ProductDataMapper } from '../../../mappers/product.mapper';
 import { IWriteProductRepository } from '@src/modules/manage/domain/ports/output/product-repository.interface';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { ProductOrmEntity } from '@src/common/infrastructure/database/typeorm/product.orm';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { ProductTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/product-type.orm';
+import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -39,8 +42,23 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        await findOneOrFail(
+          manager,
+          ProductTypeOrmEntity,
+          {
+            id: query.dto.product_type_id,
+          },
+          `product type id ${query.dto.product_type_id}`,
+        );
+        await findOneOrFail(
+          manager,
+          UnitOrmEntity,
+          {
+            id: query.dto.unit_id,
+          },
+          `unit id ${query.dto.unit_id}`,
+        )
         const mapToEntity = this._dataMapper.toEntity(query.dto);
-
         return await this._write.create(mapToEntity, manager);
       },
     );

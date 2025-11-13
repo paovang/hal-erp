@@ -41,8 +41,10 @@ export class ReadProductRepository implements IReadProductRepository {
   }
 
   private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(ProductOrmEntity, 'products')
-      .leftJoinAndSelect('products.product_type', 'product_type');
+    return manager
+      .createQueryBuilder(ProductOrmEntity, 'products')
+      .leftJoinAndSelect('products.product_type', 'product_type')
+      .leftJoinAndSelect('products.unit', 'unit');
   }
 
   private getFilterOptions(): FilterOptions {
@@ -64,7 +66,7 @@ export class ReadProductRepository implements IReadProductRepository {
     // Load product type relation if needed
     const itemWithRelation = await manager.findOne(ProductOrmEntity, {
       where: { id: id.value },
-      relations: ['product_type'],
+      relations: ['product_type', 'unit'],
     });
 
     return this._dataAccessMapper.toEntity(itemWithRelation || item);
