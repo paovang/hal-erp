@@ -13,6 +13,10 @@ import { CreateCommand } from '../commands/role/create.command';
 import { UpdateRoleDto } from '../dto/create/user/role/update.dto';
 import { UpdateCommand } from '../commands/role/update.command';
 import { DeleteCommand } from '../commands/role/delete.command';
+import { CreateDto } from '../dto/create/user/role/create-role.dto';
+import { CreateRoleCommand } from '../commands/role/create-role.command';
+import { UpdateDto } from '../dto/create/user/role/update-role.dto';
+import { UpdateRoleCommand } from '../commands/role/update-role.command';
 
 @Injectable()
 export class RoleService implements IRoleServiceInterface {
@@ -63,6 +67,27 @@ export class RoleService implements IRoleServiceInterface {
   async delete(id: number, manager?: EntityManager): Promise<void> {
     return await this._commandBus.execute(
       new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  // create role
+  async createRole(
+    dto: CreateDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<RoleEntity>> {
+    return await this._commandBus.execute(
+      new CreateRoleCommand(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  // update role
+  async updateRole(
+    id: number,
+    dto: UpdateDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<RoleEntity>> {
+    return await this._commandBus.execute(
+      new UpdateRoleCommand(id, dto, manager ?? this._readEntityManager),
     );
   }
 }
