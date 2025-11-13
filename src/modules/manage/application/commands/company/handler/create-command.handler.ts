@@ -139,7 +139,7 @@ export class CreateCommandHandler
         const companyUserId = (companyUser as any)._id._value;
         const entity = this._userTypeDataMapper.toEntity(
           {
-            name: UserTypeEnum.ADMIN, // Cast to enum
+            name: UserTypeEnum.COMPANY_ADMIN, // Cast to enum
           },
           companyUserId,
         );
