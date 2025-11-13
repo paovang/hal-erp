@@ -66,6 +66,8 @@ import { PurchaseRequestId } from '@src/modules/manage/domain/value-objects/purc
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 import { StatusEnum } from '@src/common/enums/status.enum';
+import { QuotaCompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/quota-company.orm';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
@@ -153,21 +155,6 @@ export class CreateCommandHandler
       );
     }
 
-    // const pr_code = await this._codeGeneratorUtil.generateUniqueCode(
-    //   LENGTH_PURCHASE_REQUEST_CODE,
-    //   async (generatedCode: string) => {
-    //     try {
-    //       await findOneOrFail(query.manager, PurchaseRequestOrmEntity, {
-    //         pr_number: generatedCode,
-    //       });
-    //       return false;
-    //     } catch {
-    //       return true;
-    //     }
-    //   },
-    //   'PR',
-    // );
-
     const document_number = await this._codeGeneratorUtil.generateUniqueCode(
       LENGTH_DOCUMENT_CODE,
       async (generatedCode: string) => {
@@ -230,6 +217,14 @@ export class CreateCommandHandler
 
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user.id;
+        let company_id: number | null | undefined = null;
+        const company = await manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: user_id,
+          },
+        });
+
+        company_id = company?.company_id ?? null;
 
         const department = await findOneOrFail(
           manager,
@@ -267,7 +262,6 @@ export class CreateCommandHandler
           },
           department_code,
         );
-        console.log('object', code);
 
         const DEntity = this._dataDMapper.toEntity(
           query.dto.document,
@@ -275,6 +269,7 @@ export class CreateCommandHandler
           document_number,
           user_id,
           department_id,
+          company_id || undefined,
         );
 
         const D = await this._writeD.create(DEntity, manager);
@@ -301,24 +296,6 @@ export class CreateCommandHandler
         const total = purchaseRequestItems.reduce((total, item) => {
           return total + item.quantity * item.price;
         }, 0);
-
-        // const approval_workflow = await findOneOrFail(
-        //   manager,
-        //   ApprovalWorkflowOrmEntity,
-        //   {
-        //     document_type_id: query.dto.document.documentTypeId,
-        //   },
-        // );
-
-        // const aw_id = (approval_workflow as any).id;
-
-        // const a_w_s = await query.manager.findOne(
-        //   ApprovalWorkflowStepOrmEntity,
-        //   {
-        //     where: { approval_workflow_id: aw_id },
-        //     order: { step_number: 'ASC' },
-        //   },
-        // );
 
         const merge: CustomUserApprovalDto = {
           documentId: document_id,
@@ -392,28 +369,6 @@ export class CreateCommandHandler
     );
   }
 
-  // private async getApprover(
-  //   sum_total: number,
-  //   manager: EntityManager,
-  // ): Promise<BudgetApprovalRuleOrmEntity[]> {
-  //   const budgetApprovalRule = await manager
-  //     .getRepository(BudgetApprovalRuleOrmEntity)
-  //     .createQueryBuilder('rule')
-  //     .where(':sum_total BETWEEN rule.min_amount AND rule.max_amount', {
-  //       sum_total,
-  //     })
-  //     .getMany();
-
-  //   if (budgetApprovalRule.length > 0) {
-  //     return budgetApprovalRule;
-  //   } else {
-  //     throw new ManageDomainException(
-  //       'errors.set_budget_approver_rule',
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  // }
-
   private async insertItem(
     query: CreateCommand,
     manager: EntityManager,
@@ -430,6 +385,15 @@ export class CreateCommandHandler
           id: item.unit_id,
         },
         `unit id: ${item.unit_id}`,
+      );
+
+      await findOneOrFail(
+        query.manager,
+        QuotaCompanyOrmEntity,
+        {
+          id: item.quota_company_id,
+        },
+        `quota company id: ${item.quota_company_id}`,
       );
 
       let fileKey = null;

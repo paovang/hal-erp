@@ -10,6 +10,7 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
   private readonly _file_name: any;
   private readonly _quantity: number;
   private readonly _unit_id: number;
+  private readonly _quota_company_id: number;
   private readonly _price: number;
   private readonly _total_price: number;
   private readonly _remark: string;
@@ -17,6 +18,7 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _unit: UnitEntity | null;
+  // private readonly _quota_company:
 
   private constructor(builder: PurchaseRequestItemBuilder) {
     super();
@@ -26,6 +28,7 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
     this._file_name = builder.file_name;
     this._quantity = builder.quantity;
     this._unit_id = builder.unit_id;
+    this._quota_company_id = builder.quota_company_id;
     this._price = builder.price;
     this._total_price = builder.total_price;
     this._remark = builder.remark;
@@ -53,6 +56,10 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
 
   get unit_id(): number {
     return this._unit_id;
+  }
+
+  get quota_company_id(): number {
+    return this._quota_company_id;
   }
 
   get price(): number {

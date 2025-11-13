@@ -39,6 +39,10 @@ export class PurchaseRequestItemDataMapper {
       builder.setUnitId(dto.unit_id);
     }
 
+    if (dto.quota_company_id) {
+      builder.setQuotaCompanyId(dto.quota_company_id);
+    }
+
     if (dto.price) {
       builder.setPrice(dto.price);
     }
@@ -67,6 +71,7 @@ export class PurchaseRequestItemDataMapper {
     response.file_name_url = file_name;
     response.quantity = Number(entity.quantity);
     response.unit_id = entity.unit_id;
+    response.quota_company_id = entity.quota_company_id;
     response.price = Number(entity.price);
     response.total_price = Number(entity.total_price);
     response.remark = entity.remark;

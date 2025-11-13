@@ -24,6 +24,9 @@ export class PurchaseRequestItemResponse {
   unit_id: number;
 
   @ApiProperty()
+  quota_company_id: number;
+
+  @ApiProperty()
   price: number;
 
   @ApiProperty()

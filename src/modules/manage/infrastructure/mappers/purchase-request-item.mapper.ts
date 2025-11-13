@@ -33,6 +33,7 @@ export class PurchaseRequestItemDataAccessMapper {
     mediaOrmEntity.file_name = prItemEntity.file_name;
     mediaOrmEntity.quantity = prItemEntity.quantity;
     mediaOrmEntity.unit_id = prItemEntity.unit_id;
+    mediaOrmEntity.quota_company_id = prItemEntity.quota_company_id;
     mediaOrmEntity.price = prItemEntity.price;
     mediaOrmEntity.total_price = prItemEntity.total_price;
     mediaOrmEntity.remark = prItemEntity.remark;
@@ -52,6 +53,7 @@ export class PurchaseRequestItemDataAccessMapper {
       .setFileName(ormData.file_name ?? '')
       .setQuantity(ormData.quantity ?? 0)
       .setUnitId(ormData.unit_id ?? 0)
+      .setQuotaCompanyId(ormData.quota_company_id ?? 0)
       .setPrice(ormData.price ?? 0)
       .setTotalPrice(ormData.total_price ?? 0)
       .setRemark(ormData.remark ?? '')

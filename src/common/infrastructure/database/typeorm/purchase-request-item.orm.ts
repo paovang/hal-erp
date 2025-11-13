@@ -14,6 +14,7 @@ import {
 import { PurchaseRequestOrmEntity } from './purchase-request.orm';
 import { UnitOrmEntity } from './unit.orm';
 import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
+import { QuotaCompanyOrmEntity } from './quota-company.orm';
 
 @Entity('purchase_request_items')
 export class PurchaseRequestItemOrmEntity {
@@ -34,19 +35,18 @@ export class PurchaseRequestItemOrmEntity {
   @JoinColumn({ name: 'purchase_request_id' })
   purchase_requests: Relation<PurchaseRequestOrmEntity>;
 
-  // @Index()
-  // @Column({ nullable: true })
-  // budget_item_detail_id?: number;
-  // @ManyToOne(
-  //   () => BudgetItemDetailOrmEntity,
-  //   (budget_item_details) => budget_item_details.purchase_request_items,
-  //   {
-  //     onDelete: 'CASCADE',
-  //     onUpdate: 'CASCADE',
-  //   },
-  // )
-  // @JoinColumn({ name: 'budget_item_detail_id' })
-  // budget_item_details: Relation<BudgetItemDetailOrmEntity>;
+  @Column({ nullable: true })
+  quota_company_id?: number;
+  @ManyToOne(
+    () => QuotaCompanyOrmEntity,
+    (quota_company) => quota_company.purchase_request_items,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'quota_company_id' })
+  quota_company: Relation<QuotaCompanyOrmEntity>;
 
   @Index()
   @Column({ type: 'varchar', length: 255, nullable: true })

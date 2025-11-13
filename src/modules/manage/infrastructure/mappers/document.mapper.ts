@@ -36,6 +36,7 @@ export class DocumentDataAccessMapper {
     mediaOrmEntity.description = documentTypeEntity.description;
     mediaOrmEntity.total_amount = documentTypeEntity.total_amount;
     mediaOrmEntity.department_id = documentTypeEntity.department_id;
+    mediaOrmEntity.company_id = documentTypeEntity.company_id;
     mediaOrmEntity.document_type_id = documentTypeEntity.document_type_id;
     mediaOrmEntity.requester_id = documentTypeEntity.requester_id;
     if (method === OrmEntityMethod.CREATE) {
@@ -55,6 +56,7 @@ export class DocumentDataAccessMapper {
       .setDescription(ormData.description ?? '')
       .setTotalAmount(ormData.total_amount ?? 0)
       .setDepartmentId(ormData.department_id ?? 0)
+      .setCompanyId(ormData.company_id ?? 0)
       .setRequesterId(ormData.requester_id ?? 0)
       .setDocumentTypeId(ormData.document_type_id ?? 0)
       .setCreatedAt(ormData.created_at)

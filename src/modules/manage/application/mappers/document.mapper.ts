@@ -28,6 +28,7 @@ export class DocumentDataMapper {
     generateCode?: string,
     user_id?: number,
     department_id?: number,
+    company_id?: number,
   ): DocumentEntity {
     const builder = DocumentEntity.builder();
 
@@ -53,6 +54,10 @@ export class DocumentDataMapper {
 
     if (department_id) {
       builder.setDepartmentId(department_id);
+    }
+
+    if (company_id) {
+      builder.setCompanyId(company_id);
     }
 
     if (dto.documentTypeId) {

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CreateDocumentDto {
@@ -29,5 +35,6 @@ export class CreateDocumentDto {
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  @Min(1, { message: i18nValidationMessage('validation.MIN') })
   readonly documentTypeId: number;
 }

@@ -15,6 +15,7 @@ export class DocumentEntity extends Entity<DocumentId> {
   private readonly _department_id: number;
   private readonly _requester_id: number;
   private readonly _document_type_id: number;
+  private readonly _company_id: number;
   private readonly _status: EnumDocumentStatus;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
@@ -34,6 +35,7 @@ export class DocumentEntity extends Entity<DocumentId> {
     this._department_id = builder.department_id;
     this._requester_id = builder.requester_id;
     this._document_type_id = builder.document_type_id;
+    this._company_id = builder.company_id;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -62,6 +64,10 @@ export class DocumentEntity extends Entity<DocumentId> {
 
   get department_id(): number {
     return this._department_id;
+  }
+
+  get company_id(): number {
+    return this._company_id;
   }
 
   get requester_id(): number {

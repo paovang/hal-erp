@@ -15,6 +15,7 @@ export class DocumentBuilder {
   department_id: number;
   requester_id: number;
   document_type_id: number;
+  company_id: number;
   status: EnumDocumentStatus;
   createdAt!: Date;
   updatedAt!: Date | null;
@@ -56,6 +57,11 @@ export class DocumentBuilder {
 
   setDepartmentId(department_id: number): this {
     this.department_id = department_id;
+    return this;
+  }
+
+  setCompanyId(company_id: number): this {
+    this.company_id = company_id;
     return this;
   }
 

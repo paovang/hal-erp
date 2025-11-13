@@ -9,6 +9,7 @@ export class PurchaseRequestItemBuilder {
   file_name: string;
   quantity: number;
   unit_id: number;
+  quota_company_id: number;
   price: number;
   total_price: number;
   remark: string;
@@ -22,43 +23,48 @@ export class PurchaseRequestItemBuilder {
     return this;
   }
 
-  setPurchaseRequestId(value: number): this {
-    this.purchase_request_id = value;
+  setPurchaseRequestId(purchase_request_id: number): this {
+    this.purchase_request_id = purchase_request_id;
     return this;
   }
 
-  setTitle(value: string): this {
-    this.title = value;
+  setTitle(title: string): this {
+    this.title = title;
     return this;
   }
 
-  setFileName(value: any): this {
-    this.file_name = value;
+  setFileName(file_name: any): this {
+    this.file_name = file_name;
     return this;
   }
 
-  setQuantity(value: number): this {
-    this.quantity = value;
+  setQuantity(quantity: number): this {
+    this.quantity = quantity;
     return this;
   }
 
-  setUnitId(value: number): this {
-    this.unit_id = value;
+  setUnitId(unit_id: number): this {
+    this.unit_id = unit_id;
     return this;
   }
 
-  setPrice(value: number): this {
-    this.price = value;
+  setQuotaCompanyId(quota_company_id: number): this {
+    this.quota_company_id = quota_company_id;
     return this;
   }
 
-  setTotalPrice(value: number): this {
-    this.total_price = value;
+  setPrice(price: number): this {
+    this.price = price;
     return this;
   }
 
-  setRemark(value: string): this {
-    this.remark = value;
+  setTotalPrice(total_price: number): this {
+    this.total_price = total_price;
+    return this;
+  }
+
+  setRemark(remark: string): this {
+    this.remark = remark;
     return this;
   }
 
