@@ -4,6 +4,8 @@ import { EntityManager } from 'typeorm';
 import { RoleEntity } from '../../entities/role.entity';
 import { CreateRoleDto } from '@src/modules/manage/application/dto/create/user/role/create.dto';
 import { UpdateRoleDto } from '@src/modules/manage/application/dto/create/user/role/update.dto';
+import { CreateDto } from '@src/modules/manage/application/dto/create/user/role/create-role.dto';
+import { UpdateDto } from '@src/modules/manage/application/dto/create/user/role/update-role.dto';
 
 export interface IRoleServiceInterface {
   getAll(
@@ -28,4 +30,15 @@ export interface IRoleServiceInterface {
   ): Promise<ResponseResult<RoleEntity>>;
 
   delete(id: number, manager?: EntityManager): Promise<void>;
+
+  createRole(
+    dto: CreateDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<RoleEntity>>;
+
+  updateRole(
+    id: number,
+    dto: UpdateDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<RoleEntity>>;
 }

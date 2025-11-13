@@ -13,5 +13,9 @@ export class RoleQueryDto extends PaginationDto {
 
   @IsOptional()
   @IsString()
+  company_id?: string;
+
+  @IsOptional()
+  @IsString()
   department_id?: string;
 }

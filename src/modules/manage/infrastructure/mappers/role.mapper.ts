@@ -61,7 +61,7 @@ export class RoleDataAccessMapper {
               .setCode(ormData.rolesGroups[0].department?.code ?? '')
               .build();
           })()
-        : undefined;
+        : null;
 
     const builder = RoleEntity.builder()
       .setId(new RoleId(ormData.id))

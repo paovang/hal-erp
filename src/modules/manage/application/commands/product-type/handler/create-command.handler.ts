@@ -12,6 +12,8 @@ import { ProductTypeDataMapper } from '../../../mappers/product-type.mapper';
 import { IWriteProductTypeRepository } from '@src/modules/manage/domain/ports/output/product-type-repository.interface';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { ProductTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/product-type.orm';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { CategoryOrmEntity } from '@src/common/infrastructure/database/typeorm/category.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -41,6 +43,15 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        await findOneOrFail(
+          manager,
+          CategoryOrmEntity,
+          {
+            id: query.dto.category_id,
+          },
+          `category id ${query.dto.category_id}`,
+        );
+
         const mapToEntity = this._dataMapper.toEntity(query.dto);
 
         return await this._write.create(mapToEntity, manager);
