@@ -25,6 +25,10 @@ export class ProductDataMapper {
       builder.setProductTypeId(dto.product_type_id);
     }
 
+    if ('unit_id' in dto && dto.unit_id) {
+      builder.setUnitId(dto.unit_id);
+    }
+
     if ('status' in dto && dto.status) {
       builder.setStatus(dto.status);
     }
@@ -40,6 +44,8 @@ export class ProductDataMapper {
     response.description = entity.description;
     response.product_type_id = entity.productTypeId;
     response.product_type = entity.productType;
+    response.unit_id = entity.unitId;
+    response.unit = entity.unit;
     response.status = entity.status;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

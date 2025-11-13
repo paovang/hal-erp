@@ -13,6 +13,7 @@ export class ProductDataAccessMapper {
     productEntity: ProductEntity,
     method: OrmEntityMethod,
   ): ProductOrmEntity {
+    // console.log('productEntity', productEntity);
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = productEntity.getId();
 
@@ -50,6 +51,14 @@ export class ProductDataAccessMapper {
       builder.setProductType({
         id: ormData.product_type.id,
         name: ormData.product_type.name || '',
+      });
+    }
+
+    // Add unit if relation is loaded
+    if (ormData.unit) {
+      builder.setUnit({
+        id: ormData.unit.id,
+        name: ormData.unit.name || '',
       });
     }
 
