@@ -24,6 +24,7 @@ export interface IReadPurchaseRequestRepository {
     departmentId?: number,
     user_id?: number,
     roles?: string[],
+    company_id?: number,
   ): Promise<ResponseResult<PurchaseRequestEntity>>;
   findOne(
     id: PurchaseRequestId,

@@ -593,6 +593,7 @@ export class ApproveStepCommandHandler
               dataDocumentApproverMapper: this._dataDocumentApproverMapper,
               writeDocumentApprover: this._writeDocumentApprover,
               getApprover: this.getApprover.bind(this),
+              company_id: company_id || undefined,
             });
           }
 
@@ -822,16 +823,22 @@ export class ApproveStepCommandHandler
   private async getApprover(
     sum_total: number,
     manager: EntityManager,
-    company_id?: number,
+    company_id?: number, // The parameter is here
   ): Promise<BudgetApprovalRuleOrmEntity[]> {
-    const budgetApprovalRule = await manager
+    const queryBuilder = manager
       .getRepository(BudgetApprovalRuleOrmEntity)
       .createQueryBuilder('rule')
       .where(':sum_total BETWEEN rule.min_amount AND rule.max_amount', {
         sum_total,
-      })
-      .andWhere('rule.company_id = :company_id', { company_id })
-      .getMany();
+      });
+
+    // ✅ CONDITIONALLY APPLY THE company_id FILTER
+    if (company_id) {
+      // Use ANDWHERE to combine with the previous WHERE condition
+      queryBuilder.andWhere('rule.company_id = :company_id', { company_id });
+    }
+
+    const budgetApprovalRule = await queryBuilder.getMany();
 
     if (budgetApprovalRule.length > 0) {
       return budgetApprovalRule;
@@ -842,6 +849,29 @@ export class ApproveStepCommandHandler
       );
     }
   }
+
+  // private async getApprover(
+  //   sum_total: number,
+  //   manager: EntityManager,
+  //   company_id?: number,
+  // ): Promise<BudgetApprovalRuleOrmEntity[]> {
+  //   const budgetApprovalRule = await manager
+  //     .getRepository(BudgetApprovalRuleOrmEntity)
+  //     .createQueryBuilder('rule')
+  //     .where(':sum_total BETWEEN rule.min_amount AND rule.max_amount', {
+  //       sum_total,
+  //     })
+  //     .getMany();
+
+  //   if (budgetApprovalRule.length > 0) {
+  //     return budgetApprovalRule;
+  //   } else {
+  //     throw new ManageDomainException(
+  //       'errors.set_budget_approver_rule',
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+  // }
 
   private async checkDataAndUpdateUserApproval(
     query: ApproveStepCommand,

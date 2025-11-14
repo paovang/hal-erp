@@ -1,3 +1,4 @@
+import { CompanyEntity } from '../entities/company.entity';
 import { DocumentEntity } from '../entities/document.entity';
 import { PurchaseRequestItemEntity } from '../entities/purchase-request-item.entity';
 import { PurchaseRequestEntity } from '../entities/purchase-request.entity';
@@ -20,6 +21,7 @@ export class PurchaseRequestBuilder {
   user_approval: UserApprovalEntity | null;
   workflow_step_total: number | 0;
   step: number | 0;
+  company: CompanyEntity | null;
 
   setPurchaseRequestId(value: PurchaseRequestId): this {
     this.purchaseRequestId = value;
@@ -73,6 +75,11 @@ export class PurchaseRequestBuilder {
 
   setStep(step: number | 0): this {
     this.step = step;
+    return this;
+  }
+
+  setCompany(company: CompanyEntity | null): this {
+    this.company = company;
     return this;
   }
 

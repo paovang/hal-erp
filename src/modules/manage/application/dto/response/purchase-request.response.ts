@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PurchaseRequestItemResponse } from './purchase-request-item.response';
 import { DocumentResponse } from './document.response';
 import { UserApprovalResponse } from './user-approval.response';
+import { CompanyResponse } from './company.response';
 
 export class PurchaseRequestResponse {
   @ApiProperty()
@@ -39,6 +40,9 @@ export class PurchaseRequestResponse {
 
   @ApiProperty()
   document: DocumentResponse | null;
+
+  @ApiProperty()
+  company: CompanyResponse | null;
 
   @ApiProperty()
   user_approval: UserApprovalResponse | null;

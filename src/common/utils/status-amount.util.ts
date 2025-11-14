@@ -16,6 +16,7 @@ export async function countStatusAmounts(
   status_id?: number,
   start_date?: string,
   end_date?: string,
+  company_id?: number,
 ): Promise<{ id: number; status: string; amount: number }[]> {
   // เงื่อนไข type
   if (type === EnumPrOrPo.PO) {
@@ -47,23 +48,6 @@ export async function countStatusAmounts(
       });
     }
 
-    // if (departmentId) {
-    //   query.andWhere('doc.department_id = :departmentId', {
-    //     departmentId,
-    //   });
-    // }
-
-    // if (status_id) {
-    //   query.andWhere('ua.status_id = :status_id', { status_id });
-    // }
-
-    // if (start_date && end_date) {
-    //   query.andWhere(`po.expired_date BETWEEN :dateStart AND :dateEnd`, {
-    //     dateStart: `${start_date} 00:00:00`,
-    //     dateEnd: `${end_date} 23:59:59`,
-    //   });
-    // }
-
     // Group โดยเฉพาะฟิลด์ที่เลือก (status id และ name)
     query.groupBy('ua.status_id').addGroupBy('ds.name');
 
@@ -89,25 +73,25 @@ export async function countStatusAmounts(
       // เลือกเฉพาะฟิลด์ที่ต้องการเพื่อให้ GROUP BY ถูกต้อง
       .select('ua.status_id', 'id')
       .addSelect('ds.name', 'status')
-      // ถ้าต้องการนับจำนวน PO ให้ใช้ COUNT(DISTINCT po.id)
-      // ถ้าต้องการนับจำนวน document ให้ใช้ COUNT(DISTINCT doc.id)
       .addSelect('COUNT(DISTINCT doc.id)', 'amount');
-
-    // if (start_date && end_date) {
-    //   query.andWhere(`pr.expired_date BETWEEN :dateStart AND :dateEnd`, {
-    //     dateStart: `${start_date} 00:00:00`,
-    //     dateEnd: `${end_date} 23:59:59`,
-    //   });
-    // }
 
     if (
       roles &&
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      query.andWhere('document_approver.user_id = :user_id', {
-        user_id,
-      });
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.andWhere('doc.company_id = :company_id', { company_id });
+        }
+      } else {
+        query.andWhere('document_approver.user_id = :user_id', {
+          user_id,
+        });
+      }
     }
 
     // if (departmentId) {

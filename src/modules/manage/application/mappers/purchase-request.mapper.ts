@@ -10,6 +10,7 @@ import { DocumentDataMapper } from './document.mapper';
 import { UserApprovalDataMapper } from './user-approval.mapper';
 import { UpdatePurchaseRequestDto } from '../dto/create/purchaseRequest/update.dto';
 import { AddStepDto } from '../dto/create/purchaseRequest/add-step.dto';
+import { CompanyDataMapper } from './company.mapper';
 
 @Injectable()
 export class PurchaseRequestDataMapper {
@@ -17,6 +18,7 @@ export class PurchaseRequestDataMapper {
     private readonly purchaseRequestItemDataMapper: PurchaseRequestItemDataMapper,
     private readonly documentMapper: DocumentDataMapper,
     private readonly userApprovalMapper: UserApprovalDataMapper,
+    private readonly company: CompanyDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
@@ -79,6 +81,10 @@ export class PurchaseRequestDataMapper {
 
     response.document = entity.document
       ? this.documentMapper.toResponse(entity.document)
+      : null;
+
+    response.company = entity.company
+      ? this.company.toResponse(entity.company)
       : null;
 
     response.user_approval = entity.user_approval

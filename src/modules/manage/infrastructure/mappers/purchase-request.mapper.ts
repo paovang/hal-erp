@@ -9,6 +9,7 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { CompanyDataAccessMapper } from './company.mapper';
 
 @Injectable()
 export class PurchaseRequestDataAccessMapper {
@@ -16,6 +17,7 @@ export class PurchaseRequestDataAccessMapper {
     private readonly purchaseRequestItemMapper: PurchaseRequestItemDataAccessMapper,
     private readonly documentMapper: DocumentDataAccessMapper,
     private readonly userApprovalMapper: UserApprovalDataAccessMapper,
+    private readonly company: CompanyDataAccessMapper,
   ) {}
 
   toOrmEntity(
@@ -85,6 +87,10 @@ export class PurchaseRequestDataAccessMapper {
       builder.setUserApproval(
         this.userApprovalMapper.toEntity(ormData.documents.user_approvals),
       );
+    }
+
+    if (ormData.documents && ormData.documents.company) {
+      builder.setCompany(this.company.toEntity(ormData.documents.company));
     }
 
     if (ormData.purchase_request_items) {
