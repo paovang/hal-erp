@@ -16,6 +16,7 @@ import { PurchaseRequestId } from '../../../domain/value-objects/purchase-reques
 import {
   selectApprover,
   selectApproverUserSignatures,
+  selectCompany,
   selectDepartments,
   selectDepartmentsApprover,
   selectDepartmentUserApprovers,
@@ -72,6 +73,7 @@ export class ReadPurchaseRequestRepository
     departmentId?: number,
     user_id?: number,
     roles?: string[],
+    company_id?: number,
   ): Promise<ResponseResult<PurchaseRequestEntity>> {
     const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(
@@ -79,6 +81,7 @@ export class ReadPurchaseRequestRepository
       departmentId,
       user_id,
       roles,
+      company_id,
     );
     query.sort_by = 'purchase_requests.id';
 
@@ -90,6 +93,7 @@ export class ReadPurchaseRequestRepository
       EnumPrOrPo.PR,
       user_id,
       roles,
+      company_id,
     );
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -117,6 +121,7 @@ export class ReadPurchaseRequestRepository
     departmentId?: number,
     user_id?: number,
     roles?: string[],
+    company_id?: number,
   ) {
     const selectFields = [
       ...selectUnits,
@@ -140,6 +145,7 @@ export class ReadPurchaseRequestRepository
       ...selectDocApproverUser,
       ...selectDocDeptUser,
       ...selectDepartmentsApprover,
+      ...selectCompany,
     ];
 
     const query = manager
@@ -152,6 +158,7 @@ export class ReadPurchaseRequestRepository
       .leftJoin('documents.departments', 'departments')
       .leftJoin('documents.users', 'users')
       .innerJoin('documents.document_types', 'document_types')
+      .innerJoin('documents.company', 'company')
       .leftJoin('users.user_signatures', 'user_signatures')
       .leftJoin('users.department_users', 'department_users')
       .innerJoin('purchase_request_items.units', 'units')
@@ -179,9 +186,21 @@ export class ReadPurchaseRequestRepository
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      query.andWhere('document_approver.user_id = :user_id', {
-        user_id,
-      });
+      console.log('object', roles);
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.where('documents.company_id = :company_id', {
+            company_id,
+          });
+        }
+      } else {
+        query.andWhere('document_approver.user_id = :user_id', {
+          user_id,
+        });
+      }
     }
 
     return query;

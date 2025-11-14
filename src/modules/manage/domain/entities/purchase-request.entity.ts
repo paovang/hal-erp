@@ -5,6 +5,7 @@ import { BadRequestException } from '@nestjs/common';
 import { PurchaseRequestItemEntity } from './purchase-request-item.entity';
 import { DocumentEntity } from './document.entity';
 import { UserApprovalEntity } from './user-approval.entity';
+import { CompanyEntity } from './company.entity';
 
 export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
   private readonly _document_id: number;
@@ -21,6 +22,7 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
   private readonly _user_approval: UserApprovalEntity | null;
   private _workflow_step_total: number | 0;
   private _step: number | 0;
+  private readonly _company: CompanyEntity | null;
 
   private constructor(builder: PurchaseRequestBuilder) {
     super();
@@ -39,6 +41,7 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
     this._user_approval = builder.user_approval ?? null;
     this._workflow_step_total = builder.workflow_step_total;
     this._step = builder.step;
+    this._company = builder.company ?? null;
   }
 
   get document_id(): number {
@@ -87,6 +90,10 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
 
   get user_approval(): UserApprovalEntity | null {
     return this._user_approval;
+  }
+
+  get company(): CompanyEntity | null {
+    return this._company;
   }
 
   get workflow_step_total(): number | 0 {

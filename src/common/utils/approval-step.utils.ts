@@ -28,6 +28,7 @@ interface ApprovalStepHandlerParams {
     manager: EntityManager,
     company_id?: number,
   ) => Promise<BudgetApprovalRuleOrmEntity[]>;
+  company_id?: number;
 }
 
 export async function handleApprovalStep({
@@ -39,6 +40,7 @@ export async function handleApprovalStep({
   dataDocumentApproverMapper,
   writeDocumentApprover,
   getApprover,
+  company_id,
 }: ApprovalStepHandlerParams) {
   if (!a_w_s) {
     throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND, {

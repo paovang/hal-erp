@@ -22,6 +22,9 @@ export interface IReadIncreaseBudgetRepository {
   findAll(
     query: IncreaseBudgetQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<IncreaseBudgetEntity>>;
 
   findOne(
