@@ -30,6 +30,7 @@ import {
   selectPositionApprover,
   selectPositions,
   selectPurchaseRequestItems,
+  selectQuotaCompany,
   selectStatus,
   selectUnits,
   selectUserApprovals,
@@ -146,6 +147,7 @@ export class ReadPurchaseRequestRepository
       ...selectDocDeptUser,
       ...selectDepartmentsApprover,
       ...selectCompany,
+      ...selectQuotaCompany,
     ];
 
     const query = manager
@@ -162,6 +164,7 @@ export class ReadPurchaseRequestRepository
       .leftJoin('users.user_signatures', 'user_signatures')
       .leftJoin('users.department_users', 'department_users')
       .innerJoin('purchase_request_items.units', 'units')
+      .innerJoin('purchase_request_items.quota_company', 'quota_company')
       .leftJoin('department_users.positions', 'positions')
       .innerJoin('documents.user_approvals', 'user_approvals')
       .innerJoin('user_approvals.document_statuses', 'document_statuses')
@@ -186,7 +189,6 @@ export class ReadPurchaseRequestRepository
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      console.log('object', roles);
       if (
         roles.includes(EligiblePersons.COMPANY_ADMIN) ||
         roles.includes(EligiblePersons.COMPANY_USER)

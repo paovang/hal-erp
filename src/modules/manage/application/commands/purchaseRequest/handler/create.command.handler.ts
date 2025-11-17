@@ -30,9 +30,8 @@ import {
 } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
-import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 import path from 'path';
 import { createMockMulterFile } from '@src/common/utils/services/file-utils.service';
 import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
@@ -68,6 +67,8 @@ import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/t
 import { StatusEnum } from '@src/common/enums/status.enum';
 import { QuotaCompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/quota-company.orm';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
+import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
@@ -173,9 +174,6 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        const processedItems = null;
-        const sum_total = 0;
-
         const check_document_type = await findOneOrFail(
           manager,
           DocumentTypeOrmEntity,
@@ -282,14 +280,7 @@ export class CreateCommandHandler
 
         const pr_id = (pr as any)._id._value;
 
-        await this.insertItem(
-          query,
-          manager,
-          baseFolder,
-          pr_id,
-          sum_total,
-          processedItems,
-        );
+        await this.insertItem(query, manager, baseFolder, pr_id);
 
         const purchaseRequestItems = query.dto.purchase_request_items;
 
@@ -353,30 +344,95 @@ export class CreateCommandHandler
 
         await this._writeDocumentApprover.create(d_approver_entity, manager);
 
-        // await handleApprovalStep({
-        //   a_w_s,
-        //   total,
-        //   user_id,
-        //   user_approval_step_id,
-        //   manager,
-        //   dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-        //   writeDocumentApprover: this._writeDocumentApprover,
-        //   getApprover: this.getApprover.bind(this),
-        // });
-
         return await this._read.findOne(new PurchaseRequestId(pr_id), manager);
       },
     );
   }
+
+  // --- Private Helper Method for Summing Existing Items (Unchanged) ---
+  private async getExistingRequestItemQuantity(
+    manager: EntityManager,
+    quotaId: number,
+  ): Promise<number> {
+    const result = await manager
+      .createQueryBuilder(PurchaseRequestItemOrmEntity, 'item')
+      .select('SUM(item.quantity)', 'totalQuantity')
+      .where('item.quota_company_id IS NOT NULL')
+      .andWhere('item.quota_company_id = :quotaId', { quotaId })
+      .getRawOne<{ totalQuantity: string | null }>();
+
+    const totalQuantity = parseInt(result?.totalQuantity || '0') || 0;
+    return totalQuantity;
+  }
+
+  // ---------------------------------------------------------------------
 
   private async insertItem(
     query: CreateCommand,
     manager: EntityManager,
     baseFolder: string,
     pr_id: number,
-    sum_total: number,
-    processedItems: any,
   ): Promise<void> {
+    const quotaCompanyIds: number[] = [];
+    const requestedQuantitiesByQuota = new Map<number, number>();
+
+    // --- 1. PREPARATION: GROUP QUANTITIES (IN-MEMORY) ---
+    for (const item of query.dto.purchase_request_items) {
+      const quotaId = item.quota_company_id;
+      if (!quotaCompanyIds.includes(quotaId)) {
+        quotaCompanyIds.push(quotaId);
+      }
+      requestedQuantitiesByQuota.set(
+        quotaId,
+        (requestedQuantitiesByQuota.get(quotaId) || 0) + item.quantity,
+      );
+    }
+
+    // --- 2. VALIDATION PHASE: BULK CHECKS (Must happen BEFORE Item Creation) ---
+
+    // 2a. Bulk Load all Quota Entities (1 DB Query)
+    const existingQuotas = await manager.find(QuotaCompanyOrmEntity, {
+      where: { id: In(quotaCompanyIds) },
+      relations: ['vendor_product', 'vendor_product.products'],
+    });
+    const quotaMap = new Map(existingQuotas.map((q) => [q.id, q]));
+
+    // 2b. Iterate and Validate Quota Limits
+    for (const [
+      quotaId,
+      requestedQty,
+    ] of requestedQuantitiesByQuota.entries()) {
+      const get_quota = quotaMap.get(quotaId);
+
+      if (!get_quota) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+          { property: `quota company id: ${quotaId}` },
+        );
+      }
+
+      // Calculate existing usage (1 DB Query per unique Quota ID)
+      const existingTotal = await this.getExistingRequestItemQuantity(
+        manager,
+        quotaId,
+      );
+      const maxLimit = get_quota.qty ?? 0;
+      const availableQuota = maxLimit - existingTotal;
+
+      // Check 3: Final Validation
+      if (requestedQty > availableQuota) {
+        throw new ManageDomainException(
+          'errors.quota_limit_exceeded',
+          HttpStatus.BAD_REQUEST,
+          {
+            property: `${get_quota.vendor_product?.products?.name || 'Item'} : ${availableQuota}`,
+          },
+        );
+      }
+    }
+
+    // --- 3. FINAL PROCESSING AND ITEM-BY-ITEM WRITE ---
     for (const item of query.dto.purchase_request_items) {
       await findOneOrFail(
         query.manager,
@@ -395,7 +451,7 @@ export class CreateCommandHandler
         },
         `quota company id: ${item.quota_company_id}`,
       );
-
+      // File Upload (Still necessary)
       let fileKey = null;
       if (item.file_name) {
         const mockFile = await createMockMulterFile(baseFolder, item.file_name);
@@ -408,19 +464,17 @@ export class CreateCommandHandler
         fileKey = s3ImageResponse.fileKey;
       }
 
-      processedItems = {
-        ...item,
-        file_name: fileKey,
-      };
+      const sum_total = item.quantity * item.price;
+      const processedItemData = { ...item, file_name: fileKey };
 
-      sum_total = item.quantity * item.price;
-
+      // Ensure the mapper creates a valid TypeORM Entity instance
       const pr_item = this._dataItemMapper.toEntity(
-        processedItems,
+        processedItemData,
         pr_id,
         sum_total,
       );
 
+      // ITEM-BY-ITEM WRITE (As requested, one database call per item)
       await this._writeItem.create(pr_item, manager);
     }
   }

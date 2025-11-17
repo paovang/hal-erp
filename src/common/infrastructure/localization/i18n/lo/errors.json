@@ -72,5 +72,6 @@
   "user_email_already_exists": "ອີເມວຜູ້ໃຊ້ມີໃນລະບົບແລ້ວ",
   "user_tel_already_exists": "ເບີໂທຜູ້ໃຊ້ມີໃນລະບົບແລ້ວ",
   "cannot_delete_role": "ບໍ່ສາມາດລຶບບົດບາດນີ້ {property} ໄດ້",
-  "select_budget": "ກະລຸນາເລືອກງົບປະມານ."
+  "select_budget": "ກະລຸນາເລືອກງົບປະມານ.",
+  "quota_limit_exceeded": "ເກີນຂີດຈຳກັດໂຄຕ້າແລ້ວ, ໂຄຕ້າເຫຼືອງຢູ່: {property} ໜ່ວຍ."
 }
