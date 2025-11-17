@@ -97,6 +97,17 @@ export const selectCompany = [
   'company.updated_at',
 ];
 
+// quota company
+export const selectQuotaCompany = [
+  'quota_company.id',
+  'quota_company.company_id',
+  'quota_company.vendor_product_id',
+  'quota_company.qty',
+  'quota_company.year',
+  'quota_company.created_at',
+  'quota_company.updated_at',
+];
+
 // increase_budget_details
 export const selectIncreaseBudgetDetails = [
   'details.id',
