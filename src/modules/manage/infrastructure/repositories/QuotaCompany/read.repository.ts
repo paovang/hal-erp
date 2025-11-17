@@ -42,7 +42,10 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
 
   private createBaseQuery(manager: EntityManager) {
     // console.log('manager');
-    return manager.createQueryBuilder(QuotaCompanyOrmEntity, 'quota_companies');
+    return manager
+      .createQueryBuilder(QuotaCompanyOrmEntity, 'quota_companies')
+      .leftJoinAndSelect('quota_companies.company', 'company')
+      .leftJoinAndSelect('quota_companies.vendor_product', 'vendor_product');
   }
 
   private getFilterOptions(): FilterOptions {
@@ -60,7 +63,11 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
     const item = await findOneOrFail(manager, QuotaCompanyOrmEntity, {
       id: id.value,
     });
+    const itemWithRelation = await manager.findOne(QuotaCompanyOrmEntity, {
+      where: { id: id.value },
+      relations: ['company', 'vendor_product'],
+    });
 
-    return this._dataAccessMapper.toEntity(item);
+    return this._dataAccessMapper.toEntity(itemWithRelation || item);
   }
 }
