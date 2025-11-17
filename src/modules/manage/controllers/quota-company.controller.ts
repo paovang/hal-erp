@@ -16,7 +16,6 @@ import { IQuotaCompanyServiceInterface } from '../domain/ports/input/quota-compa
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { QuotaCompanyDataMapper } from '../application/mappers/quota-company.mapper';
-import { ProductResponse } from '../application/dto/response/product.response';
 import { QuotaCompanyResponse } from '../application/dto/response/quota-company.response';
 import { CreateQuotaCompanyDto } from '../application/dto/create/QuotaCompany/create.dto';
 import { UpdateQuotaCompanyDto } from '../application/dto/create/QuotaCompany/update.dto';

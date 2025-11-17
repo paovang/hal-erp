@@ -52,18 +52,18 @@ export class UpdateCommandHandler
         { property: `${query.id}` },
       );
     }
-    await findOneOrFail(query.manager, QuotaCompanyOrmEntity, {
+    const quotaCompany = await findOneOrFail(query.manager, QuotaCompanyOrmEntity, {
       id: query.id,
     });
 
-    if (query.dto.company_id) {
+    if (quotaCompany.company_id) {
       await findOneOrFail(
         query.manager,
         CompanyOrmEntity,
         {
-          id: query.dto.company_id,
+          id: quotaCompany.company_id,
         },
-        `product type id ${query.dto.company_id}`,
+        `company id ${quotaCompany.company_id}`,
       );
     }
     if (query.dto.vendor_product_id) {
@@ -73,14 +73,17 @@ export class UpdateCommandHandler
         {
           id: query.dto.vendor_product_id,
         },
-        `unit id ${query.dto.vendor_product_id}`,
+        `vendor product id ${query.dto.vendor_product_id}`,
       );
     }
 
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        const mapToEntity = this._dataMapper.toEntity(query.dto);
+        const mapToEntity = this._dataMapper.toEntity(
+          query.dto,
+          quotaCompany.company_id!,
+        );
         const quotaCompanyId = new QuotaCompanyId(query.id);
         await mapToEntity.initializeUpdateSetId(quotaCompanyId);
         return await this._write.update(mapToEntity, manager);

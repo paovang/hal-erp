@@ -16,6 +16,7 @@ export class QuotaCompanyDataMapper {
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateQuotaCompanyDto | UpdateQuotaCompanyDto,
+    company_id: number,
   ): QuotaCompanyEntity {
     const builder = QuotaCompanyEntity.builder();
 
@@ -26,8 +27,8 @@ export class QuotaCompanyDataMapper {
       builder.setYear(dto.year);
     }
 
-    if (dto.company_id) {
-      builder.setCompanyId(dto.company_id);
+    if (company_id) {
+      builder.setCompanyId(company_id);
     }
 
     if (dto.vendor_product_id) {
