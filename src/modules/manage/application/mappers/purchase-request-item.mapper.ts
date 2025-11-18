@@ -7,10 +7,14 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { UnitDataMapper } from './unit.mapper';
 import { CreatePurchaseRequestItemDto } from '../dto/create/purchaseRequestItem/create.dto';
 import { UpdatePurchaseRequestItemDto } from '../dto/create/purchaseRequestItem/update.dto';
+import { QuotaCompanyDataMapper } from './quota-company.mapper';
 
 @Injectable()
 export class PurchaseRequestItemDataMapper {
-  constructor(private readonly unit: UnitDataMapper) {}
+  constructor(
+    private readonly unit: UnitDataMapper,
+    private readonly quotaCompany: QuotaCompanyDataMapper,
+  ) {}
 
   toEntity(
     dto: CreatePurchaseRequestItemDto | UpdatePurchaseRequestItemDto,
@@ -83,6 +87,10 @@ export class PurchaseRequestItemDataMapper {
       .format(DateFormat.DATETIME_READABLE_FORMAT);
 
     response.unit = entity.unit ? this.unit.toResponse(entity.unit) : null;
+
+    response.quota_company = entity.quota_company
+      ? this.quotaCompany.toResponse(entity.quota_company)
+      : null;
 
     return response;
   }

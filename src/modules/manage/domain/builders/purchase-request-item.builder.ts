@@ -1,4 +1,5 @@
 import { PurchaseRequestItemEntity } from '../entities/purchase-request-item.entity';
+import { QuotaCompanyEntity } from '../entities/quota-company.entity';
 import { UnitEntity } from '../entities/unit.entity';
 import { PurchaseRequestItemId } from '../value-objects/purchase-request-item-id.vo';
 
@@ -17,6 +18,7 @@ export class PurchaseRequestItemBuilder {
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   unit: UnitEntity | null;
+  quota_company: QuotaCompanyEntity | null;
 
   setPurchaseRequestItemId(value: PurchaseRequestItemId): this {
     this.purchaseRequestItemId = value;
@@ -85,6 +87,11 @@ export class PurchaseRequestItemBuilder {
 
   setUnit(unit: UnitEntity | null): this {
     this.unit = unit;
+    return this;
+  }
+
+  setQuotaCompany(quota_company: QuotaCompanyEntity | null): this {
+    this.quota_company = quota_company;
     return this;
   }
 

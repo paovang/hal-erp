@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from '../dto/create/product/create.dto';
-import { ProductEntity } from '../../domain/entities/product.entity';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
-import { ProductResponse } from '../dto/response/product.response';
-import { UpdateProductDto } from '../dto/create/product/update.dto';
 import { CreateQuotaCompanyDto } from '../dto/create/QuotaCompany/create.dto';
 import { UpdateQuotaCompanyDto } from '../dto/create/QuotaCompany/update.dto';
 import { QuotaCompanyEntity } from '../../domain/entities/quota-company.entity';
 import { QuotaCompanyResponse } from '../dto/response/quota-company.response';
+import { ProductDataMapper } from './product.mapper';
+import { VendorProductDataMapper } from './vendor-product.mapper';
 
 @Injectable()
 export class QuotaCompanyDataMapper {
+  constructor(
+    private readonly productDataMapper: ProductDataMapper,
+    private readonly vendorProductDataMapper: VendorProductDataMapper,
+  ) {}
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateQuotaCompanyDto | UpdateQuotaCompanyDto,
@@ -52,6 +54,14 @@ export class QuotaCompanyDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+
+    response.vendor_product = entity.vendor_product
+      ? this.vendorProductDataMapper.toResponse(entity.vendor_product)
+      : null;
+
+    response.Product = entity.product
+      ? this.productDataMapper.toResponse(entity.product)
+      : null;
 
     return response;
   }

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UnitResponse } from './unit.response';
+import { QuotaCompanyResponse } from './quota-company.response';
 
 export class PurchaseRequestItemResponse {
   @ApiProperty()
@@ -46,4 +47,7 @@ export class PurchaseRequestItemResponse {
 
   @ApiProperty()
   unit: UnitResponse | null;
+
+  @ApiProperty()
+  quota_company: QuotaCompanyResponse | null;
 }

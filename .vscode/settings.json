@@ -1,0 +1,8 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.fontFamily": "Menlo, Monaco, 'Courier New', monospace, Noto Sans Lao",
+  "workbench.layoutControl.type": "both",
+  "terminal.integrated.allowMnemonics": false
+}
