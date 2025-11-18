@@ -29,6 +29,8 @@ import { DocumentStatusDataAccessMapper } from '@src/modules/manage/infrastructu
 import { DocumentApproverDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document-approver.mapper';
 import { CompanyDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/company.mapper';
 import { CompanyDataMapper } from '@src/modules/manage/application/mappers/company.mapper';
+import { QuotaCompanyDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/quota-company.mapper';
+import { ProductDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/product.mapper';
 
 export const ReportPurchaseRequestMapperProviders: Provider[] = [
   ReportPurchaseRequestDataAccessMapper,
@@ -61,4 +63,6 @@ export const ReportPurchaseRequestMapperProviders: Provider[] = [
   DocumentApproverDataAccessMapper,
   CompanyDataAccessMapper,
   CompanyDataMapper,
+  QuotaCompanyDataAccessMapper,
+  ProductDataAccessMapper,
 ];

@@ -3,6 +3,7 @@ import { PurchaseRequestItemId } from '../value-objects/purchase-request-item-id
 import { PurchaseRequestItemBuilder } from '../builders/purchase-request-item.builder';
 import { BadRequestException } from '@nestjs/common';
 import { UnitEntity } from './unit.entity';
+import { QuotaCompanyEntity } from './quota-company.entity';
 
 export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
   private readonly _purchase_request_id: number;
@@ -18,7 +19,7 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
   private readonly _unit: UnitEntity | null;
-  // private readonly _quota_company:
+  private readonly _quota_company: QuotaCompanyEntity | null;
 
   private constructor(builder: PurchaseRequestItemBuilder) {
     super();
@@ -36,6 +37,7 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
     this._unit = builder.unit ?? null;
+    this._quota_company = builder.quota_company ?? null;
   }
 
   get purchase_request_id(): number {
@@ -88,6 +90,10 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
 
   get unit(): UnitEntity | null {
     return this._unit;
+  }
+
+  get quota_company(): QuotaCompanyEntity | null {
+    return this._quota_company;
   }
 
   public static builder(): PurchaseRequestItemBuilder {

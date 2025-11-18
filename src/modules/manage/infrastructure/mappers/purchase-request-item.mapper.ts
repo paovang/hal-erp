@@ -7,10 +7,14 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
+import { QuotaCompanyDataAccessMapper } from './quota-company.mapper';
 
 @Injectable()
 export class PurchaseRequestItemDataAccessMapper {
-  constructor(private readonly unitMapper: UnitDataAccessMapper) {}
+  constructor(
+    private readonly unitMapper: UnitDataAccessMapper,
+    private readonly quotaCompany: QuotaCompanyDataAccessMapper,
+  ) {}
 
   toOrmEntity(
     prItemEntity: PurchaseRequestItemEntity,
@@ -61,6 +65,12 @@ export class PurchaseRequestItemDataAccessMapper {
 
     if (ormData.units) {
       builder.setUnit(this.unitMapper.toEntity(ormData.units));
+    }
+
+    if (ormData.quota_company) {
+      builder.setQuotaCompany(
+        this.quotaCompany.toEntity(ormData.quota_company),
+      );
     }
 
     return builder.build();
