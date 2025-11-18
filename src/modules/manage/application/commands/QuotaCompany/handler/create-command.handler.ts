@@ -47,8 +47,11 @@ export class CreateCommandHandler
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user.id;
         let company_id: number | null | undefined = null;
-        const year_now: Number = new Date().getFullYear();
-        if (query.dto.year < year_now) {
+        const year_now = new Date().getFullYear();
+        if (
+          query.dto.year &&
+          new Date(query.dto.year).getFullYear() < year_now
+        ) {
           throw new ManageDomainException(
             'errors.not_found',
             HttpStatus.NOT_FOUND,
