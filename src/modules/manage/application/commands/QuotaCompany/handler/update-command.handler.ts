@@ -59,8 +59,8 @@ export class UpdateCommandHandler
         id: query.id,
       },
     );
-    const year_now: Number = new Date().getFullYear();
-    if (query.dto.year && query.dto.year < year_now) {
+    const year_now = new Date().getFullYear();
+    if (query.dto.year && new Date(query.dto.year).getFullYear() < year_now) {
       throw new ManageDomainException(
         'errors.not_found',
         HttpStatus.NOT_FOUND,
