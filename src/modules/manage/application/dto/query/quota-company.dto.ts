@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationDto } from '@src/common/validations/dto/pagination.dto';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class QuotaCompanyQueryDto extends PaginationDto {
   @ApiProperty({
@@ -16,6 +16,22 @@ export class QuotaCompanyQueryDto extends PaginationDto {
     description: 'can be company id',
   })
   @IsOptional()
-  @IsNumber()
+  @IsString()
   company_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'can be department id',
+  })
+  @IsOptional()
+  @IsString()
+  vendor_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'can be department id',
+  })
+  @IsOptional()
+  @IsString()
+  product_id?: number;
 }

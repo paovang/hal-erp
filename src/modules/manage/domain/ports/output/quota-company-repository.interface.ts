@@ -22,6 +22,9 @@ export interface IReadQuotaCompanyRepository {
   findAll(
     query: QuotaCompanyQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<QuotaCompanyEntity>>;
 
   findOne(
