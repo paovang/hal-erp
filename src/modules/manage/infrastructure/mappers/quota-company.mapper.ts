@@ -7,11 +7,13 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { QuotaCompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/quota-company.orm';
 import { Injectable } from '@nestjs/common';
 import { ProductDataAccessMapper } from './product.mapper';
+import { VendorProductDataAccessMapper } from './vendor-product.mapper';
 
 @Injectable()
 export class QuotaCompanyDataAccessMapper {
   constructor(
     private readonly productDataAccessMapper: ProductDataAccessMapper,
+    private readonly vendorProductDataAccessMapper: VendorProductDataAccessMapper,
   ) {}
   toOrmEntity(
     quotaCompanyEntity: QuotaCompanyEntity,
@@ -54,9 +56,9 @@ export class QuotaCompanyDataAccessMapper {
     }
 
     if (ormData.vendor_product) {
-      builder.setVendorProduct({
-        id: ormData.vendor_product.id,
-      });
+      builder.setVendorProduct(
+        this.vendorProductDataAccessMapper.toEntity(ormData.vendor_product),
+      );
 
       if (ormData.vendor_product.products) {
         builder.setProduct(

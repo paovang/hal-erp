@@ -45,7 +45,10 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
     return manager
       .createQueryBuilder(QuotaCompanyOrmEntity, 'quota_companies')
       .leftJoinAndSelect('quota_companies.company', 'company')
-      .leftJoinAndSelect('quota_companies.vendor_product', 'vendor_product');
+      .leftJoinAndSelect('quota_companies.vendor_product', 'vendor_product')
+      .leftJoinAndSelect('vendor_product.products', 'products')
+      .leftJoinAndSelect('products.product_type', 'product_type')
+      .leftJoinAndSelect('products.unit', 'unit');
   }
 
   private getFilterOptions(): FilterOptions {

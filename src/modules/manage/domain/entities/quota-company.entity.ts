@@ -3,6 +3,7 @@ import { QuotaCompanyBuilder } from '../builders/quota-company.builder';
 import { QuotaCompanyId } from '../value-objects/quota-company-id.vo';
 import { BadRequestException } from '@nestjs/common';
 import { ProductEntity } from './product.entity';
+import { VendorProductEntity } from './vendor-product.entity';
 
 export class QuotaCompanyEntity extends Entity<QuotaCompanyId> {
   private readonly _qty: number;
@@ -10,10 +11,11 @@ export class QuotaCompanyEntity extends Entity<QuotaCompanyId> {
   private readonly _company_id: number;
   private readonly _company?: { id: number; name: string };
   private readonly _vendor_product_id: number;
-  private readonly _vendor_product?: { id: number };
+  // private readonly _vendor_product?: { id: number };
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _vendor_product: VendorProductEntity | null;
   private readonly _product: ProductEntity | null;
 
   private constructor(builder: QuotaCompanyBuilder) {
@@ -51,7 +53,7 @@ export class QuotaCompanyEntity extends Entity<QuotaCompanyId> {
     return this._vendor_product_id;
   }
 
-  get vendor_product(): { id: number } | undefined {
+  get vendor_product(): VendorProductEntity | null {
     return this._vendor_product;
   }
 

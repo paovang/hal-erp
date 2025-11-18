@@ -29,6 +29,7 @@ import {
   selectDocumentTypes,
   selectPositionApprover,
   selectPositions,
+  selectProducts,
   selectPurchaseRequestItems,
   selectQuotaCompany,
   selectStatus,
@@ -37,6 +38,7 @@ import {
   selectUserApprovalSteps,
   selectUsers,
   selectUserSignatures,
+  selectVendorProduct,
   // selectWorkflowStepsDepartment,
 } from '@src/common/constants/select-field';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
@@ -148,6 +150,8 @@ export class ReadPurchaseRequestRepository
       ...selectDepartmentsApprover,
       ...selectCompany,
       ...selectQuotaCompany,
+      ...selectVendorProduct,
+      ...selectProducts,
     ];
 
     const query = manager
@@ -165,6 +169,11 @@ export class ReadPurchaseRequestRepository
       .leftJoin('users.department_users', 'department_users')
       .innerJoin('purchase_request_items.units', 'units')
       .innerJoin('purchase_request_items.quota_company', 'quota_company')
+
+      .leftJoin('quota_company.vendor_product', 'vendor_product')
+      .leftJoin('vendor_product.products', 'products')
+      .leftJoin('products.product_type', 'product_type')
+
       .leftJoin('department_users.positions', 'positions')
       .innerJoin('documents.user_approvals', 'user_approvals')
       .innerJoin('user_approvals.document_statuses', 'document_statuses')

@@ -108,6 +108,36 @@ export const selectQuotaCompany = [
   'quota_company.updated_at',
 ];
 
+// select vendor_product
+export const selectVendorProduct = [
+  'vendor_product.id',
+  'vendor_product.vendor_id',
+  'vendor_product.product_id',
+  'vendor_product.price',
+  'vendor_product.created_at',
+  'vendor_product.updated_at',
+];
+
+// products
+export const selectProducts = [
+  'products.id',
+  'products.name',
+  'products.description',
+  'products.product_type_id',
+  'products.unit_id',
+  'products.status',
+  'products.created_at',
+  'products.updated_at',
+];
+
+// product types
+export const selectProductTypes = [
+  'product_types.id',
+  'product_types.name',
+  'product_types.created_at',
+  'product_types.updated_at',
+];
+
 // increase_budget_details
 export const selectIncreaseBudgetDetails = [
   'details.id',
