@@ -52,10 +52,21 @@ export class UpdateCommandHandler
         { property: `${query.id}` },
       );
     }
-    const quotaCompany = await findOneOrFail(query.manager, QuotaCompanyOrmEntity, {
-      id: query.id,
-    });
-
+    const quotaCompany = await findOneOrFail(
+      query.manager,
+      QuotaCompanyOrmEntity,
+      {
+        id: query.id,
+      },
+    );
+    const year_now: Number = new Date().getFullYear();
+    if (query.dto.year && query.dto.year < year_now) {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        { property: `year must be greater than ${year_now}` },
+      );
+    }
     if (quotaCompany.company_id) {
       await findOneOrFail(
         query.manager,

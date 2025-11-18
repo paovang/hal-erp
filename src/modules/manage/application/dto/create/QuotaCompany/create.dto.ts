@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  IsEnum,
-  IsOptional,
-  IsDate,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsInt, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { i18nValidationMessage } from 'nestjs-i18n';
 
@@ -31,7 +24,8 @@ export class CreateQuotaCompanyDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsDate({ message: i18nValidationMessage('validation.IS_DATE') })
-  @Type(() => Date)
-  readonly year: Date;
+  @IsInt({ message: i18nValidationMessage('validation.IS_INT') })
+  @Type(() => Number)
+  @Max(9999)
+  readonly year: Number;
 }

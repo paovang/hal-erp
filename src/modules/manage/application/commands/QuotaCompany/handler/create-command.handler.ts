@@ -47,6 +47,14 @@ export class CreateCommandHandler
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user.id;
         let company_id: number | null | undefined = null;
+        const year_now: Number = new Date().getFullYear();
+        if (query.dto.year < year_now) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.NOT_FOUND,
+            { property: `year must be greater than ${year_now}` },
+          );
+        }
         const company_user = await findOneOrFail(
           query.manager,
           CompanyUserOrmEntity,
