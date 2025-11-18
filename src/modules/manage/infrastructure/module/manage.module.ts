@@ -41,6 +41,7 @@ import { CompanyController } from '../../controllers/company.controller';
 import { ProductController } from '../../controllers/product.controller';
 import { CompanyUserController } from '../../controllers/company-user.controller';
 import { VendorProductController } from '../../controllers/vendor-product.controller';
+import { QuotaCompanyController } from '../../controllers/quota-company.controller';
 
 @Module({
   imports: [
@@ -90,6 +91,7 @@ import { VendorProductController } from '../../controllers/vendor-product.contro
     ProductController,
     CompanyUserController,
     VendorProductController,
+    QuotaCompanyController
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],
