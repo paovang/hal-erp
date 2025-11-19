@@ -25,4 +25,12 @@ export class PurchaseOrderQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   order_date?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by department id',
+  })
+  @IsOptional()
+  @IsString()
+  company_id?: number;
 }

@@ -281,15 +281,27 @@ export class ReportReadPurchaseRequestRepository
     };
   }
 
-  private async getDocumentStatistics(manager: EntityManager, documentType: string): Promise<any> {
+  private async getDocumentStatistics(
+    manager: EntityManager,
+    documentType: string,
+  ): Promise<any> {
     const queryBuilder = manager
       .createQueryBuilder('documents', 'documents')
       .innerJoin('documents.document_types', 'document_types')
       .select('document_types.type', 'type')
       .addSelect('COUNT(documents.id)', 'all')
-      .addSelect('SUM(CASE WHEN documents.status = :pending THEN 1 ELSE 0 END)', 'pending')
-      .addSelect('SUM(CASE WHEN documents.status = :success THEN 1 ELSE 0 END)', 'approved')
-      .addSelect('SUM(CASE WHEN documents.status = :rejected THEN 1 ELSE 0 END)', 'rejected')
+      .addSelect(
+        'SUM(CASE WHEN documents.status = :pending THEN 1 ELSE 0 END)',
+        'pending',
+      )
+      .addSelect(
+        'SUM(CASE WHEN documents.status = :success THEN 1 ELSE 0 END)',
+        'approved',
+      )
+      .addSelect(
+        'SUM(CASE WHEN documents.status = :rejected THEN 1 ELSE 0 END)',
+        'rejected',
+      )
       .where('document_types.type = :documentType', { documentType })
       .setParameter('pending', 'pending')
       .setParameter('success', 'success')

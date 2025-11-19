@@ -78,6 +78,7 @@ export class ReadPurchaseRequestRepository
     roles?: string[],
     company_id?: number,
   ): Promise<ResponseResult<PurchaseRequestEntity>> {
+    const filterCompanyId = Number(query.company_id);
     const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(
       manager,
@@ -88,6 +89,12 @@ export class ReadPurchaseRequestRepository
     );
     query.sort_by = 'purchase_requests.id';
 
+    if (filterCompanyId) {
+      queryBuilder.andWhere('documents.company_id = :filterCompanyId', {
+        filterCompanyId,
+      });
+    }
+
     // Date filtering (single date)
     this.applyDateFilter(queryBuilder, filterOptions.dateColumn, query.date);
 
@@ -96,7 +103,12 @@ export class ReadPurchaseRequestRepository
       EnumPrOrPo.PR,
       user_id,
       roles,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
       company_id,
+      filterCompanyId,
     );
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -164,7 +176,7 @@ export class ReadPurchaseRequestRepository
       .leftJoin('documents.departments', 'departments')
       .leftJoin('documents.users', 'users')
       .innerJoin('documents.document_types', 'document_types')
-      .innerJoin('documents.company', 'company')
+      .leftJoin('documents.company', 'company')
       .leftJoin('users.user_signatures', 'user_signatures')
       .leftJoin('users.department_users', 'department_users')
       .innerJoin('purchase_request_items.units', 'units')

@@ -19,6 +19,7 @@ import {
   selectBanks,
   selectBudgetAccounts,
   selectBudgetItems,
+  selectCompany,
   // selectCurrencies,
   selectCurrency,
   selectDepartments,
@@ -40,10 +41,12 @@ import {
   selectPositions,
   selectPoUsers,
   selectPoUserSignatures,
+  selectProducts,
   selectPurchaseOrderItems,
   selectPurchaseOrderSelectedVendors,
   selectPurchaseRequestItems,
   selectPurchaseRequests,
+  selectQuotaCompany,
   // selectQuotesVendorBankAccounts,
   selectRequestItems,
   selectRequestItemUnits,
@@ -55,6 +58,7 @@ import {
   selectUsers,
   selectUserSignatures,
   selectVendorBankAccounts,
+  selectVendorProduct,
   // selectVendors,
   // selectWorkflowStepsDepartment,
 } from '@src/common/constants/select-field';
@@ -83,15 +87,34 @@ export class ReadPurchaseOrderRepository
     manager: EntityManager,
     user_id?: number,
     roles?: string[],
+    company_id?: number,
   ): Promise<ResponseResult<PurchaseOrderEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager, roles, user_id);
+    const filterCompanyId = Number(query.company_id);
+    const queryBuilder = await this.createBaseQuery(
+      manager,
+      roles,
+      user_id,
+      company_id,
+    );
     query.sort_by = 'purchase_orders.id';
+
+    if (filterCompanyId) {
+      queryBuilder.andWhere('documents.company_id = :filterCompanyId', {
+        filterCompanyId,
+      });
+    }
 
     const status = await countStatusAmounts(
       manager,
       EnumPrOrPo.PO,
       user_id,
       roles,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      company_id,
+      filterCompanyId,
     );
 
     const data = await this._paginationService.paginate(
@@ -110,6 +133,7 @@ export class ReadPurchaseOrderRepository
     manager: EntityManager,
     roles?: string[],
     user_id?: number,
+    company_id?: number,
   ) {
     const selectFields = [
       ...selectPurchaseOrderItems,
@@ -153,6 +177,10 @@ export class ReadPurchaseOrderRepository
       ...selectDocApproverUser,
       ...selectDocDeptUser,
       ...selectDepartmentsApprover,
+      ...selectCompany,
+      ...selectQuotaCompany,
+      ...selectVendorProduct,
+      ...selectProducts,
     ];
 
     const query = manager
@@ -171,11 +199,17 @@ export class ReadPurchaseOrderRepository
       .innerJoin('documents.departments', 'departments')
       .innerJoin('documents.users', 'users')
       .innerJoin('documents.document_types', 'document_types')
+      .leftJoin('documents.company', 'company')
       .leftJoin('users.user_signatures', 'user_signatures')
       .innerJoin('users.department_users', 'department_users')
       .innerJoin('department_users.positions', 'positions')
 
       .innerJoin('purchase_request_items.units', 'units')
+      .leftJoin('purchase_request_items.quota_company', 'quota_company')
+
+      .leftJoin('quota_company.vendor_product', 'vendor_product')
+      .leftJoin('vendor_product.products', 'products')
+      .leftJoin('products.product_type', 'product_type')
       // purchase_order_items join with purchase request
       .innerJoin('purchase_order_items.purchase_request_items', 'request_items')
       .innerJoin('request_items.units', 'request_item_unit')
@@ -217,24 +251,29 @@ export class ReadPurchaseOrderRepository
       // add select
       .addSelect(selectFields);
 
+    console.log('object', roles);
+
     if (
       roles &&
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.andWhere('documents.company_id = :company_id', {
+            company_id,
+          });
+        }
+      }
       query.andWhere('document_approver.user_id = :user_id', {
         user_id,
       });
     }
 
     return query;
-
-    // const queryBuilder = manager.createQueryBuilder(
-    //   PurchaseOrderOrmEntity,
-    //   'purchase_orders',
-    // );
-
-    // return this.joinBaseRelations(queryBuilder).addSelect(selectFields);
   }
 
   private getFilterOptions(): FilterOptions {
