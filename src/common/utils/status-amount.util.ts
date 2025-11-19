@@ -17,6 +17,7 @@ export async function countStatusAmounts(
   start_date?: string,
   end_date?: string,
   company_id?: number,
+  filterCompanyId?: number,
 ): Promise<{ id: number; status: string; amount: number }[]> {
   // เงื่อนไข type
   if (type === EnumPrOrPo.PO) {
@@ -43,8 +44,39 @@ export async function countStatusAmounts(
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.andWhere('doc.company_id = :company_id', { company_id });
+        }
+      }
       query.andWhere('document_approver.user_id = :user_id', {
         user_id,
+      });
+    }
+
+    console.log('object', filterCompanyId, company_id);
+
+    if (filterCompanyId) {
+      query.andWhere('doc.company_id = :filterCompanyId', { filterCompanyId });
+    }
+
+    if (departmentId) {
+      query.andWhere('doc.department_id = :departmentId', {
+        departmentId,
+      });
+    }
+
+    if (status_id) {
+      query.andWhere('ua.status_id = :status_id', { status_id });
+    }
+
+    if (start_date && end_date) {
+      query.andWhere(`po.order_date BETWEEN :dateStart AND :dateEnd`, {
+        dateStart: `${start_date} 00:00:00`,
+        dateEnd: `${end_date} 23:59:59`,
       });
     }
 
@@ -94,22 +126,26 @@ export async function countStatusAmounts(
       }
     }
 
-    // if (departmentId) {
-    //   query.andWhere('doc.department_id = :departmentId', {
-    //     departmentId,
-    //   });
-    // }
+    if (filterCompanyId) {
+      query.andWhere('doc.company_id = :filterCompanyId', { filterCompanyId });
+    }
 
-    // if (status_id) {
-    //   query.andWhere('ua.status_id = :status_id', { status_id });
-    // }
+    if (departmentId) {
+      query.andWhere('doc.department_id = :departmentId', {
+        departmentId,
+      });
+    }
 
-    // if (start_date && end_date) {
-    //   query.andWhere(`pr.requested_date BETWEEN :dateStart AND :dateEnd`, {
-    //     dateStart: `${start_date} 00:00:00`,
-    //     dateEnd: `${end_date} 23:59:59`,
-    //   });
-    // }
+    if (status_id) {
+      query.andWhere('ua.status_id = :status_id', { status_id });
+    }
+
+    if (start_date && end_date) {
+      query.andWhere(`pr.requested_date BETWEEN :dateStart AND :dateEnd`, {
+        dateStart: `${start_date} 00:00:00`,
+        dateEnd: `${end_date} 23:59:59`,
+      });
+    }
 
     // Group โดยเฉพาะฟิลด์ที่เลือก (status id และ name)
     query.groupBy('ua.status_id').addGroupBy('ds.name');
@@ -147,6 +183,27 @@ export async function countStatusAmounts(
     ) {
       query.andWhere('document_approver.user_id = :user_id', {
         user_id,
+      });
+    }
+
+    if (filterCompanyId) {
+      query.andWhere('doc.company_id = :filterCompanyId', { filterCompanyId });
+    }
+
+    if (departmentId) {
+      query.andWhere('doc.department_id = :departmentId', {
+        departmentId,
+      });
+    }
+
+    if (status_id) {
+      query.andWhere('ua.status_id = :status_id', { status_id });
+    }
+
+    if (start_date && end_date) {
+      query.andWhere(`r.receipt_date BETWEEN :dateStart AND :dateEnd`, {
+        dateStart: `${start_date} 00:00:00`,
+        dateEnd: `${end_date} 23:59:59`,
       });
     }
 

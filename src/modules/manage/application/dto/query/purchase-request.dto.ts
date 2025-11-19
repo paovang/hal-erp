@@ -20,6 +20,14 @@ export class PurchaseRequestQueryDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
+    description: 'Filter by company id',
+  })
+  @IsOptional()
+  @IsString()
+  company_id?: number;
+
+  @ApiProperty({
+    required: false,
     description: 'Filter by approval status id',
   })
   @IsOptional()

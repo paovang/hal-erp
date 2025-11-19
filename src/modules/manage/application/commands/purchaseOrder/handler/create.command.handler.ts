@@ -75,6 +75,7 @@ import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeo
 import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purchase-order-id.vo';
 import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
 import { StatusEnum } from '@src/common/enums/status.enum';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -165,6 +166,14 @@ export class CreateCommandHandler
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user.id;
+        let company_id: number | null | undefined = null;
+        const company = await manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: user_id,
+          },
+        });
+
+        company_id = company?.company_id ?? null;
 
         const check_document_type = await findOneOrFail(
           manager,
@@ -223,6 +232,15 @@ export class CreateCommandHandler
             id: query.dto.purchase_request_id,
           },
         });
+
+        if (!pr) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.NOT_FOUND,
+            { property: `purchase request : ${query.dto.purchase_request_id}` },
+          );
+        }
+
         const pr_doc = await findOneOrFail(
           manager,
           DocumentOrmEntity,
@@ -248,13 +266,6 @@ export class CreateCommandHandler
             id: doc_department_id,
           },
           `department id: ${doc_department_id}`,
-        );
-
-        assertOrThrow(
-          pr,
-          'errors.not_found',
-          HttpStatus.NOT_FOUND,
-          'purchase request',
         );
 
         const checkDocumentApproval = await manager.findOne(
@@ -299,21 +310,6 @@ export class CreateCommandHandler
             'D',
           );
 
-        // const po_number = await this._codeGeneratorUtil.generateUniqueCode(
-        //   LENGTH_PURCHASE_ORDER_CODE,
-        //   async (generatedCode: string) => {
-        //     try {
-        //       await findOneOrFail(manager, PurchaseOrderOrmEntity, {
-        //         po_number: generatedCode,
-        //       });
-        //       return false;
-        //     } catch {
-        //       return true;
-        //     }
-        //   },
-        //   'PO',
-        // );
-
         const department_code = (get_department_name as any).code;
         const pr_department_code = (pr_department as any).code;
 
@@ -341,6 +337,7 @@ export class CreateCommandHandler
           document_number,
           user_id,
           department_id,
+          company_id || undefined,
         );
 
         const D = await this._writeD.create(DEntity, manager);
