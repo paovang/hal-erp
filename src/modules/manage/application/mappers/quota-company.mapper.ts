@@ -8,12 +8,14 @@ import { QuotaCompanyEntity } from '../../domain/entities/quota-company.entity';
 import { QuotaCompanyResponse } from '../dto/response/quota-company.response';
 import { ProductDataMapper } from './product.mapper';
 import { VendorProductDataMapper } from './vendor-product.mapper';
+import { VendorDataMapper } from './vendor.mapper';
 
 @Injectable()
 export class QuotaCompanyDataMapper {
   constructor(
     private readonly productDataMapper: ProductDataMapper,
     private readonly vendorProductDataMapper: VendorProductDataMapper,
+    private readonly vendor: VendorDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
@@ -61,6 +63,10 @@ export class QuotaCompanyDataMapper {
 
     response.Product = entity.product
       ? this.productDataMapper.toResponse(entity.product)
+      : null;
+
+    response.vendor = entity.vendor
+      ? this.vendor.toResponse(entity.vendor)
       : null;
 
     return response;

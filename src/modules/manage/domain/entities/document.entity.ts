@@ -6,6 +6,7 @@ import { UserEntity } from './user.entity';
 import { DocumentTypeEntity } from './document-type.entity';
 import { PositionEntity } from './position.entity';
 import { EnumDocumentStatus } from '../../application/constants/status-key.const';
+import { CompanyEntity } from './company.entity';
 
 export class DocumentEntity extends Entity<DocumentId> {
   private readonly _document_number: string;
@@ -24,6 +25,7 @@ export class DocumentEntity extends Entity<DocumentId> {
   private readonly _requester: UserEntity | null;
   private readonly _position: PositionEntity[] | null;
   private readonly _documentType: DocumentTypeEntity | null;
+  private readonly _company: CompanyEntity | null;
 
   private constructor(builder: DocumentBuilder) {
     super();
@@ -44,6 +46,7 @@ export class DocumentEntity extends Entity<DocumentId> {
     this._position = builder.position ?? null;
     this._documentType = builder.documentType ?? null;
     this._status = builder.status;
+    this._company = builder.company ?? null;
   }
 
   get document_number(): string {
@@ -108,6 +111,10 @@ export class DocumentEntity extends Entity<DocumentId> {
 
   get requester(): UserEntity | null {
     return this._requester;
+  }
+
+  get company(): CompanyEntity | null {
+    return this._company;
   }
 
   public static builder(): DocumentBuilder {

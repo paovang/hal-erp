@@ -23,6 +23,7 @@ import {
   selectBanks,
   selectBudgetAccounts,
   selectBudgetItems,
+  selectCompany,
   selectCreatedBy,
   selectCurrencies,
   selectCurrency,
@@ -43,11 +44,13 @@ import {
   selectPositions,
   selectPrDocuments,
   selectPrDocumentTypes,
+  selectProducts,
   selectPurchaseOrderItems,
   selectPurchaseOrders,
   selectPurchaseOrderSelectedVendors,
   selectPurchaseRequestItems,
   selectPurchaseRequests,
+  selectQuotaCompany,
   selectReceiptBy,
   selectReceiptItems,
   selectSelectedVendors,
@@ -57,6 +60,8 @@ import {
   selectUserApprovalSteps,
   selectUsers,
   selectVendorBankAccounts,
+  selectVendorProduct,
+  selectVendors,
 } from '@src/common/constants/select-field';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
 import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
@@ -77,6 +82,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     manager: EntityManager,
     user_id?: number,
     roles?: string[],
+    company_id?: number,
   ): Promise<ResponseResult<ReceiptEntity>> {
     const department_id = Number(query.department_id);
     const status_id = Number(query.status_id);
@@ -93,6 +99,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       start_date,
       end_date,
       payment_type,
+      company_id,
     );
     query.sort_by = 'receipts.id';
 
@@ -131,6 +138,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     start_date?: string,
     end_date?: string,
     payment_type?: string,
+    company_id?: number,
   ) {
     const selectFields = [
       ...selectReceiptItems,
@@ -173,6 +181,11 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectPrDocumentTypes,
       ...selectBudgetAccounts,
       ...selectUnits,
+      ...selectCompany,
+      ...selectQuotaCompany,
+      ...selectVendorProduct,
+      ...selectProducts,
+      ...selectVendors,
     ];
 
     const query = manager
@@ -184,6 +197,8 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .innerJoin('purchase_requests.documents', 'pr_documents')
       .innerJoin('pr_documents.document_types', 'pr_document_types')
       .innerJoin('receipts.documents', 'documents')
+      .leftJoin('documents.company', 'company')
+
       .innerJoin('documents.departments', 'departments')
       .innerJoin('documents.users', 'users')
       .innerJoin('documents.document_types', 'document_types')
@@ -199,6 +214,13 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
         'purchase_request_items',
       )
       .innerJoin('purchase_request_items.units', 'units')
+
+      .leftJoin('purchase_request_items.quota_company', 'quota_company')
+      .leftJoin('quota_company.vendor_product', 'vendor_product')
+      .leftJoin('vendor_product.products', 'products')
+      .leftJoin('vendor_product.vendors', 'vendors')
+      .leftJoin('products.product_type', 'product_type')
+
       .leftJoin('purchase_order_items.budget_item', 'budget_items')
       .leftJoin('budget_items.budget_accounts', 'budget_accounts')
       .innerJoin(
@@ -238,7 +260,12 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      console.log('user_id', user_id);
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        query.andWhere('documents.company_id = :company_id', { company_id });
+      }
       query.andWhere('document_approver.user_id = :user_id', { user_id });
     }
 

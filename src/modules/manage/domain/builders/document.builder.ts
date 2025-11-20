@@ -1,4 +1,5 @@
 import { EnumDocumentStatus } from '../../application/constants/status-key.const';
+import { CompanyEntity } from '../entities/company.entity';
 import { DepartmentEntity } from '../entities/department.entity';
 import { DocumentTypeEntity } from '../entities/document-type.entity';
 import { DocumentEntity } from '../entities/document.entity';
@@ -24,6 +25,7 @@ export class DocumentBuilder {
   requester: UserEntity;
   position: PositionEntity[];
   documentType: DocumentTypeEntity;
+  company: CompanyEntity | null;
 
   setDocumentId(value: DocumentId): this {
     this.documentId = value;
@@ -107,6 +109,11 @@ export class DocumentBuilder {
 
   setRequester(requester: UserEntity): this {
     this.requester = requester;
+    return this;
+  }
+
+  setCompany(company: CompanyEntity | null): this {
+    this.company = company;
     return this;
   }
 

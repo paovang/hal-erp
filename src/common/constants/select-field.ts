@@ -495,6 +495,7 @@ export const selectPoDocuments = [
   'po_documents.department_id',
   'po_documents.document_type_id',
   'po_documents.requester_id',
+  'po_documents.company_id',
   'po_documents.created_at',
   'po_documents.updated_at',
 ];

@@ -10,6 +10,7 @@ import { DepartmentDataAccessMapper } from './department.mapper';
 import { UserDataAccessMapper } from './user.mapper';
 import { DocumentTypeDataAccessMapper } from './document-type.mapper';
 import { PositionDataAccessMapper } from './position.mapper';
+import { CompanyDataAccessMapper } from './company.mapper';
 
 @Injectable()
 export class DocumentDataAccessMapper {
@@ -18,6 +19,7 @@ export class DocumentDataAccessMapper {
     private readonly requesterMapper: UserDataAccessMapper,
     private readonly positionMapper: PositionDataAccessMapper,
     private readonly documentType: DocumentTypeDataAccessMapper,
+    private readonly company: CompanyDataAccessMapper,
   ) {}
   toOrmEntity(
     documentTypeEntity: DocumentEntity,
@@ -84,6 +86,10 @@ export class DocumentDataAccessMapper {
         this.positionMapper.toEntity(position),
       );
       builder.setPosition(positionEntities);
+    }
+
+    if (ormData.company) {
+      builder.setCompany(this.company.toEntity(ormData.company));
     }
 
     return builder.build();

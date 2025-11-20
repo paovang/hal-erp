@@ -1,6 +1,7 @@
 import { ProductEntity } from '../entities/product.entity';
 import { QuotaCompanyEntity } from '../entities/quota-company.entity';
 import { VendorProductEntity } from '../entities/vendor-product.entity';
+import { VendorEntity } from '../entities/vendor.entity';
 import { QuotaCompanyId } from '../value-objects/quota-company-id.vo';
 
 export class QuotaCompanyBuilder {
@@ -15,6 +16,7 @@ export class QuotaCompanyBuilder {
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   product: ProductEntity | null;
+  vendor: VendorEntity | null;
 
   setQuotaId(value: QuotaCompanyId): this {
     this.quotaId = value;
@@ -68,6 +70,11 @@ export class QuotaCompanyBuilder {
 
   setProduct(product: ProductEntity | null): this {
     this.product = product;
+    return this;
+  }
+
+  setVendor(vendor: VendorEntity | null): this {
+    this.vendor = vendor;
     return this;
   }
 

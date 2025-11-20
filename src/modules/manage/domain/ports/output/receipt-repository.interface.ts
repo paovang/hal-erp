@@ -24,6 +24,7 @@ export interface IReadReceiptRepository {
     manager: EntityManager,
     user_id?: number,
     roles?: string[],
+    company_id?: number,
   ): Promise<ResponseResult<ReceiptEntity>>;
 
   findOne(

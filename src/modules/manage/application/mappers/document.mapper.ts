@@ -12,6 +12,7 @@ import { CreateDocumentDto } from '../dto/create/Document/create.dto';
 import { UpdateDocumentDto } from '../dto/create/Document/update.dto';
 import { PositionDataMapper } from './position.mapper';
 import { EnumDocumentStatus } from '../constants/status-key.const';
+import { CompanyDataMapper } from './company.mapper';
 
 @Injectable()
 export class DocumentDataMapper {
@@ -20,6 +21,7 @@ export class DocumentDataMapper {
     private readonly requesterDataMapper: UserDataMapper,
     private readonly positionDataMapper: PositionDataMapper,
     private readonly documentTypeDataMapper: DocumentTypeDataMapper,
+    private readonly company: CompanyDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
@@ -111,6 +113,10 @@ export class DocumentDataMapper {
       ? entity.position.map((position) =>
           this.positionDataMapper.toResponse(position),
         )
+      : null;
+
+    response.company = entity.company
+      ? this.company.toResponse(entity.company)
       : null;
 
     return response;

@@ -59,6 +59,7 @@ import {
   selectUserSignatures,
   selectVendorBankAccounts,
   selectVendorProduct,
+  selectVendors,
   // selectVendors,
   // selectWorkflowStepsDepartment,
 } from '@src/common/constants/select-field';
@@ -181,6 +182,7 @@ export class ReadPurchaseOrderRepository
       ...selectQuotaCompany,
       ...selectVendorProduct,
       ...selectProducts,
+      ...selectVendors,
     ];
 
     const query = manager
@@ -199,17 +201,12 @@ export class ReadPurchaseOrderRepository
       .innerJoin('documents.departments', 'departments')
       .innerJoin('documents.users', 'users')
       .innerJoin('documents.document_types', 'document_types')
-      .leftJoin('documents.company', 'company')
       .leftJoin('users.user_signatures', 'user_signatures')
       .innerJoin('users.department_users', 'department_users')
       .innerJoin('department_users.positions', 'positions')
 
       .innerJoin('purchase_request_items.units', 'units')
-      .leftJoin('purchase_request_items.quota_company', 'quota_company')
 
-      .leftJoin('quota_company.vendor_product', 'vendor_product')
-      .leftJoin('vendor_product.products', 'products')
-      .leftJoin('products.product_type', 'product_type')
       // purchase_order_items join with purchase request
       .innerJoin('purchase_order_items.purchase_request_items', 'request_items')
       .innerJoin('request_items.units', 'request_item_unit')
@@ -217,6 +214,13 @@ export class ReadPurchaseOrderRepository
       .leftJoin('budget_items.budget_accounts', 'budget_accounts')
       .innerJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
       // .leftJoin('selected_vendors.vendor_bank_accounts', 'vendor_bank_accounts')
+      .leftJoin('request_items.quota_company', 'quota_company')
+
+      .leftJoin('quota_company.vendor_product', 'vendor_product')
+      .leftJoin('vendor_product.products', 'products')
+      .leftJoin('vendor_product.vendors', 'vendors')
+      .leftJoin('products.product_type', 'product_type')
+
       .leftJoin(
         'purchase_order_selected_vendors.vendor_bank_account',
         'vendor_bank_accounts',
@@ -225,6 +229,7 @@ export class ReadPurchaseOrderRepository
       .leftJoin('vendor_bank_accounts.currencies', 'currency')
 
       .innerJoin('purchase_orders.documents', 'po_documents')
+      .leftJoin('po_documents.company', 'company')
       .innerJoin('po_documents.departments', 'po_departments')
       .innerJoin('po_documents.users', 'po_users')
       .innerJoin('po_documents.document_types', 'po_document_types')

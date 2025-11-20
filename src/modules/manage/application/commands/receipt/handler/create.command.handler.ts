@@ -67,6 +67,7 @@ import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.v
 import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
 import { StatusEnum } from '@src/common/enums/status.enum';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -154,6 +155,14 @@ export class CreateCommandHandler
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user.id;
+        let company_id: number | null | undefined = null;
+        const company = await manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: user_id,
+          },
+        });
+
+        company_id = company?.company_id ?? null;
 
         const check_document_type = await findOneOrFail(
           manager,
@@ -225,14 +234,13 @@ export class CreateCommandHandler
           poRest,
         );
 
-        console.log('receipt_number', receipt_number);
-
         const document_id = await this.createDocument(
           query,
           document_number,
           user_id,
           department_id,
           manager,
+          company_id || undefined,
         );
 
         const entity = this.createReceiptEntity(
@@ -381,6 +389,7 @@ export class CreateCommandHandler
     user_id: number,
     department_id: number,
     manager: EntityManager,
+    company_id?: number,
   ): Promise<number> {
     const DEntity = this._dataDMapper.toEntity(
       query.dto.document,
@@ -388,6 +397,7 @@ export class CreateCommandHandler
       document_number,
       user_id,
       department_id,
+      company_id,
     );
     const D = await this._writeD.create(DEntity, manager);
     return (D as any)._id._value;

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductResponse } from './product.response';
 import { VendorProductResponse } from './vendor-product.response';
+import { VendorResponse } from './vendor.response';
 
 export class QuotaCompanyResponse {
   @ApiProperty()
@@ -37,4 +38,7 @@ export class QuotaCompanyResponse {
 
   @ApiProperty()
   Product: ProductResponse | null;
+
+  @ApiProperty()
+  vendor: VendorResponse | null;
 }

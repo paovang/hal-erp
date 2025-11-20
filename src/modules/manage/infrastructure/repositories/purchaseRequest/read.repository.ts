@@ -39,6 +39,7 @@ import {
   selectUsers,
   selectUserSignatures,
   selectVendorProduct,
+  selectVendors,
   // selectWorkflowStepsDepartment,
 } from '@src/common/constants/select-field';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
@@ -164,6 +165,7 @@ export class ReadPurchaseRequestRepository
       ...selectQuotaCompany,
       ...selectVendorProduct,
       ...selectProducts,
+      ...selectVendors,
     ];
 
     const query = manager
@@ -184,6 +186,7 @@ export class ReadPurchaseRequestRepository
 
       .leftJoin('quota_company.vendor_product', 'vendor_product')
       .leftJoin('vendor_product.products', 'products')
+      .leftJoin('vendor_product.vendors', 'vendors')
       .leftJoin('products.product_type', 'product_type')
 
       .leftJoin('department_users.positions', 'positions')

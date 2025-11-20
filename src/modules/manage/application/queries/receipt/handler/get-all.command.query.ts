@@ -7,6 +7,7 @@ import { HttpStatus, Inject } from '@nestjs/common';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { IReadReceiptRepository } from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler
@@ -20,8 +21,15 @@ export class GetAllQueryHandler
 
   async execute(query: GetAllQuery): Promise<ResponseResult<ReceiptEntity>> {
     const user = this._userContextService.getAuthUser()?.user;
-
     const user_id = user?.id;
+
+    const company_user = await query.manager.findOne(CompanyUserOrmEntity, {
+      where: {
+        user_id: user_id,
+      },
+    });
+
+    const company_id = company_user?.company_id ?? undefined;
     const roles = user?.roles?.map((r: any) => r.name) ?? [];
 
     const data = await this._readRepo.findAll(
@@ -29,6 +37,7 @@ export class GetAllQueryHandler
       query.manager,
       user_id,
       roles,
+      company_id,
     );
 
     if (!data) {

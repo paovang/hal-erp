@@ -30,7 +30,6 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
     manager: EntityManager,
     company_id?: number,
     roles?: string[],
-    department_id?: number,
   ): Promise<ResponseResult<QuotaCompanyEntity>> {
     const queryBuilder = await this.createBaseQuery(manager);
     query.sort_by = 'quota_companies.id';

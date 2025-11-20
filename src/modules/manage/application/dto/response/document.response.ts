@@ -3,6 +3,7 @@ import { DepartmentResponse } from './department.response';
 import { UserResponse } from './user.response';
 import { DocumentTypeResponse } from './document-type.response';
 import { PositionResponse } from './position.response';
+import { CompanyResponse } from './company.response';
 
 export class DocumentResponse {
   @ApiProperty()
@@ -49,4 +50,7 @@ export class DocumentResponse {
 
   @ApiProperty()
   position: PositionResponse[] | null;
+
+  @ApiProperty()
+  company: CompanyResponse | null;
 }
