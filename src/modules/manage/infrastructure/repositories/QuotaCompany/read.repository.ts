@@ -114,7 +114,13 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
     });
     const itemWithRelation = await manager.findOne(QuotaCompanyOrmEntity, {
       where: { id: id.value },
-      relations: ['company', 'vendor_product'],
+      relations: [
+        'company',
+        'vendor_product',
+        'vendor_product.products',
+        'vendor_product.products.product_type',
+        'vendor_product.products.unit',
+      ],
     });
 
     return this._dataAccessMapper.toEntity(itemWithRelation || item);
