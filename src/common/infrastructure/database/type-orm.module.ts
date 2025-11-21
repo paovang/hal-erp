@@ -13,6 +13,7 @@ import { ProvinceSeeder } from './seeders/province.seeder';
 import { UserSeeder } from './seeders/user.seeder';
 import { VatSeeder } from './seeders/vat.seeder';
 import { BankSeeder } from './seeders/bank.seeder';
+import { CurrencySeeder } from './seeders/currecy.seeder';
 
 @Global()
 @Module({
@@ -72,6 +73,7 @@ import { BankSeeder } from './seeders/bank.seeder';
     UserSeeder,
     VatSeeder,
     BankSeeder,
+    CurrencySeeder,
   ],
 })
 export class TypeOrmRepositoryModule {}
