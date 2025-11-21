@@ -88,6 +88,7 @@ import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
 import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { CurrencyEnum } from '@src/common/enums/currency.enum';
 
 interface CustomApprovalDto
   extends Omit<
@@ -445,6 +446,7 @@ export class ApproveStepCommandHandler
                     const get_total = await this._readBudget.getTotal(
                       item.id,
                       manager,
+                      company_id || undefined,
                     );
 
                     sum_total += Number(get_total);
@@ -460,7 +462,10 @@ export class ApproveStepCommandHandler
                   const check_budget = await this._readBudget.calculate(
                     item.budget_item_id,
                     manager,
+                    company_id || undefined,
                   );
+
+                  const exchage = await this.exchange(query, manager);
 
                   if (sum_total > check_budget) {
                     throw new ManageDomainException(
@@ -872,6 +877,124 @@ export class ApproveStepCommandHandler
   //     );
   //   }
   // }
+
+  private async exchange(
+    query: ApproveStepCommand,
+    manager: EntityManager,
+  ): Promise<number> {
+    let totalAllocated = 0;
+    let sum_total = 0;
+    let payment_total = 0;
+
+    for (const item of query.dto.purchase_order_items) {
+      // 1. SUM allocated_amount
+      const result = await manager
+        .createQueryBuilder(BudgetItemOrmEntity, 'budget_item')
+        .leftJoin('budget_item.increase_budget_detail', 'inc')
+        .where('budget_item.id = :id', { id: Number(item.budget_item_id) })
+        .select('SUM(inc.allocated_amount)', 'totalAllocated')
+        .getRawOne();
+
+      if (!result) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+          { property: 'budget_item_detail_id' },
+        );
+      }
+
+      totalAllocated += Number(result.totalAllocated ?? 0);
+
+      // 2. Find purchase order item
+      const purchase_order_item = await manager.findOne(
+        PurchaseOrderItemOrmEntity,
+        { where: { id: item.id } },
+      );
+      assertOrThrow(
+        purchase_order_item,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'purchase order item',
+      );
+
+      // 3. Get selected vendor
+      const order_item_select_vendor = await manager.findOne(
+        PurchaseOrderSelectedVendorOrmEntity,
+        {
+          where: {
+            purchase_order_item_id: purchase_order_item?.id,
+          },
+        },
+      );
+      assertOrThrow(
+        order_item_select_vendor,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'purchase order selected vendor',
+      );
+
+      // 4. Vendor bank account
+      const vendor_bank_account = await manager.findOne(
+        VendorBankAccountOrmEntity,
+        { where: { id: order_item_select_vendor?.vendor_bank_account_id } },
+      );
+      assertOrThrow(
+        vendor_bank_account,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'vendor bank account',
+      );
+
+      // 5. Exchange rate
+      const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
+        where: {
+          from_currency_id: vendor_bank_account?.currency_id,
+          to_currency_id: CurrencyEnum.kIP,
+          is_active: true,
+        },
+      });
+      assertOrThrow(
+        exchange_rate,
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        'exchange rate',
+      );
+
+      // 6. Get currency info
+      const currency = await this.getCurrency(
+        exchange_rate!.from_currency_id,
+        manager,
+      );
+      const payment_currency = await this.getCurrency(
+        exchange_rate!.to_currency_id,
+        manager,
+      );
+
+      // 7. Calculate totals
+      const vat = Number(purchase_order_item?.vat ?? 0);
+      const get_total = Number(purchase_order_item?.total ?? 0);
+      sum_total += get_total + vat;
+
+      const rate = Number(exchange_rate?.rate ?? 0);
+
+      if (payment_currency.code !== 'LAK') {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.BAD_REQUEST,
+          {
+            property: `invalid payment currency`,
+          },
+        );
+      }
+
+      // Convert to LAK
+      payment_total = sum_total * (currency.code === 'LAK' ? 1 : rate);
+    }
+
+    // 👉 return after the loop
+    const final_total = payment_total - totalAllocated;
+    return final_total;
+  }
 
   private async checkDataAndUpdateUserApproval(
     query: ApproveStepCommand,

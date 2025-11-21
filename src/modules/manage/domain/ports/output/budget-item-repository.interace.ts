@@ -29,9 +29,17 @@ export interface IReadBudgetItemRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetItemEntity>>;
 
-  calculate(id: number, manager: EntityManager): Promise<number>;
+  calculate(
+    id: number,
+    manager: EntityManager,
+    company_id?: number,
+  ): Promise<number>;
 
-  getTotal(id: number, manager: EntityManager): Promise<number>;
+  getTotal(
+    id: number,
+    manager: EntityManager,
+    company_id?: number,
+  ): Promise<number>;
 }
 
 export interface IWriteBudgetItemRepository {

@@ -26,6 +26,9 @@ export class CurrencyOrmEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   name?: string;
 
+  @Column({ type: 'boolean', default: false })
+  default?: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

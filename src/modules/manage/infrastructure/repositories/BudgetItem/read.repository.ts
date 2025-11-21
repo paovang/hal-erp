@@ -307,13 +307,19 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     return this._dataAccessMapper.toEntityReport(item);
   }
 
-  async calculate(id: number, manager: EntityManager): Promise<number> {
+  async calculate(
+    id: number,
+    manager: EntityManager,
+    company_id?: number,
+  ): Promise<number> {
     // Sum amount from document_transactions
     const documentTransactionSum = await manager
       .createQueryBuilder()
       .select('SUM(document_transactions.amount)', 'total')
       .from('document_transactions', 'document_transactions')
+      .leftJoin('document_transactions.documents', 'documents')
       .where('document_transactions.budget_item_id = :id', { id })
+      .andWhere('documents.company_id = :company_id', { company_id })
       .getRawOne();
 
     // Sum allocated_amount from increase_budget_detail
@@ -321,7 +327,10 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .createQueryBuilder()
       .select('SUM(increase_budget_detail.allocated_amount)', 'total')
       .from('increase_budget_details', 'increase_budget_detail')
+      .leftJoin('increase_budget_detail.increase_budgets', 'increase_budgets')
+      .leftJoin('increase_budgets.budget_account', 'budget_account')
       .where('increase_budget_detail.budget_item_id = :id', { id })
+      .andWhere('budget_account.company_id = :company_id', { company_id })
       .getRawOne();
 
     const total =
@@ -331,12 +340,18 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     return total;
   }
 
-  async getTotal(id: number, manager: EntityManager): Promise<number> {
+  async getTotal(
+    id: number,
+    manager: EntityManager,
+    company_id?: number,
+  ): Promise<number> {
     const result = await manager
       .createQueryBuilder()
       .select('purchase_order_items.total', 'total')
       .from('purchase_order_items', 'purchase_order_items')
+      .leftJoin('purchase_order_items.quota_company', 'quota_company')
       .where('purchase_order_items.id = :id', { id })
+      .andWhere('quota_company.company_id = :company_id', { company_id })
       .getRawOne();
 
     if (!result || result.total === null) {
