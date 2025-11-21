@@ -92,7 +92,8 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
       .leftJoinAndSelect('quota_companies.vendor_product', 'vendor_product')
       .leftJoinAndSelect('vendor_product.products', 'products')
       .leftJoinAndSelect('products.product_type', 'product_type')
-      .leftJoinAndSelect('products.unit', 'unit');
+      .leftJoinAndSelect('products.unit', 'unit')
+      .leftJoinAndSelect('vendor_product.vendor', 'vendor');
   }
 
   // vendor, product
@@ -120,6 +121,7 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
         'vendor_product.products',
         'vendor_product.products.product_type',
         'vendor_product.products.unit',
+        'vendor_product.vendor',
       ],
     });
 
