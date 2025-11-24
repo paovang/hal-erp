@@ -44,6 +44,18 @@ export class RoleController {
     );
   }
 
+  @Get('company')
+  async getAllForCompany(
+    @Query() dto: RoleQueryDto,
+  ): Promise<ResponseResult<RoleResponse>> {
+    const result = await this._roleService.getAllForCompany(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
   @Post('department')
   async create(
     @Body() dto: CreateRoleDto,
