@@ -6,6 +6,7 @@ import { UpdateCommandHandler } from '../../../commands/role/handler/update.comm
 import { DeleteCommandHandler } from '../../../commands/role/handler/delete.command.handler';
 import { CreateRoleCommandHandler } from '../../../commands/role/handler/create-role-command.handler';
 import { UpdateRoleCommandHandler } from '../../../commands/role/handler/update-role-command.handler';
+import { GetAllForCompanyQueryHandler } from '../../../queries/user/role/handler/get-all-for-company-query.handler';
 
 export const RoleHandlersProviders: Provider[] = [
   GetAllQueryHandler,
@@ -15,4 +16,5 @@ export const RoleHandlersProviders: Provider[] = [
   DeleteCommandHandler,
   CreateRoleCommandHandler,
   UpdateRoleCommandHandler,
+  GetAllForCompanyQueryHandler,
 ];
