@@ -418,7 +418,7 @@ export class ApproveStepCommandHandler
               ) {
                 let sum_total = 0;
                 for (const item of query.dto.purchase_order_items) {
-                  await findOneOrFail(
+                  const purchase_order_item = await findOneOrFail(
                     manager,
                     PurchaseOrderItemOrmEntity,
                     {
@@ -440,6 +440,7 @@ export class ApproveStepCommandHandler
                     (item) => item.budget_item_id,
                   );
 
+                  let payment_total = 0;
                   // Check if all values in the array are the same
                   const [firstBudgetItemId, ...rest] = allBudgetItemIds;
                   if (rest.every((id) => id === firstBudgetItemId)) {
@@ -449,14 +450,16 @@ export class ApproveStepCommandHandler
                       company_id || undefined,
                     );
 
-                    sum_total += Number(get_total);
+                    sum_total +=
+                      Number(get_total) + (purchase_order_item?.vat || 0);
                   } else {
                     const get_total = await this._readBudget.getTotal(
                       item.id,
                       manager,
                     );
 
-                    sum_total = Number(get_total);
+                    sum_total +=
+                      Number(get_total) + (purchase_order_item?.vat || 0);
                   }
 
                   const check_budget = await this._readBudget.calculate(
@@ -465,9 +468,100 @@ export class ApproveStepCommandHandler
                     company_id || undefined,
                   );
 
-                  const exchage = await this.exchange(query, manager);
+                  // 3. Get selected vendor
+                  const order_item_select_vendor = await manager.findOne(
+                    PurchaseOrderSelectedVendorOrmEntity,
+                    {
+                      where: {
+                        purchase_order_item_id: purchase_order_item?.id,
+                      },
+                    },
+                  );
+                  assertOrThrow(
+                    order_item_select_vendor,
+                    'errors.not_found',
+                    HttpStatus.NOT_FOUND,
+                    'purchase order selected vendor',
+                  );
 
-                  if (sum_total > check_budget) {
+                  // 4. Vendor bank account
+                  const vendor_bank_account = await manager.findOne(
+                    VendorBankAccountOrmEntity,
+                    {
+                      where: {
+                        id: order_item_select_vendor?.vendor_bank_account_id,
+                      },
+                    },
+                  );
+                  assertOrThrow(
+                    vendor_bank_account,
+                    'errors.not_found',
+                    HttpStatus.NOT_FOUND,
+                    'vendor bank account',
+                  );
+
+                  // 5. Exchange rate
+                  const exchange_rate = await manager.findOne(
+                    ExchangeRateOrmEntity,
+                    {
+                      where: {
+                        from_currency_id: vendor_bank_account?.currency_id,
+                        to_currency_id: CurrencyEnum.kIP,
+                        is_active: true,
+                      },
+                    },
+                  );
+                  assertOrThrow(
+                    exchange_rate,
+                    'errors.not_found',
+                    HttpStatus.NOT_FOUND,
+                    'exchange rate',
+                  );
+
+                  // 6. Get currency info
+                  const currency = await this.getCurrency(
+                    exchange_rate!.from_currency_id,
+                    manager,
+                  );
+                  const payment_currency = await this.getCurrency(
+                    exchange_rate!.to_currency_id,
+                    manager,
+                  );
+
+                  // 7. Calculate totals
+
+                  const rate = Number(exchange_rate?.rate ?? 0);
+
+                  if (
+                    currency.code === 'USD' &&
+                    payment_currency.code === 'LAK'
+                  ) {
+                    payment_total = sum_total * rate;
+                  } else if (
+                    currency.code === 'THB' &&
+                    payment_currency.code === 'LAK'
+                  ) {
+                    payment_total = sum_total * rate;
+                  } else if (
+                    currency.code === 'LAK' &&
+                    payment_currency.code === 'LAK'
+                  ) {
+                    payment_total = sum_total * 1;
+                  } else {
+                    throw new ManageDomainException(
+                      'errors.not_found',
+                      HttpStatus.NOT_FOUND,
+                      {
+                        property: `exchange rate ${currency.code} and ${payment_currency.code}`,
+                      },
+                    );
+                  }
+
+                  console.log('object', payment_total, check_budget);
+
+                  // const exchage = await this.exchange(query, manager);
+
+                  if (payment_total > check_budget) {
                     throw new ManageDomainException(
                       'errors.insufficient_budget',
                       HttpStatus.BAD_REQUEST,
@@ -605,6 +699,8 @@ export class ApproveStepCommandHandler
           if (!a_w_s) {
             // ກໍລະນິບໍ່ມິ step ຕໍ່ໄປແລ້ວ
             if (query.dto.type === EnumPrOrPo.PO) {
+              console.log('purchase order');
+
               const po = await manager.findOne(PurchaseOrderOrmEntity, {
                 where: { document_id: step.user_approvals.document_id },
                 relations: [
@@ -878,123 +974,123 @@ export class ApproveStepCommandHandler
   //   }
   // }
 
-  private async exchange(
-    query: ApproveStepCommand,
-    manager: EntityManager,
-  ): Promise<number> {
-    let totalAllocated = 0;
-    let sum_total = 0;
-    let payment_total = 0;
+  // private async exchange(
+  //   query: ApproveStepCommand,
+  //   manager: EntityManager,
+  // ): Promise<number> {
+  //   let totalAllocated = 0;
+  //   let sum_total = 0;
+  //   let payment_total = 0;
 
-    for (const item of query.dto.purchase_order_items) {
-      // 1. SUM allocated_amount
-      const result = await manager
-        .createQueryBuilder(BudgetItemOrmEntity, 'budget_item')
-        .leftJoin('budget_item.increase_budget_detail', 'inc')
-        .where('budget_item.id = :id', { id: Number(item.budget_item_id) })
-        .select('SUM(inc.allocated_amount)', 'totalAllocated')
-        .getRawOne();
+  //   for (const item of query.dto.purchase_order_items) {
+  //     // 1. SUM allocated_amount
+  //     const result = await manager
+  //       .createQueryBuilder(BudgetItemOrmEntity, 'budget_item')
+  //       .leftJoin('budget_item.increase_budget_detail', 'inc')
+  //       .where('budget_item.id = :id', { id: Number(item.budget_item_id) })
+  //       .select('SUM(inc.allocated_amount)', 'totalAllocated')
+  //       .getRawOne();
 
-      if (!result) {
-        throw new ManageDomainException(
-          'errors.not_found',
-          HttpStatus.NOT_FOUND,
-          { property: 'budget_item_detail_id' },
-        );
-      }
+  //     if (!result) {
+  //       throw new ManageDomainException(
+  //         'errors.not_found',
+  //         HttpStatus.NOT_FOUND,
+  //         { property: 'budget_item_detail_id' },
+  //       );
+  //     }
 
-      totalAllocated += Number(result.totalAllocated ?? 0);
+  //     totalAllocated += Number(result.totalAllocated ?? 0);
 
-      // 2. Find purchase order item
-      const purchase_order_item = await manager.findOne(
-        PurchaseOrderItemOrmEntity,
-        { where: { id: item.id } },
-      );
-      assertOrThrow(
-        purchase_order_item,
-        'errors.not_found',
-        HttpStatus.NOT_FOUND,
-        'purchase order item',
-      );
+  //     // 2. Find purchase order item
+  //     const purchase_order_item = await manager.findOne(
+  //       PurchaseOrderItemOrmEntity,
+  //       { where: { id: item.id } },
+  //     );
+  //     assertOrThrow(
+  //       purchase_order_item,
+  //       'errors.not_found',
+  //       HttpStatus.NOT_FOUND,
+  //       'purchase order item',
+  //     );
 
-      // 3. Get selected vendor
-      const order_item_select_vendor = await manager.findOne(
-        PurchaseOrderSelectedVendorOrmEntity,
-        {
-          where: {
-            purchase_order_item_id: purchase_order_item?.id,
-          },
-        },
-      );
-      assertOrThrow(
-        order_item_select_vendor,
-        'errors.not_found',
-        HttpStatus.NOT_FOUND,
-        'purchase order selected vendor',
-      );
+  //     // 3. Get selected vendor
+  //     const order_item_select_vendor = await manager.findOne(
+  //       PurchaseOrderSelectedVendorOrmEntity,
+  //       {
+  //         where: {
+  //           purchase_order_item_id: purchase_order_item?.id,
+  //         },
+  //       },
+  //     );
+  //     assertOrThrow(
+  //       order_item_select_vendor,
+  //       'errors.not_found',
+  //       HttpStatus.NOT_FOUND,
+  //       'purchase order selected vendor',
+  //     );
 
-      // 4. Vendor bank account
-      const vendor_bank_account = await manager.findOne(
-        VendorBankAccountOrmEntity,
-        { where: { id: order_item_select_vendor?.vendor_bank_account_id } },
-      );
-      assertOrThrow(
-        vendor_bank_account,
-        'errors.not_found',
-        HttpStatus.NOT_FOUND,
-        'vendor bank account',
-      );
+  //     // 4. Vendor bank account
+  //     const vendor_bank_account = await manager.findOne(
+  //       VendorBankAccountOrmEntity,
+  //       { where: { id: order_item_select_vendor?.vendor_bank_account_id } },
+  //     );
+  //     assertOrThrow(
+  //       vendor_bank_account,
+  //       'errors.not_found',
+  //       HttpStatus.NOT_FOUND,
+  //       'vendor bank account',
+  //     );
 
-      // 5. Exchange rate
-      const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
-        where: {
-          from_currency_id: vendor_bank_account?.currency_id,
-          to_currency_id: CurrencyEnum.kIP,
-          is_active: true,
-        },
-      });
-      assertOrThrow(
-        exchange_rate,
-        'errors.not_found',
-        HttpStatus.NOT_FOUND,
-        'exchange rate',
-      );
+  //     // 5. Exchange rate
+  //     const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
+  //       where: {
+  //         from_currency_id: vendor_bank_account?.currency_id,
+  //         to_currency_id: CurrencyEnum.kIP,
+  //         is_active: true,
+  //       },
+  //     });
+  //     assertOrThrow(
+  //       exchange_rate,
+  //       'errors.not_found',
+  //       HttpStatus.NOT_FOUND,
+  //       'exchange rate',
+  //     );
 
-      // 6. Get currency info
-      const currency = await this.getCurrency(
-        exchange_rate!.from_currency_id,
-        manager,
-      );
-      const payment_currency = await this.getCurrency(
-        exchange_rate!.to_currency_id,
-        manager,
-      );
+  //     // 6. Get currency info
+  //     const currency = await this.getCurrency(
+  //       exchange_rate!.from_currency_id,
+  //       manager,
+  //     );
+  //     const payment_currency = await this.getCurrency(
+  //       exchange_rate!.to_currency_id,
+  //       manager,
+  //     );
 
-      // 7. Calculate totals
-      const vat = Number(purchase_order_item?.vat ?? 0);
-      const get_total = Number(purchase_order_item?.total ?? 0);
-      sum_total += get_total + vat;
+  //     // 7. Calculate totals
+  //     const vat = Number(purchase_order_item?.vat ?? 0);
+  //     const get_total = Number(purchase_order_item?.total ?? 0);
+  //     sum_total += get_total + vat;
 
-      const rate = Number(exchange_rate?.rate ?? 0);
+  //     const rate = Number(exchange_rate?.rate ?? 0);
 
-      if (payment_currency.code !== 'LAK') {
-        throw new ManageDomainException(
-          'errors.not_found',
-          HttpStatus.BAD_REQUEST,
-          {
-            property: `invalid payment currency`,
-          },
-        );
-      }
+  //     if (payment_currency.code !== 'LAK') {
+  //       throw new ManageDomainException(
+  //         'errors.not_found',
+  //         HttpStatus.BAD_REQUEST,
+  //         {
+  //           property: `invalid payment currency`,
+  //         },
+  //       );
+  //     }
 
-      // Convert to LAK
-      payment_total = sum_total * (currency.code === 'LAK' ? 1 : rate);
-    }
+  //     // Convert to LAK
+  //     payment_total = sum_total * (currency.code === 'LAK' ? 1 : rate);
+  //   }
 
-    // 👉 return after the loop
-    const final_total = payment_total - totalAllocated;
-    return final_total;
-  }
+  //   // 👉 return after the loop
+  //   const final_total = payment_total - totalAllocated;
+  //   return final_total;
+  // }
 
   private async checkDataAndUpdateUserApproval(
     query: ApproveStepCommand,
@@ -1246,8 +1342,16 @@ export class ApproveStepCommandHandler
         payment_total = sum_total * rate;
       } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
         payment_total = sum_total * rate;
-      } else {
+      } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
         payment_total = sum_total * 1;
+      } else {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+          {
+            property: `exchange rate ${currency.code} -> ${payment_currency.code}`,
+          },
+        );
       }
 
       // Generate transaction number
