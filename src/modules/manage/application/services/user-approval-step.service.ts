@@ -33,6 +33,7 @@ export class UserApprovalStepService
     dto: ApprovalDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<UserApprovalStepEntity>> {
+    console.log('object');
     return await this._commandBus.execute(
       new ApproveStepCommand(stepId, dto, manager ?? this._readEntityManager),
     );

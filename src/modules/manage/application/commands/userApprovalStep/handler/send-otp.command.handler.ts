@@ -49,6 +49,8 @@ export class SendOTPCommandHandler
       'step',
     );
 
+    console.log('object');
+
     return await sendOtpUtil(query.id, user, tel);
   }
 }
