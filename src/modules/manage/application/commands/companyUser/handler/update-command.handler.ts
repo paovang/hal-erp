@@ -159,13 +159,13 @@ export class UpdateCompanyUserCommandHandler
           command.body.permissionIds,
         );
 
-        const UserSignature = await findOneOrFail(
-          manager,
-          UserSignatureOrmEntity,
-          { user_id: user_id },
-          `user_id ${user_id}`,
-        );
         if (command.body.signature) {
+          const UserSignature = await findOneOrFail(
+            manager,
+            UserSignatureOrmEntity,
+            { user_id: user_id },
+            `user_id ${user_id}`,
+          );
           // user signature
           let processedItems = null;
           const baseFolder = path.join(

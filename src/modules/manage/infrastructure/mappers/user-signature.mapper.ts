@@ -20,8 +20,17 @@ export class UserSignatureDataAccessMapper {
     }
 
     mediaOrmEntity.user_id = userSignatureEntity.userId;
+    if (method === OrmEntityMethod.UPDATE) {
+      if (
+        userSignatureEntity.signature &&
+        userSignatureEntity.signature !== undefined
+      ) {
+        mediaOrmEntity.signature_file = userSignatureEntity.signature;
+      }
+    }
     mediaOrmEntity.signature_file = userSignatureEntity.signature ?? undefined;
     if (method === OrmEntityMethod.CREATE) {
+      mediaOrmEntity.signature_file = userSignatureEntity.signature;
       mediaOrmEntity.created_at =
         userSignatureEntity.createdAt ?? new Date(now);
     }

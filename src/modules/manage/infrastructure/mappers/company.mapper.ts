@@ -22,12 +22,17 @@ export class CompanyDataAccessMapper {
     }
 
     companyOrmEntity.name = companyEntity.name ?? null;
-    companyOrmEntity.logo = companyEntity.logo ?? null;
+    if (method === OrmEntityMethod.UPDATE) {
+      if (companyEntity.logo && companyEntity.logo !== undefined) {
+        companyOrmEntity.logo = companyEntity.logo;
+      }
+    }
     companyOrmEntity.tel = companyEntity.tel ?? null;
     companyOrmEntity.email = companyEntity.email ?? null;
     companyOrmEntity.address = companyEntity.address ?? null;
 
     if (method === OrmEntityMethod.CREATE) {
+      companyOrmEntity.logo = companyEntity.logo ?? null;
       companyOrmEntity.created_at = companyEntity.createdAt ?? new Date(now);
     }
     companyOrmEntity.updated_at = new Date(now);

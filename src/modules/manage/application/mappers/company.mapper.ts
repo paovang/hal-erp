@@ -17,7 +17,7 @@ export class CompanyDataMapper {
       builder.setName(dto.name);
     }
 
-    if (dto.logo) {
+    if (dto.logo && dto.logo !== undefined) {
       builder.setLogo(dto.logo);
     }
 
