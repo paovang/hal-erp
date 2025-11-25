@@ -168,10 +168,10 @@ export class PermissionSeeder {
       'update-receipt-item': 28,
       'delete-receipt-item': 28,
 
-      'create-company': 39,
-      'read-company': 39,
-      'update-company': 39,
-      'delete-company': 39,
+      'create-company': 29,
+      'read-company': 29,
+      'update-company': 29,
+      'delete-company': 29,
 
       'create-company-user': 30,
       'read-company-user': 30,
