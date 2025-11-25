@@ -85,7 +85,6 @@ export class ApproveCommandHandler
     await entity.initializeUpdateSetId(new ApprovalWorkflowId(query.id));
     await entity.validateExistingIdForUpdate();
 
-    /** Check Exits Department Id */
     await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {
       id: entity.getId().value,
     });
