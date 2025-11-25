@@ -65,7 +65,7 @@ export class ReadRoleRepository implements IReadRoleRepository {
     roles?: string[],
     companyId?: number,
   ) {
-    const roleName = ['super-admin', 'admin'];
+    const roleName = ['super-admin', 'admin', 'company-admin'];
     const queryBuilder = manager
       .createQueryBuilder(RoleOrmEntity, 'roles')
       .leftJoin('roles.rolesGroups', 'roleGroups') // use rolesGroups (matches entity)
@@ -125,7 +125,7 @@ export class ReadRoleRepository implements IReadRoleRepository {
     department_id?: number,
     company_id?: number,
   ) {
-    const roleName = ['super-admin', 'admin'];
+    const roleName = ['super-admin', 'admin', 'company-admin'];
     const queryBuilder = manager
       .createQueryBuilder(RoleOrmEntity, 'roles')
       .leftJoin('roles.rolesGroups', 'roleGroups') // use rolesGroups (matches entity)

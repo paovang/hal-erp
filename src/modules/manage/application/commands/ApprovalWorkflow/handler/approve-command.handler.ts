@@ -40,21 +40,18 @@ export class ApproveCommandHandler
     let company_id: number | null | undefined = null;
     const user = this._userContextService.getAuthUser()?.user;
     const user_id = user.id;
-    const company_user = await findOneOrFail(
-      query.manager,
-      CompanyUserOrmEntity,
-      {
+    const company = await query.manager.findOne(CompanyUserOrmEntity, {
+      where: {
         user_id: user_id,
       },
-      `company user id ${user_id}`,
-    );
+    });
 
-    company_id = company_user.company_id ?? undefined;
+    company_id = company?.company_id ?? undefined;
 
     const roles = user?.roles?.map((r: any) => r.name) ?? [];
 
     if (
-      !roles.includes(EligiblePersons.SUPER_ADMIN) ||
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.COMPANY_ADMIN)
     ) {
       throw new ManageDomainException(
