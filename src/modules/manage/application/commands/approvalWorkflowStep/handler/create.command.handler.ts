@@ -2,7 +2,10 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { CreateCommand } from '../create.command';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ApprovalWorkflowStepEntity } from '@src/modules/manage/domain/entities/approval-workflow-step.entity';
-import { WRITE_APPROVAL_WORKFLOW_STEP_REPOSITORY } from '../../../constants/inject-key.const';
+import {
+  WRITE_APPROVAL_WORKFLOW_REPOSITORY,
+  WRITE_APPROVAL_WORKFLOW_STEP_REPOSITORY,
+} from '../../../constants/inject-key.const';
 import { HttpStatus, Inject } from '@nestjs/common';
 import { IWriteApprovalWorkflowStepRepository } from '@src/modules/manage/domain/ports/output/approval-workflow-step-repository.interface';
 import { ApprovalWorkflowStepDataMapper } from '../../../mappers/approval-workflow-step.mapper';
@@ -14,6 +17,11 @@ import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/databa
 import { EnumWorkflowStep } from '../../../constants/status-key.const';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { EntityManager } from 'typeorm';
+import { IWriteApprovalWorkflowRepository } from '@src/modules/manage/domain/ports/output/approval-workflow-repository.interface';
+import { ApprovalWorkflowDataMapper } from '../../../mappers/approval-workflow.mapper';
+import { ApprovalWorkflowId } from '@src/modules/manage/domain/value-objects/approval-workflow-id.vo';
+import { StatusEnum } from '@src/common/enums/status.enum';
+import { ApproveDto } from '../../../dto/create/ApprovalWorkflow/approve.dto';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -24,6 +32,9 @@ export class CreateCommandHandler
     @Inject(WRITE_APPROVAL_WORKFLOW_STEP_REPOSITORY)
     private readonly _writeStep: IWriteApprovalWorkflowStepRepository,
     private readonly _dataMapperStep: ApprovalWorkflowStepDataMapper,
+    @Inject(WRITE_APPROVAL_WORKFLOW_REPOSITORY)
+    private readonly _write: IWriteApprovalWorkflowRepository,
+    private readonly _dataMapper: ApprovalWorkflowDataMapper,
   ) {}
 
   async execute(
@@ -92,7 +103,23 @@ export class CreateCommandHandler
     }
 
     const step = this._dataMapperStep.toEntity(mergeData, query.id);
-    return await this._writeStep.create(step, query.manager);
+    const res = await this._writeStep.create(step, query.manager);
+
+    const status = StatusEnum.PENDING;
+    const dto = status as unknown as ApproveDto;
+
+    const entity = this._dataMapper.toEntityApprove(dto);
+    await entity.initializeUpdateSetId(new ApprovalWorkflowId(query.id));
+    await entity.validateExistingIdForUpdate();
+
+    /** Check Exits Department Id */
+    await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {
+      id: entity.getId().value,
+    });
+
+    await this._write.approved(entity, query.manager);
+
+    return res;
   }
 
   private async checkData(query: CreateCommand): Promise<void> {

@@ -21,6 +21,7 @@ export class ApprovalWorkflowDataAccessMapper {
   toOrmEntity(
     approvalWorkflowEntity: ApprovalWorkflowEntity,
     method: OrmEntityMethod,
+    status?: StatusEnum.PENDING,
   ): ApprovalWorkflowOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = approvalWorkflowEntity.getId();
@@ -38,7 +39,10 @@ export class ApprovalWorkflowDataAccessMapper {
       mediaOrmEntity.created_at =
         approvalWorkflowEntity.createdAt ?? new Date(now);
     }
-    mediaOrmEntity.status = approvalWorkflowEntity.status;
+
+    if (method === OrmEntityMethod.UPDATE) {
+      mediaOrmEntity.status = status ?? StatusEnum.PENDING;
+    }
     mediaOrmEntity.updated_at = new Date(now);
 
     return mediaOrmEntity;

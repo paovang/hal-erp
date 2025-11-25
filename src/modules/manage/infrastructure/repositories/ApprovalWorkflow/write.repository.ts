@@ -8,6 +8,7 @@ import { ApprovalWorkflowDataAccessMapper } from '../../mappers/approval-workflo
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { ApprovalWorkflowId } from '@src/modules/manage/domain/value-objects/approval-workflow-id.vo';
+import { StatusEnum } from '@src/common/enums/status.enum';
 
 @Injectable()
 export class WriteApprovalWorkflowRepository
@@ -35,6 +36,7 @@ export class WriteApprovalWorkflowRepository
     const OrmEntity = this._dataAccessMapper.toOrmEntity(
       entity,
       OrmEntityMethod.UPDATE,
+      StatusEnum.PENDING,
     );
 
     try {
