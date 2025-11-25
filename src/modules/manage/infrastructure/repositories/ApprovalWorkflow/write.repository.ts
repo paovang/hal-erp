@@ -91,4 +91,26 @@ export class WriteApprovalWorkflowRepository
       throw error;
     }
   }
+
+  async rejected(
+    entity: ApprovalWorkflowEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.REJECTED,
+    );
+
+    try {
+      await manager.update(
+        ApprovalWorkflowOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
 }

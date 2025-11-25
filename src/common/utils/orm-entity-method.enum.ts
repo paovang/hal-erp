@@ -3,6 +3,7 @@ export enum OrmEntityMethod {
   UPDATE = 'update',
   DELETE = 'delete',
   APPROVED = 'approved',
+  REJECTED = 'rejected',
 }
 
 export enum DocumentEntityMode {

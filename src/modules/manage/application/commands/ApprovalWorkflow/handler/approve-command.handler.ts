@@ -13,6 +13,10 @@ import { ManageDomainException } from '@src/modules/manage/domain/exceptions/man
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { EligiblePersons } from '../../../constants/status-key.const';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
+import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 @CommandHandler(ApproveCommand)
 export class ApproveCommandHandler
@@ -24,71 +28,80 @@ export class ApproveCommandHandler
     private readonly _write: IWriteApprovalWorkflowRepository,
     private readonly _dataMapper: ApprovalWorkflowDataMapper,
     private readonly _userContextService: UserContextService,
+    @Inject(TRANSACTION_MANAGER_SERVICE)
+    private readonly _transactionManagerService: ITransactionManagerService,
+    @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
+    private readonly _dataSource: DataSource,
   ) {}
 
   async execute(
     query: ApproveCommand,
   ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
-    if (isNaN(query.id)) {
-      throw new ManageDomainException(
-        'errors.must_be_number',
-        HttpStatus.BAD_REQUEST,
-        { property: `${query.id}` },
-      );
-    }
+    return await this._transactionManagerService.runInTransaction(
+      this._dataSource,
+      async (manager) => {
+        if (isNaN(query.id)) {
+          throw new ManageDomainException(
+            'errors.must_be_number',
+            HttpStatus.BAD_REQUEST,
+            { property: `${query.id}` },
+          );
+        }
 
-    let company_id: number | null | undefined = null;
-    const user = this._userContextService.getAuthUser()?.user;
-    const user_id = user.id;
-    const company = await query.manager.findOne(CompanyUserOrmEntity, {
-      where: {
-        user_id: user_id,
+        let company_id: number | null | undefined = null;
+        const user = this._userContextService.getAuthUser()?.user;
+        const user_id = user.id;
+        const company = await manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: user_id,
+          },
+        });
+
+        company_id = company?.company_id ?? undefined;
+
+        const roles = user?.roles?.map((r: any) => r.name) ?? [];
+
+        if (
+          !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+          !roles.includes(EligiblePersons.COMPANY_ADMIN)
+        ) {
+          throw new ManageDomainException(
+            'errors.unauthorized',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        if (company_id) {
+          await findOneOrFail(
+            manager,
+            ApprovalWorkflowOrmEntity,
+            {
+              id: query.id,
+              company_id: company_id,
+            },
+            `Approval Workflow ID: ${query.id}`,
+          );
+        }
+
+        await findOneOrFail(
+          manager,
+          ApprovalWorkflowOrmEntity,
+          {
+            id: query.id,
+          },
+          `Approval Workflow ID: ${query.id}`,
+        );
+
+        const entity = this._dataMapper.toEntityApprove(query.dto);
+        await entity.initializeUpdateSetId(new ApprovalWorkflowId(query.id));
+        await entity.validateExistingIdForUpdate();
+
+        await findOneOrFail(manager, ApprovalWorkflowOrmEntity, {
+          id: entity.getId().value,
+        });
+
+        return await this._write.approved(entity, manager);
       },
-    });
-
-    company_id = company?.company_id ?? undefined;
-
-    const roles = user?.roles?.map((r: any) => r.name) ?? [];
-
-    if (
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.COMPANY_ADMIN)
-    ) {
-      throw new ManageDomainException(
-        'errors.unauthorized',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    if (company_id) {
-      await findOneOrFail(
-        query.manager,
-        ApprovalWorkflowOrmEntity,
-        {
-          id: query.id,
-          company_id: company_id,
-        },
-        `Approval Workflow ID: ${query.id}`,
-      );
-    }
-
-    await findOneOrFail(
-      query.manager,
-      ApprovalWorkflowOrmEntity,
-      {
-        id: query.id,
-      },
-      `Approval Workflow ID: ${query.id}`,
     );
-
-    const entity = this._dataMapper.toEntityApprove(query.dto);
-    await entity.initializeUpdateSetId(new ApprovalWorkflowId(query.id));
-    await entity.validateExistingIdForUpdate();
-
-    await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {
-      id: entity.getId().value,
-    });
-
-    return await this._write.approved(entity, query.manager);
   }
 }
