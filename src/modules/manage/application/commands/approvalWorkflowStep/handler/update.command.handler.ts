@@ -3,7 +3,10 @@ import { UpdateCommand } from '../update.command';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ApprovalWorkflowStepEntity } from '@src/modules/manage/domain/entities/approval-workflow-step.entity';
 import { HttpStatus, Inject } from '@nestjs/common';
-import { WRITE_APPROVAL_WORKFLOW_STEP_REPOSITORY } from '../../../constants/inject-key.const';
+import {
+  WRITE_APPROVAL_WORKFLOW_REPOSITORY,
+  WRITE_APPROVAL_WORKFLOW_STEP_REPOSITORY,
+} from '../../../constants/inject-key.const';
 import { IWriteApprovalWorkflowStepRepository } from '@src/modules/manage/domain/ports/output/approval-workflow-step-repository.interface';
 import { ApprovalWorkflowStepDataMapper } from '../../../mappers/approval-workflow-step.mapper';
 import { ApprovalWorkflowStepId } from '@src/modules/manage/domain/value-objects/approval-workflow-step-id.vo';
@@ -14,6 +17,12 @@ import { EntityManager, Not } from 'typeorm';
 import { EnumWorkflowStep } from '../../../constants/status-key.const';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import { IWriteApprovalWorkflowRepository } from '@src/modules/manage/domain/ports/output/approval-workflow-repository.interface';
+import { ApprovalWorkflowDataMapper } from '../../../mappers/approval-workflow.mapper';
+import { StatusEnum } from '@src/common/enums/status.enum';
+import { ApproveDto } from '../../../dto/create/ApprovalWorkflow/approve.dto';
+import { ApprovalWorkflowId } from '@src/modules/manage/domain/value-objects/approval-workflow-id.vo';
+import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -24,6 +33,9 @@ export class UpdateCommandHandler
     @Inject(WRITE_APPROVAL_WORKFLOW_STEP_REPOSITORY)
     private readonly _write: IWriteApprovalWorkflowStepRepository,
     private readonly _dataMapper: ApprovalWorkflowStepDataMapper,
+    @Inject(WRITE_APPROVAL_WORKFLOW_REPOSITORY)
+    private readonly _writeWorkflow: IWriteApprovalWorkflowRepository,
+    private readonly _dataMapperWorkflow: ApprovalWorkflowDataMapper,
   ) {}
 
   async execute(query: UpdateCommand): Promise<any> {
@@ -106,7 +118,23 @@ export class UpdateCommandHandler
       id: entity.getId().value,
     });
 
-    return await this._write.update(entity, query.manager);
+    const res = await this._write.update(entity, query.manager);
+
+    const status = StatusEnum.PENDING;
+    const dto = status as unknown as ApproveDto;
+
+    const entityWork = this._dataMapperWorkflow.toEntityApprove(dto);
+    await entityWork.initializeUpdateSetId(new ApprovalWorkflowId(query.id));
+    await entityWork.validateExistingIdForUpdate();
+
+    /** Check Exits Department Id */
+    await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {
+      id: entityWork.getId().value,
+    });
+
+    await this._writeWorkflow.approved(entityWork, query.manager);
+
+    return res;
   }
 
   private async checkData(query: UpdateCommand): Promise<void> {
