@@ -234,14 +234,6 @@ export class PermissionSeeder {
       }
     }
 
-    // for (const item of items) {
-    //   const existingItem = await _repository.findOne({ where: { name: item.name } });
-    //   if (!existingItem) {
-    //     const createdItem = _repository.create(item);
-    //     await _repository.save(createdItem);
-    //   }
-    // }
-
     await this._helper.executingLog(this.SEEDER_NAME, seederLogRepository);
   }
 
