@@ -35,4 +35,9 @@ export interface IWriteApprovalWorkflowRepository {
     entity: ApprovalWorkflowEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
+
+  rejected(
+    entity: ApprovalWorkflowEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 }

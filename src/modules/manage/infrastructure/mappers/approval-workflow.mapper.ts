@@ -44,6 +44,10 @@ export class ApprovalWorkflowDataAccessMapper {
       mediaOrmEntity.status = status ?? StatusEnum.PENDING;
     }
 
+    if (method === OrmEntityMethod.REJECTED) {
+      mediaOrmEntity.status = StatusEnum.PENDING;
+    }
+
     if (method === OrmEntityMethod.APPROVED) {
       mediaOrmEntity.status = approvalWorkflowEntity.status;
     }
