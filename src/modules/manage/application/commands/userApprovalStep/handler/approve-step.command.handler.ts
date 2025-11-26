@@ -775,6 +775,9 @@ export class ApproveStepCommandHandler
                       manager,
                     );
 
+                    console.log('calculate', check_budget);
+                    console.log('sum_total', sum_total);
+
                     if (sum_total > check_budget) {
                       throw new ManageDomainException(
                         'errors.insufficient_budget',
