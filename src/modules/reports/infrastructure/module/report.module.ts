@@ -7,6 +7,7 @@ import { ReportRegisterProviders } from '../../application/providers';
 import { ReportPurchaseRequestController } from '../../controllers/report-purchase-request.controller';
 import { ReportPurchaseOrderController } from '../../controllers/report-purchase-order.controller';
 import { ReportReceiptController } from '../../controllers/report-receipt.controller';
+import { ReportCompanyController } from '../../controllers/report-company.controller';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ReportReceiptController } from '../../controllers/report-receipt.contro
     ReportPurchaseRequestController,
     ReportPurchaseOrderController,
     ReportReceiptController,
+    ReportCompanyController,
   ],
   providers: [...ReportRegisterProviders],
   exports: [...ReportRegisterProviders],
