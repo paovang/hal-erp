@@ -466,7 +466,7 @@ export class ApproveStepCommandHandler
                     );
 
                     sum_total +=
-                      Number(get_total) + (purchase_order_item?.vat || 0);
+                      Number(get_total) + Number(purchase_order_item?.vat || 0);
                   } else {
                     const get_total = await this._readBudget.getTotal(
                       item.id,
@@ -474,7 +474,7 @@ export class ApproveStepCommandHandler
                     );
 
                     sum_total +=
-                      Number(get_total) + (purchase_order_item?.vat || 0);
+                      Number(get_total) + Number(purchase_order_item?.vat || 0);
                   }
 
                   const check_budget = await this._readBudget.calculate(
