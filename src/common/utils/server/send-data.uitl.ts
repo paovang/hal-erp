@@ -26,6 +26,12 @@ export async function sendApprovalRequest(
     );
   }
 
+  // 2. Specific prefix check (020 -> 20)
+  if (tel.startsWith('020')) {
+    // Removes the leading '0'
+    tel = tel.substring(1);
+  }
+
   if (!tel.startsWith('20')) {
     tel = '20' + tel;
   }
