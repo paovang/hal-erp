@@ -27,6 +27,9 @@ export interface IReadBudgetItemRepository {
   report(
     dto: BudgetItemQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<BudgetItemEntity>>;
 
   calculate(
