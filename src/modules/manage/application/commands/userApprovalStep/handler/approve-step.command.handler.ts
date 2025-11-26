@@ -418,6 +418,21 @@ export class ApproveStepCommandHandler
               ) {
                 let sum_total = 0;
                 for (const item of query.dto.purchase_order_items) {
+                  if (!item.id) {
+                    throw new ManageDomainException(
+                      'errors.is_required',
+                      HttpStatus.BAD_REQUEST,
+                      { property: `${item.id}` },
+                    );
+                  }
+
+                  if (!item.budget_item_id) {
+                    throw new ManageDomainException(
+                      'errors.is_required',
+                      HttpStatus.BAD_REQUEST,
+                      { property: `${item.budget_item_id}` },
+                    );
+                  }
                   const purchase_order_item = await findOneOrFail(
                     manager,
                     PurchaseOrderItemOrmEntity,
