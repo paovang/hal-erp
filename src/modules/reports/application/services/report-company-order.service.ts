@@ -3,7 +3,7 @@ import { QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { IReportCompanyServiceInterface } from '../../domain/ports/input/report-company-order-domain-service.interface';
-import { GetReportCompanyMoneyQuery } from '../queries/reportCompany/report-company.query';
+import { GetReportCompanyQuery } from '../queries/reportCompany/report-company.query';
 
 @Injectable()
 export class ReportCompanyService implements IReportCompanyServiceInterface {
@@ -13,8 +13,9 @@ export class ReportCompanyService implements IReportCompanyServiceInterface {
     private readonly _readEntityManager: EntityManager,
   ) {}
   reportCompany(manager?: EntityManager): Promise<any> {
+    // console.log('hello world');
     return this._queryBus.execute(
-      new GetReportCompanyMoneyQuery(manager ?? this._readEntityManager),
+      new GetReportCompanyQuery(manager ?? this._readEntityManager),
     );
   }
 }
