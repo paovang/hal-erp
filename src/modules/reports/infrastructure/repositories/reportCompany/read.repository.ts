@@ -18,16 +18,59 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
     //   relations: ['company_users'],
     // });
 
+    // const items = await manager
+    //   .createQueryBuilder(CompanyOrmEntity, 'company')
+    //   .leftJoinAndSelect('company.company_users', 'company_users')
+    //   .leftJoinAndSelect('company_users.user', 'user')
+    //   .leftJoinAndSelect('company.budget_accounts', 'budget_accounts')
+    //   .leftJoinAndSelect('budget_accounts.increase_budgets', 'increase_budgets')
+    //   .leftJoinAndSelect('budget_accounts.budget_items', 'budget_items')
+    //   // .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
+    //   .loadRelationCountAndMap(
+    //     'company.approvalWorkflowCount',
+    //     'company.approval_workflows',
+    //   )
+    //   .loadRelationCountAndMap(
+    //     'company.budgetRuleCount',
+    //     'company.budget_approval_rules',
+    //   )
+    //   .loadRelationCountAndMap('company.userCount', 'company.company_users')
+    //   .getMany();
+
+    //   const allocated_amount = Array.isArray(ormData.increase_budgets)
+    //     ? ormData.increase_budgets.reduce(
+    //         (sum, increase) => sum + Number(increase.allocated_amount ?? 0),
+    //         0,
+    //       )
+    //     : 0;
+
+    //   const increase_amount = (ormData.budget_items ?? [])
+    //     .flatMap((item) => item.increase_budget_detail ?? [])
+    //     .reduce((sum, d) => sum + Number(d.allocated_amount ?? 0), 0);
+
+    //   const totalUsedAmount = (ormData.budget_items ?? [])
+    //     .flatMap((item) => item.document_transactions ?? [])
+    //     .reduce((sum, d) => sum + Number(d.amount ?? 0), 0);
+
+    //   const total_budget = allocated_amount - increase_amount;
+    //   const balance_amount = increase_amount - totalUsedAmount;
+    // return items;
+
     const items = await manager
       .createQueryBuilder(CompanyOrmEntity, 'company')
       .leftJoinAndSelect('company.company_users', 'company_users')
       .leftJoinAndSelect('company_users.user', 'user')
-      .leftJoinAndSelect('company.approval_workflows', 'approval_workflows')
-      .leftJoinAndSelect(
-        'company.budget_approval_rules',
-        'budget_approval_rules',
-      )
       .leftJoinAndSelect('company.budget_accounts', 'budget_accounts')
+      .leftJoinAndSelect('budget_accounts.increase_budgets', 'increase_budgets')
+      .leftJoinAndSelect('budget_accounts.budget_items', 'budget_items')
+      .leftJoinAndSelect(
+        'budget_items.increase_budget_detail',
+        'increase_budget_detail',
+      )
+      .leftJoinAndSelect(
+        'budget_items.document_transactions',
+        'document_transactions',
+      )
       .loadRelationCountAndMap(
         'company.approvalWorkflowCount',
         'company.approval_workflows',
@@ -38,6 +81,45 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
       )
       .loadRelationCountAndMap('company.userCount', 'company.company_users')
       .getMany();
-    return items;
+
+    const result = items.map((company) => {
+      // รวม allocated_amount ของ increase_budgets
+      const allocated_amount =
+        company.budget_accounts
+          ?.flatMap((ba) => ba.increase_budgets ?? [])
+          .reduce((sum, b) => sum + Number(b.allocated_amount ?? 0), 0) ?? 0;
+
+      // รวม increase_amount ของ increase_budget_detail ใน budget_items
+      const increase_amount =
+        company.budget_accounts
+          ?.flatMap((ba) => ba.budget_items ?? [])
+          .flatMap((bi) => bi.increase_budget_detail ?? [])
+          .reduce((sum, d) => sum + Number(d.allocated_amount ?? 0), 0) ?? 0;
+
+      // รวม totalUsedAmount ของ document_transactions
+      const totalUsedAmount =
+        company.budget_accounts
+          ?.flatMap((ba) => ba.budget_items ?? [])
+          .flatMap((bi) => bi.document_transactions ?? [])
+          .reduce((sum, dt) => sum + Number(dt.amount ?? 0), 0) ?? 0;
+
+      const total_budget = allocated_amount - increase_amount;
+      const balance_amount = increase_amount - totalUsedAmount;
+
+      return {
+        ...company,
+        company_users: company.company_users?.map((cu) => {
+          const { password, ...user } = cu.user;
+          return user;
+        }),
+        allocated_amount,
+        increase_amount,
+        totalUsedAmount,
+        total_budget,
+        balance_amount,
+      };
+    });
+
+    return result;
   }
 }
