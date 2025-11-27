@@ -1,5 +1,7 @@
 import { EntityManager } from 'typeorm';
 
-export class GetReportCompanyMoneyQuery {
-  constructor(public manager: EntityManager) {}
+export class GetReportCompanyQuery {
+  constructor(public manager: EntityManager) {
+    // console.log('hello world');
+  }
 }

@@ -9,11 +9,9 @@ import { LocalizationService } from '@src/common/infrastructure/localization/loc
 import {
   REPORT_COMPANY_APPLICATION_SERVICE,
   REPORT_COMPANY_REPOSITORY,
-  REPORT_PURCHASE_ORDER_APPLICATION_SERVICE,
-  REPORT_PURCHASE_ORDER_REPOSITORY,
 } from '../../constants/inject-key.const';
-import { ReportReceiptService } from '../../services/report-receipt.service';
-import { ReportReadReceiptRepository } from '@src/modules/reports/infrastructure/repositories/reportReceipt/read.repository';
+import { ReportCompanyService } from '../../services/report-company-order.service';
+import { ReportReadCompanyRepository } from '@src/modules/reports/infrastructure/repositories/reportCompany/read.repository';
 import { TransformResultService } from '@src/common/utils/services/transform-result.service';
 
 export const ReportCompanyProvider: Provider[] = [
@@ -24,15 +22,16 @@ export const ReportCompanyProvider: Provider[] = [
     useClass: LocalizationService,
   },
   {
-    provide: REPORT_PURCHASE_ORDER_APPLICATION_SERVICE,
-    useClass: ReportReceiptService,
+    provide: REPORT_COMPANY_APPLICATION_SERVICE,
+    useClass: ReportCompanyService,
   },
   {
     provide: REPORT_COMPANY_REPOSITORY,
-    useClass: ReportReadReceiptRepository,
+    useClass: ReportReadCompanyRepository,
   },
   {
     provide: TRANSFORM_RESULT_SERVICE,
     useClass: TransformResultService,
   },
 ];
+// IReportCompanuRepository;
