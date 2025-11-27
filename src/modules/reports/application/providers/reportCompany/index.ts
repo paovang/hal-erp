@@ -9,6 +9,8 @@ import { LocalizationService } from '@src/common/infrastructure/localization/loc
 import {
   REPORT_COMPANY_APPLICATION_SERVICE,
   REPORT_COMPANY_REPOSITORY,
+  REPORT_PURCHASE_ORDER_APPLICATION_SERVICE,
+  REPORT_PURCHASE_ORDER_REPOSITORY,
 } from '../../constants/inject-key.const';
 import { ReportReceiptService } from '../../services/report-receipt.service';
 import { ReportReadReceiptRepository } from '@src/modules/reports/infrastructure/repositories/reportReceipt/read.repository';
@@ -22,7 +24,7 @@ export const ReportCompanyProvider: Provider[] = [
     useClass: LocalizationService,
   },
   {
-    provide: REPORT_COMPANY_APPLICATION_SERVICE,
+    provide: REPORT_PURCHASE_ORDER_APPLICATION_SERVICE,
     useClass: ReportReceiptService,
   },
   {
