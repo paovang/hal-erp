@@ -256,8 +256,6 @@ export class ReadPurchaseOrderRepository
       // add select
       .addSelect(selectFields);
 
-    console.log('role', roles);
-
     if (
       roles &&
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
@@ -267,11 +265,7 @@ export class ReadPurchaseOrderRepository
         roles.includes(EligiblePersons.COMPANY_ADMIN) ||
         roles.includes(EligiblePersons.COMPANY_USER)
       ) {
-        console.log('role', roles);
-
         if (company_id) {
-          console.log('company_id', company_id);
-
           query.andWhere('po_documents.company_id = :company_id', {
             company_id,
           });
