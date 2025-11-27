@@ -418,6 +418,21 @@ export class ApproveStepCommandHandler
               ) {
                 let sum_total = 0;
                 for (const item of query.dto.purchase_order_items) {
+                  if (!item.id) {
+                    throw new ManageDomainException(
+                      'errors.is_required',
+                      HttpStatus.BAD_REQUEST,
+                      { property: `${item.id}` },
+                    );
+                  }
+
+                  if (!item.budget_item_id) {
+                    throw new ManageDomainException(
+                      'errors.is_required',
+                      HttpStatus.BAD_REQUEST,
+                      { property: `${item.budget_item_id}` },
+                    );
+                  }
                   const purchase_order_item = await findOneOrFail(
                     manager,
                     PurchaseOrderItemOrmEntity,
@@ -451,7 +466,7 @@ export class ApproveStepCommandHandler
                     );
 
                     sum_total +=
-                      Number(get_total) + (purchase_order_item?.vat || 0);
+                      Number(get_total) + Number(purchase_order_item?.vat || 0);
                   } else {
                     const get_total = await this._readBudget.getTotal(
                       item.id,
@@ -459,7 +474,7 @@ export class ApproveStepCommandHandler
                     );
 
                     sum_total +=
-                      Number(get_total) + (purchase_order_item?.vat || 0);
+                      Number(get_total) + Number(purchase_order_item?.vat || 0);
                   }
 
                   const check_budget = await this._readBudget.calculate(
@@ -759,6 +774,9 @@ export class ApproveStepCommandHandler
                       item.budget_item_id,
                       manager,
                     );
+
+                    console.log('calculate', check_budget);
+                    console.log('sum_total', sum_total);
 
                     if (sum_total > check_budget) {
                       throw new ManageDomainException(

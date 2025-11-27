@@ -13,6 +13,7 @@ import { BudgetItemEntity } from '@src/modules/manage/domain/entities/budget-ite
 import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item.orm';
 import { BudgetItemId } from '@src/modules/manage/domain/value-objects/budget-item-id.vo';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
@@ -166,8 +167,17 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
   async report(
     query: BudgetItemQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<BudgetItemEntity>> {
-    const queryBuilder = await this.createBaseReportQuery(manager, query);
+    const queryBuilder = await this.createBaseReportQuery(
+      manager,
+      query,
+      company_id,
+      roles,
+      department_id,
+    );
     query.sort_by = 'budget_items.id';
 
     const data = await this._paginationService.paginate(
@@ -182,6 +192,9 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
   private createBaseReportQuery(
     manager: EntityManager,
     query?: BudgetItemQueryDto,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ) {
     const queryBuilder = manager
       .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
@@ -227,6 +240,29 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .addGroupBy('budget_accounts.id')
       .addGroupBy('document_transactions.id')
       .addGroupBy('departments.id');
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          queryBuilder.where('budget_accounts.company_id = :company_id', {
+            company_id,
+          });
+        }
+      }
+      if (department_id) {
+        queryBuilder.andWhere(
+          'budget_accounts.department_id = :department_id',
+          { department_id },
+        );
+      }
+    }
 
     if (query?.budget_account_id) {
       queryBuilder.where('budget_accounts.id = :budget_account_id', {
@@ -310,7 +346,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
   async calculate(
     id: number,
     manager: EntityManager,
-    company_id?: number,
+    // company_id?: number,
   ): Promise<number> {
     // Sum amount from document_transactions
     const documentTransactionSum = await manager
@@ -319,7 +355,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .from('document_transactions', 'document_transactions')
       .leftJoin('document_transactions.documents', 'documents')
       .where('document_transactions.budget_item_id = :id', { id })
-      .andWhere('documents.company_id = :company_id', { company_id })
+      // .andWhere('documents.company_id = :company_id', { company_id })
       .getRawOne();
 
     // Sum allocated_amount from increase_budget_detail
@@ -328,9 +364,9 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .select('SUM(increase_budget_detail.allocated_amount)', 'total')
       .from('increase_budget_details', 'increase_budget_detail')
       .leftJoin('increase_budget_detail.increase_budgets', 'increase_budgets')
-      .leftJoin('increase_budgets.budget_account', 'budget_account')
+      // .leftJoin('increase_budgets.budget_account', 'budget_account')
       .where('increase_budget_detail.budget_item_id = :id', { id })
-      .andWhere('budget_account.company_id = :company_id', { company_id })
+      // .andWhere('budget_account.company_id = :company_id', { company_id })
       .getRawOne();
 
     const total =
@@ -343,15 +379,15 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
   async getTotal(
     id: number,
     manager: EntityManager,
-    company_id?: number,
+    // company_id?: number,
   ): Promise<number> {
     const result = await manager
       .createQueryBuilder()
       .select('purchase_order_items.total', 'total')
       .from('purchase_order_items', 'purchase_order_items')
-      .leftJoin('purchase_order_items.quota_company', 'quota_company')
+      // .leftJoin('purchase_order_items.quota_company', 'quota_company')
       .where('purchase_order_items.id = :id', { id })
-      .andWhere('quota_company.company_id = :company_id', { company_id })
+      // .andWhere('quota_company.company_id = :company_id', { company_id })
       .getRawOne();
 
     if (!result || result.total === null) {

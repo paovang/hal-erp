@@ -264,9 +264,12 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
         roles.includes(EligiblePersons.COMPANY_ADMIN) ||
         roles.includes(EligiblePersons.COMPANY_USER)
       ) {
-        query.andWhere('documents.company_id = :company_id', { company_id });
+        if (company_id) {
+          query.andWhere('documents.company_id = :company_id', { company_id });
+        }
+      } else {
+        query.andWhere('document_approver.user_id = :user_id', { user_id });
       }
-      query.andWhere('document_approver.user_id = :user_id', { user_id });
     }
 
     if (department_id) {

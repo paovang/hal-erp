@@ -100,7 +100,7 @@ export class ReadPurchaseOrderRepository
     query.sort_by = 'purchase_orders.id';
 
     if (filterCompanyId) {
-      queryBuilder.andWhere('documents.company_id = :filterCompanyId', {
+      queryBuilder.andWhere('po_documents.company_id = :filterCompanyId', {
         filterCompanyId,
       });
     }
@@ -256,8 +256,6 @@ export class ReadPurchaseOrderRepository
       // add select
       .addSelect(selectFields);
 
-    console.log('object', roles);
-
     if (
       roles &&
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
@@ -268,14 +266,15 @@ export class ReadPurchaseOrderRepository
         roles.includes(EligiblePersons.COMPANY_USER)
       ) {
         if (company_id) {
-          query.andWhere('documents.company_id = :company_id', {
+          query.andWhere('po_documents.company_id = :company_id', {
             company_id,
           });
         }
+      } else {
+        query.andWhere('document_approver.user_id = :user_id', {
+          user_id,
+        });
       }
-      query.andWhere('document_approver.user_id = :user_id', {
-        user_id,
-      });
     }
 
     return query;
