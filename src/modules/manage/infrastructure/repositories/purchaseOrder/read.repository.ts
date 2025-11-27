@@ -268,7 +268,7 @@ export class ReadPurchaseOrderRepository
         roles.includes(EligiblePersons.COMPANY_USER)
       ) {
         if (company_id) {
-          query.andWhere('documents.company_id = :company_id', {
+          query.andWhere('po_documents.company_id = :company_id', {
             company_id,
           });
         }
