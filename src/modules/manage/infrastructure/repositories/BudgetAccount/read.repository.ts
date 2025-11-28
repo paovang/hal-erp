@@ -466,7 +466,6 @@ export class ReadBudgetAccountRepository
     for (const row of result) {
       const totalBudget = parseNumber(row.total_budget);
       const usedAmount = parseNumber(row.used_amount);
-      // The remaining budget (negative if over budget)
       const remainingAmount = totalBudget - usedAmount;
       const logo_url = row?.logo
         ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${row.logo}`
