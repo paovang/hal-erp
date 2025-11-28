@@ -14,6 +14,8 @@ import { CreateBudgetAccountDto } from '../dto/create/BudgetAccount/create.dto';
 import { BudgetAccountQueryDto } from '../dto/query/budget-account.dto';
 import { UpdateBudgetAccountDto } from '../dto/create/BudgetAccount/update.dto';
 import { GetReportQuery } from '../queries/BudgetAccount/report.query';
+import { GetReportHalGroupMonthBudgetQuery } from '../queries/BudgetAccount/report-hal-group-monthly-budget.query';
+import { ReportBudgetInterface } from '@src/common/application/interfaces/report-budget.interface';
 
 @Injectable()
 export class BudgetAccountService implements IBudgetAccountServiceInterface {
@@ -74,6 +76,19 @@ export class BudgetAccountService implements IBudgetAccountServiceInterface {
   ): Promise<ResponseResult<BudgetAccountEntity>> {
     return await this._queryBus.execute(
       new GetReportQuery(id, query, manager ?? this._readEntityManager),
+    );
+  }
+
+  // report hal group
+  async getReportHalMonthlyBudgetGroups(
+    query: BudgetAccountQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ReportBudgetInterface>> {
+    return await this._queryBus.execute(
+      new GetReportHalGroupMonthBudgetQuery(
+        query,
+        manager ?? this._readEntityManager,
+      ),
     );
   }
 }
