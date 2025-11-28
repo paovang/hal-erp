@@ -459,7 +459,6 @@ export class ReadBudgetAccountRepository
       },
     };
 
-    // Helper function to convert string numbers from raw result to actual numbers
     const parseNumber = (value: any): number =>
       typeof value === 'string' ? parseFloat(value) : value || 0;
 
