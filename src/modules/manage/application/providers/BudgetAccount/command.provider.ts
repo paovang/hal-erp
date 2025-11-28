@@ -5,6 +5,7 @@ import { GetOneQueryHandler } from '../../queries/BudgetAccount/handler/get-one.
 import { UpdateCommandHandler } from '../../commands/BudgetAccount/handler/update-commmand.handler';
 import { DeleteCommandHandler } from '../../commands/BudgetAccount/handler/delete-command.handler';
 import { GetReportQueryHandler } from '../../queries/BudgetAccount/handler/report.command.query';
+import { GetReportHalGroupMonthBudgetQueryHandler } from '../../queries/BudgetAccount/handler/report-hal-group-monthly-budget-query.handler';
 
 export const BudgetAccountHandlersProviders: Provider[] = [
   GetAllQueryHandler,
@@ -13,4 +14,5 @@ export const BudgetAccountHandlersProviders: Provider[] = [
   UpdateCommandHandler,
   DeleteCommandHandler,
   GetReportQueryHandler,
+  GetReportHalGroupMonthBudgetQueryHandler,
 ];

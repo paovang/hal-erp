@@ -25,4 +25,8 @@ export class BudgetAccountQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   budgetId?: string;
+
+  @IsOptional()
+  @IsString()
+  company_id?: string;
 }

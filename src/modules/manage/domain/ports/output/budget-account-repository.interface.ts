@@ -4,6 +4,7 @@ import { BudgetAccountEntity } from '../../entities/budget-account.entity';
 import { BudgetAccountQueryDto } from '@src/modules/manage/application/dto/query/budget-account.dto';
 import { BudgetAccountId } from '../../value-objects/budget-account-id.vo';
 import { DepartmentId } from '../../value-objects/department-id.vo';
+import { ReportBudgetInterface } from '@src/common/application/interfaces/report-budget.interface';
 
 export interface IReadBudgetAccountRepository {
   findAll(
@@ -24,6 +25,13 @@ export interface IReadBudgetAccountRepository {
     dto: BudgetAccountQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetAccountEntity>>;
+
+  // report hal group
+  getAllForHalGroupMonthlyBudget(
+    query: BudgetAccountQueryDto,
+    manager: EntityManager,
+    roles?: string[],
+  ): Promise<ResponseResult<ReportBudgetInterface>>;
 }
 
 export interface IWriteBudgetAccountRepository {

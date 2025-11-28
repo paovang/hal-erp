@@ -19,6 +19,11 @@ import {
   selectDepartments,
 } from '@src/common/constants/select-field';
 import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
+import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-item.orm';
+import {
+  CompanyInterface,
+  ReportBudgetInterface,
+} from '@src/common/application/interfaces/report-budget.interface';
 
 @Injectable()
 export class ReadBudgetAccountRepository
@@ -105,34 +110,6 @@ export class ReadBudgetAccountRepository
         'company.address',
       ]);
 
-    // queryBuilder.addSelect(
-    //   (subQuery) =>
-    //     subQuery
-    //       .select('COALESCE(SUM(increase_budgets.allocated_amount), 0)')
-    //       .from('increase_budgets', 'increase_budgets')
-    //       .where('increase_budgets.budget_account_id = budget_accounts.id'),
-    //   'allocated_amount_total',
-    // );
-
-    // queryBuilder.addSelect(
-    //   (subQuery) =>
-    //     subQuery
-    //       .select('COALESCE(SUM(document_transactions.amount), 0)')
-    //       .from('document_transactions', 'document_transactions')
-    //       .where('document_transactions.budget_item_id = budget_items.id'),
-    //   'used_amount',
-    // );
-
-    // // Add a subquery to get the total allocated amount per budget item
-    // queryBuilder.addSelect(
-    //   (subQuery) =>
-    //     subQuery
-    //       .select('COALESCE(SUM(increase_budget_detail.allocated_amount), 0)')
-    //       .from('increase_budget_details', 'increase_budget_detail')
-    //       .where('increase_budget_detail.budget_item_id = budget_items.id'),
-    //   'increase_amount',
-    // );
-
     return queryBuilder;
   }
 
@@ -214,5 +191,163 @@ export class ReadBudgetAccountRepository
       dateColumn: '',
       filterByColumns: ['budget_accounts.type'],
     };
+  }
+
+  // Assuming your ORM entities and interfaces are imported
+
+  async getAllForHalGroupMonthlyBudget(
+    query: BudgetAccountQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ReportBudgetInterface>> {
+    // 1. Fetch budget accounts, total budget, and company details (Remains the same)
+    const budgetAccounts = await manager
+      .createQueryBuilder(BudgetAccountOrmEntity, 'budget_accounts')
+      .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
+      .leftJoin('budget_accounts.company', 'company')
+      .select([
+        'budget_accounts.id AS id',
+        'budget_accounts.company_id AS company_id',
+        'company.name AS company_name',
+        'company.logo AS company_logo',
+        'COALESCE(SUM(increase_budgets.allocated_amount), 0) AS total_budget', // Total allocated for THIS budget account
+      ])
+      .where('budget_accounts.company_id IS NOT NULL')
+      .groupBy('budget_accounts.id')
+      .addGroupBy('budget_accounts.company_id')
+      .addGroupBy('company.name')
+      .addGroupBy('company.logo');
+    // ... (rest of WHERE clauses remain the same)
+    if (query.company_id) {
+      budgetAccounts.andWhere('budget_accounts.company_id = :company_id', {
+        company_id: query.company_id,
+      });
+    }
+
+    if (query.departmentId) {
+      budgetAccounts.andWhere(
+        'budget_accounts.department_id = :department_id',
+        {
+          department_id: query.departmentId,
+        },
+      );
+    }
+
+    if (query.fiscal_year) {
+      budgetAccounts.andWhere('budget_accounts.fiscal_year = :fiscal_year', {
+        fiscal_year: query.fiscal_year,
+      });
+    }
+
+    const result = await budgetAccounts.getRawMany();
+
+    // 2. Initialize the return structure and two aggregation maps
+    const data: ReportBudgetInterface = {
+      budget_overruns: {
+        amount: 0,
+        total: 0,
+        budget: [],
+      },
+      within_budget: {
+        amount: 0,
+        total: 0,
+        budget: [],
+      },
+    };
+
+    // Use AggregatedCompanyData to include 'allocated_amount'
+    type AggregatedCompanyData = CompanyInterface & {
+      allocated_amount: number;
+    };
+
+    // Temporary maps to aggregate total variance and company info by company_id
+    const overrunMap: Map<string | null, AggregatedCompanyData> = new Map();
+    const withinBudgetMap: Map<string | null, AggregatedCompanyData> =
+      new Map();
+
+    // 3. Loop through results and aggregate variance AND allocated budget by Company ID
+    for (const item of result) {
+      // Fetch used amount (Query 2 - remains the same)
+      const usedResult = await manager
+        .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
+        .leftJoin('budget_items.document_transactions', 'document_transactions')
+        .leftJoin('budget_items.budget_accounts', 'budget_accounts')
+        .select([
+          'COALESCE(SUM(document_transactions.amount), 0) AS used_amount',
+        ])
+        .where('budget_items.budget_account_id = :budget_account_id', {
+          budget_account_id: item.id,
+        })
+        .andWhere('budget_accounts.company_id = :company_id', {
+          company_id: item.company_id,
+        })
+        .getRawOne();
+
+      const totalBudget = Number(item.total_budget); // Allocated amount for this budget account
+      const usedAmount = Number(usedResult?.used_amount || 0);
+      const companyId: string | null = item.company_id;
+
+      let targetMap: Map<string | null, AggregatedCompanyData>;
+      let variance: number;
+
+      if (usedAmount > totalBudget) {
+        // Case: Budget Overrun
+        variance = usedAmount - totalBudget;
+        targetMap = overrunMap;
+        data.budget_overruns.total += variance;
+      } else {
+        // Case: Within Budget
+        variance = totalBudget - usedAmount;
+        targetMap = withinBudgetMap;
+        data.within_budget.total += variance;
+      }
+
+      // *** AGGREGATION LOGIC (UPDATED) ***
+      if (targetMap.has(companyId)) {
+        // Company exists in the map, add the current variance AND allocated amount
+        const existingData = targetMap.get(companyId)!;
+        existingData.total += variance;
+        existingData.allocated_amount += totalBudget; // Accumulate allocated budget
+      } else {
+        const logo_url = item?.company_logo
+          ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${item.company_logo}`
+          : null;
+        // First time seeing this company, create new entry
+        targetMap.set(companyId, {
+          id: Number(companyId),
+          name: item.company_name || '',
+          logo: logo_url || '',
+          total: variance,
+          allocated_amount: totalBudget, // Initialize allocated budget
+        });
+      }
+    }
+
+    // 4. Finalize the return structure and filter out null company IDs
+
+    // 4a. Convert maps to arrays and FILTER out entries where the company 'id' is null
+    data.budget_overruns.budget = Array.from(overrunMap.values()).filter(
+      (item) => item.id !== null,
+    );
+
+    data.within_budget.budget = Array.from(withinBudgetMap.values()).filter(
+      (item) => item.id !== null,
+    );
+
+    // 4b. Recalculate summary totals and amounts based ONLY on the filtered/valid companies
+
+    data.budget_overruns.total = data.budget_overruns.budget.reduce(
+      (sum, item) => sum + item.total,
+      0,
+    );
+    data.within_budget.total = data.within_budget.budget.reduce(
+      (sum, item) => sum + item.total,
+      0,
+    );
+
+    // The amount now counts the number of valid companies
+    data.budget_overruns.amount = data.budget_overruns.budget.length;
+    data.within_budget.amount = data.within_budget.budget.length;
+
+    return data;
   }
 }
