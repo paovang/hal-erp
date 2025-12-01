@@ -268,6 +268,9 @@ export class ReadBudgetAccountRepository
       },
     };
 
+    // const parseNumber = (value: any): number =>
+    //   typeof value === 'string' ? parseFloat(value) : value || 0;
+
     for (const row of result) {
       const totalBudget = Number(row.total_budget);
       const usedAmount = Number(row.used_amount);
