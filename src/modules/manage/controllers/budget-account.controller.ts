@@ -19,6 +19,7 @@ import { IBudgetAccountServiceInterface } from '../domain/ports/input/budget-acc
 import { CreateBudgetAccountDto } from '../application/dto/create/BudgetAccount/create.dto';
 import { BudgetAccountQueryDto } from '../application/dto/query/budget-account.dto';
 import { UpdateBudgetAccountDto } from '../application/dto/create/BudgetAccount/update.dto';
+import { ReportBudgetInterface } from '@src/common/application/interfaces/report-budget.interface';
 
 @Controller('budget-accounts')
 export class BudgetAccountController {
@@ -70,6 +71,17 @@ export class BudgetAccountController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  // report hal group
+  @Get('report-hal-groups-monthly-budget')
+  async getReportHalMonthlyBudgetGroups(
+    @Query() query: BudgetAccountQueryDto,
+  ): Promise<ResponseResult<ReportBudgetInterface>> {
+    const result =
+      await this._budgetAccountService.getReportHalMonthlyBudgetGroups(query);
+
+    return result;
   }
 
   @Get(':id')
