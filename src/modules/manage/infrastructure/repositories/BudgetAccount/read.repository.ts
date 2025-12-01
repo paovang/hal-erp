@@ -194,35 +194,45 @@ export class ReadBudgetAccountRepository
     query: BudgetAccountQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<ReportBudgetInterface>> {
-    // 1. Single Query: Get Allocated Budget and Used Amount per Budget Account
+    // ---------------- QUERY ----------------
     const reportQuery = manager
       .createQueryBuilder(CompanyOrmEntity, 'company')
-      .leftJoin('company.budget_accounts', 'budget_accounts')
-      // ... (Rest of the query remains the same)
+      .leftJoin('company.budget_accounts', 'ba')
 
-      // --- PATH 1: Allocated Amount (Increase Budgets) ---
-      .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
+      // Total allocated amount for ALL budget accounts of the company 730000000
+      .addSelect(
+        `(
+        SELECT COALESCE(SUM(ib.allocated_amount), 0)
+        FROM increase_budgets ib
+        WHERE ib.budget_account_id IN (
+          SELECT id FROM budget_accounts WHERE company_id = company.id
+        )
+      ) AS total_budget`,
+      )
 
-      // --- PATH 2: Used Amount (Budget Items -> Document Transactions) ---
-      .leftJoin('budget_accounts.budget_items', 'budget_items')
-      .leftJoin('budget_items.document_transactions', 'document_transactions')
+      // Total used amount for ALL budget accounts of the company
+      .addSelect(
+        `(
+        SELECT COALESCE(SUM(dt.amount),0)
+        FROM document_transactions dt
+        WHERE dt.budget_item_id IN (
+          SELECT bi.id
+          FROM budget_items bi
+          WHERE bi.budget_account_id IN (
+            SELECT id FROM budget_accounts WHERE company_id = company.id
+          )
+        )
+      ) AS used_amount`,
+      )
 
-      .select([
-        'company.id AS id', // Select Company ID for use in the final structure
-        'company.name AS name', // Select Company Name
-        'company.logo AS logo', // Select Company Logo
+      .addSelect('company.id', 'id')
+      .addSelect('company.name', 'name')
+      .addSelect('company.logo', 'logo')
 
-        // Sum 1: Total allocated for THIS budget account (must be aliased to total_budget)
-        'COALESCE(SUM(increase_budgets.allocated_amount), 0) AS total_budget',
+      // Only group by company
+      .groupBy('company.id');
 
-        // Sum 2: Total used amount for THIS budget account (must be aliased to used_amount)
-        'COALESCE(SUM(document_transactions.amount), 0) AS used_amount',
-      ])
-      .addGroupBy('company.id')
-      .addGroupBy('company.name')
-      .addGroupBy('company.logo');
-
-    // Add Filtering based on the query DTO
+    // ---------------- FILTERS ----------------
     if (query.company_id) {
       reportQuery.andWhere('company.id = :company_id', {
         company_id: query.company_id,
@@ -230,21 +240,21 @@ export class ReadBudgetAccountRepository
     }
 
     if (query.departmentId) {
-      reportQuery.andWhere('budget_accounts.department_id = :department_id', {
+      reportQuery.andWhere('ba.department_id = :department_id', {
         department_id: query.departmentId,
       });
     }
 
     if (query.fiscal_year) {
-      reportQuery.andWhere('budget_accounts.fiscal_year = :fiscal_year', {
+      reportQuery.andWhere('ba.fiscal_year = :fiscal_year', {
         fiscal_year: query.fiscal_year,
       });
     }
 
-    // Execute the query
+    // ---------------- EXECUTE QUERY ----------------
     const result = await reportQuery.getRawMany();
 
-    // 2. Process Raw Results into the Desired Structure
+    // ---------------- PROCESS RESULTS ----------------
     const reportData: ReportBudgetInterface = {
       budget_overruns: {
         amount: 0,
@@ -258,16 +268,11 @@ export class ReadBudgetAccountRepository
       },
     };
 
-    // const parseNumber = (value: any): number =>
-    //   typeof value === 'string' ? parseFloat(value) : value || 0;
-
     for (const row of result) {
       const totalBudget = Number(row.total_budget);
       const usedAmount = Number(row.used_amount);
       const remainingAmount = totalBudget - usedAmount;
-      console.log('totalBudget', totalBudget);
-      console.log('usedAmount', usedAmount);
-      console.log('remainingAmount', remainingAmount);
+
       const logo_url = row?.logo
         ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${row.logo}`
         : '';
@@ -277,29 +282,24 @@ export class ReadBudgetAccountRepository
         name: row.name,
         logo: logo_url,
         allocated_amount: totalBudget,
-        total: 0,
+        total:
+          remainingAmount < 0 ? Math.abs(remainingAmount) : remainingAmount,
       };
 
       if (remainingAmount < 0) {
-        // Budget Overrun: used_amount > total_budget
-        const overspentAmount = Math.abs(remainingAmount);
-        companyReport.total = overspentAmount;
-
+        // Budget overrun
         reportData.budget_overruns.amount += 1;
-        reportData.budget_overruns.total += overspentAmount;
+        reportData.budget_overruns.total += Math.abs(remainingAmount);
         reportData.budget_overruns.budget.push(companyReport);
       } else {
-        // Within Budget: used_amount <= total_budget
-        // We use the full allocated budget as the total amount for this category
-        companyReport.total = totalBudget;
-
+        // Within budget
         reportData.within_budget.amount += 1;
         reportData.within_budget.total += remainingAmount;
         reportData.within_budget.budget.push(companyReport);
       }
     }
 
-    // 3. Return the processed and structured data
+    // ---------------- RETURN ----------------
     return reportData;
   }
 }
