@@ -141,6 +141,9 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
         const { password, ...user } = cu.user;
         return user;
       }),
+      logo: item?.logo
+        ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${item.logo}`
+        : null,
       allocated_amount,
       increase_amount,
       totalUsedAmount,
