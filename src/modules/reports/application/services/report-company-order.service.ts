@@ -4,6 +4,7 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { IReportCompanyServiceInterface } from '../../domain/ports/input/report-company-order-domain-service.interface';
 import { GetReportCompanyQuery } from '../queries/reportCompany/report-company.query';
+import { CompanyQueryDto } from '@src/modules/manage/application/dto/query/company-query.dto';
 
 @Injectable()
 export class ReportCompanyService implements IReportCompanyServiceInterface {

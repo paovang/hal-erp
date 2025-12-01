@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { CompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/company.orm';
+import { IPaginationService } from '@src/common/infrastructure/pagination/pagination.interface';
 import { IReportCompanuRepository } from '@src/modules/reports/domain/ports/output/company-repository.interface';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -10,52 +12,10 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
     @InjectRepository(CompanyOrmEntity)
     private readonly _companyOrm: Repository<CompanyOrmEntity>,
     // private readonly _dataAccessMapper: ReportReceiptDataAccessMapper,
-    // @Inject(PAGINATION_SERVICE)
-    // private readonly _paginationService: IPaginationService,
+    @Inject(PAGINATION_SERVICE)
+    private readonly _paginationService: IPaginationService,
   ) {}
   async reportCompany(manager: EntityManager): Promise<any> {
-    // const items = await this._companyOrm.find({
-    //   relations: ['company_users'],
-    // });
-
-    // const items = await manager
-    //   .createQueryBuilder(CompanyOrmEntity, 'company')
-    //   .leftJoinAndSelect('company.company_users', 'company_users')
-    //   .leftJoinAndSelect('company_users.user', 'user')
-    //   .leftJoinAndSelect('company.budget_accounts', 'budget_accounts')
-    //   .leftJoinAndSelect('budget_accounts.increase_budgets', 'increase_budgets')
-    //   .leftJoinAndSelect('budget_accounts.budget_items', 'budget_items')
-    //   // .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
-    //   .loadRelationCountAndMap(
-    //     'company.approvalWorkflowCount',
-    //     'company.approval_workflows',
-    //   )
-    //   .loadRelationCountAndMap(
-    //     'company.budgetRuleCount',
-    //     'company.budget_approval_rules',
-    //   )
-    //   .loadRelationCountAndMap('company.userCount', 'company.company_users')
-    //   .getMany();
-
-    //   const allocated_amount = Array.isArray(ormData.increase_budgets)
-    //     ? ormData.increase_budgets.reduce(
-    //         (sum, increase) => sum + Number(increase.allocated_amount ?? 0),
-    //         0,
-    //       )
-    //     : 0;
-
-    //   const increase_amount = (ormData.budget_items ?? [])
-    //     .flatMap((item) => item.increase_budget_detail ?? [])
-    //     .reduce((sum, d) => sum + Number(d.allocated_amount ?? 0), 0);
-
-    //   const totalUsedAmount = (ormData.budget_items ?? [])
-    //     .flatMap((item) => item.document_transactions ?? [])
-    //     .reduce((sum, d) => sum + Number(d.amount ?? 0), 0);
-
-    //   const total_budget = allocated_amount - increase_amount;
-    //   const balance_amount = increase_amount - totalUsedAmount;
-    // return items;
-
     const items = await manager
       .createQueryBuilder(CompanyOrmEntity, 'company')
       .leftJoinAndSelect('company.company_users', 'company_users')
@@ -108,6 +68,9 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
 
       return {
         ...company,
+        logo: company?.logo
+          ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${company.logo}`
+          : null,
         company_users: company.company_users?.map((cu) => {
           const { password, ...user } = cu.user;
           return user;

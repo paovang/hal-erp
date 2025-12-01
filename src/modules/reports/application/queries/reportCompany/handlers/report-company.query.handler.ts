@@ -4,6 +4,7 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { Inject } from '@nestjs/common';
 import { REPORT_COMPANY_REPOSITORY } from '../../../constants/inject-key.const';
 import { IReportCompanuRepository } from '@src/modules/reports/domain/ports/output/company-repository.interface';
+import { CompanyQueryDto } from '@src/modules/manage/application/dto/query/company-query.dto';
 
 @QueryHandler(GetReportCompanyQuery)
 export class GetReportCompanyQueryHandler
