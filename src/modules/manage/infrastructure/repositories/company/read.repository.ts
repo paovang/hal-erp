@@ -94,6 +94,13 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       .leftJoinAndSelect('budget_accounts.increase_budgets', 'increase_budgets')
       .leftJoinAndSelect('budget_accounts.budget_items', 'budget_items')
       .leftJoinAndSelect(
+        'company.documents',
+        'documents',
+        'documents.status = :status',
+        { status: 'pending' },
+      )
+
+      .leftJoinAndSelect(
         'budget_items.increase_budget_detail',
         'increase_budget_detail',
       )
