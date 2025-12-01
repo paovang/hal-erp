@@ -6,6 +6,7 @@ import { CreateCommandHandler } from '@src/modules/manage/application/commands/c
 import { GetOneQueryHandler } from '@src/modules/manage/application/queries/company/handler/get-one.command.query';
 import { GetReportQueryHandler } from '../../queries/company/handler/get-report-query.handler';
 import { GetOneReportQueryHandler } from '../../queries/company/handler/get-one-report.command.query';
+import { GetReportQueryHandler } from '../../queries/company/handler/get-report-query.handler';
 
 export const CompanyHandlersProviders: Provider[] = [
   GetAllQueryHandler,

@@ -17,6 +17,8 @@ import { GetReportQuery } from '../queries/company/get-report-company.query';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 import { GetOneReportQuery } from '../queries/company/get-one-report.query';
 
+import { GetReportQuery } from '../queries/company/get-report-company.query';
+import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 @Injectable()
 export class CompanyService implements ICompanyServiceInterface {
   constructor(
