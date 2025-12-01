@@ -258,12 +258,12 @@ export class ReadBudgetAccountRepository
       },
     };
 
-    const parseNumber = (value: any): number =>
-      typeof value === 'string' ? parseFloat(value) : value || 0;
+    // const parseNumber = (value: any): number =>
+    //   typeof value === 'string' ? parseFloat(value) : value || 0;
 
     for (const row of result) {
-      const totalBudget = parseNumber(row.total_budget);
-      const usedAmount = parseNumber(row.used_amount);
+      const totalBudget = Number(row.total_budget);
+      const usedAmount = Number(row.used_amount);
       const remainingAmount = totalBudget - usedAmount;
       console.log('totalBudget', totalBudget);
       console.log('usedAmount', usedAmount);
@@ -294,7 +294,7 @@ export class ReadBudgetAccountRepository
         companyReport.total = totalBudget;
 
         reportData.within_budget.amount += 1;
-        reportData.within_budget.total += totalBudget;
+        reportData.within_budget.total += remainingAmount;
         reportData.within_budget.budget.push(companyReport);
       }
     }
