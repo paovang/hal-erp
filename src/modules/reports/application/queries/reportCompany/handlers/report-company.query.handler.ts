@@ -15,10 +15,7 @@ export class GetReportCompanyQueryHandler
     private readonly _readRepo: IReportCompanuRepository,
   ) {}
 
-  async execute(
-    query: GetReportCompanyQuery,
-    dto: CompanyQueryDto,
-  ): Promise<ResponseResult<any>> {
-    return await this._readRepo.reportCompany(query.manager, dto);
+  async execute(query: GetReportCompanyQuery): Promise<ResponseResult<any>> {
+    return await this._readRepo.reportCompany(query.manager);
   }
 }

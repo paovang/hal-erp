@@ -2,5 +2,5 @@ import { CompanyQueryDto } from '@src/modules/manage/application/dto/query/compa
 import { EntityManager } from 'typeorm';
 
 export interface IReportCompanuRepository {
-  reportCompany(manager: EntityManager, dto: CompanyQueryDto): Promise<any>;
+  reportCompany(manager: EntityManager): Promise<any>;
 }
