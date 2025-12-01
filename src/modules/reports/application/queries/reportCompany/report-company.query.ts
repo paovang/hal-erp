@@ -4,7 +4,7 @@ import { EntityManager } from 'typeorm';
 export class GetReportCompanyQuery {
   constructor(
     public manager: EntityManager,
-    public dto: CompanyQueryDto,
+    // public dto: CompanyQueryDto,
   ) {
     // console.log('hello world');
   }

@@ -13,10 +13,10 @@ export class ReportCompanyService implements IReportCompanyServiceInterface {
     @InjectEntityManager(process.env.CONNECTION_NAME)
     private readonly _readEntityManager: EntityManager,
   ) {}
-  reportCompany(dto: CompanyQueryDto, manager?: EntityManager): Promise<any> {
+  reportCompany(manager?: EntityManager): Promise<any> {
     // console.log('hello world');
     return this._queryBus.execute(
-      new GetReportCompanyQuery(manager ?? this._readEntityManager, dto),
+      new GetReportCompanyQuery(manager ?? this._readEntityManager),
     );
   }
 }
