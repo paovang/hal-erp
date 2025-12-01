@@ -13,6 +13,7 @@ import { EntityManager } from 'typeorm';
 import { CompanyEntity } from '@src/modules/manage/domain/entities/company.entity';
 import { CompanyId } from '@src/modules/manage/domain/value-objects/company-id.vo';
 import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
+import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 
 @Injectable()
 export class ReadCompanyRepository implements IReadCompanyRepository {
@@ -91,6 +92,26 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       searchColumns: ['companies.name', 'companies.email', 'companies.tel'],
       dateColumn: '',
       filterByColumns: [],
+    };
+  }
+
+  async getReport(
+    manager: EntityManager,
+  ): Promise<ResponseResult<ReportCompanyInterface>> {
+    const result = await manager
+      .createQueryBuilder(CompanyOrmEntity, 'company')
+      .leftJoin('company.budget_accounts', 'ba')
+      .leftJoin('ba.increase_budgets', 'ib')
+      .leftJoin('company.company_users', 'user') // join company users
+      .select('COUNT(DISTINCT company.id)', 'total_companies') // count companies
+      .addSelect('COALESCE(SUM(ib.allocated_amount), 0)', 'total_allocated') // sum allocated_amount
+      .addSelect('COUNT(DISTINCT user.id)', 'total_users') // count unique users across companies
+      .getRawOne();
+
+    return {
+      total_companies: Number(result.total_companies),
+      total_allocated: Number(result.total_allocated),
+      total_users: Number(result.total_users),
     };
   }
 }

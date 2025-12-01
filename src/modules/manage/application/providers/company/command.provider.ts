@@ -4,6 +4,7 @@ import { Provider } from '@nestjs/common';
 import { GetAllQueryHandler } from '@src/modules/manage/application/queries/company/handler/get-all.command.query';
 import { CreateCommandHandler } from '@src/modules/manage/application/commands/company/handler/create-command.handler';
 import { GetOneQueryHandler } from '@src/modules/manage/application/queries/company/handler/get-one.command.query';
+import { GetReportQueryHandler } from '../../queries/company/handler/get-report-query.handler';
 
 export const CompanyHandlersProviders: Provider[] = [
   GetAllQueryHandler,
@@ -11,4 +12,5 @@ export const CompanyHandlersProviders: Provider[] = [
   CreateCommandHandler,
   UpdateCommandHandler,
   DeleteCommandHandler,
+  GetReportQueryHandler,
 ];

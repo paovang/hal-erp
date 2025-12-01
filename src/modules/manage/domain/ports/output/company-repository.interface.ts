@@ -3,6 +3,7 @@ import { CompanyQueryDto } from '@src/modules/manage/application/dto/query/compa
 import { EntityManager } from 'typeorm';
 import { CompanyEntity } from '@src/modules/manage/domain/entities/company.entity';
 import { CompanyId } from '@src/modules/manage/domain/value-objects/company-id.vo';
+import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 
 export interface IReadCompanyRepository {
   findAll(
@@ -12,6 +13,10 @@ export interface IReadCompanyRepository {
     roles?: string[],
     department_id?: number,
   ): Promise<ResponseResult<CompanyEntity>>;
+
+  getReport(
+    manager: EntityManager,
+  ): Promise<ResponseResult<ReportCompanyInterface>>;
 
   findOne(
     id: CompanyId,

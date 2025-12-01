@@ -13,7 +13,8 @@ import { UpdateCommand } from '@src/modules/manage/application/commands/company/
 import { UpdateCompanyDto } from '@src/modules/manage/application/dto/create/company/update.dto';
 import { DeleteCommand } from '@src/modules/manage/application/commands/company/delete.command';
 import { GetOneQuery } from '@src/modules/manage/application/queries/company/get-one.query';
-
+import { GetReportQuery } from '../queries/company/get-report-company.query';
+import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 @Injectable()
 export class CompanyService implements ICompanyServiceInterface {
   constructor(
@@ -29,6 +30,14 @@ export class CompanyService implements ICompanyServiceInterface {
   ): Promise<ResponseResult<CompanyEntity>> {
     return await this._queryBus.execute(
       new GetAllQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getReport(
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ReportCompanyInterface>> {
+    return await this._queryBus.execute(
+      new GetReportQuery(manager ?? this._readEntityManager),
     );
   }
 
