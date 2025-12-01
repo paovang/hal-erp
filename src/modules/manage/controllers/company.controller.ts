@@ -19,6 +19,7 @@ import { CompanyDataMapper } from '../application/mappers/company.mapper';
 import { CompanyResponse } from '../application/dto/response/company.response';
 import { UpdateCompanyDto } from '../application/dto/create/company/update.dto';
 import { CompanyQueryDto } from '../application/dto/query/company-query.dto';
+import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 
 @Controller('companies')
 export class CompanyController {
@@ -53,6 +54,12 @@ export class CompanyController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  // report company
+  @Get('report')
+  async getReport(): Promise<ResponseResult<ReportCompanyInterface>> {
+    return await this._companyService.getReport();
   }
 
   @Get(':id')
