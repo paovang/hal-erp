@@ -68,6 +68,9 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
 
       return {
         ...company,
+        logo: company?.logo
+          ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${company.logo}`
+          : null,
         company_users: company.company_users?.map((cu) => {
           const { password, ...user } = cu.user;
           return user;
