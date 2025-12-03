@@ -30,6 +30,15 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
         { status: 'pending' },
       )
       .innerJoinAndSelect('documents.receipts', 'receipts')
+      .loadRelationCountAndMap(
+        'company.documentsWithReceiptsCount',
+        'company.documents',
+        'documentsCount',
+        (qb) =>
+          qb
+            .innerJoin('documentsCount.receipts', 'receiptsCount')
+            .where('documentsCount.status = :status', { status: 'pending' }),
+      )
       .leftJoinAndSelect(
         'budget_items.increase_budget_detail',
         'increase_budget_detail',
