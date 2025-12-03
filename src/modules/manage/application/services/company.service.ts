@@ -13,10 +13,7 @@ import { UpdateCommand } from '@src/modules/manage/application/commands/company/
 import { UpdateCompanyDto } from '@src/modules/manage/application/dto/create/company/update.dto';
 import { DeleteCommand } from '@src/modules/manage/application/commands/company/delete.command';
 import { GetOneQuery } from '@src/modules/manage/application/queries/company/get-one.query';
-import { GetReportQuery } from '../queries/company/get-report-company.query';
-import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 import { GetOneReportQuery } from '../queries/company/get-one-report.query';
-
 import { GetReportQuery } from '../queries/company/get-report-company.query';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 import { GetReportReceiptQuery } from '../queries/company/get-report-receit.query';
