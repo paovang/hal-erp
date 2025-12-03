@@ -100,7 +100,7 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
         'documents.status = :status',
         { status: 'pending' },
       )
-      .leftJoinAndSelect('documents.receipts', 'receipts')
+      .innerJoinAndSelect('documents.receipts', 'receipts') // เปลี่ยนเป็น innerJoinAndSelect
 
       .leftJoinAndSelect(
         'budget_items.increase_budget_detail',
