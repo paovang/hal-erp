@@ -5,10 +5,12 @@ import { GetAllQueryHandler } from '@src/modules/manage/application/queries/comp
 import { CreateCommandHandler } from '@src/modules/manage/application/commands/company/handler/create-command.handler';
 import { GetOneQueryHandler } from '@src/modules/manage/application/queries/company/handler/get-one.command.query';
 import { GetReportQueryHandler } from '../../queries/company/handler/get-report-query.handler';
+import { GetOneReportQueryHandler } from '../../queries/company/handler/get-one-report.command.query';
 
 export const CompanyHandlersProviders: Provider[] = [
   GetAllQueryHandler,
   GetOneQueryHandler,
+  GetOneReportQueryHandler,
   CreateCommandHandler,
   UpdateCommandHandler,
   DeleteCommandHandler,

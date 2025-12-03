@@ -9,11 +9,12 @@ import {
   ResponseResult,
 } from '@common/infrastructure/pagination/pagination.interface';
 import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CompanyEntity } from '@src/modules/manage/domain/entities/company.entity';
 import { CompanyId } from '@src/modules/manage/domain/value-objects/company-id.vo';
 import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ReadCompanyRepository implements IReadCompanyRepository {
@@ -21,6 +22,8 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
     private readonly _dataAccessMapper: CompanyDataAccessMapper,
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
+    @InjectRepository(CompanyOrmEntity)
+    private readonly _companyRepository: Repository<CompanyOrmEntity>,
   ) {}
 
   async findAll(
@@ -78,6 +81,73 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       .getOneOrFail();
 
     return this._dataAccessMapper.toEntity(item);
+  }
+
+  async findOneReport(
+    id: CompanyId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<any>> {
+    const item = await manager
+      .createQueryBuilder(CompanyOrmEntity, 'company')
+      .leftJoinAndSelect('company.company_users', 'company_users')
+      .leftJoinAndSelect('company_users.user', 'user')
+      .leftJoinAndSelect('company.budget_accounts', 'budget_accounts')
+      .leftJoinAndSelect('budget_accounts.increase_budgets', 'increase_budgets')
+      .leftJoinAndSelect('budget_accounts.budget_items', 'budget_items')
+      .leftJoinAndSelect(
+        'budget_items.increase_budget_detail',
+        'increase_budget_detail',
+      )
+      .leftJoinAndSelect(
+        'budget_items.document_transactions',
+        'document_transactions',
+      )
+      .loadRelationCountAndMap(
+        'company.approvalWorkflowCount',
+        'company.approval_workflows',
+      )
+      .loadRelationCountAndMap(
+        'company.budgetRuleCount',
+        'company.budget_approval_rules',
+      )
+      .loadRelationCountAndMap('company.userCount', 'company.company_users')
+      .where('company.id = :id', { id: id.value })
+
+      .getOneOrFail();
+    const allocated_amount =
+      item.budget_accounts
+        ?.flatMap((ba) => ba.increase_budgets ?? [])
+        .reduce((sum, b) => sum + Number(b.allocated_amount ?? 0), 0) ?? 0;
+
+    // รวม increase_amount ของ increase_budget_detail ใน budget_items
+    const increase_amount =
+      item.budget_accounts
+        ?.flatMap((ba) => ba.budget_items ?? [])
+        .flatMap((bi) => bi.increase_budget_detail ?? [])
+        .reduce((sum, d) => sum + Number(d.allocated_amount ?? 0), 0) ?? 0;
+
+    // รวม totalUsedAmount ของ document_transactions
+    const totalUsedAmount =
+      item.budget_accounts
+        ?.flatMap((ba) => ba.budget_items ?? [])
+        .flatMap((bi) => bi.document_transactions ?? [])
+        .reduce((sum, dt) => sum + Number(dt.amount ?? 0), 0) ?? 0;
+
+    const total_budget = allocated_amount - increase_amount;
+    const balance_amount = increase_amount - totalUsedAmount;
+    const result = {
+      ...item,
+      company_users: item.company_users?.map((cu) => {
+        const { password, ...user } = cu.user;
+        return user;
+      }),
+      allocated_amount,
+      increase_amount,
+      totalUsedAmount,
+      total_budget,
+      balance_amount,
+    };
+    return result;
   }
 
   private createBaseQuery(manager: EntityManager) {

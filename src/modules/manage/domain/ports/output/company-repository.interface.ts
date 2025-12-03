@@ -22,6 +22,11 @@ export interface IReadCompanyRepository {
     id: CompanyId,
     manager: EntityManager,
   ): Promise<ResponseResult<CompanyEntity>>;
+
+  findOneReport(
+    id: CompanyId,
+    manager: EntityManager,
+  ): Promise<ResponseResult<any>>;
 }
 
 export interface IWriteCompanyRepository {

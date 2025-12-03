@@ -15,6 +15,8 @@ import { DeleteCommand } from '@src/modules/manage/application/commands/company/
 import { GetOneQuery } from '@src/modules/manage/application/queries/company/get-one.query';
 import { GetReportQuery } from '../queries/company/get-report-company.query';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
+import { GetOneReportQuery } from '../queries/company/get-one-report.query';
+
 @Injectable()
 export class CompanyService implements ICompanyServiceInterface {
   constructor(
@@ -47,6 +49,15 @@ export class CompanyService implements ICompanyServiceInterface {
   ): Promise<ResponseResult<CompanyEntity>> {
     return await this._queryBus.execute(
       new GetOneQuery(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getOneReport(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<any>> {
+    return await this._queryBus.execute(
+      new GetOneReportQuery(id, manager ?? this._readEntityManager),
     );
   }
 

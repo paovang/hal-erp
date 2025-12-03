@@ -32,5 +32,10 @@ export interface ICompanyServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<CompanyEntity>>;
 
+  getOneReport(
+    id: number,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<any>>;
+
   delete(id: number, manager?: EntityManager): Promise<void>;
 }

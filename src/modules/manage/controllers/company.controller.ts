@@ -74,6 +74,12 @@ export class CompanyController {
     );
   }
 
+  @Get('/report/:id')
+  async getOneReport(@Param('id') id: number): Promise<ResponseResult<any>> {
+    // console.log('hello world');
+    return await this._companyService.getOneReport(id);
+  }
+
   @Put(':id')
   async update(
     @Param('id') id: number,
