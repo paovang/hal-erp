@@ -15,7 +15,6 @@ import { CompanyId } from '@src/modules/manage/domain/value-objects/company-id.v
 import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 
 @Injectable()
 export class ReadCompanyRepository implements IReadCompanyRepository {
