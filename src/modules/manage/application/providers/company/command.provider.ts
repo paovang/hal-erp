@@ -16,4 +16,5 @@ export const CompanyHandlersProviders: Provider[] = [
   UpdateCommandHandler,
   DeleteCommandHandler,
   GetReportQueryHandler,
+  // dd
 ];
