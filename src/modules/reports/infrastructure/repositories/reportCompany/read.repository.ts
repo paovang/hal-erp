@@ -29,6 +29,7 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
         'documents.status = :status',
         { status: 'pending' },
       )
+      .leftJoinAndSelect('documents.receipts', 'receipts')
       .leftJoinAndSelect(
         'budget_items.increase_budget_detail',
         'increase_budget_detail',

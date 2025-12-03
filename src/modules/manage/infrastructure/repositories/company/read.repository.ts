@@ -100,6 +100,7 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
         'documents.status = :status',
         { status: 'pending' },
       )
+      .leftJoinAndSelect('documents.receipts', 'receipts')
 
       .leftJoinAndSelect(
         'budget_items.increase_budget_detail',
@@ -121,6 +122,7 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       .where('company.id = :id', { id: id.value })
 
       .getOneOrFail();
+    console.log('item', item);
     const allocated_amount =
       item.budget_accounts
         ?.flatMap((ba) => ba.increase_budgets ?? [])
