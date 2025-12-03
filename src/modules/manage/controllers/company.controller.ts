@@ -62,6 +62,13 @@ export class CompanyController {
     return await this._companyService.getReport();
   }
 
+  @Get('report/receipts')
+  async getReportReceipt(
+    @Query() query: CompanyQueryDto,
+  ): Promise<ResponseResult<ReportCompanyInterface>> {
+    return await this._companyService.getReportReceipt(query);
+  }
+
   @Get(':id')
   async getOne(
     @Param('id') id: number,

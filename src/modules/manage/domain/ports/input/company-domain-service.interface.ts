@@ -16,6 +16,11 @@ export interface ICompanyServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<ReportCompanyInterface>>;
 
+  getReportReceipt(
+    query: CompanyQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ReportCompanyInterface>>;
+
   getOne(
     id: number,
     manager?: EntityManager,
