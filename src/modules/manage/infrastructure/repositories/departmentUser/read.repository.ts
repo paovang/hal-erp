@@ -73,7 +73,7 @@ export class ReadDepartmentUserRepository
       .leftJoin('user_has_permissions.permission', 'permissions')
       .leftJoin('department_users.positions', 'positions')
       .leftJoin('users.roles', 'roles')
-      .leftJoin('roles.permissions', 'role_permissions')
+      // .leftJoin('roles.permissions', 'role_permissions')
       .addSelect([
         'departments.id',
         'departments.name',
@@ -90,8 +90,8 @@ export class ReadDepartmentUserRepository
         'positions.name',
         'roles.id',
         'roles.name',
-        'role_permissions.id',
-        'role_permissions.name',
+        // 'role_permissions.id',
+        // 'role_permissions.name',
         'user_signatures.id',
         'user_signatures.signature_file',
         'line_manager.id',

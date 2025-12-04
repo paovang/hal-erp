@@ -62,11 +62,15 @@ export class CompanyController {
     return await this._companyService.getReport();
   }
 
-  @Get('report/receipts')
+  @Get('report/receipt')
   async getReportReceipt(
     @Query() query: CompanyQueryDto,
-  ): Promise<ResponseResult<ReportCompanyInterface>> {
-    return await this._companyService.getReportReceipt(query);
+  ): Promise<ResponseResult<CompanyResponse>> {
+    const result = await this._companyService.getReportReceipt(query);
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
   }
 
   @Get(':id')

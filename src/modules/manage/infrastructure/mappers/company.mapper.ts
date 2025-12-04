@@ -54,4 +54,63 @@ export class CompanyDataAccessMapper {
 
     return builder.build();
   }
+
+  toEntityReportReceipt(ormData: CompanyOrmEntity): CompanyEntity {
+    const documents = ormData?.documents || [];
+
+    // Get all receipts from documents
+    const allReceipts = documents.flatMap((doc: any) => doc.receipts || []);
+
+    // Filter receipts that have id
+    const validReceipts = allReceipts.filter((receipt: any) => receipt.id);
+
+    // Count receipt IDs
+    const receipt_count = validReceipts.length;
+
+    const total_allocated_amount =
+      ormData?.budget_accounts?.reduce((sum: number, budgetAccount: any) => {
+        const accountIncreaseBudgets = budgetAccount?.increase_budgets || [];
+        const accountAllocatedAmount = accountIncreaseBudgets.reduce(
+          (accountSum: number, increaseBudget: any) =>
+            accountSum + Number(increaseBudget.allocated_amount || 0),
+          0,
+        );
+        return sum + accountAllocatedAmount;
+      }, 0) || 0;
+
+    const total_used_amount =
+      ormData?.budget_accounts?.reduce((sum: number, budgetAccount: any) => {
+        const accountBudgetItems = budgetAccount?.budget_items || [];
+        const accountTransactionAmount = accountBudgetItems.reduce(
+          (itemSum: number, budgetItem: any) => {
+            const itemTransactions = budgetItem?.document_transactions || [];
+            const itemTransactionAmount = itemTransactions.reduce(
+              (transactionSum: number, transaction: any) =>
+                transactionSum + Number(transaction.amount || 0),
+              0,
+            );
+            return itemSum + itemTransactionAmount;
+          },
+          0,
+        );
+        return sum + accountTransactionAmount;
+      }, 0) || 0;
+
+    console.log('receipt_count', receipt_count);
+    console.log('total_allocated_amount', total_allocated_amount);
+    console.log('total_used_amount', total_used_amount);
+
+    const builder = CompanyEntity.builder()
+      .setCompanyId(new CompanyId(ormData.id))
+      .setName(ormData.name ?? '')
+      .setLogo(ormData.logo ?? '')
+      .setTel(ormData.tel ?? '')
+      .setEmail(ormData.email ?? '')
+      .setAddress(ormData.address ?? '')
+      .setCreatedAt(ormData.created_at)
+      .setUpdatedAt(ormData.updated_at)
+      .setDeletedAt(ormData.deleted_at);
+
+    return builder.build();
+  }
 }

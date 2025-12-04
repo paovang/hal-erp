@@ -18,6 +18,11 @@ export interface IReadCompanyRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<ReportCompanyInterface>>;
 
+  getReportReceipt(
+    query: CompanyQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<CompanyEntity>>;
+
   findOne(
     id: CompanyId,
     manager: EntityManager,
