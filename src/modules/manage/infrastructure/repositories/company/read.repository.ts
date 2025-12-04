@@ -100,6 +100,7 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
         'documents.status = :status',
         { status: 'pending' },
       )
+<<<<<<< HEAD
       .innerJoinAndSelect('documents.receipts', 'receipts')
       .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
 
@@ -112,6 +113,9 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
             .innerJoin('documentsCount.receipts', 'receiptsCount')
             .where('documentsCount.status = :status', { status: 'pending' }),
       ) // เปลี่ยนเป็น innerJoinAndSelect
+=======
+      .innerJoinAndSelect('documents.receipts', 'receipts') // เปลี่ยนเป็น innerJoinAndSelect
+>>>>>>> dd79e72 (receipts)
 
       .leftJoinAndSelect(
         'budget_items.increase_budget_detail',
