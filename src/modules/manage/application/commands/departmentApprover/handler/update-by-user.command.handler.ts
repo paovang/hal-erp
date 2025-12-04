@@ -14,6 +14,8 @@ import { _checkColumnDuplicate } from '@common/utils/check-column-duplicate-orm.
 import { UserContextService } from '@common/infrastructure/cls/cls.service';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 
+//
+
 @CommandHandler(UpdateByUserCommand)
 export class UpdateByUserCommandHandler
   implements
