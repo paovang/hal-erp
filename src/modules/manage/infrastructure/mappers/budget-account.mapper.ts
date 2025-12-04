@@ -45,7 +45,7 @@ export class BudgetAccountDataAccessMapper {
   }
 
   toEntity(ormData: BudgetAccountOrmEntity): BudgetAccountEntity {
-    let total: number; //
+    let total: number; // test
     const allocated_amount = Array.isArray(ormData.increase_budgets)
       ? ormData.increase_budgets.reduce(
           (sum, increase) => sum + Number(increase.allocated_amount ?? 0),
