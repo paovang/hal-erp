@@ -30,6 +30,8 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
         { status: 'pending' },
       )
       .innerJoinAndSelect('documents.receipts', 'receipts')
+      .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
+
       .loadRelationCountAndMap(
         'company.documentsWithReceiptsCount',
         'company.documents',
