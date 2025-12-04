@@ -45,6 +45,7 @@ export class BudgetAccountDataAccessMapper {
   }
 
   toEntity(ormData: BudgetAccountOrmEntity): BudgetAccountEntity {
+    let total: number;
     const allocated_amount = Array.isArray(ormData.increase_budgets)
       ? ormData.increase_budgets.reduce(
           (sum, increase) => sum + Number(increase.allocated_amount ?? 0),
@@ -61,6 +62,11 @@ export class BudgetAccountDataAccessMapper {
       .reduce((sum, d) => sum + Number(d.amount ?? 0), 0);
 
     const total_budget = allocated_amount - increase_amount;
+    if (total_budget > 0) {
+      total = 0;
+    } else {
+      total = total_budget;
+    }
     const balance_amount = increase_amount - totalUsedAmount;
 
     const build = BudgetAccountEntity.builder()
@@ -69,7 +75,8 @@ export class BudgetAccountDataAccessMapper {
       .setName(ormData.name ?? '')
       .setFiscalYear(ormData.fiscal_year ?? 0)
       .setAllocatedAmount(allocated_amount)
-      .setTotalBudget(total_budget)
+      .setTotalBudget(total)
+      // .setTotalBudget(total_budget)
       .setIncreaseAmount(increase_amount)
       .setUsedAmount(totalUsedAmount)
       .setBalanceAmount(balance_amount)
