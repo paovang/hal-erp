@@ -33,7 +33,7 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
       .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
 
       .loadRelationCountAndMap(
-        'company.documentsWithReceiptsCount',
+        'company.approvalWorkflowCount',
         'company.documents',
         'documentsCount',
         (qb) =>
@@ -49,10 +49,10 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
         'budget_items.document_transactions',
         'document_transactions',
       )
-      .loadRelationCountAndMap(
-        'company.approvalWorkflowCount',
-        'company.approval_workflows',
-      )
+      // .loadRelationCountAndMap(
+      //   'company.approvalWorkflowCount',
+      //   'company.approval_workflows',
+      // )
       .loadRelationCountAndMap(
         'company.budgetRuleCount',
         'company.budget_approval_rules',
