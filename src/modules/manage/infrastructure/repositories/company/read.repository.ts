@@ -205,4 +205,36 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       total_users: Number(result.total_users),
     };
   }
+
+  async getReportReceipt(
+    query: CompanyQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<CompanyEntity>> {
+    const queryBuilder = await this.createReportQuery(manager);
+    query.sort_by = 'companies.id';
+
+    const data = await this._paginationService.paginate(
+      queryBuilder,
+      query,
+      this._dataAccessMapper.toEntityReportReceipt.bind(this._dataAccessMapper),
+      this.getFilterOptions(),
+    );
+    return data as ResponseResult<CompanyEntity>;
+  }
+
+  private createReportQuery(manager: EntityManager) {
+    return manager
+      .createQueryBuilder(CompanyOrmEntity, 'companies')
+      .leftJoin('companies.documents', 'documents')
+      .leftJoin('documents.receipts', 'receipts')
+      .leftJoin('companies.budget_accounts', 'budget_accounts')
+      .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
+      .addSelect([
+        'documents.id',
+        'receipts.id',
+        'budget_accounts.id',
+        'increase_budgets.id',
+        'increase_budgets.allocated_amount',
+      ]);
+  }
 }

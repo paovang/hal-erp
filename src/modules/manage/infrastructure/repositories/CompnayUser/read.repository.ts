@@ -60,7 +60,7 @@ export class ReadCompanyUserRepository implements IReadCompanyUserRepository {
       .leftJoinAndSelect('user.roles', 'roles')
       .leftJoinAndSelect('user.userHasPermissions', 'user_has_permissions')
       .leftJoinAndSelect('user_has_permissions.permission', 'permissions')
-      .leftJoinAndSelect('roles.permissions', 'role_permissions')
+      // .leftJoinAndSelect('roles.permissions', 'role_permissions')
       .where('roles.name NOT IN (:...role)', { role });
 
     if (company_id) {

@@ -59,7 +59,7 @@ export class ReadUserRepository implements IReadUserRepository {
       .leftJoinAndSelect('users.userHasPermissions', 'user_has_permissions')
       .leftJoinAndSelect('user_has_permissions.permission', 'permissions')
       .leftJoinAndSelect('users.roles', 'roles')
-      .leftJoinAndSelect('roles.permissions', 'role_permissions')
+      // .leftJoinAndSelect('roles.permissions', 'role_permissions')
       .leftJoinAndSelect('users.user_signatures', 'user_signatures')
       .leftJoinAndSelect('users.user_types', 'user_types')
       .where('roles.name NOT IN (:...roleName)', { roleName });
