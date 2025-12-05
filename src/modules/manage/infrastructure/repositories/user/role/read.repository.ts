@@ -36,6 +36,7 @@ export class ReadRoleRepository implements IReadRoleRepository {
       department_id,
       roles,
       companyId,
+      query.type,
     );
     query.sort_by = 'roles.id';
 
@@ -64,14 +65,16 @@ export class ReadRoleRepository implements IReadRoleRepository {
     department_id?: number,
     roles?: string[],
     companyId?: number,
+    type?: string,
   ) {
     const roleName = ['super-admin', 'admin', 'company-admin'];
+    const displayRole = ['admin', 'user'];
     const queryBuilder = manager
       .createQueryBuilder(RoleOrmEntity, 'roles')
       .leftJoin('roles.rolesGroups', 'roleGroups') // use rolesGroups (matches entity)
       .leftJoin('roleGroups.department', 'departments') // use the alias roleGroups here
       .leftJoinAndSelect('roles.permissions', 'permissions')
-      .where('roles.name NOT IN (:...roleName)', { roleName })
+      // .where('roles.name NOT IN (:...roleName)', { roleName })
       .addSelect([
         'roleGroups.id',
         'roleGroups.role_id',
@@ -81,6 +84,12 @@ export class ReadRoleRepository implements IReadRoleRepository {
         'departments.code',
         'departments.company_id',
       ]);
+
+    if (type && type == 'user') {
+      queryBuilder.andWhere('roles.name IN (:...displayRole)', { displayRole });
+    } else {
+      queryBuilder.andWhere('roles.name NOT IN (:...roleName)', { roleName });
+    }
 
     if (companyId) {
       queryBuilder.andWhere('departments.company_id = :companyId', {
