@@ -34,9 +34,9 @@ export class BudgetAccountDataMapper {
       builder.setFiscalYear(dto.fiscal_year);
     }
 
-    // if (dto.allocated_amount) {
-    //   builder.setAllocatedAmount(dto.allocated_amount);
-    // }
+    if (dto.allocated_amount) {
+      builder.setAllocatedAmount(dto.allocated_amount);
+    }
 
     if (dto.departmentId) {
       builder.setDepartmentId(dto.departmentId);

@@ -34,6 +34,10 @@ export class BudgetAccountOrmEntity {
   @Column({ type: 'integer', nullable: true })
   fiscal_year?: number;
 
+  @Index()
+  @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
+  allocated_amount?: number;
+
   @Column({ nullable: true })
   company_id?: number;
   @ManyToOne(() => CompanyOrmEntity, (company) => company.budget_accounts, {

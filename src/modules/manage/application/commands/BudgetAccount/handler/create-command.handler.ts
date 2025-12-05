@@ -20,7 +20,7 @@ import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/type
 import { IWriteIncreaseBudgetRepository } from '@src/modules/manage/domain/ports/output/increase-budget-repository.interface';
 import { IncreaseBudgetDataMapper } from '../../../mappers/increase-budget.mapper';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
-import { CreateIncreaseBudgetDto } from '../../../dto/create/increaseBudget/create.dto';
+// import { CreateIncreaseBudgetDto } from '../../../dto/create/increaseBudget/create.dto';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @CommandHandler(CreateCommand)
@@ -85,21 +85,21 @@ export class CreateCommandHandler
 
         const result = await this._write.create(mapToEntity, manager);
 
-        const budget_account = (result as any)._id._value;
+        // const budget_account = (result as any)._id._value;
 
-        const increase_dto = query.dto as unknown as CreateIncreaseBudgetDto;
-        const merge = {
-          ...increase_dto,
-          budget_account_id: budget_account,
-        };
+        // const increase_dto = query.dto as unknown as CreateIncreaseBudgetDto;
+        // const merge = {
+        //   ...increase_dto,
+        //   budget_account_id: budget_account,
+        // };
 
-        const entity = this._dataIncreaseMapper.toEntity(
-          merge,
-          user_id,
-          query.dto.allocated_amount,
-        );
+        // const entity = this._dataIncreaseMapper.toEntity(
+        //   merge,
+        //   user_id,
+        //   query.dto.allocated_amount,
+        // );
 
-        await this._writeIncrease.create(entity, manager);
+        // await this._writeIncrease.create(entity, manager);
 
         return result;
       },

@@ -31,7 +31,7 @@ export class BudgetAccountDataAccessMapper {
     mediaOrmEntity.code = budgetAccountEntity.code;
     mediaOrmEntity.name = budgetAccountEntity.name;
     mediaOrmEntity.fiscal_year = budgetAccountEntity.fiscal_year;
-    // mediaOrmEntity.allocated_amount = budgetAccountEntity.allocated_amount;
+    mediaOrmEntity.allocated_amount = budgetAccountEntity.allocated_amount;
     mediaOrmEntity.department_id = budgetAccountEntity.departmentId;
     mediaOrmEntity.company_id = budgetAccountEntity.company_id;
     mediaOrmEntity.type = budgetAccountEntity.type;
@@ -46,12 +46,13 @@ export class BudgetAccountDataAccessMapper {
 
   toEntity(ormData: BudgetAccountOrmEntity): BudgetAccountEntity {
     let total: number; // test
-    const allocated_amount = Array.isArray(ormData.increase_budgets)
-      ? ormData.increase_budgets.reduce(
-          (sum, increase) => sum + Number(increase.allocated_amount ?? 0),
-          0,
-        )
-      : 0;
+
+    const allocated_amount = Number(ormData.allocated_amount) ?? 0;
+    // const increase_allocated_amount =
+    //   Array.isArray(ormData.increase_budgets) &&
+    //   ormData.increase_budgets.length > 0
+    //     ? Number(ormData.increase_budgets[0].allocated_amount ?? 0)
+    //     : 0;
 
     const increase_amount = (ormData.budget_items ?? [])
       .flatMap((item) => item.increase_budget_detail ?? [])

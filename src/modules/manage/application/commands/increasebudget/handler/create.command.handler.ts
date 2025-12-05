@@ -99,7 +99,12 @@ export class CreateCommandHandler
         );
         fileKey = s3ImageResponse.fileKey;
 
-        const entity = this._dataMapper.toEntity(query.dto, user_id);
+        const total = query.dto.increase_budget_details.reduce(
+          (acc, item) => acc + item.allocated_amount,
+          0,
+        );
+
+        const entity = this._dataMapper.toEntity(query.dto, user_id, total);
 
         const result = await this._write.create(entity, manager);
 
