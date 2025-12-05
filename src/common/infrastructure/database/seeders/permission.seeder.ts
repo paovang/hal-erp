@@ -231,7 +231,7 @@ export class PermissionSeeder {
       'create-department-rule': 41,
       'read-department-rule': 41,
       'update-department-rule': 41,
-      'delete-department-rule': 41,
+      'delete-department-rule': 41, //
     };
 
     const items = Object.entries(permissionGroupMapping).map(
