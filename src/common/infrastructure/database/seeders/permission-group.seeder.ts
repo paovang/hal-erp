@@ -299,6 +299,34 @@ export class PermissionGroupSeeder {
         created_at: currentDateTime,
         updated_at: currentDateTime,
       },
+      {
+        name: 'vat',
+        display_name: 'Vat',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'bank',
+        display_name: 'Bank',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'budget-approval',
+        display_name: 'Budget Approval',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
+      {
+        name: 'department-rule',
+        display_name: 'Department Rule',
+        type: 'all',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
     ];
 
     for (const item of items) {

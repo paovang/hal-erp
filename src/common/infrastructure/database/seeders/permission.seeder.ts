@@ -212,6 +212,26 @@ export class PermissionSeeder {
       'read-vendor-product': 37,
       'update-vendor-product': 37,
       'delete-vendor-product': 37,
+
+      // 'create-vat': 37,
+      // 'read-vat': 37,
+      // 'update-vat': 37,
+      // 'delete-vat': 37,
+
+      // 'create-bank': 37,
+      // 'read-bank': 37,
+      // 'update-bank': 37,
+      // 'delete-bank': 37,
+
+      // 'create-budget-approval': 37,
+      // 'read-budget-approval': 37,
+      // 'update-budget-approval': 37,
+      // 'delete-budget-approval': 37,
+
+      // 'create-department-rule': 37,
+      // 'read-department-rule': 37,
+      // 'update-department-rule': 37,
+      // 'delete-department-rule': 37,
     };
 
     const items = Object.entries(permissionGroupMapping).map(
