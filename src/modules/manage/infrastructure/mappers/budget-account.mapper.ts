@@ -46,6 +46,7 @@ export class BudgetAccountDataAccessMapper {
 
   toEntity(ormData: BudgetAccountOrmEntity): BudgetAccountEntity {
     let total: number; // test
+    let balance_amount: number;
 
     const allocated_amount = Number(ormData.allocated_amount) ?? 0;
     // const increase_allocated_amount =
@@ -68,7 +69,12 @@ export class BudgetAccountDataAccessMapper {
     } else {
       total = total_budget;
     }
-    const balance_amount = increase_amount - totalUsedAmount;
+
+    if (allocated_amount > increase_amount) {
+      balance_amount = allocated_amount - totalUsedAmount;
+    } else {
+      balance_amount = increase_amount - totalUsedAmount;
+    }
 
     const build = BudgetAccountEntity.builder()
       .setBudgetAccountId(new BudgetAccountId(ormData.id))
