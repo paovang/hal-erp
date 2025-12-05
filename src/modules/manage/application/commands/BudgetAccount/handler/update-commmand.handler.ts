@@ -21,9 +21,9 @@ import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.co
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
-import { UpdateIncreaseBudgetDto } from '../../../dto/create/increaseBudget/update.dto';
-import { IncreaseBudgetId } from '@src/modules/manage/domain/value-objects/increase-budget-id.vo';
-import { IncreaseBudgetOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget.orm';
+// import { UpdateIncreaseBudgetDto } from '../../../dto/create/increaseBudget/update.dto';
+// import { IncreaseBudgetId } from '@src/modules/manage/domain/value-objects/increase-budget-id.vo';
+// import { IncreaseBudgetOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget.orm';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @CommandHandler(UpdateCommand)
@@ -76,35 +76,35 @@ export class UpdateCommandHandler
 
         const result = await this._write.update(entity, manager);
 
-        const increase = await findOneOrFail(
-          manager,
-          IncreaseBudgetOrmEntity,
-          {
-            budget_account_id: query.id,
-          },
-          `increase budget account id: ${query.id}`,
-        );
+        // const increase = await findOneOrFail(
+        //   manager,
+        //   IncreaseBudgetOrmEntity,
+        //   {
+        //     budget_account_id: query.id,
+        //   },
+        //   `increase budget account id: ${query.id}`,
+        // );
 
-        const increase_id = increase.id;
+        // const increase_id = increase.id;
 
-        const increase_dto = query.dto as unknown as UpdateIncreaseBudgetDto;
-        const merge = {
-          ...increase_dto,
-          budget_account_id: query.id,
-        };
+        // const increase_dto = query.dto as unknown as UpdateIncreaseBudgetDto;
+        // const merge = {
+        //   ...increase_dto,
+        //   budget_account_id: query.id,
+        // };
 
-        const entityIncrease = this._dataIncreaseMapper.toEntity(
-          merge,
-          user_id,
-          query.dto.allocated_amount,
-        );
+        // const entityIncrease = this._dataIncreaseMapper.toEntity(
+        //   merge,
+        //   user_id,
+        //   query.dto.allocated_amount,
+        // );
 
-        await entityIncrease.initializeUpdateSetId(
-          new IncreaseBudgetId(increase_id),
-        );
-        await entityIncrease.validateExistingIdForUpdate();
+        // await entityIncrease.initializeUpdateSetId(
+        //   new IncreaseBudgetId(increase_id),
+        // );
+        // await entityIncrease.validateExistingIdForUpdate();
 
-        await this._writeIncrease.update(entityIncrease, manager);
+        // await this._writeIncrease.update(entityIncrease, manager);
 
         return result;
       },

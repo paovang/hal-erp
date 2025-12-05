@@ -25,6 +25,8 @@ import { IncreaseBudgetDetailDataMapper } from '../../../mappers/increase-budget
 // import { IncreaseBudgetId } from '@src/modules/manage/domain/value-objects/increase-budget-id.vo';
 // import { IncreaseBudgetOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget.orm';
 import { IncreaseBudgetDetailId } from '@src/modules/manage/domain/value-objects/increase-budget-detail-id.vo';
+import { IncreaseBudgetId } from '@src/modules/manage/domain/value-objects/increase-budget-id.vo';
+import { IncreaseBudgetOrmEntity } from '@src/common/infrastructure/database/typeorm/increase-budget.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -86,28 +88,30 @@ export class UpdateCommandHandler
 
         const result = await this._write.update(entity, manager);
 
-        // // sum total
-        // const sum_total = await this._readBudget.sum_total(
-        //   new IncreaseBudgetId(budget_id),
-        //   manager,
-        // );
+        const budget_id = (result as any).increase_budget_id;
 
-        // // mapper total
-        // const entity_budget =
-        //   await this._dataMapperBudget.toEntityUpdate(sum_total);
+        // sum total
+        const sum_total = await this._readBudget.sum_total(
+          new IncreaseBudgetId(budget_id),
+          manager,
+        );
 
-        // // Set and validate ID
-        // await entity_budget.initializeUpdateSetId(
-        //   new IncreaseBudgetId(budget_id),
-        // );
-        // await entity_budget.validateExistingIdForUpdate();
+        // mapper total
+        const entity_budget =
+          await this._dataMapperBudget.toEntityUpdate(sum_total);
 
-        // // Final existence check for ID before update
-        // await findOneOrFail(manager, IncreaseBudgetOrmEntity, {
-        //   id: entity_budget.getId().value,
-        // });
+        // Set and validate ID
+        await entity_budget.initializeUpdateSetId(
+          new IncreaseBudgetId(budget_id),
+        );
+        await entity_budget.validateExistingIdForUpdate();
 
-        // await this._writeBudget.update(entity_budget, manager);
+        // Final existence check for ID before update
+        await findOneOrFail(manager, IncreaseBudgetOrmEntity, {
+          id: entity_budget.getId().value,
+        });
+
+        await this._writeBudget.update(entity_budget, manager);
 
         return result;
       },
