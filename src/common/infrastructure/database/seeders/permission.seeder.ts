@@ -213,25 +213,25 @@ export class PermissionSeeder {
       'update-vendor-product': 37,
       'delete-vendor-product': 37,
 
-      // 'create-vat': 37,
-      // 'read-vat': 37,
-      // 'update-vat': 37,
-      // 'delete-vat': 37,
+      'create-vat': 38,
+      'read-vat': 38,
+      'update-vat': 38,
+      'delete-vat': 38,
 
-      // 'create-bank': 37,
-      // 'read-bank': 37,
-      // 'update-bank': 37,
-      // 'delete-bank': 37,
+      'create-bank': 39,
+      'read-bank': 39,
+      'update-bank': 39,
+      'delete-bank': 39,
 
-      // 'create-budget-approval': 37,
-      // 'read-budget-approval': 37,
-      // 'update-budget-approval': 37,
-      // 'delete-budget-approval': 37,
+      'create-budget-approval': 40,
+      'read-budget-approval': 40,
+      'update-budget-approval': 40,
+      'delete-budget-approval': 40,
 
-      // 'create-department-rule': 37,
-      // 'read-department-rule': 37,
-      // 'update-department-rule': 37,
-      // 'delete-department-rule': 37,
+      'create-department-rule': 41,
+      'read-department-rule': 41,
+      'update-department-rule': 41,
+      'delete-department-rule': 41,
     };
 
     const items = Object.entries(permissionGroupMapping).map(
