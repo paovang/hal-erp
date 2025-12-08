@@ -89,6 +89,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     const start_date = query.start_date;
     const end_date = query.end_date;
     const payment_type = query.payment_type;
+    const companyID = Number(query.company_id);
     const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(
       manager,
@@ -100,6 +101,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       end_date,
       payment_type,
       company_id,
+      companyID,
     );
     query.sort_by = 'receipts.id';
 
@@ -139,6 +141,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     end_date?: string,
     payment_type?: string,
     company_id?: number,
+    companyID?: number,
   ) {
     const selectFields = [
       ...selectReceiptItems,
@@ -270,6 +273,10 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       } else {
         query.andWhere('document_approver.user_id = :user_id', { user_id });
       }
+    }
+
+    if (companyID) {
+      query.andWhere('documents.company_id = :companyID', { companyID });
     }
 
     if (department_id) {

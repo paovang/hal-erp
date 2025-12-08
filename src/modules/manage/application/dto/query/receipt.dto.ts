@@ -34,4 +34,8 @@ export class ReceiptQueryDto extends PaginationDto {
   @ApiProperty()
   @IsOptional()
   payment_type?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  company_id?: string;
 }
