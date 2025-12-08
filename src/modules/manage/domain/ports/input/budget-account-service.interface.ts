@@ -4,7 +4,10 @@ import { BudgetAccountEntity } from '../../entities/budget-account.entity';
 import { BudgetAccountQueryDto } from '@src/modules/manage/application/dto/query/budget-account.dto';
 import { CreateBudgetAccountDto } from '@src/modules/manage/application/dto/create/BudgetAccount/create.dto';
 import { UpdateBudgetAccountDto } from '@src/modules/manage/application/dto/create/BudgetAccount/update.dto';
-import { ReportBudgetInterface } from '@src/common/application/interfaces/report-budget.interface';
+import {
+  ReportBudgetInterface,
+  ReportToUseBudget,
+} from '@src/common/application/interfaces/report-budget.interface';
 
 export interface IBudgetAccountServiceInterface {
   getAll(
@@ -41,4 +44,9 @@ export interface IBudgetAccountServiceInterface {
     query: BudgetAccountQueryDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<ReportBudgetInterface>>;
+
+  getReportToUseBudget(
+    query: BudgetAccountQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ReportToUseBudget>>;
 }

@@ -18,3 +18,9 @@ export interface CompanyInterface {
   allocated_amount: number;
   total: number;
 }
+
+export interface ReportToUseBudget {
+  allocated_total: number;
+  use_total: number;
+  balance_total: number;
+}

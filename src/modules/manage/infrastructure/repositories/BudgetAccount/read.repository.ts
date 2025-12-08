@@ -19,7 +19,10 @@ import {
   selectDepartments,
 } from '@src/common/constants/select-field';
 import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
-import { ReportBudgetInterface } from '@src/common/application/interfaces/report-budget.interface';
+import {
+  ReportBudgetInterface,
+  ReportToUseBudget,
+} from '@src/common/application/interfaces/report-budget.interface';
 import { CompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/company.orm';
 
 @Injectable()
@@ -301,5 +304,72 @@ export class ReadBudgetAccountRepository
 
     // ---------------- RETURN ----------------
     return reportData;
+  }
+
+  async getReportToUseBudget(
+    query: BudgetAccountQueryDto,
+    manager: EntityManager,
+  ): Promise<ReportToUseBudget> {
+    const reportQuery = manager
+      .createQueryBuilder(CompanyOrmEntity, 'company')
+      .leftJoin('company.budget_accounts', 'ba')
+      .where('company.id = :company_id', { company_id: query.company_id })
+      .addSelect(
+        `
+      (
+        SELECT COALESCE(SUM(ib.allocated_amount), 0)
+        FROM increase_budgets ib
+        WHERE ib.budget_account_id IN (
+          SELECT id FROM budget_accounts WHERE company_id = company.id
+        )
+      )`,
+        'total_budget',
+      )
+      .addSelect(
+        `
+      (
+        SELECT COALESCE(SUM(dt.amount),0)
+        FROM document_transactions dt
+        WHERE dt.budget_item_id IN (
+          SELECT bi.id
+          FROM budget_items bi
+          WHERE bi.budget_account_id IN (
+            SELECT id FROM budget_accounts WHERE company_id = company.id
+          )
+        )
+      )`,
+        'used_amount',
+      )
+      .groupBy('company.id');
+
+    // Fiscal year filter
+    if (query.fiscal_year) {
+      reportQuery.andWhere(
+        `ba.id IN (
+        SELECT id FROM budget_accounts
+        WHERE company_id = company.id
+        AND fiscal_year = :fiscal_year
+      )`,
+        { fiscal_year: query.fiscal_year },
+      );
+    }
+
+    const data = await reportQuery.getRawOne();
+
+    // ⛑ Prevent crash when no data
+    if (!data) {
+      return {
+        allocated_total: 0,
+        use_total: 0,
+        balance_total: 0,
+      };
+    }
+
+    return {
+      allocated_total: Number(data.total_budget) || 0,
+      use_total: Number(data.used_amount) || 0,
+      balance_total:
+        Number(data.total_budget || 0) - Number(data.used_amount || 0),
+    };
   }
 }

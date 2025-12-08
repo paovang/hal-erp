@@ -19,7 +19,10 @@ import { IBudgetAccountServiceInterface } from '../domain/ports/input/budget-acc
 import { CreateBudgetAccountDto } from '../application/dto/create/BudgetAccount/create.dto';
 import { BudgetAccountQueryDto } from '../application/dto/query/budget-account.dto';
 import { UpdateBudgetAccountDto } from '../application/dto/create/BudgetAccount/update.dto';
-import { ReportBudgetInterface } from '@src/common/application/interfaces/report-budget.interface';
+import {
+  ReportBudgetInterface,
+  ReportToUseBudget,
+} from '@src/common/application/interfaces/report-budget.interface';
 
 @Controller('budget-accounts')
 export class BudgetAccountController {
@@ -83,6 +86,17 @@ export class BudgetAccountController {
 
     return result;
   }
+
+  @Get('report-to-use-budget')
+  async getReportToUseBudget(
+    @Query() query: BudgetAccountQueryDto,
+  ): Promise<ResponseResult<ReportToUseBudget>> {
+    const result = await this._budgetAccountService.getReportToUseBudget(query);
+
+    return result;
+  }
+
+  // end
 
   @Get(':id')
   async getOne(

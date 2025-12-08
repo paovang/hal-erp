@@ -4,7 +4,10 @@ import { BudgetAccountEntity } from '../../entities/budget-account.entity';
 import { BudgetAccountQueryDto } from '@src/modules/manage/application/dto/query/budget-account.dto';
 import { BudgetAccountId } from '../../value-objects/budget-account-id.vo';
 import { DepartmentId } from '../../value-objects/department-id.vo';
-import { ReportBudgetInterface } from '@src/common/application/interfaces/report-budget.interface';
+import {
+  ReportBudgetInterface,
+  ReportToUseBudget,
+} from '@src/common/application/interfaces/report-budget.interface';
 
 export interface IReadBudgetAccountRepository {
   findAll(
@@ -32,6 +35,11 @@ export interface IReadBudgetAccountRepository {
     manager: EntityManager,
     roles?: string[],
   ): Promise<ResponseResult<ReportBudgetInterface>>;
+
+  getReportToUseBudget(
+    query: BudgetAccountQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ReportToUseBudget>>;
 }
 
 export interface IWriteBudgetAccountRepository {
