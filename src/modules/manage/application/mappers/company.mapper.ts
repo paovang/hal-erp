@@ -55,6 +55,9 @@ export class CompanyDataMapper {
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
+    response.receipt_count = entity.receipt_count;
+    response.total_allocated = entity.total_allocated;
+    response.total_used_amount = entity.total_used_amount;
 
     return response;
   }

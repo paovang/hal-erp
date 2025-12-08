@@ -30,4 +30,13 @@ export class CompanyResponse {
 
   @ApiProperty()
   deleted_at: string | null;
+
+  @ApiProperty()
+  receipt_count: number;
+
+  @ApiProperty()
+  total_allocated: number;
+
+  @ApiProperty()
+  total_used_amount: number;
 }

@@ -11,6 +11,9 @@ export class CompanyEntity extends Entity<CompanyId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  private readonly _receipt_count: number;
+  private readonly _total_allocated: number;
+  private readonly _total_used_amount: number;
 
   private constructor(builder: CompanyBuilder) {
     super();
@@ -23,6 +26,9 @@ export class CompanyEntity extends Entity<CompanyId> {
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
+    this._receipt_count = builder.receipt_count;
+    this._total_allocated = builder.total_allocated;
+    this._total_used_amount = builder.total_used_amount;
   }
 
   get name(): string {
@@ -55,6 +61,18 @@ export class CompanyEntity extends Entity<CompanyId> {
 
   get deletedAt(): Date | null {
     return this._deletedAt;
+  }
+
+  get receipt_count(): number {
+    return this._receipt_count;
+  }
+
+  get total_allocated(): number {
+    return this._total_allocated;
+  }
+
+  get total_used_amount(): number {
+    return this._total_used_amount;
   }
 
   public static builder(): CompanyBuilder {

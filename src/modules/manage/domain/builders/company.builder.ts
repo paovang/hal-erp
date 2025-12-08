@@ -11,6 +11,9 @@ export class CompanyBuilder {
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
+  receipt_count: number;
+  total_allocated: number;
+  total_used_amount: number;
 
   setCompanyId(value: CompanyId): this {
     this.companyId = value;
@@ -54,6 +57,21 @@ export class CompanyBuilder {
 
   setDeletedAt(deletedAt: Date | null): this {
     this.deletedAt = deletedAt;
+    return this;
+  }
+
+  setReceiptCount(receipt_count: number): this {
+    this.receipt_count = receipt_count;
+    return this;
+  }
+
+  setTotalAllocated(total_allocated: number): this {
+    this.total_allocated = total_allocated;
+    return this;
+  }
+
+  setTotalUsedAmount(total_used_amount: number): this {
+    this.total_used_amount = total_used_amount;
     return this;
   }
 

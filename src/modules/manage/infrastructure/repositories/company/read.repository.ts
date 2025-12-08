@@ -213,7 +213,25 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<CompanyEntity>> {
     const queryBuilder = await this.createReportQuery(manager);
-    query.sort_by = 'companies.id';
+
+    // query.sort_by = sort_columns.includes(query.sort_by);
+
+    const allowedSortFields = {
+      id: 'companies.id',
+      name: 'companies.name',
+      created_at: 'companies.created_at',
+      updated_at: 'companies.updated_at',
+    };
+
+    // Get the requested sort_by value, or use the safe default
+    let sortBy = query?.sort_by ?? 'companies.id';
+
+    // Map the sort field to its proper alias, or use default if not allowed
+    sortBy =
+      allowedSortFields[sortBy as keyof typeof allowedSortFields] ||
+      'companies.id';
+
+    query.sort_by = sortBy;
 
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -230,13 +248,19 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       .leftJoin('companies.documents', 'documents')
       .leftJoin('documents.receipts', 'receipts')
       .leftJoin('companies.budget_accounts', 'budget_accounts')
+      .leftJoin('budget_accounts.budget_items', 'budget_items')
       .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
+      .leftJoin('budget_items.document_transactions', 'document_transactions')
       .addSelect([
         'documents.id',
         'receipts.id',
         'budget_accounts.id',
         'increase_budgets.id',
         'increase_budgets.allocated_amount',
+        'budget_items.id',
+        'budget_items.name',
+        'document_transactions.id',
+        'document_transactions.amount',
       ]);
   }
 }

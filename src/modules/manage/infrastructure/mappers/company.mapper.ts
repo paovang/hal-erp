@@ -79,22 +79,11 @@ export class CompanyDataAccessMapper {
       }, 0) || 0;
 
     const total_used_amount =
-      ormData?.budget_accounts?.reduce((sum: number, budgetAccount: any) => {
-        const accountBudgetItems = budgetAccount?.budget_items || [];
-        const accountTransactionAmount = accountBudgetItems.reduce(
-          (itemSum: number, budgetItem: any) => {
-            const itemTransactions = budgetItem?.document_transactions || [];
-            const itemTransactionAmount = itemTransactions.reduce(
-              (transactionSum: number, transaction: any) =>
-                transactionSum + Number(transaction.amount || 0),
-              0,
-            );
-            return itemSum + itemTransactionAmount;
-          },
-          0,
-        );
-        return sum + accountTransactionAmount;
-      }, 0) || 0;
+      ormData?.budget_accounts
+        ?.flatMap((ba: any) => ba.budget_items ?? [])
+        ?.flatMap((bi: any) => bi.document_transactions ?? [])
+        ?.reduce((sum: number, dt: any) => sum + Number(dt.amount ?? 0), 0) ??
+      0;
 
     console.log('receipt_count', receipt_count);
     console.log('total_allocated_amount', total_allocated_amount);
@@ -109,7 +98,10 @@ export class CompanyDataAccessMapper {
       .setAddress(ormData.address ?? '')
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
-      .setDeletedAt(ormData.deleted_at);
+      .setDeletedAt(ormData.deleted_at)
+      .setReceiptCount(receipt_count)
+      .setTotalAllocated(total_allocated_amount)
+      .setTotalUsedAmount(total_used_amount);
 
     return builder.build();
   }
