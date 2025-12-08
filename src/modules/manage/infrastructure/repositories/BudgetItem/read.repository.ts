@@ -22,30 +22,41 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
   ) {}
-
-  // async findAll(
-  //   query: BudgetItemQueryDto,
-  //   manager: EntityManager,
-  // ): Promise<ResponseResult<BudgetItemEntity>> {
-  //   const budget_account_id = Number(query.budget_account_id);
-  //   const queryBuilder = await this.createBaseQuery(manager, budget_account_id);
-  //   query.sort_by = 'budget_items.id';
-
-  //   const data = await this._paginationService.paginate(
-  //     queryBuilder,
-  //     query,
-  //     this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
-  //     this.getFilterOptions(),
-  //   );
-  //   return data;
-  // }
   async findAll(
     query: BudgetItemQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<BudgetItemEntity>> {
     const budget_account_id = Number(query.budget_account_id);
-    const queryBuilder = this.createBaseQuery(manager, budget_account_id);
+    const department_id = Number(query.department_id);
+    const year = query.fiscal_year;
+    const queryBuilder = this.createBaseQuery(manager);
 
+    if (budget_account_id) {
+      queryBuilder.andWhere(
+        'budget_items.budget_account_id = :budget_account_id',
+        {
+          budget_account_id,
+        },
+      );
+    }
+    if (department_id) {
+      queryBuilder.andWhere('departments.id = :department_id', {
+        department_id,
+      });
+    }
+
+    // Assuming 'year' is an input parameter like '2025'
+    const yearAsNumber = year ? Number(year) : null;
+    console.log('yearAsNumber', year);
+
+    if (yearAsNumber) {
+      queryBuilder.andWhere(
+        `EXTRACT(YEAR FROM budget_accounts.created_at) = :year`,
+        {
+          year: yearAsNumber,
+        },
+      );
+    }
     // Ensure sorting
     query.sort_by = 'budget_items.id';
 
@@ -60,7 +71,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     return data;
   }
 
-  private createBaseQuery(manager: EntityManager, budget_account_id?: number) {
+  private createBaseQuery(manager: EntityManager) {
     const query = manager
       .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
       .select([
@@ -117,17 +128,17 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     //   'allocated_amount_total',
     // );
 
-    if (budget_account_id) {
-      query.where('budget_accounts.id = :budget_account_id', {
-        budget_account_id: budget_account_id,
-      });
-    }
+    // if (budget_account_id) {
+    //   query.where('budget_accounts.id = :budget_account_id', {
+    //     budget_account_id: budget_account_id,
+    //   });
+    // }
     return query;
   }
 
   private getFilterOptions(): FilterOptions {
     return {
-      searchColumns: ['budget_items.name'],
+      searchColumns: ['budget_items.name', 'budget_items.description'],
       dateColumn: '',
       filterByColumns: [],
     };
