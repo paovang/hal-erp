@@ -136,15 +136,17 @@ export class UpdateCompanyUserCommandHandler
           );
         }
 
-        for (const permissionId of command.body.permissionIds) {
-          await findOneOrFail(
-            manager,
-            PermissionOrmEntity,
-            {
-              id: permissionId,
-            },
-            `${permissionId}`,
-          );
+        if (command.body.permissionIds.length > 0) {
+          for (const permissionId of command.body.permissionIds) {
+            await findOneOrFail(
+              manager,
+              PermissionOrmEntity,
+              {
+                id: permissionId,
+              },
+              `${permissionId}`,
+            );
+          }
         }
 
         const userEntity = this._dataUserMapper.toEntityForUpdate(command.body);
