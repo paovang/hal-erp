@@ -77,7 +77,7 @@ export class UpdateCommandHandler
         where: {
           id: Not(query.id),
           code: query.dto.code,
-          company_id: Not(company_id),
+          company_id: company_id,
         },
       });
 
