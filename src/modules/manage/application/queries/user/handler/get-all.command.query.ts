@@ -7,6 +7,7 @@ import { HttpStatus, Inject } from '@nestjs/common';
 import { IReadUserRepository } from '@src/modules/manage/domain/ports/output/user-repository.interface';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
+import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 
 @QueryHandler(GetAllQuery)
 export class GetAllQueryHandler
@@ -22,10 +23,18 @@ export class GetAllQueryHandler
     const user = this._userContextService.getAuthUser()?.user;
 
     const user_id = user?.id;
+    const company_user = await query.manager.findOne(CompanyUserOrmEntity, {
+      where: {
+        user_id: user_id,
+      },
+    });
+
+    const company_id = company_user?.company_id ?? undefined;
     const data = await this._readRepo.findAll(
       query.dto,
       query.manager,
       user_id,
+      company_id,
     );
 
     if (!data) {

@@ -27,8 +27,13 @@ export class ReadUserRepository implements IReadUserRepository {
     query: UserQueryDto,
     manager: EntityManager,
     userId?: number,
+    company_id?: number,
   ): Promise<ResponseResult<UserEntity>> {
-    const queryBuilder = await this.createBaseQuery(manager, userId);
+    const queryBuilder = await this.createBaseQuery(
+      manager,
+      userId,
+      company_id,
+    );
     query.sort_by = 'users.id';
 
     const data = await this._paginationService.paginate(
@@ -51,8 +56,12 @@ export class ReadUserRepository implements IReadUserRepository {
     return this._dataAccessMapper.toEntity(item);
   }
 
-  private createBaseQuery(manager: EntityManager, userId?: number) {
-    const roleName = ['super-admin'];
+  private createBaseQuery(
+    manager: EntityManager,
+    userId?: number,
+    company_id?: number,
+  ) {
+    const roleName = ['super-admin', 'admin'];
 
     const query = manager
       .createQueryBuilder(UserOrmEntity, 'users')
@@ -62,10 +71,24 @@ export class ReadUserRepository implements IReadUserRepository {
       // .leftJoinAndSelect('roles.permissions', 'role_permissions')
       .leftJoinAndSelect('users.user_signatures', 'user_signatures')
       .leftJoinAndSelect('users.user_types', 'user_types')
-      .where('roles.name NOT IN (:...roleName)', { roleName });
+      .leftJoinAndSelect('users.company_users', 'company_users');
 
-    if (userId) {
-      query.andWhere('users.id != :userId', { userId });
+    console.log('company_id', company_id);
+
+    if (company_id) {
+      query.andWhere(
+        `
+      company_users.company_id = :company_id
+      OR roles.name = 'super-admin'
+      OR roles.name = 'admin'
+      `,
+        { company_id },
+      );
+    } else {
+      query.andWhere('roles.name NOT IN (:...roleName)', { roleName });
+      if (userId) {
+        query.andWhere('users.id != :userId', { userId });
+      }
     }
 
     return query;
