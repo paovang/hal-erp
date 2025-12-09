@@ -118,24 +118,26 @@ export class WriteUserRepository implements IWriteUserRepository {
         .of(savedUser.id)
         .add(rolesToAdd);
 
-      await transactionalEntityManager
-        .createQueryBuilder()
-        .delete()
-        .from(UserHasPermissionOrmEntity)
-        .where('user_id = :userId', { userId: savedUser.id })
-        .execute();
+      if (permissionIds.length > 0) {
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .delete()
+          .from(UserHasPermissionOrmEntity)
+          .where('user_id = :userId', { userId: savedUser.id })
+          .execute();
 
-      const insertValues = permissionIds.map((permissionId) => ({
-        user_id: savedUser.id,
-        permission_id: permissionId,
-      }));
+        const insertValues = permissionIds.map((permissionId) => ({
+          user_id: savedUser.id,
+          permission_id: permissionId,
+        }));
 
-      await transactionalEntityManager
-        .createQueryBuilder()
-        .insert()
-        .into(UserHasPermissionOrmEntity)
-        .values(insertValues)
-        .execute();
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(UserHasPermissionOrmEntity)
+          .values(insertValues)
+          .execute();
+      }
 
       const updatedUser = await transactionalEntityManager.findOne(
         UserOrmEntity,
