@@ -18,7 +18,10 @@ import { ICompanyServiceInterface } from '../domain/ports/input/company-domain-s
 import { CompanyDataMapper } from '../application/mappers/company.mapper';
 import { CompanyResponse } from '../application/dto/response/company.response';
 import { UpdateCompanyDto } from '../application/dto/create/company/update.dto';
-import { CompanyQueryDto } from '../application/dto/query/company-query.dto';
+import {
+  CompanyQueryDto,
+  reportHalGroupQueryDto,
+} from '../application/dto/query/company-query.dto';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 
 @Controller('companies')
@@ -30,6 +33,12 @@ export class CompanyController {
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: CompanyDataMapper,
   ) {}
+  @Get('report-hal-group-state')
+  async getReportHarGroupState(
+    @Body() dto: reportHalGroupQueryDto,
+  ): Promise<ResponseResult<any>> {
+    return await this._companyService.getStateReport(dto);
+  }
 
   @Post('')
   async create(

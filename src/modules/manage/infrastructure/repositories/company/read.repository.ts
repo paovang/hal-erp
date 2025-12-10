@@ -2,7 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/company.orm';
 import { IReadCompanyRepository } from '@src/modules/manage/domain/ports/output/company-repository.interface';
 import { CompanyDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/company.mapper';
-import { CompanyQueryDto } from '@src/modules/manage/application/dto/query/company-query.dto';
+import {
+  CompanyQueryDto,
+  reportHalGroupQueryDto,
+} from '@src/modules/manage/application/dto/query/company-query.dto';
 import {
   FilterOptions,
   IPaginationService,
@@ -15,6 +18,7 @@ import { CompanyId } from '@src/modules/manage/domain/value-objects/company-id.v
 import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
+import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/document.orm';
 
 @Injectable()
 export class ReadCompanyRepository implements IReadCompanyRepository {
@@ -24,7 +28,26 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
     private readonly _paginationService: IPaginationService,
     @InjectRepository(CompanyOrmEntity)
     private readonly _companyRepository: Repository<CompanyOrmEntity>,
+    @InjectRepository(DocumentOrmEntity)
+    private readonly _documentTypeOrm: Repository<DocumentOrmEntity>,
   ) {}
+
+  async getHalGroupState(
+    query: reportHalGroupQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<any>> {
+    const company = await this._companyRepository
+      .createQueryBuilder('companies')
+      .leftJoin('companies.company_users', 'company_users')
+      .select('companies.id', 'companyId')
+      .addSelect('COUNT(company_users.id)', 'totalUsers')
+      .where('companies.id = :id', { id: query.company_id })
+      .groupBy('companies.id')
+      .getRawOne();
+    return {
+      company,
+    };
+  }
 
   async findAll(
     query: CompanyQueryDto,
