@@ -11,6 +11,9 @@ export interface IReportPurchaseRequestRepository {
   report(
     query: PurchaseRequestReportQueryDto,
     manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<ReportPurchaseRequestEntity>>;
 
   reportMoney(manager: EntityManager): Promise<any>;
