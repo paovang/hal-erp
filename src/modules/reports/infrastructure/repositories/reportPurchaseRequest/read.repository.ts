@@ -52,16 +52,22 @@ export class ReportReadPurchaseRequestRepository
   async report(
     query: PurchaseRequestReportQueryDto,
     manager: EntityManager,
-    user_id?: number,
+    company_id?: number,
     roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<ReportPurchaseRequestEntity>> {
     const departmentId = Number(query.department_id);
     const status_id = Number(query.status_id);
+    const companyId = Number(query.company_id);
     const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(
       manager,
+      company_id,
       departmentId,
+      department_id,
       status_id,
+      roles,
+      companyId,
     );
     query.sort_by = 'purchase_requests.id';
 
@@ -76,12 +82,14 @@ export class ReportReadPurchaseRequestRepository
     const status = await countStatusAmounts(
       manager,
       EnumPrOrPo.PR,
-      user_id,
+      undefined,
       roles,
       departmentId,
       status_id,
       query.requested_date_start,
       query.requested_date_end,
+      company_id,
+      companyId,
     );
 
     const data = await this._paginationService.paginate(
@@ -99,10 +107,12 @@ export class ReportReadPurchaseRequestRepository
 
   private createBaseQuery(
     manager: EntityManager,
+    company_id?: number,
     departmentId?: number,
+    department_id?: number,
     status_id?: number,
-    user_id?: number,
     roles?: string[],
+    companyId?: number,
   ) {
     const selectFields = [
       ...selectUnits,
@@ -158,9 +168,25 @@ export class ReportReadPurchaseRequestRepository
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      query.andWhere('document_approver.user_id = :user_id', {
-        user_id,
-      });
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.andWhere('documents.company_id = :company_id', {
+            company_id,
+          });
+        }
+      }
+      if (department_id) {
+        query.andWhere('departments.id = :department_id', {
+          department_id,
+        });
+      }
+
+      // query.andWhere('document_approver.user_id = :user_id', {
+      //   user_id,
+      // });
     }
 
     if (departmentId) {
@@ -169,6 +195,12 @@ export class ReportReadPurchaseRequestRepository
 
     if (status_id) {
       query.andWhere('user_approvals.status_id = :status_id', { status_id });
+    }
+
+    if (companyId) {
+      query.andWhere('documents.company_id = :companyId', {
+        companyId,
+      });
     }
 
     return query;
