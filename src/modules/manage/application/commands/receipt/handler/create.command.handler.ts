@@ -174,28 +174,60 @@ export class CreateCommandHandler
         );
 
         const document_type_id = (check_document_type as any).id;
-        const check_workflow_status = await manager.findOne(
-          ApprovalWorkflowOrmEntity,
-          {
-            where: { document_type_id: document_type_id },
-          },
-        );
 
-        if (
-          check_workflow_status &&
-          check_workflow_status.status === StatusEnum.PENDING
-        ) {
-          throw new ManageDomainException(
-            'errors.not_approve_workflow_yet',
-            HttpStatus.BAD_REQUEST,
-            { property: 'Approval Workflow' },
+        if (company_id && company_id === null) {
+          const check_workflow_status = await manager.findOne(
+            ApprovalWorkflowOrmEntity,
+            {
+              where: {
+                document_type_id: document_type_id,
+                company_id: company_id,
+              },
+            },
           );
-        } else if (!check_workflow_status) {
-          throw new ManageDomainException(
-            'errors.not_found',
-            HttpStatus.BAD_REQUEST,
-            { property: 'Approval Workflow' },
+
+          if (
+            check_workflow_status &&
+            check_workflow_status.status === StatusEnum.PENDING
+          ) {
+            throw new ManageDomainException(
+              'errors.not_approve_workflow_yet',
+              HttpStatus.BAD_REQUEST,
+              { property: 'Approval Workflow' },
+            );
+          } else if (!check_workflow_status) {
+            throw new ManageDomainException(
+              'errors.not_found',
+              HttpStatus.BAD_REQUEST,
+              { property: 'Approval Workflow' },
+            );
+          }
+        } else {
+          const check_workflow_status = await manager.findOne(
+            ApprovalWorkflowOrmEntity,
+            {
+              where: {
+                document_type_id: document_type_id,
+              },
+            },
           );
+
+          if (
+            check_workflow_status &&
+            check_workflow_status.status === StatusEnum.PENDING
+          ) {
+            throw new ManageDomainException(
+              'errors.not_approve_workflow_yet',
+              HttpStatus.BAD_REQUEST,
+              { property: 'Approval Workflow' },
+            );
+          } else if (!check_workflow_status) {
+            throw new ManageDomainException(
+              'errors.not_found',
+              HttpStatus.BAD_REQUEST,
+              { property: 'Approval Workflow' },
+            );
+          }
         }
 
         const department_id = await this.getDepartmentId(
