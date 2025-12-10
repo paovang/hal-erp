@@ -17,6 +17,7 @@ import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -41,6 +42,7 @@ export class CreateCommandHandler
       this._dataSource,
       async (manager) => {
         const { min_amount, max_amount } = query.dto;
+        let departmentId: number | null | undefined = null;
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user?.id;
 
@@ -57,7 +59,17 @@ export class CreateCommandHandler
             where: { user_id: user_id },
           },
         );
-        const departmentId = departmentUser?.department_id ?? null;
+        const department_id = departmentUser?.department_id ?? null;
+
+        await findOneOrFail(query.manager, DepartmentOrmEntity, {
+          id: query.dto.department_id,
+        });
+
+        if (department_id && department_id !== null) {
+          departmentId = department_id;
+        } else {
+          departmentId = query.dto.department_id;
+        }
 
         company_id = company?.company_id ?? null;
 
