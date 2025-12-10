@@ -97,9 +97,9 @@ export class UserDataMapper {
   toEntityForChangePassword(dto: ChangePasswordDto): UserEntity {
     const builder = UserEntity.builder();
 
-    if (dto.old_password) {
-      builder.setPassword(dto.old_password);
-    }
+    // if (dto.old_password) {
+    //   builder.setPassword(dto.old_password);
+    // }
 
     if (dto.new_password) {
       builder.setPassword(dto.new_password);

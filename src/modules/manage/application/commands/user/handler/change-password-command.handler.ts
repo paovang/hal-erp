@@ -30,20 +30,20 @@ export class ChangePasswordCommandHandler
       );
     }
 
-    const user = await findOneOrFail(query.manager, UserOrmEntity, {
+    await findOneOrFail(query.manager, UserOrmEntity, {
       id: query.id,
     });
 
-    const password = (user as any).password;
+    // const password = (user as any).password;
 
     // Compare input old password with stored hashed password
-    const isMatch = await bcrypt.compare(query.dto.old_password, password);
-    if (!isMatch) {
-      throw new ManageDomainException(
-        'errors.incorrect_password',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // const isMatch = await bcrypt.compare(query.dto.old_password, password);
+    // if (!isMatch) {
+    //   throw new ManageDomainException(
+    //     'errors.incorrect_password',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
 
     // Hash new password
     const hashedPassword = await bcrypt.hash(query.dto.new_password, 10);
