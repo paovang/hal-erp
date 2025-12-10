@@ -27,6 +27,13 @@ export class PurchaseOrderReportQueryDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
+    description: 'filter by department id',
+  })
+  @IsOptional()
+  company_id?: number;
+
+  @ApiProperty({
+    required: false,
     description: 'filter by po date start',
     example: '2023-01-01',
   })

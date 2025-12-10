@@ -117,7 +117,14 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       EnumPrOrPo.R,
       user_id,
       roles,
+      department_id,
+      status_id,
+      start_date,
+      end_date,
+      company_id,
+      companyID,
     );
+
     const data = await this._paginationService.paginate(
       queryBuilder,
       query,

@@ -74,18 +74,22 @@ export class ReportReadPurchaseOrderRepository
   async report(
     query: PurchaseOrderReportQueryDto,
     manager: EntityManager,
-    user_id?: number,
+    company_id?: number,
     roles?: string[],
+    department_id?: number,
   ): Promise<ResponseResult<ReportPurchaseOrderEntity>> {
     const departmentId = Number(query.department_id);
     const status_id = Number(query.status_id);
+    const companyId = Number(query.company_id);
     const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(
       manager,
       departmentId,
       status_id,
-      user_id,
+      company_id,
+      department_id,
       roles,
+      companyId,
     );
     query.sort_by = 'purchase_orders.id';
 
@@ -100,12 +104,14 @@ export class ReportReadPurchaseOrderRepository
     const status = await countStatusAmounts(
       manager,
       EnumPrOrPo.PO,
-      user_id,
+      undefined,
       roles,
       departmentId,
       status_id,
       query.start_date,
       query.end_date,
+      company_id,
+      companyId,
     );
     const data = await this._paginationService.paginate(
       queryBuilder,
@@ -124,8 +130,10 @@ export class ReportReadPurchaseOrderRepository
     manager: EntityManager,
     departmentId?: number,
     status_id?: number,
-    user_id?: number,
+    company_id?: number,
+    department_id?: number,
     roles?: string[],
+    companyId?: number,
   ) {
     const selectFields = [
       ...selectPurchaseOrderItems,
@@ -238,9 +246,21 @@ export class ReportReadPurchaseOrderRepository
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      query.andWhere('document_approver.user_id = :user_id', {
-        user_id,
-      });
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.andWhere('po_documents.company_id = :company_id', {
+            company_id,
+          });
+        }
+      }
+      if (department_id) {
+        query.andWhere('purchase_orders.department_id = :department_id', {
+          department_id,
+        });
+      }
     }
 
     if (departmentId) {
@@ -249,6 +269,10 @@ export class ReportReadPurchaseOrderRepository
 
     if (status_id) {
       query.andWhere('user_approvals.status_id = :status_id', { status_id });
+    }
+
+    if (companyId) {
+      query.andWhere('po_documents.company_id = :companyId', { companyId });
     }
 
     return query;
