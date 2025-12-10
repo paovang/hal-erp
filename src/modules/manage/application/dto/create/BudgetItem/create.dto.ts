@@ -8,7 +8,7 @@ export class CreateBudgetItemDto {
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
   readonly name: string;
 
-  // @ApiProperty()
+  // @ApiProperty() //ddd
   // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   // @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   // readonly allocated_amount: number;
