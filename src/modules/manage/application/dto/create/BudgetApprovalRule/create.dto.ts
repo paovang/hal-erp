@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CreateBudgetApprovalRuleDto {
   @ApiProperty()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  // @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  @IsOptional()
   readonly department_id: number;
 
   @ApiProperty()

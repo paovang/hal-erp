@@ -61,14 +61,18 @@ export class CreateCommandHandler
         );
         const department_id = departmentUser?.department_id ?? null;
 
-        await findOneOrFail(query.manager, DepartmentOrmEntity, {
-          id: query.dto.department_id,
-        });
+        if (query.dto.department_id) {
+          await findOneOrFail(query.manager, DepartmentOrmEntity, {
+            id: query.dto.department_id,
+          });
+        }
 
         if (department_id && department_id !== null) {
           departmentId = department_id;
-        } else {
+        } else if (query.dto.department_id) {
           departmentId = query.dto.department_id;
+        } else {
+          departmentId = undefined;
         }
 
         company_id = company?.company_id ?? null;
