@@ -1,5 +1,8 @@
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
-import { CompanyQueryDto } from '@src/modules/manage/application/dto/query/company-query.dto';
+import {
+  CompanyQueryDto,
+  reportHalGroupQueryDto,
+} from '@src/modules/manage/application/dto/query/company-query.dto';
 import { EntityManager } from 'typeorm';
 import { CompanyEntity } from '@src/modules/manage/domain/entities/company.entity';
 import { CompanyId } from '@src/modules/manage/domain/value-objects/company-id.vo';
@@ -13,6 +16,11 @@ export interface IReadCompanyRepository {
     roles?: string[],
     department_id?: number,
   ): Promise<ResponseResult<CompanyEntity>>;
+
+  getHalGroupState(
+    query: reportHalGroupQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<any>>;
 
   getReport(
     manager: EntityManager,

@@ -7,6 +7,7 @@ import { GetOneQueryHandler } from '@src/modules/manage/application/queries/comp
 import { GetOneReportQueryHandler } from '../../queries/company/handler/get-one-report.command.query';
 import { GetReportQueryHandler } from '../../queries/company/handler/get-report-query.handler';
 import { GetReportReceiptQueryHandler } from '../../queries/company/handler/get-report-receipt.handler';
+import { GetHalGroupStateHandler } from '../../queries/company/handler/get-hal-group-state.command.query';
 
 export const CompanyHandlersProviders: Provider[] = [
   GetAllQueryHandler,
@@ -17,4 +18,5 @@ export const CompanyHandlersProviders: Provider[] = [
   DeleteCommandHandler,
   GetReportQueryHandler,
   GetReportReceiptQueryHandler,
+  GetHalGroupStateHandler,
 ];
