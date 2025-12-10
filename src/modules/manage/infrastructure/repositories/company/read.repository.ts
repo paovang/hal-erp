@@ -36,16 +36,33 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
     query: reportHalGroupQueryDto,
     manager: EntityManager,
   ): Promise<ResponseResult<any>> {
-    const company = await this._companyRepository
+    const qb = this._companyRepository
       .createQueryBuilder('companies')
       .leftJoin('companies.company_users', 'company_users')
+      .leftJoin('companies.departments', 'departments')
       .select('companies.id', 'companyId')
-      .addSelect('COUNT(company_users.id)', 'totalUsers')
-      .where('companies.id = :id', { id: query.company_id })
-      .groupBy('companies.id')
-      .getRawOne();
+      .addSelect('COUNT(DISTINCT company_users.id)', 'totalUsers')
+      .groupBy('companies.id');
+
+    if (query.company_id) {
+      qb.where('companies.id = :id', { id: query.company_id });
+    }
+    // if (query.department_id) {
+    //   qb.andWhere('departments.id = :department_id', {
+    //     department_id: query.department_id,
+    //   });
+    // }
+
+    const company = await qb.getRawMany();
+
+    const totalUsers = company.reduce(
+      (sum, item) => sum + Number(item.totalUsers),
+      0,
+    );
+
     return {
       company,
+      totalUsers,
     };
   }
 
