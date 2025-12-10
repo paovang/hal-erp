@@ -51,10 +51,11 @@ export async function countStatusAmounts(
         if (company_id) {
           query.andWhere('doc.company_id = :company_id', { company_id });
         }
+      } else {
+        query.andWhere('document_approver.user_id = :user_id', {
+          user_id,
+        });
       }
-      query.andWhere('document_approver.user_id = :user_id', {
-        user_id,
-      });
     }
 
     console.log('object', filterCompanyId, company_id);
@@ -181,9 +182,21 @@ export async function countStatusAmounts(
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      query.andWhere('document_approver.user_id = :user_id', {
-        user_id,
-      });
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.andWhere('doc.company_id = :company_id', { company_id });
+        }
+      } else {
+        query.andWhere('document_approver.user_id = :user_id', {
+          user_id,
+        });
+      }
+      // query.andWhere('document_approver.user_id = :user_id', {
+      //   user_id,
+      // });
     }
 
     if (filterCompanyId) {
