@@ -93,7 +93,7 @@ export class ReportReadPurchaseOrderRepository
     );
     query.sort_by = 'purchase_orders.id';
 
-    // Date filtering for delivery date
+    // Date filtering for delivery date and expired date
     this.applyDateFilter(
       queryBuilder,
       'purchase_orders.expired_date',
