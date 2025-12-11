@@ -23,23 +23,23 @@ export class GetHalGroupStateHandler
   ) {}
 
   async execute(query: GetHalStateQuery): Promise<ResponseResult<any>> {
-    await findOneOrFail(
-      query.manager,
-      CompanyOrmEntity,
-      {
-        id: Number(query.query.company_id),
-      },
-      `company id ${query.query.company_id}`,
-    );
-    await findOneOrFail(
-      query.manager,
-      DepartmentOrmEntity,
-      {
-        id: Number(query.query.department_id),
-      },
-      `department id ${query.query.department_id}`,
-      // `company user id ${query.query.company_id}`,
-    );
+    // await findOneOrFail(
+    //   query.manager,
+    //   CompanyOrmEntity,
+    //   {
+    //     id: Number(query.query.company_id),
+    //   },
+    //   `company id ${query.query.company_id}`,
+    // );
+    // await findOneOrFail(
+    //   query.manager,
+    //   DepartmentOrmEntity,
+    //   {
+    //     id: Number(query.query.department_id),
+    //   },
+    //   `department id ${query.query.department_id}`,
+    //   // `company user id ${query.query.company_id}`,
+    // );
     return await this._readRepo.getHalGroupState(query.query, query.manager);
   }
 }
