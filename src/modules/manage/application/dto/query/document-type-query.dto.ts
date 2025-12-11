@@ -14,4 +14,8 @@ export class DocumentTypeQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   status?: string;
+
+  @IsOptional()
+  @IsString()
+  company_id?: string;
 }
