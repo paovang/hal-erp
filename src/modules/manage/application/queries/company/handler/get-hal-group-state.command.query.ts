@@ -8,6 +8,9 @@ import { ResponseResult } from '@common/infrastructure/pagination/pagination.int
 import { UserContextService } from '@common/infrastructure/cls/cls.service';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { CompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/company.orm';
+import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 
 @QueryHandler(GetHalStateQuery)
 export class GetHalGroupStateHandler
@@ -20,6 +23,23 @@ export class GetHalGroupStateHandler
   ) {}
 
   async execute(query: GetHalStateQuery): Promise<ResponseResult<any>> {
+    await findOneOrFail(
+      query.manager,
+      CompanyOrmEntity,
+      {
+        id: Number(query.query.company_id),
+      },
+      `company id ${query.query.company_id}`,
+    );
+    await findOneOrFail(
+      query.manager,
+      DepartmentOrmEntity,
+      {
+        id: Number(query.query.department_id),
+      },
+      `department id ${query.query.department_id}`,
+      // `company user id ${query.query.company_id}`,
+    );
     return await this._readRepo.getHalGroupState(query.query, query.manager);
   }
 }

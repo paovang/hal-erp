@@ -107,11 +107,11 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
 
     // optional filters
     if (query.company_id) {
-      qb.where('companies.id = :id', { id: query.company_id });
+      qb.where('companies.id = :id', { id: Number(query.company_id) });
     }
     if (query.department_id) {
       qb.andWhere('departments.id = :id', {
-        id: query.department_id,
+        id: Number(query.department_id),
       });
     }
 
