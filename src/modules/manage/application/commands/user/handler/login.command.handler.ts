@@ -28,6 +28,8 @@ export class LoginCommandHandler
         'user_signatures',
         'department_users',
         'department_users.departments',
+        'company_users',
+        'company_users.company',
       ],
     });
     const fullUserType = await this.userRepository.findOne({
@@ -41,6 +43,13 @@ export class LoginCommandHandler
 
     const roleNames = fullUser?.roles?.map((role) => role.name) ?? [];
     const userType = fullUserType?.user_types?.map((type) => type.name) ?? [];
+    const company = fullUser?.company_users?.[0]?.company
+      ? {
+          id: fullUser.company_users[0].company.id,
+          name: fullUser.company_users[0].company.name,
+        }
+      : null;
+
     // const user_signature =
     //   fullUser?.user_signatures?.[0]?.signature_file ?? null;
     const signature = fullUser?.user_signatures?.[0]?.signature_file
@@ -66,6 +75,10 @@ export class LoginCommandHandler
       delete userWithoutPermissions.department_users;
     }
 
+    if (userWithoutPermissions && 'company_users' in userWithoutPermissions) {
+      delete userWithoutPermissions.company_users;
+    }
+
     return {
       access_token: result.access_token,
       user: {
@@ -75,6 +88,7 @@ export class LoginCommandHandler
         user_type: userType,
         department_name,
         signature,
+        company: company,
       },
     };
   }
