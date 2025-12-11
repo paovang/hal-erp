@@ -10,4 +10,17 @@ export class DepartmentQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  company_id?: string;
+
+  @IsOptional()
+  @IsString()
+  year?: string;
+
+  @IsOptional()
+  @IsString()
+  month?: string;
 }

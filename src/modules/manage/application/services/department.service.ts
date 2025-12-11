@@ -13,6 +13,8 @@ import { UpdateCommand } from '@src/modules/manage/application/commands/departme
 import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
 import { DeleteCommand } from '@src/modules/manage/application/commands/department/delete.command';
 import { GetOneQuery } from '@src/modules/manage/application/queries/department/get-one.query';
+import { GetReportQuery } from '../queries/department/get-report.query';
+import { ReportDepartmentBudget } from '@src/common/application/interfaces/report-department-budget.interface';
 
 @Injectable()
 export class DepartmentService implements IDepartmentServiceInterface {
@@ -63,6 +65,16 @@ export class DepartmentService implements IDepartmentServiceInterface {
   async delete(id: number, manager?: EntityManager): Promise<void> {
     return await this._commandBus.execute(
       new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  // get report hal group
+  async getReport(
+    query: DepartmentQueryDto,
+    manager?: EntityManager,
+  ): Promise<ReportDepartmentBudget[]> {
+    return await this._queryBus.execute(
+      new GetReportQuery(query, manager ?? this._readEntityManager),
     );
   }
 }
