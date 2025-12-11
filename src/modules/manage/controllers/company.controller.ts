@@ -35,7 +35,7 @@ export class CompanyController {
   ) {}
   @Get('report-hal-group-state')
   async getReportHarGroupState(
-    @Body() dto: reportHalGroupQueryDto,
+    @Query() dto: reportHalGroupQueryDto,
   ): Promise<ResponseResult<any>> {
     return await this._companyService.getStateReport(dto);
   }
