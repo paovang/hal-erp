@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ICompanyServiceInterface } from '@src/modules/manage/domain/ports/input/company-domain-service.interface';
 import { GetAllQuery } from '@src/modules/manage/application/queries/company/get-all.query';
-import { CompanyQueryDto } from '@src/modules/manage/application/dto/query/company-query.dto';
+import {
+  CompanyQueryDto,
+  reportHalGroupQueryDto,
+} from '@src/modules/manage/application/dto/query/company-query.dto';
 import { EntityManager } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
@@ -17,6 +20,7 @@ import { GetOneReportQuery } from '../queries/company/get-one-report.query';
 import { GetReportQuery } from '../queries/company/get-report-company.query';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 import { GetReportReceiptQuery } from '../queries/company/get-report-receipt.query';
+import { GetHalStateQuery } from '../queries/company/get-hal-group-state.query';
 @Injectable()
 export class CompanyService implements ICompanyServiceInterface {
   constructor(
@@ -92,6 +96,15 @@ export class CompanyService implements ICompanyServiceInterface {
   async delete(id: number, manager?: EntityManager): Promise<void> {
     return await this._commandBus.execute(
       new DeleteCommand(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getStateReport(
+    query: reportHalGroupQueryDto,
+    manager?: EntityManager,
+  ): Promise<any> {
+    return await this._queryBus.execute(
+      new GetHalStateQuery(query, manager ?? this._readEntityManager),
     );
   }
 }
