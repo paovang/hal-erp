@@ -26,4 +26,8 @@ export class BudgetItemQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   department_id?: string;
+
+  @IsOptional()
+  @IsString()
+  company_id?: string;
 }

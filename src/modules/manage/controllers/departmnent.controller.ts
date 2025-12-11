@@ -33,6 +33,7 @@ import { USER_PROFILE_IMAGE_FOLDER } from '../application/constants/inject-key.c
 import { Public } from '@core-system/auth';
 import { IImageOptimizeService } from '@common/utils/services/images/interface/image-optimize-service.interface';
 import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
+import { ReportDepartmentBudget } from '@src/common/application/interfaces/report-department-budget.interface';
 // import { AuthUser } from '@core-system/auth';
 
 @Controller('department')
@@ -62,6 +63,14 @@ export class DepartmentController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  // get report hal group
+  @Get('/report')
+  async getReport(
+    @Query() dto: DepartmentQueryDto,
+  ): Promise<ReportDepartmentBudget[]> {
+    return await this._departmentService.getReport(dto);
   }
 
   /** Get One */

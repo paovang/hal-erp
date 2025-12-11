@@ -29,6 +29,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     const budget_account_id = Number(query.budget_account_id);
     const department_id = Number(query.department_id);
     const year = query.fiscal_year;
+    const company_id = Number(query.company_id);
     const queryBuilder = this.createBaseQuery(manager);
 
     if (budget_account_id) {
@@ -39,6 +40,13 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         },
       );
     }
+
+    if (company_id) {
+      queryBuilder.andWhere('budget_accounts.company_id = :company_id', {
+        company_id,
+      });
+    }
+
     if (department_id) {
       queryBuilder.andWhere('departments.id = :department_id', {
         department_id,
@@ -83,6 +91,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       ])
       .innerJoin('budget_items.budget_accounts', 'budget_accounts')
       .leftJoin('budget_accounts.departments', 'departments')
+      .leftJoin('budget_accounts.company', 'company')
       .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
       .leftJoin('budget_items.document_transactions', 'document_transactions')
       .addSelect([
@@ -106,6 +115,11 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'document_transactions.document_id',
         'document_transactions.transaction_type',
         'document_transactions.budget_item_id',
+        'company.id',
+        'company.name',
+        'company.logo',
+        'company.email',
+        'company.tel',
       ]);
 
     // Add a subquery to get the total used amount per budget item to avoid duplication

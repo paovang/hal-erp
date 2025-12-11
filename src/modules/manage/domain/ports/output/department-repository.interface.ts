@@ -3,6 +3,7 @@ import { DepartmentQueryDto } from '@src/modules/manage/application/dto/query/de
 import { EntityManager } from 'typeorm';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { DepartmentId } from '@src/modules/manage/domain/value-objects/department-id.vo';
+import { ReportDepartmentBudget } from '@src/common/application/interfaces/report-department-budget.interface';
 
 export interface IReadDepartmentRepository {
   findAll(
@@ -16,6 +17,11 @@ export interface IReadDepartmentRepository {
     id: DepartmentId,
     manager: EntityManager,
   ): Promise<ResponseResult<DepartmentEntity>>;
+
+  getReport(
+    query: DepartmentQueryDto,
+    manager: EntityManager,
+  ): Promise<ReportDepartmentBudget[]>;
 }
 
 export interface IWriteDepartmentRepository {

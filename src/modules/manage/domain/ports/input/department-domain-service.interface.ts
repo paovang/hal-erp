@@ -4,6 +4,7 @@ import { EntityManager } from 'typeorm';
 import { DepartmentEntity } from '@src/modules/manage/domain/entities/department.entity';
 import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/department/create.dto';
 import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
+import { ReportDepartmentBudget } from '@src/common/application/interfaces/report-department-budget.interface';
 
 export interface IDepartmentServiceInterface {
   getAll(
@@ -28,4 +29,10 @@ export interface IDepartmentServiceInterface {
   ): Promise<ResponseResult<DepartmentEntity>>;
 
   delete(id: number, manager?: EntityManager): Promise<void>;
+
+  // get report hal group
+  getReport(
+    query: DepartmentQueryDto,
+    manager?: EntityManager,
+  ): Promise<ReportDepartmentBudget[]>;
 }
