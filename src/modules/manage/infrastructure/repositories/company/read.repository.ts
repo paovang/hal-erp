@@ -40,8 +40,25 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       .createQueryBuilder('companies')
       .leftJoin('companies.company_users', 'company_users')
       .leftJoin('companies.departments', 'departments')
+      .leftJoin('companies.documents', 'documents')
+      .leftJoin('documents.receipts', 'receipts')
+      .leftJoin(
+        'companies.documents',
+        'documentsPadding',
+        'documentsPadding.status = :status',
+        { status: 'pending' },
+      )
+      .leftJoin('companies.budget_accounts', 'budget_accounts')
+      .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
+      .leftJoin('budget_accounts.budget_items', 'budget_items')
+      .leftJoin('documentsPadding.receipts', 'receiptsPadding')
       .select('companies.id', 'companyId')
+      .addSelect('companies.name', 'companyName')
+      // .addSelect('COUNT(DISTINCT documents)', 'totalDocuments')
       .addSelect('COUNT(DISTINCT company_users.id)', 'totalUsers')
+      // .addSelect('COUNT(DISTINCT departments.id)', 'totalDepartments')
+      .addSelect('COUNT(DISTINCT receipts.id)', 'totalReceipts')
+      .addSelect('COUNT(DISTINCT receiptsPadding.id)', 'totalReceiptsPadding')
       .groupBy('companies.id');
 
     if (query.company_id) {
@@ -173,7 +190,7 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       .where('company.id = :id', { id: id.value })
 
       .getOneOrFail();
-    console.log('item', item);
+    // console.log('item', item);
     const allocated_amount =
       item.budget_accounts
         ?.flatMap((ba) => ba.increase_budgets ?? [])
