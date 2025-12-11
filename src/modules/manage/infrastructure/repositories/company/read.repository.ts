@@ -48,27 +48,72 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
         'documentsPadding.status = :status',
         { status: 'pending' },
       )
+      .leftJoin('documentsPadding.receipts', 'receiptsPadding')
+
+      // =======================
+      // BUDGET RELATIONS
+      // =======================
       .leftJoin('companies.budget_accounts', 'budget_accounts')
       .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
       .leftJoin('budget_accounts.budget_items', 'budget_items')
-      .leftJoin('documentsPadding.receipts', 'receiptsPadding')
+      .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
+      .leftJoin('budget_items.document_transactions', 'document_transactions')
+
       .select('companies.id', 'companyId')
       .addSelect('companies.name', 'companyName')
-      // .addSelect('COUNT(DISTINCT documents)', 'totalDocuments')
+
+      // SUMMARY BASE
       .addSelect('COUNT(DISTINCT company_users.id)', 'totalUsers')
-      // .addSelect('COUNT(DISTINCT departments.id)', 'totalDepartments')
       .addSelect('COUNT(DISTINCT receipts.id)', 'totalReceipts')
       .addSelect('COUNT(DISTINCT receiptsPadding.id)', 'totalReceiptsPadding')
+
+      // =======================
+      // BUDGET SUMMARY FIELDS
+      // =======================
+
+      // allocated_amount (รวมทุก budget ของบริษัท)
+      .addSelect(
+        'SUM(DISTINCT budget_accounts.allocated_amount)',
+        'allocated_amount',
+      )
+
+      // increase_amount
+      .addSelect(
+        'SUM(DISTINCT increase_budgets.allocated_amount)',
+        'increase_amount',
+      )
+
+      // totalUsedAmount จาก document_transactions.amount
+      .addSelect(
+        'SUM(DISTINCT document_transactions.amount)',
+        'totalUsedAmount',
+      )
+
+      // total_budget = allocated + increase - used
+      .addSelect(
+        `
+      (
+        COALESCE(SUM(DISTINCT budget_accounts.allocated_amount), 0)
+        +
+        COALESCE(SUM(DISTINCT increase_budgets.allocated_amount), 0)
+        -
+        COALESCE(SUM(DISTINCT document_transactions.amount), 0)
+      )
+    `,
+        'total_budget',
+      )
+
       .groupBy('companies.id');
 
+    // optional filters
     if (query.company_id) {
       qb.where('companies.id = :id', { id: query.company_id });
     }
-    // if (query.department_id) {
-    //   qb.andWhere('departments.id = :department_id', {
-    //     department_id: query.department_id,
-    //   });
-    // }
+    if (query.department_id) {
+      qb.andWhere('departments.id = :id', {
+        id: query.department_id,
+      });
+    }
 
     const company = await qb.getRawMany();
 
@@ -76,15 +121,49 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       (sum, item) => sum + Number(item.totalUsers),
       0,
     );
+    const totalReceipts = company.reduce(
+      (sum, item) => sum + Number(item.totalReceipts),
+      0,
+    );
+    const totalReceiptsPadding = company.reduce(
+      (sum, item) => sum + Number(item.totalReceiptsPadding),
+      0,
+    );
+
+    const allocated_amount = company.reduce(
+      (sum, item) => sum + Number(item.allocated_amount),
+      0,
+    );
+
+    const increase_amount = company.reduce(
+      (sum, item) => sum + Number(item.increase_amount),
+      0,
+    );
+
+    const totalUsedAmount = company.reduce(
+      (sum, item) => sum + Number(item.totalUsedAmount),
+      0,
+    );
+
+    const total_budget = company.reduce(
+      (sum, item) => sum + Number(item.total_budget),
+      0,
+    );
 
     return {
-      company,
       totalUsers,
+      totalReceipts,
+      totalReceiptsPadding,
+      allocated_amount,
+      increase_amount,
+      totalUsedAmount,
+      total_budget,
     };
   }
 
   async findAll(
     query: CompanyQueryDto,
+    // .addSelect('COUNT(DISTINCT documents)', 'totalDocuments')
     manager: EntityManager,
     company_id?: number,
     roles?: string[],
