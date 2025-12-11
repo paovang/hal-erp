@@ -18,22 +18,22 @@ export class reportHalGroupQueryDto {
     description: 'can be year',
   })
   @IsOptional()
-  @IsNumber()
-  year?: number;
+  @IsString()
+  year?: string;
 
   @ApiProperty({
     required: false,
     description: 'can be department id',
   })
   @IsOptional()
-  @IsNumber()
-  department_id?: number;
+  @IsString()
+  department_id?: string;
 
   @ApiProperty({
     required: false,
     description: 'can be company id',
   })
   @IsOptional()
-  @IsNumber()
-  company_id?: number;
+  @IsString()
+  company_id?: string;
 }
