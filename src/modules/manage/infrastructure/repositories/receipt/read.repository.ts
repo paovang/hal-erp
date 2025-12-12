@@ -265,11 +265,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .leftJoin('doc_dept_user.departments', 'departments_approver')
       .addSelect(selectFields);
 
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.ADMIN)
-    ) {
+    if (roles && !roles.includes(EligiblePersons.ADMIN)) {
       if (
         roles.includes(EligiblePersons.COMPANY_ADMIN) ||
         roles.includes(EligiblePersons.COMPANY_USER)
