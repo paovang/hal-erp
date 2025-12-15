@@ -179,14 +179,14 @@ export class ReadRoleRepository implements IReadRoleRepository {
   async findAllForCompanyUser(
     query: RoleQueryDto,
     manager: EntityManager,
-    roles?: string[],
-    company_id?: number,
+    // roles?: string[],
+    // company_id?: number,
   ): Promise<ResponseResult<RoleEntity>> {
-    const department_id = Number(query.department_id);
+    // const department_id = Number(query.department_id);
     const queryBuilder = await this.createBaseQueryForCompanyUser(
       manager,
-      department_id,
-      company_id,
+      // department_id,
+      // company_id,
     );
     query.sort_by = 'roles.id';
 
@@ -201,8 +201,8 @@ export class ReadRoleRepository implements IReadRoleRepository {
 
   private createBaseQueryForCompanyUser(
     manager: EntityManager,
-    department_id?: number,
-    company_id?: number,
+    // department_id?: number,
+    // company_id?: number,
   ) {
     const roleName = ['company-user'];
     const queryBuilder = manager
@@ -222,18 +222,18 @@ export class ReadRoleRepository implements IReadRoleRepository {
         'departments.company_id',
       ]);
 
-    console.log('object', company_id);
-    if (company_id) {
-      queryBuilder.andWhere('departments.company_id = :company_id', {
-        company_id,
-      });
-    }
+    // console.log('object', company_id);
+    // if (company_id) {
+    //   queryBuilder.andWhere('departments.company_id = :company_id', {
+    //     company_id,
+    //   });
+    // }
 
-    if (department_id) {
-      queryBuilder.andWhere('departments.id = :department_id', {
-        department_id,
-      });
-    }
+    // if (department_id) {
+    //   queryBuilder.andWhere('departments.id = :department_id', {
+    //     department_id,
+    //   });
+    // }
 
     return queryBuilder;
   }
