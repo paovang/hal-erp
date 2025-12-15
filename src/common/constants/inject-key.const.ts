@@ -14,12 +14,18 @@ export const USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY = Symbol(
 // export const USER_PROFILE_IMAGE_FOLDER = 'profile';
 
 export const PROFILE_IMAGE_ALLOW_MIME_TYPE = [
+  // Images
   'image/png',
   'image/jpg',
   'image/jpeg',
+  // PDF
   'application/pdf',
+  // Word documents
   'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  // Excel documents
   'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 ];
 
 export const SUPPORTED_IMAGE_MIME_TYPES = [

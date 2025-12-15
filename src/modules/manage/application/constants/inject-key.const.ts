@@ -102,6 +102,7 @@ export const COMPANY_LOGO_FOLDER = 'company_logo';
 export const FILE_FOLDER = 'file';
 export const IMAGE_FOLDER = process.env.IMAGE_FOLDER || 'assets/uploads';
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+export const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024; // 10MB for documents
 
 // department approver
 export const DEPARTMENT_APPROVER_APPLICATION_SERVICE = Symbol(

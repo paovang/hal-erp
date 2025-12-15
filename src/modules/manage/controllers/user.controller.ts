@@ -18,7 +18,7 @@ import {
   USER_PROFILE_IMAGE_FILE_OPTIMIZE_SERVICE_KEY,
 } from '@src/common/constants/inject-key.const';
 import {
-  MAX_IMAGE_SIZE,
+  MAX_DOCUMENT_SIZE,
   USER_APPLICATION_SERVICE,
 } from '../application/constants/inject-key.const';
 import { IUserServiceInterface } from '../domain/ports/input/user-domain-service.interface';
@@ -89,7 +89,7 @@ export class UserController {
     }),
     new FileValidationInterceptor(
       new FileMimeTypeValidator(PROFILE_IMAGE_ALLOW_MIME_TYPE),
-      new FileSizeValidator(MAX_IMAGE_SIZE),
+      new FileSizeValidator(MAX_DOCUMENT_SIZE),
       'image',
     ),
   )
