@@ -68,6 +68,7 @@ import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/type
 import { StatusEnum } from '@src/common/enums/status.enum';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -255,6 +256,32 @@ export class CreateCommandHandler
 
         const po_code = (check_po as any).po_number;
         const poRest = (po_code ?? '').replace(/^\d{4}\//, '');
+
+        const approval = await findOneOrFail(manager, UserApprovalOrmEntity, {
+          document_id: (check_po as any).document_id,
+        });
+
+        if (approval.status_id !== STATUS_KEY.APPROVED) {
+          throw new ManageDomainException(
+            'errors.not_approve_po_yet',
+            HttpStatus.BAD_REQUEST,
+            { property: 'Purchase Order' },
+          );
+        }
+
+        const check_receipt = await manager.findOne(ReceiptOrmEntity, {
+          where: {
+            purchase_order_id: query.dto.purchase_order_id,
+          },
+        });
+
+        if (check_receipt) {
+          throw new ManageDomainException(
+            'errors.receipt_exist',
+            HttpStatus.BAD_REQUEST,
+            { property: 'Receipt' },
+          );
+        }
 
         const department_name = (get_department_name as any).name;
 

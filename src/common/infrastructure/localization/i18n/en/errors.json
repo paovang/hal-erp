@@ -73,5 +73,7 @@
   "user_tel_already_exists": "User tel already exists",
   "cannot_delete_role": "Cannot delete role {property}",
   "select_budget": "Please select budget",
-  "quota_limit_exceeded": "Quota limit exceeded, there is still a quota available: {property} Unit"
+  "quota_limit_exceeded": "Quota limit exceeded, there is still a quota available: {property} Unit",
+  "not_approve_po_yet": "Purchase Order not approved yet",
+  "receipt_exist": "Receipt already exists"
 }
