@@ -293,10 +293,10 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
     const balance_amount = increase_amount - totalUsedAmount;
     const result = {
       ...item,
-      company_users: item.company_users?.map((cu) => {
-        const { password, ...user } = cu.user;
-        return user;
-      }),
+      // company_users: item.company_users?.map((cu) => {
+      //   const { password, ...user } = cu.user;
+      //   return user;
+      // }),
       logo: item?.logo
         ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${item.logo}`
         : null,
