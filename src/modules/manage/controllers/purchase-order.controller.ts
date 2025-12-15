@@ -188,6 +188,7 @@ export class PurchaseOrderController {
       // Send the file
       res.send(excelBuffer);
     } catch (error) {
+      console.error('Failed to export purchase order:', error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'Failed to export purchase order',
         error: error.message,
