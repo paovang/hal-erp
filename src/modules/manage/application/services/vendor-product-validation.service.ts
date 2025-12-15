@@ -20,9 +20,11 @@ export class VendorProductValidationService {
    */
   async checkIfVendorHasProduct(
     vendorId: number,
-    productId: number
+    productId: number,
   ): Promise<boolean> {
-    console.log(`🔍 [VALIDATION] Checking if vendor ${vendorId} has product ${productId}`);
+    console.log(
+      `🔍 [VALIDATION] Checking if vendor ${vendorId} has product ${productId}`,
+    );
 
     try {
       // Method 1: Raw SQL query (most reliable)
@@ -41,7 +43,9 @@ export class VendorProductValidationService {
       console.log(`📋 [VALIDATION] Raw SQL result - count: ${count}`);
 
       if (count > 0) {
-        console.log(`❌ [VALIDATION] Found ${count} record(s) - vendor ${vendorId} already has product ${productId}`);
+        console.log(
+          `❌ [VALIDATION] Found ${count} record(s) - vendor ${vendorId} already has product ${productId}`,
+        );
         return true;
       }
 
@@ -51,23 +55,28 @@ export class VendorProductValidationService {
         where: {
           vendor_id: vendorId,
           product_id: productId,
-        }
+        },
       });
 
       console.log(`📋 [VALIDATION] Repository result:`, existingRecord);
 
       if (existingRecord) {
-        console.log(`❌ [VALIDATION] Found record via repository - vendor ${vendorId} already has product ${productId}`);
+        console.log(
+          `❌ [VALIDATION] Found record via repository - vendor ${vendorId} already has product ${productId}`,
+        );
         return true;
       }
 
-      console.log(`✅ [VALIDATION] No duplicate found - vendor ${vendorId} can add product ${productId}`);
+      console.log(
+        `✅ [VALIDATION] No duplicate found - vendor ${vendorId} can add product ${productId}`,
+      );
       return false;
-
     } catch (error) {
       console.error(`❌ [VALIDATION] Error checking duplicate:`, error.message);
       // If validation fails, throw error to prevent duplicate creation
-      throw new Error(`Failed to validate vendor-product combination: ${error.message}`);
+      throw new Error(
+        `Failed to validate vendor-product combination: ${error.message}`,
+      );
     }
   }
 
@@ -79,7 +88,7 @@ export class VendorProductValidationService {
    */
   async getExistingVendorProduct(
     vendorId: number,
-    productId: number
+    productId: number,
   ): Promise<any> {
     try {
       const query = `
@@ -100,7 +109,10 @@ export class VendorProductValidationService {
 
       return null;
     } catch (error) {
-      console.error(`❌ [VALIDATION] Error getting existing record:`, error.message);
+      console.error(
+        `❌ [VALIDATION] Error getting existing record:`,
+        error.message,
+      );
       return null;
     }
   }
@@ -112,7 +124,7 @@ export class VendorProductValidationService {
    */
   async validateVendorProductCombination(
     vendorId: number,
-    productId: number
+    productId: number,
   ): Promise<void> {
     const hasExisting = await this.checkIfVendorHasProduct(vendorId, productId);
 
@@ -122,7 +134,7 @@ export class VendorProductValidationService {
 
       throw new Error(
         `Vendor ${vendorId} already has product ${productId} ${priceInfo}. ` +
-        `Duplicate vendor-product combinations are not allowed.`
+          `Duplicate vendor-product combinations are not allowed.`,
       );
     }
   }

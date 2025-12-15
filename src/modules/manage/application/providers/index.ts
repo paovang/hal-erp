@@ -95,5 +95,5 @@ export const AllRegisterProviders: Provider[] = [
   ...ProductProviders,
   ...CompanyUserProvider,
   ...VendorProductProvider,
-  ...QuotaCompanyProvider
+  ...QuotaCompanyProvider,
 ];

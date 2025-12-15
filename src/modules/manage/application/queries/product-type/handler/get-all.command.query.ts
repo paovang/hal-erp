@@ -16,7 +16,9 @@ export class GetAllQueryHandler
     private readonly _readRepo: IReadProductTypeRepository,
   ) {}
 
-  async execute(query: GetAllQuery): Promise<ResponseResult<ProductTypeEntity>> {
+  async execute(
+    query: GetAllQuery,
+  ): Promise<ResponseResult<ProductTypeEntity>> {
     const data = await this._readRepo.findAll(query.dto, query.manager);
 
     if (!data) {

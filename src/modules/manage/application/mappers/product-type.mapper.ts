@@ -10,7 +10,9 @@ import { UpdateProductTypeDto } from '../dto/create/product-type/update.dto';
 @Injectable()
 export class ProductTypeDataMapper {
   /** Mapper Dto To Entity */
-  toEntity(dto: CreateProductTypeDto | UpdateProductTypeDto): ProductTypeEntity {
+  toEntity(
+    dto: CreateProductTypeDto | UpdateProductTypeDto,
+  ): ProductTypeEntity {
     const builder = ProductTypeEntity.builder();
 
     if (dto.name) {

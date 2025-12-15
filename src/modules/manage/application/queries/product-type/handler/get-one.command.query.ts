@@ -19,7 +19,9 @@ export class GetOneQueryHandler
     private readonly _readRepo: IReadProductTypeRepository,
   ) {}
 
-  async execute(query: GetOneQuery): Promise<ResponseResult<ProductTypeEntity>> {
+  async execute(
+    query: GetOneQuery,
+  ): Promise<ResponseResult<ProductTypeEntity>> {
     if (isNaN(query.id)) {
       throw new ManageDomainException(
         'errors.must_be_number',

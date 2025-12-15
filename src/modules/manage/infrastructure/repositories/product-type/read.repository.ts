@@ -41,7 +41,8 @@ export class ReadProductTypeRepository implements IReadProductTypeRepository {
   }
 
   private createBaseQuery(manager: EntityManager) {
-    return manager.createQueryBuilder(ProductTypeOrmEntity, 'product_types')
+    return manager
+      .createQueryBuilder(ProductTypeOrmEntity, 'product_types')
       .leftJoinAndSelect('product_types.category', 'category');
   }
 

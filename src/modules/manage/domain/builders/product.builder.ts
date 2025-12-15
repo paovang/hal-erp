@@ -54,7 +54,6 @@ export class ProductBuilder {
     return this;
   }
 
-
   setCreatedAt(createdAt: Date): this {
     this.createdAt = createdAt;
     return this;
@@ -69,8 +68,6 @@ export class ProductBuilder {
     this.deletedAt = deletedAt;
     return this;
   }
-
-
 
   build(): ProductEntity {
     return ProductEntity.create(this);

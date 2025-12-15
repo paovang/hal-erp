@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetOneQuery } from '../get-one.query';
 import { ResponseResult } from '@common/infrastructure/pagination/pagination.interface';
-import {  READ_QUOTA_COMPANY_REPOSITORY } from '../../../constants/inject-key.const';
+import { READ_QUOTA_COMPANY_REPOSITORY } from '../../../constants/inject-key.const';
 import { HttpStatus, Inject } from '@nestjs/common';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { QuotaCompanyEntity } from '@src/modules/manage/domain/entities/quota-company.entity';
@@ -17,7 +17,9 @@ export class GetOneQueryHandler
     private readonly _readRepo: IReadQuotaCompanyRepository,
   ) {}
 
-  async execute(query: GetOneQuery): Promise<ResponseResult<QuotaCompanyEntity>> {
+  async execute(
+    query: GetOneQuery,
+  ): Promise<ResponseResult<QuotaCompanyEntity>> {
     const productId = new QuotaCompanyId(query.id);
     const data = await this._readRepo.findOne(productId, query.manager);
 

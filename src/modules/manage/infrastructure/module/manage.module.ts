@@ -91,7 +91,7 @@ import { QuotaCompanyController } from '../../controllers/quota-company.controll
     ProductController,
     CompanyUserController,
     VendorProductController,
-    QuotaCompanyController
+    QuotaCompanyController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

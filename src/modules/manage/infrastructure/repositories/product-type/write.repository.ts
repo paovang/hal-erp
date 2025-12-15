@@ -10,7 +10,9 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 
 @Injectable()
 export class WriteProductTypeRepository implements IWriteProductTypeRepository {
-  constructor(private readonly _dataAccessMapper: ProductTypeDataAccessMapper) {}
+  constructor(
+    private readonly _dataAccessMapper: ProductTypeDataAccessMapper,
+  ) {}
 
   async create(
     entity: ProductTypeEntity,
@@ -33,7 +35,11 @@ export class WriteProductTypeRepository implements IWriteProductTypeRepository {
     );
 
     try {
-      await manager.update(ProductTypeOrmEntity, entity.getId().value, OrmEntity);
+      await manager.update(
+        ProductTypeOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
 
       return this._dataAccessMapper.toEntity(OrmEntity);
     } catch (error) {

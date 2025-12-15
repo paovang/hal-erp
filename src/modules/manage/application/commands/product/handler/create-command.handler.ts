@@ -57,7 +57,7 @@ export class CreateCommandHandler
             id: query.dto.unit_id,
           },
           `unit id ${query.dto.unit_id}`,
-        )
+        );
         const mapToEntity = this._dataMapper.toEntity(query.dto);
         return await this._write.create(mapToEntity, manager);
       },

@@ -74,7 +74,7 @@ export class UpdateCommandHandler
           id: query.dto.unit_id,
         },
         `unit id ${query.dto.unit_id}`,
-      )
+      );
     }
 
     return await this._transactionManagerService.runInTransaction(
