@@ -18,6 +18,11 @@ export interface IRoleServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<RoleEntity>>;
 
+  getAllForCompanyUser(
+    dto: RoleQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<RoleEntity>>;
+
   getOne(
     id: number,
     manager?: EntityManager,

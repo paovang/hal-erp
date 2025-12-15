@@ -18,6 +18,7 @@ import { CreateRoleCommand } from '../commands/role/create-role.command';
 import { UpdateDto } from '../dto/create/user/role/update-role.dto';
 import { UpdateRoleCommand } from '../commands/role/update-role.command';
 import { GetAllForCompanyQuery } from '../queries/user/role/get-all-for-company.query';
+import { GetAllForCompanyUserQuery } from '../queries/user/role/get-all-for-company-user.query';
 
 @Injectable()
 export class RoleService implements IRoleServiceInterface {
@@ -43,6 +44,16 @@ export class RoleService implements IRoleServiceInterface {
   ): Promise<ResponseResult<RoleEntity>> {
     return await this._queryBus.execute(
       new GetAllForCompanyQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getAllForCompanyUser(
+    dto: RoleQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<RoleEntity>> {
+    // Assuming there is a corresponding query for this method
+    return await this._queryBus.execute(
+      new GetAllForCompanyUserQuery(dto, manager ?? this._readEntityManager),
     );
   }
 

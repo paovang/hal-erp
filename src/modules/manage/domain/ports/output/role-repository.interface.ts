@@ -20,6 +20,14 @@ export interface IReadRoleRepository {
     department_id?: number,
   ): Promise<ResponseResult<RoleEntity>>;
 
+  findAllForCompanyUser(
+    query: RoleQueryDto,
+    manager: EntityManager,
+    roles?: string[],
+    company_id?: number,
+    department_id?: number,
+  ): Promise<ResponseResult<RoleEntity>>;
+
   findOne(
     id: RoleId,
     manager: EntityManager,
