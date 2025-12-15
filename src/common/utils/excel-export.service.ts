@@ -1965,8 +1965,9 @@ export class ExcelExportService {
 
     // Sanitize poNumber to remove invalid characters for HTTP headers
     const sanitizedPoNumber = poNumber
-      .replace(/[<>:"/\\|?*]/g, '') // Remove invalid filename characters
+      .replace(/[<>:"/\\|?*\x00-\x1F\x7F-\x9F]/g, '') // Remove invalid filename and control characters
       .replace(/\s+/g, '_') // Replace spaces with underscores
+      .replace(/[^a-zA-Z0-9_\-]/g, '') // Keep only alphanumeric, underscore, and hyphen
       .trim();
 
     return `${prefix}_${sanitizedPoNumber}_${date}.xlsx`;

@@ -115,9 +115,11 @@ export class ReceiptController {
         'Content-Type',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       );
+      // Use encodeURIComponent to ensure the filename is safe for HTTP headers
+      const encodedFileName = encodeURIComponent(fileName);
       res.setHeader(
         'Content-Disposition',
-        `attachment; filename="${fileName}"`,
+        `attachment; filename*=UTF-8''${encodedFileName}`,
       );
       res.setHeader('Content-Length', excelBuffer.length);
 
