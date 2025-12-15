@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { HttpStatus, Injectable, PipeTransform } from '@nestjs/common';
+import { DomainException } from '../domain/exceptions/domain.exception';
 
 @Injectable()
 export class FileMimeTypeValidator implements PipeTransform {
@@ -6,8 +7,10 @@ export class FileMimeTypeValidator implements PipeTransform {
 
   transform(value: any): any {
     if (!this.isValidMimeType(value.mimetype, this.allowedTypes)) {
-      throw new BadRequestException(
-        `File type not allowed. Allowed types: ${this.allowedTypes.join(', ')}`,
+      throw new DomainException(
+        'errors.invalid_file_type',
+        HttpStatus.BAD_REQUEST,
+        { property: this.allowedTypes.join(', ') },
       );
     }
     return value;
