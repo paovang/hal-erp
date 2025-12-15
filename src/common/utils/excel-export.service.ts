@@ -1950,18 +1950,25 @@ export class ExcelExportService {
   /**
    * Generate filename for Excel export
    * @param poNumber - Purchase order number
+   * @param prefix - Prefix for the filename
    * @returns string - Generated filename
    */
-  generateFileName(poNumber: string, perfix: string): string {
+  generateFileName(poNumber: string, prefix: string): string {
     const now = new Date();
 
-    // Format to YYYY-MM-DD HH:mm:ss
+    // Format to YYYY-MM-DD HH-mm-ss (using hyphens instead of colons)
     const date = now
       .toISOString()
-      .replace('T', '-') // Replace T with space
+      .replace('T', '-') // Replace T with hyphen
       .substring(0, 19) // Keep only YYYY-MM-DD HH:mm:ss
-      .replace(/:/g, '-');
+      .replace(/:/g, '-'); // Replace colons with hyphens
 
-    return `${perfix}_${poNumber}_${date}.xlsx`;
+    // Sanitize poNumber to remove invalid characters for HTTP headers
+    const sanitizedPoNumber = poNumber
+      .replace(/[<>:"/\\|?*]/g, '') // Remove invalid filename characters
+      .replace(/\s+/g, '_') // Replace spaces with underscores
+      .trim();
+
+    return `${prefix}_${sanitizedPoNumber}_${date}.xlsx`;
   }
 }
