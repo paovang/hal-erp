@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PAGINATION_SERVICE } from '@src/common/constants/inject-key.const';
 import { CompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/company.orm';
 import { IPaginationService } from '@src/common/infrastructure/pagination/pagination.interface';
-import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 import { IReportCompanuRepository } from '@src/modules/reports/domain/ports/output/company-repository.interface';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -16,12 +15,7 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
   ) {}
-  async reportCompany(
-    manager: EntityManager,
-    company_id?: number,
-    roles?: string[],
-    department_id?: number,
-  ): Promise<any> {
+  async reportCompany(manager: EntityManager): Promise<any> {
     const query = await manager
       .createQueryBuilder(CompanyOrmEntity, 'company')
       .leftJoinAndSelect('company.company_users', 'company_users')
@@ -36,7 +30,6 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
         { status: 'pending' },
       )
       .innerJoinAndSelect('documents.receipts', 'receipts')
-      .innerJoin('documents.departments', 'departments')
       .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
 
       .loadRelationCountAndMap(
@@ -61,28 +54,6 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
         'company.budget_approval_rules',
       )
       .loadRelationCountAndMap('company.userCount', 'company.company_users');
-
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.ADMIN)
-    ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          query.andWhere('documents.company_id = :company_id', {
-            company_id,
-          });
-        }
-      }
-      if (department_id) {
-        query.andWhere('departments.id = :department_id', {
-          department_id,
-        });
-      }
-    }
 
     const data = await query.getMany();
 

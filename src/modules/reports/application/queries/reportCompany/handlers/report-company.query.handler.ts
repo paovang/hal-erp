@@ -19,31 +19,6 @@ export class GetReportCompanyQueryHandler
   ) {}
 
   async execute(query: GetReportCompanyQuery): Promise<ResponseResult<any>> {
-    const user = this._userContextService.getAuthUser()?.user;
-
-    const user_id = user?.id;
-
-    const departmentUser = await query.manager.findOne(
-      DepartmentUserOrmEntity,
-      {
-        where: { user_id: user_id },
-      },
-    );
-
-    const company_user = await query.manager.findOne(CompanyUserOrmEntity, {
-      where: {
-        user_id: user_id,
-      },
-    });
-
-    const company_id = company_user?.company_id ?? undefined;
-    const roles = user?.roles?.map((r: any) => r.name) ?? [];
-    const department_id = departmentUser?.department_id ?? null;
-    return await this._readRepo.reportCompany(
-      query.manager,
-      company_id,
-      roles,
-      department_id || undefined,
-    );
+    return await this._readRepo.reportCompany(query.manager);
   }
 }
