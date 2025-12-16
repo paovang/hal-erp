@@ -4,8 +4,6 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { Inject } from '@nestjs/common';
 import { REPORT_COMPANY_REPOSITORY } from '../../../constants/inject-key.const';
 import { IReportCompanuRepository } from '@src/modules/reports/domain/ports/output/company-repository.interface';
-import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
-import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 
 @QueryHandler(GetReportCompanyQuery)
