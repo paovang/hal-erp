@@ -194,14 +194,14 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     manager: EntityManager,
     company_id?: number,
     roles?: string[],
-    // department_id?: number,
+    department_id?: number,
   ): Promise<ResponseResult<BudgetItemEntity>> {
     const queryBuilder = await this.createBaseReportQuery(
       manager,
       query,
       company_id,
       roles,
-      // department_id,
+      department_id,
     );
     query.sort_by = 'budget_items.id';
 
@@ -219,7 +219,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     query?: BudgetItemQueryDto,
     company_id?: number,
     roles?: string[],
-    // department_id?: number,
+    department_id?: number,
   ) {
     const queryBuilder = manager
       .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
@@ -281,12 +281,12 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
           });
         }
       }
-      // if (department_id) {
-      //   queryBuilder.andWhere(
-      //     'budget_accounts.department_id = :department_id',
-      //     { department_id },
-      //   );
-      // }
+      if (department_id) {
+        queryBuilder.andWhere(
+          'budget_accounts.department_id = :department_id',
+          { department_id },
+        );
+      }
     }
 
     if (query?.budget_account_id) {

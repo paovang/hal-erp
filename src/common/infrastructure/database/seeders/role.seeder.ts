@@ -110,6 +110,12 @@ export class RoleSeeder {
         created_at: currentDateTime,
         updated_at: currentDateTime,
       },
+      {
+        name: 'procurement-group',
+        guard_name: 'api',
+        created_at: currentDateTime,
+        updated_at: currentDateTime,
+      },
     ];
 
     for (const item of items) {
