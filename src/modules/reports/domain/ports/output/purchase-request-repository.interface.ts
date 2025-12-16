@@ -16,7 +16,12 @@ export interface IReportPurchaseRequestRepository {
     department_id?: number,
   ): Promise<ResponseResult<ReportPurchaseRequestEntity>>;
 
-  reportMoney(manager: EntityManager): Promise<any>;
+  reportMoney(
+    manager: EntityManager,
+    company_id?: number,
+    roles?: string,
+    department_id?: number,
+  ): Promise<any>;
 
   getProcurementStatistics(manager: EntityManager): Promise<any>;
 }

@@ -16,5 +16,10 @@ export interface IReportPurchaseOrderRepository {
     department_id?: number,
   ): Promise<ResponseResult<ReportPurchaseOrderEntity>>;
 
-  reportMoney(manager: EntityManager): Promise<any>;
+  reportMoney(
+    manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
+  ): Promise<any>;
 }

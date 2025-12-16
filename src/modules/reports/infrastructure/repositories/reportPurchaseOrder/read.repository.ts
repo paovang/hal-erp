@@ -313,20 +313,49 @@ export class ReportReadPurchaseOrderRepository
     }
   }
 
-  async reportMoney(manager: EntityManager): Promise<any> {
-    const item = await manager
+  async reportMoney(
+    manager: EntityManager,
+    company_id?: number,
+    roles?: string[],
+    department_id?: number,
+  ): Promise<any> {
+    const query = await manager
       .createQueryBuilder(PurchaseOrderOrmEntity, 'purchase_orders')
       .innerJoin('purchase_orders.purchase_order_items', 'purchase_order_items')
       .select('document_statuses.name', 'status')
-      .addSelect('SUM(purchase_order_items.total_price)', 'total')
+      .addSelect('SUM(purchase_order_items.total)', 'total')
       .addSelect('SUM(purchase_order_items.vat)', 'total_vat')
       .innerJoin('purchase_orders.documents', 'documents')
+      .innerJoin('documents.departments', 'departments')
       .innerJoin('documents.user_approvals', 'user_approvals')
       .innerJoin('user_approvals.document_statuses', 'document_statuses')
-      .groupBy('document_statuses.name')
-      .getRawMany();
+      .groupBy('document_statuses.name');
 
-    const data = item.map((row) => ({
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.andWhere('documents.company_id = :company_id', {
+            company_id,
+          });
+        }
+      }
+      if (department_id) {
+        query.andWhere('departments.id = :department_id', {
+          department_id,
+        });
+      }
+    }
+
+    const result = await query.getRawMany();
+
+    const data = result.map((row) => ({
       status: row.status,
       total: Number(row.total) + Number(row.total_vat),
     }));
