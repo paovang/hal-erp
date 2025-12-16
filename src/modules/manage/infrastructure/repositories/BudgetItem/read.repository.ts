@@ -235,10 +235,6 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
       .leftJoin('budget_items.document_transactions', 'document_transactions')
 
-      // .leftJoinAndSelect(
-      //   'budget_items.increase_budget_detail',
-      //   'increase_budget_detail',
-      // )
       .addSelect([
         'budget_accounts.id',
         'budget_accounts.name',
