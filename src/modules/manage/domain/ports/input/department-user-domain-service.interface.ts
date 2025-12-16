@@ -16,6 +16,11 @@ export interface IDepartmentUserServiceInterface {
     manager?: EntityManager,
   ): Promise<ResponseResult<DepartmentUserEntity>>;
 
+  getAllNotHaveInApprovers(
+    dto: DepartmentUserQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>>;
+
   getOne(
     id: number,
     manager?: EntityManager,

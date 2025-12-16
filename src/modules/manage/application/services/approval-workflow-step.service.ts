@@ -13,6 +13,8 @@ import { GetOneQuery } from '../queries/approvalWorkflowStep/get-one.query';
 import { UpdateApprovalWorkflowStepDto } from '../dto/create/approvalWorkflowStep/update.dto';
 import { UpdateCommand } from '../commands/approvalWorkflowStep/update.command';
 import { DeleteCommand } from '../commands/approvalWorkflowStep/delete.command';
+import { OrderByApprovalWorkflowStepDto } from '../dto/create/approvalWorkflowStep/order-by.dto';
+import { OrderByCommand } from '../commands/approvalWorkflowStep/order-by.command';
 
 @Injectable()
 export class ApprovalWorkflowStepService
@@ -61,6 +63,16 @@ export class ApprovalWorkflowStepService
   ): Promise<ResponseResult<ApprovalWorkflowStepEntity>> {
     return await this._commandBus.execute(
       new UpdateCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async orderBy(
+    id: number,
+    dto: OrderByApprovalWorkflowStepDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowStepEntity>> {
+    return await this._commandBus.execute(
+      new OrderByCommand(id, dto, manager ?? this._readEntityManager),
     );
   }
 

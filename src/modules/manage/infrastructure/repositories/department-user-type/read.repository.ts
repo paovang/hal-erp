@@ -140,6 +140,32 @@ export class ReadDepartmentUserRepository
     };
   }
 
+  async getAllNotHaveInApproversQuery(
+    query: DepartmentUserQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>> {
+    const queryBuilder = await this.createBaseQuery(manager);
+
+    queryBuilder
+      .leftJoin('users.department_approvers', 'department_approvers')
+      .andWhere('department_approvers.id IS NULL');
+
+    if (query.department_id) {
+      queryBuilder.andWhere('department_users.department_id = :department_id', {
+        department_id: query.department_id,
+      });
+    }
+
+    query.sort_by = 'department_users.id';
+
+    const data = await this._paginationService.paginate(
+      queryBuilder,
+      query,
+      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+      this.getFilterOptions(),
+    );
+    return data;
+  }
   async findOne(
     id: DepartmentUserId,
     manager: EntityManager,

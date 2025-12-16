@@ -16,4 +16,12 @@ export class DepartmentUserQueryDto extends PaginationDto {
   @IsOptional()
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
   type: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'can be code, name',
+  })
+  @IsOptional()
+  @IsString()
+  department_id?: string;
 }

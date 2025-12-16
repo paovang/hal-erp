@@ -10,4 +10,12 @@ export class DepartmentApproverQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'can be code, name',
+  })
+  @IsOptional()
+  @IsString()
+  department_id?: string;
 }

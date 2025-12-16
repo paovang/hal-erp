@@ -10,7 +10,8 @@ import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CreatePurchaseRequestItemDto {
   @ApiProperty()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsOptional()
   readonly title: string;
 
   @ApiProperty()

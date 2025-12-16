@@ -14,6 +14,7 @@ import { UpdateCommand } from '../commands/departmentUser/update.command';
 import { DeleteCommand } from '../commands/departmentUser/delete.command';
 import { GetOneQuery } from '../queries/departmentUser/get-one.query';
 import { GetAllByDepartmentQuery } from '../queries/departmentUser/get-all-by-department.query';
+import { getAllNotHaveInApproversQuery } from '../queries/departmentUser/get-all-user-not-in-approver.query';
 
 @Injectable()
 export class DepartmentUserService implements IDepartmentUserServiceInterface {
@@ -39,6 +40,18 @@ export class DepartmentUserService implements IDepartmentUserServiceInterface {
   ): Promise<ResponseResult<DepartmentUserEntity>> {
     return await this._queryBus.execute(
       new GetAllQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getAllNotHaveInApprovers(
+    dto: DepartmentUserQueryDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>> {
+    return await this._queryBus.execute(
+      new getAllNotHaveInApproversQuery(
+        dto,
+        manager ?? this._readEntityManager,
+      ),
     );
   }
 

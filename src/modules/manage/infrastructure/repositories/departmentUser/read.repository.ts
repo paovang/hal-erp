@@ -35,12 +35,14 @@ export class ReadDepartmentUserRepository
     company_id?: number,
     roles?: string[],
   ): Promise<ResponseResult<DepartmentUserEntity>> {
+    const department_id = Number(query.department_id);
     const queryBuilder = await this.createBaseQuery(
       manager,
       departmentId,
       query.type,
       company_id,
       roles,
+      department_id,
     );
 
     query.sort_by = 'department_users.id';
@@ -60,6 +62,7 @@ export class ReadDepartmentUserRepository
     type?: string,
     company_id?: number,
     roles?: string[],
+    department_id?: number,
   ) {
     const qb = manager
       .createQueryBuilder(DepartmentUserOrmEntity, 'department_users')
@@ -130,6 +133,12 @@ export class ReadDepartmentUserRepository
       }
     }
 
+    if (department_id) {
+      qb.andWhere('department_users.department_id = :department_id', {
+        department_id,
+      });
+    }
+
     if (departmentId && type === 'approvers') {
       qb.andWhere(
         `NOT EXISTS (
@@ -168,6 +177,33 @@ export class ReadDepartmentUserRepository
       dateColumn: '',
       filterByColumns: [],
     };
+  }
+
+  async getAllNotHaveInApproversQuery(
+    query: DepartmentUserQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>> {
+    const queryBuilder = await this.createBaseQuery(manager);
+
+    queryBuilder
+      .leftJoin('users.department_approvers', 'department_approvers')
+      .andWhere('department_approvers.id IS NULL');
+
+    if (query.department_id) {
+      queryBuilder.andWhere('department_users.department_id = :department_id', {
+        department_id: query.department_id,
+      });
+    }
+
+    query.sort_by = 'department_users.id';
+
+    const data = await this._paginationService.paginate(
+      queryBuilder,
+      query,
+      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+      this.getFilterOptions(),
+    );
+    return data;
   }
 
   async findOne(

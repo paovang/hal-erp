@@ -19,6 +19,7 @@ import { ApprovalWorkflowStepResponse } from '../application/dto/response/approv
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ApprovalWorkflowStepQueryDto } from '../application/dto/query/approval-workflow-step.dto';
 import { UpdateApprovalWorkflowStepDto } from '../application/dto/create/approvalWorkflowStep/update.dto';
+import { OrderByApprovalWorkflowStepDto } from '../application/dto/create/approvalWorkflowStep/order-by.dto';
 
 @Controller('approval-workflow-steps')
 export class ApprovalWorkflowStepController {
@@ -74,6 +75,19 @@ export class ApprovalWorkflowStepController {
     @Body() dto: UpdateApprovalWorkflowStepDto,
   ): Promise<ResponseResult<ApprovalWorkflowStepResponse>> {
     const result = await this._approvalWorkflowStepService.update(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Put('order-by/:id')
+  async updateOrderBy(
+    @Param('id') id: number,
+    @Body() dto: OrderByApprovalWorkflowStepDto,
+  ): Promise<ResponseResult<ApprovalWorkflowStepResponse>> {
+    const result = await this._approvalWorkflowStepService.orderBy(id, dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

@@ -4,6 +4,7 @@ import { EntityManager } from 'typeorm';
 import { ApprovalWorkflowStepEntity } from '../../entities/approval-workflow-step.entity';
 import { ApprovalWorkflowStepQueryDto } from '@src/modules/manage/application/dto/query/approval-workflow-step.dto';
 import { UpdateApprovalWorkflowStepDto } from '@src/modules/manage/application/dto/create/approvalWorkflowStep/update.dto';
+import { OrderByApprovalWorkflowStepDto } from '@src/modules/manage/application/dto/create/approvalWorkflowStep/order-by.dto';
 
 export interface IApprovalWorkflowStepServiceInterface {
   getAll(
@@ -26,6 +27,12 @@ export interface IApprovalWorkflowStepServiceInterface {
   update(
     id: number,
     dto: UpdateApprovalWorkflowStepDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowStepEntity>>;
+
+  orderBy(
+    id: number,
+    dto: OrderByApprovalWorkflowStepDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowStepEntity>>;
 

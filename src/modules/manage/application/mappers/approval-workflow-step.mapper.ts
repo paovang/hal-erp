@@ -55,6 +55,16 @@ export class ApprovalWorkflowStepDataMapper {
     return builder.build();
   }
 
+  toEntityOrderBy(step?: number): ApprovalWorkflowStepEntity {
+    const builder = ApprovalWorkflowStepEntity.builder();
+
+    if (step) {
+      builder.setStepNumber(step);
+    }
+
+    return builder.build();
+  }
+
   /** Mapper Entity To Response */
   toResponse(entity: ApprovalWorkflowStepEntity): ApprovalWorkflowStepResponse {
     const response = new ApprovalWorkflowStepResponse();

@@ -28,5 +28,10 @@ export interface IWriteApprovalWorkflowStepRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowStepEntity>>;
 
+  orderBy(
+    entity: ApprovalWorkflowStepEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowStepEntity>>;
+
   delete(id: ApprovalWorkflowStepId, manager: EntityManager): Promise<void>;
 }

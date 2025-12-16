@@ -31,11 +31,13 @@ export class ReadDepartmentApproverRepository
     company_id?: number,
     roles?: string[],
   ): Promise<ResponseResult<DepartmentApproverEntity>> {
+    const department_id = Number(query.department_id);
     const queryBuilder = await this.createBaseQuery(
       manager,
       departmentId,
       company_id,
       roles,
+      department_id,
     );
     query.sort_by = 'department_approvers.id';
 
@@ -53,6 +55,7 @@ export class ReadDepartmentApproverRepository
     departmentId?: number,
     company_id?: number,
     roles?: string[],
+    department_id?: number,
   ) {
     const qb = manager
       .createQueryBuilder(DepartmentApproverOrmEntity, 'department_approvers')
@@ -92,6 +95,12 @@ export class ReadDepartmentApproverRepository
           });
         }
       }
+    }
+
+    if (department_id) {
+      qb.andWhere('department_approvers.department_id = :department_id', {
+        department_id,
+      });
     }
 
     return qb;

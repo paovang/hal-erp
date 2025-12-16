@@ -83,6 +83,19 @@ export class DepartmentUserController {
     );
   }
 
+  @Get('approvers')
+  async getAllNotHaveInApprovers(
+    @Query() dto: DepartmentUserQueryDto,
+  ): Promise<ResponseResult<DepartmentUserResponse>> {
+    const result =
+      await this._departmentUserService.getAllNotHaveInApprovers(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
   /** Get One */
   @Get(':id')
   async getOne(

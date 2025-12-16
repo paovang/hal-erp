@@ -48,6 +48,21 @@ export class ApprovalWorkflowStepDataAccessMapper {
     return mediaOrmEntity;
   }
 
+  toOrmEntityOrderBy(
+    approvalWorkflowStepEntity: ApprovalWorkflowStepEntity,
+  ): ApprovalWorkflowStepOrmEntity {
+    const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
+    const id = approvalWorkflowStepEntity.getId();
+    const mediaOrmEntity = new ApprovalWorkflowStepOrmEntity();
+    if (id) {
+      mediaOrmEntity.id = id.value;
+    }
+    mediaOrmEntity.step_number = approvalWorkflowStepEntity.step_number;
+    mediaOrmEntity.updated_at = new Date(now);
+
+    return mediaOrmEntity;
+  }
+
   toEntity(ormData: ApprovalWorkflowStepOrmEntity): ApprovalWorkflowStepEntity {
     const build = ApprovalWorkflowStepEntity.builder()
       .setApprovalWorkflowStepId(new ApprovalWorkflowStepId(ormData.id))

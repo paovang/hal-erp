@@ -14,6 +14,11 @@ export interface IReadDepartmentUserRepository {
     roles?: string[],
   ): Promise<ResponseResult<DepartmentUserEntity>>;
 
+  getAllNotHaveInApproversQuery(
+    query: DepartmentUserQueryDto,
+    manager: EntityManager,
+  ): Promise<ResponseResult<DepartmentUserEntity>>;
+
   findOne(
     id: DepartmentUserId,
     manager: EntityManager,
