@@ -35,7 +35,7 @@ import { JwtModule } from '@nestjs/jwt';
           from: 'Your Name <phetaibtc@gmail.com>',
         },
         template: {
-          dir: join(process.cwd(), 'src/modules/mail/templates'),
+          dir: join(process.cwd(), 'src/common/infrastructure/mail/templates'),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
