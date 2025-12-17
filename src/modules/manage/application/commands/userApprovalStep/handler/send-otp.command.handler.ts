@@ -52,7 +52,7 @@ export class SendOTPCommandHandler
     );
 
     console.log('object');
-    await this._sendEmailUserUseCase.execute({ email: user.email });
+    // await this._sendEmailUserUseCase.execute({ email: user.email });
     return await sendOtpUtil(query.id, user, tel);
   }
 }
