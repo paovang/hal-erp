@@ -115,8 +115,24 @@ export class ExcelExportService {
       applyBorder(cell);
     };
 
-    const logoPath = path.resolve('src', 'common', 'images', 'logo.jpg');
-    const imageBuffer = fs.readFileSync(logoPath);
+    // const logoPath = path.resolve('src', 'common', 'images', 'logo.jpg');
+    // const imageBuffer = fs.readFileSync(logoPath);
+    let imageBuffer: Buffer;
+
+    // 1️⃣ Decide which logo to use
+    const companyLogo = purchaseOrder?.document?.company?.logo_url;
+
+    if (companyLogo) {
+      // If company logo exists → load from URL
+      const response = await axios.get(companyLogo, {
+        responseType: 'arraybuffer',
+      });
+      imageBuffer = Buffer.from(response.data);
+    } else {
+      // Fallback → default logo
+      const logoPath = path.resolve('src', 'common', 'images', 'logo.jpg');
+      imageBuffer = fs.readFileSync(logoPath);
+    }
 
     // 2️⃣ Add image to workbook
     const logoImageId = workbook.addImage({
@@ -145,12 +161,12 @@ export class ExcelExportService {
     worksheet.mergeCells('N3:Q3'); // Row 5: Title
 
     // Use Noto Font (centered) for main title
-    applyNotoFont(worksheet.getCell('E5'), { size: 14, bold: true });
-    worksheet.getCell('E5').value = 'ໃບອະນຸມັດຈັດຊື້-ຈັດຈ້າງ.';
-    worksheet.mergeCells('E5:H5'); // Row 7: Addressee
+    applyNotoFont(worksheet.getCell('F5'), { size: 14, bold: true });
+    worksheet.getCell('F5').value = 'ໃບອະນຸມັດຈັດຊື້-ຈັດຈ້າງ.';
+    worksheet.mergeCells('F5:I5'); // Row 7: Addressee
 
     // Row 7: Addressee - using Rich Text for mixed bold/regular font styles
-    const addresseeCell = worksheet.getCell('D7');
+    const addresseeCell = worksheet.getCell('E7');
 
     // Apply Left Align to set the default alignment and font for the cell area
     // We remove { bold: true } from the function call since we handle bold within Rich Text.
@@ -181,11 +197,11 @@ export class ExcelExportService {
       ],
     };
 
-    // Merge cells D7 to J7
-    worksheet.mergeCells('D7:J7');
+    // Merge cells E7 to J7
+    worksheet.mergeCells('E7:K7');
 
     // Use Left Align for long text starting at a position
-    const subjectCell = worksheet.getCell('C8');
+    const subjectCell = worksheet.getCell('D8');
     // Apply alignment and default font
     applyLeftAlign(subjectCell);
 
@@ -213,7 +229,7 @@ export class ExcelExportService {
       ],
     };
 
-    worksheet.mergeCells('C8:N8');
+    worksheet.mergeCells('D8:N8');
 
     // Row 10: Reference (MODIFIED TO USE RICH TEXT)
     const referenceCell = worksheet.getCell('A10');
@@ -852,8 +868,25 @@ export class ExcelExportService {
       applyBorder(cell);
     };
 
-    const logoPath = path.resolve('src', 'common', 'images', 'logo.jpg');
-    const imageBuffer = fs.readFileSync(logoPath);
+    // const logoPath = path.resolve('src', 'common', 'images', 'logo.jpg');
+    // const imageBuffer = fs.readFileSync(logoPath);
+
+    let imageBuffer: Buffer;
+
+    // 1️⃣ Decide which logo to use
+    const companyLogo = receipt?.document?.company?.logo_url;
+
+    if (companyLogo) {
+      // If company logo exists → load from URL
+      const response = await axios.get(companyLogo, {
+        responseType: 'arraybuffer',
+      });
+      imageBuffer = Buffer.from(response.data);
+    } else {
+      // Fallback → default logo
+      const logoPath = path.resolve('src', 'common', 'images', 'logo.jpg');
+      imageBuffer = fs.readFileSync(logoPath);
+    }
 
     // 2️⃣ Add image to workbook
     const logoImageId = workbook.addImage({
@@ -871,23 +904,23 @@ export class ExcelExportService {
       editAs: 'oneCell', // keeps image anchored to cell
     });
 
-    applyLeftAlign(worksheet.getCell('C2'));
-    worksheet.getCell('C2').value = 'HAL LOGISTICS SOLE CO.,Ltd';
-    worksheet.mergeCells('C2:J2');
+    // applyLeftAlign(worksheet.getCell('C2'));
+    // worksheet.getCell('C2').value = 'HAL LOGISTICS SOLE CO.,Ltd';
+    // worksheet.mergeCells('C2:J2');
 
-    applyLeftAlign(worksheet.getCell('C3'));
-    worksheet.getCell('C3').value =
-      'Chommany subdistrict, Saysettha district, Vientiane laos republic';
-    worksheet.mergeCells('C3:J3');
+    // applyLeftAlign(worksheet.getCell('C3'));
+    // worksheet.getCell('C3').value =
+    //   'Chommany subdistrict, Saysettha district, Vientiane laos republic';
+    // worksheet.mergeCells('C3:J3');
 
-    applyLeftAlign(worksheet.getCell('C4'));
-    worksheet.getCell('C4').value =
-      'LAOS TEL:020 5985 0248, 020 9509 0998. Call Center: 1419';
-    worksheet.mergeCells('C4:J4');
+    // applyLeftAlign(worksheet.getCell('C4'));
+    // worksheet.getCell('C4').value =
+    //   'LAOS TEL:020 5985 0248, 020 9509 0998. Call Center: 1419';
+    // worksheet.mergeCells('C4:J4');
 
-    applyLeftAlign(worksheet.getCell('C5'));
-    worksheet.getCell('C5').value = 'EMAIL: Sisavanh.hal@gmail.com';
-    worksheet.mergeCells('C5:J5');
+    // applyLeftAlign(worksheet.getCell('C5'));
+    // worksheet.getCell('C5').value = 'EMAIL: Sisavanh.hal@gmail.com';
+    // worksheet.mergeCells('C5:J5');
 
     // Row 2: Document number (top right)
     applyLeftAlign(worksheet.getCell('N2'));
@@ -1451,8 +1484,27 @@ export class ExcelExportService {
       applyBorder(cell);
     };
 
-    const logoPath = path.resolve('src', 'common', 'images', 'logo.jpg');
-    const imageBuffer = fs.readFileSync(logoPath);
+    // const logoPath = path.resolve('src', 'common', 'images', 'logo.jpg');
+    // const imageBuffer = fs.readFileSync(logoPath);
+
+    // const company_log = purchase_request.document.company.logo_url;
+
+    let imageBuffer: Buffer;
+
+    // 1️⃣ Decide which logo to use
+    const companyLogo = purchase_request?.document?.company?.logo_url;
+
+    if (companyLogo) {
+      // If company logo exists → load from URL
+      const response = await axios.get(companyLogo, {
+        responseType: 'arraybuffer',
+      });
+      imageBuffer = Buffer.from(response.data);
+    } else {
+      // Fallback → default logo
+      const logoPath = path.resolve('src', 'common', 'images', 'logo.jpg');
+      imageBuffer = fs.readFileSync(logoPath);
+    }
 
     // 2️⃣ Add image to workbook
     const logoImageId = workbook.addImage({
@@ -1470,6 +1522,23 @@ export class ExcelExportService {
       editAs: 'oneCell', // keeps image anchored to cell
     });
 
+    // company data
+    // applyLeftAlign(worksheet.getCell('C1'));
+    // worksheet.getCell('C1').value =
+    //   `${purchase_request.document.company.name || ''}`;
+    // worksheet.mergeCells('C1:I1');
+
+    // applyLeftAlign(worksheet.getCell('C2'));
+    // worksheet.getCell('C2').value =
+    //   `${purchase_request.document.company.address || ''}`;
+    // worksheet.mergeCells('C2:I2');
+
+    // applyLeftAlign(worksheet.getCell('C3'));
+    // worksheet.getCell('C3').value =
+    //   `ເບິໂທ: ${purchase_request.document.company.tel || ''}, ອີເມວ: ${purchase_request.document.company.email || ''}`;
+    // worksheet.mergeCells('C3:I3');
+    // end company data
+
     // Row 2: Document number (top right)
     applyLeftAlign(worksheet.getCell('N2'));
     worksheet.getCell('N2').value =
@@ -1483,12 +1552,12 @@ export class ExcelExportService {
     worksheet.mergeCells('N3:Q3'); // Row 5: Title
 
     // Use Noto Font (centered) for main title
-    applyNotoFont(worksheet.getCell('E5'), { size: 14, bold: true });
-    worksheet.getCell('E5').value = 'ໃບສະເໜີ.';
-    worksheet.mergeCells('E5:H5'); // Row 7: Addressee
+    applyNotoFont(worksheet.getCell('F5'), { size: 14, bold: true });
+    worksheet.getCell('F5').value = 'ໃບສະເໜີ.';
+    worksheet.mergeCells('F5:I5'); // Row 7: Addressee
 
     // Row 7: Addressee - using Rich Text for mixed bold/regular font styles
-    const addresseeCell = worksheet.getCell('D7');
+    const addresseeCell = worksheet.getCell('E7');
 
     // Apply Left Align to set the default alignment and font for the cell area
     // We remove { bold: true } from the function call since we handle bold within Rich Text.
@@ -1520,10 +1589,10 @@ export class ExcelExportService {
     };
 
     // Merge cells D7 to J7
-    worksheet.mergeCells('D7:J7');
+    worksheet.mergeCells('E7:K7');
 
     // Use Left Align for long text starting at a position
-    const subjectCell = worksheet.getCell('C8');
+    const subjectCell = worksheet.getCell('D8');
     // Apply alignment and default font
     applyLeftAlign(subjectCell);
 
@@ -1551,7 +1620,7 @@ export class ExcelExportService {
       ],
     };
 
-    worksheet.mergeCells('C8:N8');
+    worksheet.mergeCells('D8:N8');
 
     // Row 10: Reference (MODIFIED TO USE RICH TEXT)
     const referenceCell = worksheet.getCell('A10');
