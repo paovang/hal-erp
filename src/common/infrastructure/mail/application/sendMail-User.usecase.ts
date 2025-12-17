@@ -23,7 +23,7 @@ export class SendEmailUserUseCase {
       'Welcome to our system 🎉',
       'welcome',
       {
-        verifyLink: `${this.configService.getOrThrow('FRONTEND_URL')}/verify?token=${emailToken}`,
+        verifyLink: `verify?token=${emailToken}`,
       },
     );
     return { message: 'Email sent' };
