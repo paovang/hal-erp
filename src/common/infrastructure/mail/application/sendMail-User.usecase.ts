@@ -21,7 +21,7 @@ export class SendEmailUserUseCase {
     await this.sendMailUseCase.execute(
       user.email,
       'Welcome to our system 🎉',
-      'welcome',
+      'sendMail',
       {
         verifyLink: `verify?token=${emailToken}`,
       },
