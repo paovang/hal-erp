@@ -455,7 +455,7 @@ export class ApproveStepCommandHandler
                     (item) => item.budget_item_id,
                   );
 
-                  let payment_total = 0;
+                  // let payment_total = 0;
                   // Check if all values in the array are the same
                   const [firstBudgetItemId, ...rest] = allBudgetItemIds;
                   if (rest.every((id) => id === firstBudgetItemId)) {
@@ -534,49 +534,59 @@ export class ApproveStepCommandHandler
                   );
 
                   // 6. Get currency info
-                  const currency = await this.getCurrency(
-                    exchange_rate!.from_currency_id,
-                    manager,
-                  );
-                  const payment_currency = await this.getCurrency(
-                    exchange_rate!.to_currency_id,
-                    manager,
-                  );
+                  // const currency = await this.getCurrency(
+                  //   exchange_rate!.from_currency_id,
+                  //   manager,
+                  // );
+                  // const payment_currency = await this.getCurrency(
+                  //   exchange_rate!.to_currency_id,
+                  //   manager,
+                  // );
 
                   // 7. Calculate totals
 
-                  const rate = Number(exchange_rate?.rate ?? 0);
+                  // const rate = Number(exchange_rate?.rate ?? 0);
 
-                  if (
-                    currency.code === 'USD' &&
-                    payment_currency.code === 'LAK'
-                  ) {
-                    payment_total = sum_total * rate;
-                  } else if (
-                    currency.code === 'THB' &&
-                    payment_currency.code === 'LAK'
-                  ) {
-                    payment_total = sum_total * rate;
-                  } else if (
-                    currency.code === 'LAK' &&
-                    payment_currency.code === 'LAK'
-                  ) {
-                    payment_total = sum_total * 1;
-                  } else {
-                    throw new ManageDomainException(
-                      'errors.not_found',
-                      HttpStatus.NOT_FOUND,
-                      {
-                        property: `exchange rate ${currency.code} and ${payment_currency.code}`,
-                      },
-                    );
-                  }
+                  // if (
+                  //   currency.code === 'USD' &&
+                  //   payment_currency.code === 'LAK'
+                  // ) {
+                  //   payment_total = sum_total * rate;
+                  // } else if (
+                  //   currency.code === 'LAK' &&
+                  //   payment_currency.code === 'USD'
+                  // ) {
+                  //   payment_total = sum_total / rate;
+                  // } else if (
+                  //   currency.code === 'THB' &&
+                  //   payment_currency.code === 'LAK'
+                  // ) {
+                  //   payment_total = sum_total * rate;
+                  // } else if (
+                  //   currency.code === 'LAK' &&
+                  //   payment_currency.code === 'THB'
+                  // ) {
+                  //   payment_total = sum_total / rate;
+                  // } else if (
+                  //   currency.code === 'LAK' &&
+                  //   payment_currency.code === 'LAK'
+                  // ) {
+                  //   payment_total = sum_total * 1;
+                  // } else {
+                  //   throw new ManageDomainException(
+                  //     'errors.not_found',
+                  //     HttpStatus.NOT_FOUND,
+                  //     {
+                  //       property: `exchange rate ${currency.code} and ${payment_currency.code}`,
+                  //     },
+                  //   );
+                  // }
 
-                  console.log('object', payment_total, check_budget);
+                  console.log('object', sum_total, check_budget);
 
                   // const exchage = await this.exchange(query, manager);
 
-                  if (payment_total > check_budget) {
+                  if (sum_total > check_budget) {
                     throw new ManageDomainException(
                       'errors.insufficient_budget',
                       HttpStatus.BAD_REQUEST,
@@ -1358,8 +1368,12 @@ export class ApproveStepCommandHandler
       let payment_total = 0;
       if (currency.code === 'USD' && payment_currency.code === 'LAK') {
         payment_total = sum_total * rate;
+      } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
+        payment_total = sum_total / rate;
       } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
         payment_total = sum_total * rate;
+      } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
+        payment_total = sum_total / rate;
       } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
         payment_total = sum_total * 1;
       } else {
