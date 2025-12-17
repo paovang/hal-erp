@@ -32,7 +32,7 @@ export class ReadApprovalWorkflowStepRepository
     manager: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowStepEntity>> {
     const queryBuilder = await this.createBaseQuery(manager, id);
-    query.sort_by = 'approval_workflow_steps.id';
+    query.sort_by = 'approval_workflow_steps.step_number';
 
     const data = await this._paginationService.paginate(
       queryBuilder,
