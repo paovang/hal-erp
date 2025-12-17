@@ -11,28 +11,28 @@ import { JwtModule } from '@nestjs/jwt';
   imports: [
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: async (config: ConfigService) => ({
-        secret: config.getOrThrow('MAIL_SECRET'),
+      useFactory: async (_config: ConfigService) => ({
+        secret: 'phetaibtc@gmail.com',
         signOptions: {
-          expiresIn: config.getOrThrow('MAIL_EXPIRATION'),
+          expiresIn: '3d',
         },
       }),
     }),
     MailerModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: async (config) => ({
+      useFactory: async (_config) => ({
         global: true,
         transport: {
-          host: config.getOrThrow('SMTP_HOST'),
-          port: config.getOrThrow('SMTP_PORT'),
-          secure: config.getOrThrow('SMTP_SECURE') === 'true',
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
           auth: {
-            user: config.getOrThrow('SMTP_USER'),
-            pass: config.getOrThrow('SMTP_PASSWORD'),
+            user: 'phetaibtc@gmail.com',
+            pass: 'rofaurwigibjrrcn',
           },
         },
         defaults: {
-          from: config.getOrThrow('SMTP_FROM'),
+          from: 'Your Name <phetaibtc@gmail.com>',
         },
         template: {
           dir: join(process.cwd(), 'src/modules/mail/templates'),
@@ -42,6 +42,28 @@ import { JwtModule } from '@nestjs/jwt';
           },
         },
       }),
+      // useFactory: async (config) => ({
+      //   global: true,
+      //   transport: {
+      //     host: config.getOrThrow('SMTP_HOST'),
+      //     port: config.getOrThrow('SMTP_PORT'),
+      //     secure: config.getOrThrow('SMTP_SECURE') === 'true',
+      //     auth: {
+      //       user: config.getOrThrow('SMTP_USER'),
+      //       pass: config.getOrThrow('SMTP_PASSWORD'),
+      //     },
+      //   },
+      //   defaults: {
+      //     from: config.getOrThrow('SMTP_FROM'),
+      //   },
+      //   template: {
+      //     dir: join(process.cwd(), 'src/modules/mail/templates'),
+      //     adapter: new HandlebarsAdapter(),
+      //     options: {
+      //       strict: true,
+      //     },
+      //   },
+      // }),
     }),
   ],
   providers: [
