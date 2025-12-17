@@ -34,7 +34,6 @@ export class QuotaCompanyController {
     @Query() dto: QuotaCompanyQueryDto,
   ): Promise<ResponseResult<QuotaCompanyResponse>> {
     const result = await this._quotaCompanyService.getAll(dto);
-
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,

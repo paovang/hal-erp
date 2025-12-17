@@ -14,7 +14,10 @@ import { QuotaCompanyEntity } from '@src/modules/manage/domain/entities/quota-co
 import { QuotaCompanyQueryDto } from '@src/modules/manage/application/dto/query/quota-company.dto';
 import { QuotaCompanyDataAccessMapper } from '../../mappers/quota-company.mapper';
 import { QuotaCompanyId } from '@src/modules/manage/domain/value-objects/quota-company-id.vo';
-import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
+import {
+  EligiblePersons,
+  EnumDocumentStatus,
+} from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
@@ -33,7 +36,18 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
   ): Promise<ResponseResult<QuotaCompanyEntity>> {
     const queryBuilder = await this.createBaseQuery(manager);
     query.sort_by = 'quota_companies.id';
-
+    // const quota = await this._quotaOrm.find({
+    //   relations: [
+    //     'company',
+    //     'vendor_product',
+    //     'vendor_product.products',
+    //     'vendor_product.products.product_type',
+    //     'vendor_product.products.unit',
+    //     'vendor_product.vendors',
+    //     'purchase_request_items',
+    //   ],
+    // });
+    // console.log(quota);
     if (
       roles &&
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
@@ -74,7 +88,6 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
         product_id: query.product_id,
       });
     }
-
     const data = await this._paginationService.paginate(
       queryBuilder,
       query,
@@ -86,14 +99,43 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
 
   private createBaseQuery(manager: EntityManager) {
     // console.log('manager');
-    return manager
-      .createQueryBuilder(QuotaCompanyOrmEntity, 'quota_companies')
-      .leftJoinAndSelect('quota_companies.company', 'company')
-      .leftJoinAndSelect('quota_companies.vendor_product', 'vendor_product')
-      .leftJoinAndSelect('vendor_product.products', 'products')
-      .leftJoinAndSelect('products.product_type', 'product_type')
-      .leftJoinAndSelect('products.unit', 'unit')
-      .leftJoinAndSelect('vendor_product.vendors', 'vendors');
+    return (
+      manager
+        .createQueryBuilder(QuotaCompanyOrmEntity, 'quota_companies')
+        .leftJoinAndSelect('quota_companies.company', 'company')
+        .leftJoinAndSelect('quota_companies.vendor_product', 'vendor_product')
+        .leftJoinAndSelect('vendor_product.products', 'products')
+        .leftJoinAndSelect('products.product_type', 'product_type')
+        .leftJoinAndSelect('products.unit', 'unit')
+        .leftJoinAndSelect('vendor_product.vendors', 'vendors')
+
+        // 🔴 จุดสำคัญ
+        .innerJoinAndSelect('company.documents', 'documents')
+        .innerJoinAndSelect('documents.receipts', 'receipts')
+        .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
+
+        .where('documents.status = :status', {
+          status: EnumDocumentStatus.SUCCESS,
+        })
+    );
+
+    //  return manager
+    // .createQueryBuilder(QuotaCompanyOrmEntity, 'quota_companies')
+    // .leftJoinAndSelect('quota_companies.company', 'company')
+    // .leftJoinAndSelect('quota_companies.vendor_product', 'vendor_product')
+    // .leftJoinAndSelect('vendor_product.products', 'products')
+    // .leftJoinAndSelect('products.product_type', 'product_type')
+    // .leftJoinAndSelect('products.unit', 'unit')
+    // .leftJoinAndSelect('vendor_product.vendors', 'vendors')
+
+    // // 🔴 จุดสำคัญ
+    // .innerJoinAndSelect('company.documents', 'documents')
+    // .innerJoinAndSelect('documents.receipts', 'receipts')
+    // .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
+
+    // .where('documents.status = :status', {
+    //   status: EnumDocumentStatus.SUCCESS,
+    // });
   }
 
   // vendor, product
