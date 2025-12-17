@@ -5,6 +5,7 @@ import { BadRequestException } from '@nestjs/common';
 import { ProductEntity } from './product.entity';
 import { VendorProductEntity } from './vendor-product.entity';
 import { VendorEntity } from './vendor.entity';
+import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
 
 export class QuotaCompanyEntity extends Entity<QuotaCompanyId> {
   private readonly _qty: number;
@@ -13,6 +14,9 @@ export class QuotaCompanyEntity extends Entity<QuotaCompanyId> {
   private readonly _company?: { id: number; name: string };
   private readonly _vendor_product_id: number;
   // private readonly _vendor_product?: { id: number };
+  private readonly _purchase_request_items:
+    | PurchaseRequestItemOrmEntity[]
+    | null;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -78,6 +82,10 @@ export class QuotaCompanyEntity extends Entity<QuotaCompanyId> {
 
   get vendor(): VendorEntity | null {
     return this._vendor;
+  }
+
+  get purchase_request_items(): PurchaseRequestItemOrmEntity[] | null {
+    return this._purchase_request_items;
   }
 
   public static builder(): QuotaCompanyBuilder {

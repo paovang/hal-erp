@@ -1,3 +1,4 @@
+import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
 import { ProductEntity } from '../entities/product.entity';
 import { QuotaCompanyEntity } from '../entities/quota-company.entity';
 import { VendorProductEntity } from '../entities/vendor-product.entity';
@@ -10,6 +11,7 @@ export class QuotaCompanyBuilder {
   company?: { id: number; name: string };
   vendor_product_id: number;
   vendor_product: VendorProductEntity | null;
+  purchase_request_items?: PurchaseRequestItemOrmEntity[] | null;
   qty: number;
   year: Date;
   createdAt!: Date;
@@ -45,6 +47,13 @@ export class QuotaCompanyBuilder {
 
   setQty(qty: number): this {
     this.qty = qty;
+    return this;
+  }
+
+  setPurchaseRequestItems(
+    purchase_request_items: PurchaseRequestItemOrmEntity[] | null,
+  ): this {
+    this.purchase_request_items = purchase_request_items;
     return this;
   }
 

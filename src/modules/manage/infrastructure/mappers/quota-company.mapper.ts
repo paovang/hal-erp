@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common';
 import { ProductDataAccessMapper } from './product.mapper';
 import { VendorProductDataAccessMapper } from './vendor-product.mapper';
 import { VendorDataAccessMapper } from './vendor.mapper';
+import { EnumDocumentStatus } from '../../application/constants/status-key.const';
 
 @Injectable()
 export class QuotaCompanyDataAccessMapper {
@@ -41,15 +42,33 @@ export class QuotaCompanyDataAccessMapper {
   }
 
   toEntity(ormData: QuotaCompanyOrmEntity): QuotaCompanyEntity {
+    let usedQty = 0;
+
+    const documents = ormData.company?.documents ?? [];
+
+    for (const doc of documents) {
+      if (!doc.receipts) continue; // ป้องกัน null/undefined
+
+      for (const receipt of doc.receipts.receipt_items) {
+        usedQty += Number(receipt.quantity ?? 0);
+      }
+    }
+
+    const totalQty = Number(ormData.qty ?? 0);
+    // const remainingQty = Math.max(totalQty - usedQty, 0); // กันติดลบ
+    const qty = totalQty - usedQty;
+
     const builder = QuotaCompanyEntity.builder()
       .setQuotaId(new QuotaCompanyId(ormData.id))
       .setYear(ormData.year || new Date())
       .setCompanyId(ormData.company_id || 0)
       .setVendorProductId(ormData.vendor_product_id || 0)
-      .setQty(ormData.qty || 0)
+      .setQty(qty)
       .setDeletedAt(ormData.deleted_at)
       .setCreatedAt(ormData.created_at)
+      .setPurchaseRequestItems(ormData.purchase_request_items)
       .setUpdatedAt(ormData.updated_at);
+
     if (ormData.company) {
       builder.setCompany({
         id: ormData.company.id,
