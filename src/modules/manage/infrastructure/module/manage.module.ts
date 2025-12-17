@@ -42,11 +42,13 @@ import { ProductController } from '../../controllers/product.controller';
 import { CompanyUserController } from '../../controllers/company-user.controller';
 import { VendorProductController } from '../../controllers/vendor-product.controller';
 import { QuotaCompanyController } from '../../controllers/quota-company.controller';
+import { MailModule } from '@src/common/infrastructure/mail/mail.module';
 
 @Module({
   imports: [
     CqrsModule,
     UserModule,
+    MailModule,
     CoreAuthModule.registerAsync({
       provide: 'USER_SERVICE',
       useExisting: UserService,
@@ -91,7 +93,7 @@ import { QuotaCompanyController } from '../../controllers/quota-company.controll
     ProductController,
     CompanyUserController,
     VendorProductController,
-    QuotaCompanyController
+    QuotaCompanyController,
   ],
   providers: [...AllRegisterProviders],
   exports: [...AllRegisterProviders],

@@ -1,0 +1,31 @@
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { SendMailUseCase } from './send-mail.usecase';
+@Injectable()
+export class SendEmailUserUseCase {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly sendMailUseCase: SendMailUseCase,
+    private readonly jwtService: JwtService,
+  ) {}
+  async execute(user: { email: string }) {
+    const emailToken = this.jwtService.sign(
+      {
+        email: user.email,
+      },
+      {
+        expiresIn: '5m',
+      },
+    );
+    await this.sendMailUseCase.execute(
+      user.email,
+      'Welcome to our system 🎉',
+      'welcome',
+      {
+        verifyLink: `${this.configService.getOrThrow('FRONTEND_URL')}/verify?token=${emailToken}`,
+      },
+    );
+    return { message: 'Email sent' };
+  }
+}

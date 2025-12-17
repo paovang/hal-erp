@@ -6,17 +6,19 @@ import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { sendOtpUtil } from '@src/common/utils/server/send-otp.util';
+import { SendEmailUserUseCase } from '@src/common/infrastructure/mail/application/sendMail-User.usecase';
 
 @CommandHandler(SendOTPCommand)
 export class SendOTPCommandHandler
   implements IQueryHandler<SendOTPCommand, any>
 {
-  constructor(private readonly _userContextService: UserContextService) {}
+  constructor(
+    private readonly _userContextService: UserContextService,
+    private readonly _sendEmailUserUseCase: SendEmailUserUseCase,
+  ) {}
 
   async execute(query: SendOTPCommand): Promise<any> {
     const user = this._userContextService.getAuthUser()?.user;
-
-    // Validate tel
     let tel = user?.tel ? String(user.tel).trim() : '';
 
     if (!tel.match(/^\d+$/)) {
@@ -50,7 +52,7 @@ export class SendOTPCommandHandler
     );
 
     console.log('object');
-
+    await this._sendEmailUserUseCase.execute({ email: user.email });
     return await sendOtpUtil(query.id, user, tel);
   }
 }
