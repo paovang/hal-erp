@@ -53,32 +53,32 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          queryBuilder.where('quota_companies.company_id = :company_id', {
-            company_id,
-          });
-        }
+      // if (
+      //   roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+      //   roles.includes(EligiblePersons.COMPANY_USER)
+      // ) {
+      if (company_id) {
+        queryBuilder.where('quota_companies.company_id = :company_id', {
+          company_id,
+        });
+      }
 
-        if (query.vendor_id) {
-          queryBuilder.andWhere('vendor_product.vendor_id = :vendor_id', {
-            vendor_id: query.vendor_id,
-          });
-        }
+      if (query.vendor_id) {
+        queryBuilder.andWhere('vendor_id = :vendor_id', {
+          vendor_id: query.vendor_id,
+        });
+      }
 
-        if (query.product_id) {
-          queryBuilder.andWhere('vendor_product.product_id = :product_id', {
-            product_id: query.product_id,
-          });
-        }
+      if (query.product_id) {
+        queryBuilder.andWhere('vendor_product.product_id = :product_id', {
+          product_id: query.product_id,
+        });
+        // }
       }
     }
 
     if (query.vendor_id) {
-      queryBuilder.andWhere('vendor_product.vendor_id = :vendor_id', {
+      queryBuilder.andWhere('vendor_id = :vendor_id', {
         vendor_id: query.vendor_id,
       });
     }

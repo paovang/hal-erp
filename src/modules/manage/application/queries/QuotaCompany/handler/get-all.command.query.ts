@@ -38,7 +38,6 @@ export class GetAllQueryHandler
         user_id: user_id,
       },
     });
-
     const company_id = company_user?.company_id ?? undefined;
     const roles = user?.roles?.map((r: any) => r.name) ?? [];
     const department_id = departmentUser?.department_id ?? null;
