@@ -85,10 +85,12 @@ export class UpdateCommandHandler
       });
     }
 
-    for (const permissionId of query.dto.permissionIds) {
-      await findOneOrFail(query.manager, PermissionOrmEntity, {
-        id: permissionId,
-      });
+    if (query.dto.permissionIds) {
+      for (const permissionId of query.dto.permissionIds) {
+        await findOneOrFail(query.manager, PermissionOrmEntity, {
+          id: permissionId,
+        });
+      }
     }
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
