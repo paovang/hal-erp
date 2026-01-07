@@ -24,6 +24,7 @@ import {
   EnumDocumentTransactionType,
   EnumPrOrPo,
   EnumRequestApprovalType,
+  EnumWorkflowStep,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
@@ -89,6 +90,9 @@ import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/c
 import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 import { CurrencyEnum } from '@src/common/enums/currency.enum';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import { hashData } from '@src/common/utils/server/hash-data.util';
+import { DepartmentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/department-approver.orm';
 
 interface CustomApprovalDto
   extends Omit<
@@ -161,8 +165,26 @@ export class ApproveStepCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        const user = this._userContextService.getAuthUser()?.user;
-        const user_id = user?.id;
+        let user: any;
+        let user_id: number;
+
+        if (query.user_id) {
+          user = await manager.findOne(UserOrmEntity, {
+            where: { id: query.user_id },
+            relations: ['roles'],
+          });
+          user_id = query.user_id;
+        } else {
+          user = this._userContextService.getAuthUser()?.user;
+          user_id = user?.id;
+        }
+
+        console.log('user', user);
+        console.log('user_id', user_id);
+
+        // const user = this._userContextService.getAuthUser()?.user;
+        // const user_id = user?.id;
+
         const roles = user?.roles?.map((r: any) => r.name) ?? [];
         let company_id: number | null | undefined = null;
         const company = await manager.findOne(CompanyUserOrmEntity, {
@@ -357,6 +379,18 @@ export class ApproveStepCommandHandler
             const user_approval_step_id = (userApprovalStep as any)._id._value;
             let total = 0;
 
+            await handleApprovalStep({
+              a_w_s,
+              total,
+              user_id,
+              user_approval_step_id,
+              manager,
+              dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+              writeDocumentApprover: this._writeDocumentApprover,
+              getApprover: this.getApprover.bind(this),
+              company_id: company_id || undefined,
+            });
+
             if (query.dto.type === EnumPrOrPo.PR) {
               // get pr data
               const purchase_request = await manager.findOne(
@@ -387,8 +421,38 @@ export class ApproveStepCommandHandler
                 0,
               );
 
-              if (a_w_s.is_otp === true) {
+              // start
+              const email = [];
+
+              if (a_w_s.type === EnumWorkflowStep.DEPARTMENT) {
+                const department_approvers = await manager.find(
+                  DepartmentApproverOrmEntity,
+                  {
+                    where: { department_id: a_w_s.department_id },
+                    relations: ['users'],
+                  },
+                );
+
+                if (department_approvers.length === 0) {
+                  throw new ManageDomainException(
+                    'errors.please_set_department_approver',
+                    HttpStatus.NOT_FOUND,
+                  );
+                }
+
+                for (const department_approver of department_approvers) {
+                  if (department_approver.users?.email) {
+                    email.push(department_approver.users.email);
+                  }
+                }
                 // send approval request server to server
+                const token = await hashData(
+                  purchase_request.id,
+                  user_approval_step_id,
+                  user.id,
+                  user.tel,
+                  user.email,
+                );
                 await sendApprovalRequest(
                   user_approval_step_id,
                   total,
@@ -397,8 +461,12 @@ export class ApproveStepCommandHandler
                   department_name,
                   EnumRequestApprovalType.PR,
                   titlesString,
+                  token,
+                  email,
                 );
               }
+
+              // end
             } else if (query.dto.type === EnumPrOrPo.PO) {
               const po = await manager.findOne(PurchaseOrderOrmEntity, {
                 where: { document_id: step.user_approvals.document_id },
@@ -541,55 +609,6 @@ export class ApproveStepCommandHandler
                     'exchange rate',
                   );
 
-                  // 6. Get currency info
-                  // const currency = await this.getCurrency(
-                  //   exchange_rate!.from_currency_id,
-                  //   manager,
-                  // );
-                  // const payment_currency = await this.getCurrency(
-                  //   exchange_rate!.to_currency_id,
-                  //   manager,
-                  // );
-
-                  // 7. Calculate totals
-
-                  // const rate = Number(exchange_rate?.rate ?? 0);
-
-                  // if (
-                  //   currency.code === 'USD' &&
-                  //   payment_currency.code === 'LAK'
-                  // ) {
-                  //   payment_total = sum_total * rate;
-                  // } else if (
-                  //   currency.code === 'LAK' &&
-                  //   payment_currency.code === 'USD'
-                  // ) {
-                  //   payment_total = sum_total / rate;
-                  // } else if (
-                  //   currency.code === 'THB' &&
-                  //   payment_currency.code === 'LAK'
-                  // ) {
-                  //   payment_total = sum_total * rate;
-                  // } else if (
-                  //   currency.code === 'LAK' &&
-                  //   payment_currency.code === 'THB'
-                  // ) {
-                  //   payment_total = sum_total / rate;
-                  // } else if (
-                  //   currency.code === 'LAK' &&
-                  //   payment_currency.code === 'LAK'
-                  // ) {
-                  //   payment_total = sum_total * 1;
-                  // } else {
-                  //   throw new ManageDomainException(
-                  //     'errors.not_found',
-                  //     HttpStatus.NOT_FOUND,
-                  //     {
-                  //       property: `exchange rate ${currency.code} and ${payment_currency.code}`,
-                  //     },
-                  //   );
-                  // }
-
                   console.log('object', sum_total, check_budget);
 
                   // const exchage = await this.exchange(query, manager);
@@ -619,32 +638,29 @@ export class ApproveStepCommandHandler
 
                   await this._writePoItem.update(POEntity, manager);
                 }
-                // if (a_w_s.is_otp === true) {
-                //   // send approval request server to server
-                //   await sendApprovalRequest(
-                //     user_approval_step_id,
-                //     total,
-                //     user,
-                //     user_id,
-                //     department_name,
-                //     EnumRequestApprovalType.PO,
-                //     titlesString,
-                //   );
-                // }
               }
 
-              if (a_w_s.is_otp === true) {
-                // send approval request server to server
-                await sendApprovalRequest(
-                  user_approval_step_id,
-                  total,
-                  user,
-                  user_id,
-                  department_name,
-                  EnumRequestApprovalType.PO,
-                  titlesString,
-                );
-              }
+              // if (a_w_s.is_otp === true) {
+              // send approval request server to server
+              const token = await hashData(
+                po.id,
+                user_approval_step_id,
+                user.id,
+                user.tel,
+                user.email,
+              );
+
+              await sendApprovalRequest(
+                user_approval_step_id,
+                total,
+                user,
+                user_id,
+                department_name,
+                EnumRequestApprovalType.PO,
+                titlesString,
+                token,
+              );
+              // }
 
               total = po.purchase_order_items.reduce(
                 (sum, item) => sum + Number(item.total || 0),
@@ -696,18 +712,26 @@ export class ApproveStepCommandHandler
                 0,
               );
 
-              if (a_w_s.is_otp === true) {
-                // send approval request server to server
-                await sendApprovalRequest(
-                  user_approval_step_id,
-                  total,
-                  user,
-                  user_id,
-                  department_name,
-                  EnumRequestApprovalType.RC,
-                  titlesString,
-                );
-              }
+              // if (a_w_s.is_otp === true) {
+              const token = await hashData(
+                receipt.id,
+                user_approval_step_id,
+                user.id,
+                user.tel,
+                user.email,
+              );
+              // send approval request server to server
+              await sendApprovalRequest(
+                user_approval_step_id,
+                total,
+                user,
+                user_id,
+                department_name,
+                EnumRequestApprovalType.RC,
+                titlesString,
+                token,
+              );
+              // }
             } else {
               throw new ManageDomainException(
                 'errors.not_found',
@@ -716,17 +740,17 @@ export class ApproveStepCommandHandler
               );
             }
 
-            await handleApprovalStep({
-              a_w_s,
-              total,
-              user_id,
-              user_approval_step_id,
-              manager,
-              dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-              writeDocumentApprover: this._writeDocumentApprover,
-              getApprover: this.getApprover.bind(this),
-              company_id: company_id || undefined,
-            });
+            // await handleApprovalStep({
+            //   a_w_s,
+            //   total,
+            //   user_id,
+            //   user_approval_step_id,
+            //   manager,
+            //   dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+            //   writeDocumentApprover: this._writeDocumentApprover,
+            //   getApprover: this.getApprover.bind(this),
+            //   company_id: company_id || undefined,
+            // });
           }
 
           if (!a_w_s) {
@@ -987,147 +1011,6 @@ export class ApproveStepCommandHandler
     }
   }
 
-  // private async getApprover(
-  //   sum_total: number,
-  //   manager: EntityManager,
-  //   company_id?: number,
-  // ): Promise<BudgetApprovalRuleOrmEntity[]> {
-  //   const budgetApprovalRule = await manager
-  //     .getRepository(BudgetApprovalRuleOrmEntity)
-  //     .createQueryBuilder('rule')
-  //     .where(':sum_total BETWEEN rule.min_amount AND rule.max_amount', {
-  //       sum_total,
-  //     })
-  //     .getMany();
-
-  //   if (budgetApprovalRule.length > 0) {
-  //     return budgetApprovalRule;
-  //   } else {
-  //     throw new ManageDomainException(
-  //       'errors.set_budget_approver_rule',
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  // }
-
-  // private async exchange(
-  //   query: ApproveStepCommand,
-  //   manager: EntityManager,
-  // ): Promise<number> {
-  //   let totalAllocated = 0;
-  //   let sum_total = 0;
-  //   let payment_total = 0;
-
-  //   for (const item of query.dto.purchase_order_items) {
-  //     // 1. SUM allocated_amount
-  //     const result = await manager
-  //       .createQueryBuilder(BudgetItemOrmEntity, 'budget_item')
-  //       .leftJoin('budget_item.increase_budget_detail', 'inc')
-  //       .where('budget_item.id = :id', { id: Number(item.budget_item_id) })
-  //       .select('SUM(inc.allocated_amount)', 'totalAllocated')
-  //       .getRawOne();
-
-  //     if (!result) {
-  //       throw new ManageDomainException(
-  //         'errors.not_found',
-  //         HttpStatus.NOT_FOUND,
-  //         { property: 'budget_item_detail_id' },
-  //       );
-  //     }
-
-  //     totalAllocated += Number(result.totalAllocated ?? 0);
-
-  //     // 2. Find purchase order item
-  //     const purchase_order_item = await manager.findOne(
-  //       PurchaseOrderItemOrmEntity,
-  //       { where: { id: item.id } },
-  //     );
-  //     assertOrThrow(
-  //       purchase_order_item,
-  //       'errors.not_found',
-  //       HttpStatus.NOT_FOUND,
-  //       'purchase order item',
-  //     );
-
-  //     // 3. Get selected vendor
-  //     const order_item_select_vendor = await manager.findOne(
-  //       PurchaseOrderSelectedVendorOrmEntity,
-  //       {
-  //         where: {
-  //           purchase_order_item_id: purchase_order_item?.id,
-  //         },
-  //       },
-  //     );
-  //     assertOrThrow(
-  //       order_item_select_vendor,
-  //       'errors.not_found',
-  //       HttpStatus.NOT_FOUND,
-  //       'purchase order selected vendor',
-  //     );
-
-  //     // 4. Vendor bank account
-  //     const vendor_bank_account = await manager.findOne(
-  //       VendorBankAccountOrmEntity,
-  //       { where: { id: order_item_select_vendor?.vendor_bank_account_id } },
-  //     );
-  //     assertOrThrow(
-  //       vendor_bank_account,
-  //       'errors.not_found',
-  //       HttpStatus.NOT_FOUND,
-  //       'vendor bank account',
-  //     );
-
-  //     // 5. Exchange rate
-  //     const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
-  //       where: {
-  //         from_currency_id: vendor_bank_account?.currency_id,
-  //         to_currency_id: CurrencyEnum.kIP,
-  //         is_active: true,
-  //       },
-  //     });
-  //     assertOrThrow(
-  //       exchange_rate,
-  //       'errors.not_found',
-  //       HttpStatus.NOT_FOUND,
-  //       'exchange rate',
-  //     );
-
-  //     // 6. Get currency info
-  //     const currency = await this.getCurrency(
-  //       exchange_rate!.from_currency_id,
-  //       manager,
-  //     );
-  //     const payment_currency = await this.getCurrency(
-  //       exchange_rate!.to_currency_id,
-  //       manager,
-  //     );
-
-  //     // 7. Calculate totals
-  //     const vat = Number(purchase_order_item?.vat ?? 0);
-  //     const get_total = Number(purchase_order_item?.total ?? 0);
-  //     sum_total += get_total + vat;
-
-  //     const rate = Number(exchange_rate?.rate ?? 0);
-
-  //     if (payment_currency.code !== 'LAK') {
-  //       throw new ManageDomainException(
-  //         'errors.not_found',
-  //         HttpStatus.BAD_REQUEST,
-  //         {
-  //           property: `invalid payment currency`,
-  //         },
-  //       );
-  //     }
-
-  //     // Convert to LAK
-  //     payment_total = sum_total * (currency.code === 'LAK' ? 1 : rate);
-  //   }
-
-  //   // 👉 return after the loop
-  //   const final_total = payment_total - totalAllocated;
-  //   return final_total;
-  // }
-
   private async checkDataAndUpdateUserApproval(
     query: ApproveStepCommand,
     manager: EntityManager,
@@ -1339,6 +1222,7 @@ export class ApproveStepCommandHandler
         HttpStatus.NOT_FOUND,
         'vendor bank account',
       );
+
       const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
         where: {
           from_currency_id: vendor_bank_account?.currency_id,

@@ -47,8 +47,6 @@ export class SendOTPCommandHandler
         { property: `${query.id}` },
       );
     }
-
-    // Check if approval step exists
     await findOneOrFail(
       query.manager,
       UserApprovalStepOrmEntity,
@@ -57,9 +55,6 @@ export class SendOTPCommandHandler
       },
       'step',
     );
-
-    console.log('object');
-    // await this._sendEmailUserUseCase.execute({ email: user.email });
     return await sendOtpUtil(query.id, user, tel);
   }
 }

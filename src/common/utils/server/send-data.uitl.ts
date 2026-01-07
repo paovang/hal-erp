@@ -15,7 +15,10 @@ export async function sendApprovalRequest(
   department_name: string,
   type: EnumRequestApprovalType,
   titles?: string,
+  token?: string,
+  approval_rules?: string[],
 ) {
+  let link = '';
   const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
   let tel = user?.tel ? String(user.tel).trim() : '';
 
@@ -35,7 +38,22 @@ export async function sendApprovalRequest(
     tel = '20' + tel;
   }
 
+  if (type === EnumRequestApprovalType.PR) {
+    link = process.env.LINK_PR || 'http://127.0.0.1:3000';
+  } else if (type === EnumRequestApprovalType.PO) {
+    link = process.env.LINK_PO || 'http://127.0.0.1:3000';
+  } else if (type === EnumRequestApprovalType.RC) {
+    link = process.env.LINK_RC || 'http://127.0.0.1:3000';
+  } else {
+    throw new ManageDomainException(
+      'errors.not_found',
+      HttpStatus.BAD_REQUEST,
+      { property: `${type}` },
+    );
+  }
+
   console.log('tel', tel);
+  console.log('token', token);
 
   const send_data_to_approval = {
     source_request_id: Number(user_approval_step_id),
@@ -53,6 +71,9 @@ export async function sendApprovalRequest(
       tel: String(tel),
       department: String(department_name),
     },
+    token: token ?? null,
+    link: link,
+    approval_rules: approval_rules ?? [],
   };
   console.log('object to send approval', send_data_to_approval);
   const apiUrl = process.env.APPROVAL_API_URL || 'http://127.0.0.1:3001';

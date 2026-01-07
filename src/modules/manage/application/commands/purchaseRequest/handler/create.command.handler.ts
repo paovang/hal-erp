@@ -69,6 +69,7 @@ import { QuotaCompanyOrmEntity } from '@src/common/infrastructure/database/typeo
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
 import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
+import { hashData } from '@src/common/utils/server/hash-data.util';
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
@@ -336,6 +337,16 @@ export class CreateCommandHandler
           .map((item) => item.title)
           .join(', ');
 
+        const approval_rules = [user.email];
+
+        const token = await hashData(
+          pr_id,
+          user_approval_step_id,
+          user.id,
+          user.tel,
+          user.email,
+        );
+
         // send approval request server to server
         await sendApprovalRequest(
           user_approval_step_id,
@@ -345,6 +356,8 @@ export class CreateCommandHandler
           department_name,
           EnumRequestApprovalType.PR,
           titles,
+          token,
+          approval_rules,
         );
 
         const d_approver: CustomDocumentApprover = {

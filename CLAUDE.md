@@ -2,16 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Development Commands
+## Project Overview
 
-### Package Manager
-This project uses **pnpm** (not npm or yarn).
+HAL-ERP is an Enterprise Resource Planning system built with **NestJS** and **TypeScript**, following **Domain-Driven Design (DDD)** principles with **CQRS** (Command Query Responsibility Segregation) pattern.
+
+## Development Commands
 
 ```bash
 pnpm install                    # Install dependencies
 ```
 
 ### Running the Application
+
 ```bash
 pnpm run start:dev              # Start development server with hot reload
 pnpm run start:debug            # Start with debug mode
@@ -20,41 +22,39 @@ pnpm run start:prod             # Run production build
 ```
 
 ### Testing
+
 ```bash
 pnpm run test                   # Run unit tests
 pnpm run test:e2e               # Run end-to-end tests
 pnpm run test:cov               # Run tests with coverage
 pnpm run test:watch             # Watch mode for tests
-pnpm run test -- <path/to/test> # Run specific test file
 ```
 
 ### Database Operations
+
 ```bash
 pnpm run migration:generate     # Generate new migration (creates file in src/common/infrastructure/database/migrations/)
 pnpm run migration:run          # Apply pending migrations
 pnpm run migration:revert       # Rollback last migration
 pnpm run db:seed                # Seed database with initial data
-
-# Production migration commands (use after build)
-pnpm run migration-dev:generate # Generate migration from dist/
-pnpm run migration-dev:run      # Apply migration from dist/
-pnpm run db-dev:seed            # Seed database from dist/
 ```
 
 ### Code Quality
+
 ```bash
 pnpm run lint                   # Lint and auto-fix TypeScript files
 pnpm run format                 # Format code with Prettier
 ```
 
 ### Production Deployment
+
 ```bash
-pnpm run deploy                 # Deploy to main server (134.209.101.30)
-pnpm run deploy-hal-group       # Deploy to HAL Group server (139.59.227.188)
+pnpm run deploy                 # Deploy dist/ to production server (via SCP)
 ```
 
 ## Architecture Overview
 
+<<<<<<< HEAD
 This is a **NestJS ERP system** following **Domain-Driven Design (DDD)** with **Clean Architecture** and **CQRS** patterns.
 
 ### Layer Structure
@@ -108,14 +108,15 @@ src/modules/{module-name}/
 ### Module Organization
 
 Two main modules:
+
 - **manage/** - Core business operations (users, organizations, procurement, budget, documents)
 - **reports/** - Reporting and export functionality
 
 ## Import Path Aliases
 
 ```typescript
-import { X } from '@src/modules/...'      // Points to src/
-import { Y } from '@common/...'           // Points to src/common/
+import { X } from '@src/modules/...'; // Points to src/
+import { Y } from '@common/...'; // Points to src/common/
 ```
 
 ## Technology Stack
@@ -133,6 +134,7 @@ import { Y } from '@common/...'           // Points to src/common/
 ## Key Conventions
 
 ### Naming
+
 - Controllers, Services, Repositories: PascalCase (e.g., `UserService`)
 - Files: kebab-case directories, PascalCase files
 - Repository interfaces: `{name}-repository.interface.ts`
@@ -142,6 +144,7 @@ import { Y } from '@common/...'           // Points to src/common/
 - Query handlers: `{entity}-query.handler.ts` in `queries/handler/` subdirectory
 
 ### Database Entities
+
 - Use TypeORM decorators (`@Entity`, `@Column`, etc.)
 - Soft deletes enabled (use `@DeleteDateColumn`)
 - Timestamps with `@CreateDateColumn` and `@UpdateDateColumn`
@@ -150,17 +153,20 @@ import { Y } from '@common/...'           // Points to src/common/
 - Entity files in `src/common/infrastructure/database/typeorm/` use `.orm.` suffix (e.g., `user.orm.ts`)
 
 ### Validation
+
 - DTOs use `class-validator` decorators
 - Use `@IsDefined()`, `@IsString()`, `@IsOptional()`, etc.
 - Auto-validation enabled globally via ValidationPipe
 
 ### Error Handling
+
 - Use domain-specific exceptions in `application/exceptions/`
 - Global exception filter with i18n support
 - Standardized error response format
 - Laravel-style error response structure
 
 ### File Upload Handling
+
 - Use `FileInterceptor` from `@nestjs/platform-express` with `multerStorage` utility
 - Apply `FileValidationInterceptor` for custom validation
 - Use `FileMimeTypeValidator` and `FileSizeValidator` for file restrictions
@@ -169,6 +175,7 @@ import { Y } from '@common/...'           // Points to src/common/
 - Upload to AWS S3 via `IAmazonS3ImageService`
 
 ### Company Context
+
 - Most operations require company scoping
 - Use guards/decorators to extract company from JWT
 - Filter queries by company_id automatically
@@ -176,6 +183,7 @@ import { Y } from '@common/...'           // Points to src/common/
 - Use `@Inject()` with custom inject keys for dependency injection
 
 ### Dependency Injection Patterns
+
 - Define inject keys in `application/constants/inject-key.const` (module-level) or `src/common/constants/inject-key.const` (global)
 - Use string constants for injection tokens instead of class references
 - Pattern: `@Inject(SERVICE_KEY) private readonly _service: IServiceInterface`
@@ -219,5 +227,3 @@ import { Y } from '@common/...'           // Points to src/common/
 - Input validation on all endpoints
 - File upload restrictions (type, size)
 - Guards protect protected routes
-- Password hashing with bcrypt
-- Use `@Public()` decorator to bypass JWT authentication on specific endpoints

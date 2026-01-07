@@ -24,6 +24,10 @@ import { UpdatePurchaseRequestDto } from '../application/dto/create/purchaseRequ
 import { AddStepDto } from '../application/dto/create/purchaseRequest/add-step.dto';
 import { ExcelExportService } from '@src/common/utils/excel-export.service';
 import { Response } from 'express';
+import { Public } from '@core-system/auth';
+import { verifyHashData } from '@src/common/utils/server/hash-data.util';
+import { ManageDomainException } from '../domain/exceptions/manage-domain.exception';
+import { TokenDto } from '@src/common/validations/dto/token.dto';
 
 @Controller('purchase-requests')
 export class PurchaseRequestController {
@@ -66,6 +70,28 @@ export class PurchaseRequestController {
     @Query() dto: PurchaseRequestQueryDto,
   ): Promise<ResponseResult<PurchaseRequestResponse>> {
     const result = await this._purchaseRequestService.getAll(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Public()
+  @Get('by-token')
+  async getByToken(
+    @Query() dto: TokenDto,
+  ): Promise<ResponseResult<PurchaseRequestResponse>> {
+    const verify = await verifyHashData(dto.token);
+    if (!verify) {
+      throw new ManageDomainException(
+        'errors.invalid_token',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const id = verify.id;
+
+    const result = await this._purchaseRequestService.getOne(id);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

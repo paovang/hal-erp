@@ -11,6 +11,7 @@ export interface IUserApprovalStepServiceInterface {
     stepId: number,
     dto: ApprovalDto,
     manager?: EntityManager,
+    user_id?: number,
   ): Promise<ResponseResult<UserApprovalStepEntity>>;
 
   count(query: CountItemDto, manager?: EntityManager): Promise<any>;

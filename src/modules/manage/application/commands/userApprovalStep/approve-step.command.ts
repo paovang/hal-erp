@@ -6,5 +6,6 @@ export class ApproveStepCommand {
     public readonly stepId: number,
     public readonly dto: ApprovalDto,
     public readonly manager: EntityManager,
+    public readonly user_id?: number,
   ) {}
 }

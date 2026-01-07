@@ -76,6 +76,7 @@ import { PurchaseOrderId } from '@src/modules/manage/domain/value-objects/purcha
 import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
 import { StatusEnum } from '@src/common/enums/status.enum';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
+import { hashData } from '@src/common/utils/server/hash-data.util';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -370,6 +371,7 @@ export class CreateCommandHandler
           total,
           user_id,
           user,
+          po_id,
         );
 
         // return po_result;
@@ -385,6 +387,7 @@ export class CreateCommandHandler
     total: number,
     user_id: number,
     user: UserEntity,
+    po_id: number,
   ): Promise<void> {
     const department = await findOneOrFail(manager, DepartmentUserOrmEntity, {
       user_id: user_id,
@@ -459,6 +462,14 @@ export class CreateCommandHandler
 
     const titles = foundItems.map((item) => item.title).join(', ');
 
+    const token = await hashData(
+      po_id,
+      user_approval_step_id,
+      user_id,
+      user.tel,
+      user.email,
+    );
+
     // send approval request server to server
     await sendApprovalRequest(
       user_approval_step_id,
@@ -468,6 +479,7 @@ export class CreateCommandHandler
       department_name,
       EnumRequestApprovalType.PO,
       titles,
+      token,
     );
 
     const d_approver: CustomDocumentApprover = {
@@ -479,17 +491,6 @@ export class CreateCommandHandler
       await this._dataDocumentApproverMapper.toEntity(d_approver);
 
     await this._writeDocumentApprover.create(d_approver_entity, manager);
-
-    // await handleApprovalStep({
-    //   a_w_s,
-    //   total,
-    //   user_id,
-    //   user_approval_step_id,
-    //   manager,
-    //   dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-    //   writeDocumentApprover: this._writeDocumentApprover,
-    //   getApprover: this.getApprover.bind(this),
-    // });
   }
 
   private async saveSelectedVendor(

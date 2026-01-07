@@ -29,6 +29,9 @@ import { EnumType } from '../application/constants/status-key.const';
 import { ExcelExportService } from '@common/utils/excel-export.service';
 import { IBudgetItemServiceInterface } from '../domain/ports/input/budget-item-domain-service.interface';
 import { BudgetItemDataMapper } from '../application/mappers/budget-item.mapper';
+import { TokenDto } from '@src/common/validations/dto/token.dto';
+import { ManageDomainException } from '../domain/exceptions/manage-domain.exception';
+import { verifyHashData } from '@src/common/utils/server/hash-data.util';
 
 @Controller('purchase-orders')
 export class PurchaseOrderController {
@@ -49,6 +52,26 @@ export class PurchaseOrderController {
     @Query() dto: PurchaseOrderQueryDto,
   ): Promise<ResponseResult<PurchaseOrderResponse>> {
     const result = await this._purchaseOrderService.getAll(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get('by-token')
+  async getByToken(
+    @Query() dto: TokenDto,
+  ): Promise<ResponseResult<PurchaseOrderResponse>> {
+    const verify = await verifyHashData(dto.token);
+    if (!verify) {
+      throw new ManageDomainException(
+        'errors.invalid_token',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const id = verify.id;
+    const result = await this._purchaseOrderService.getOne(id);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

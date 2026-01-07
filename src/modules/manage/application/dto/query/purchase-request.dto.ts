@@ -39,4 +39,12 @@ export class PurchaseRequestQueryDto extends PaginationDto {
   })
   @IsOptional()
   date?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by vendor id',
+  })
+  @IsOptional()
+  @IsString()
+  token?: string;
 }

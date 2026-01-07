@@ -23,6 +23,9 @@ import { ReceiptQueryDto } from '../application/dto/query/receipt.dto';
 import { UpdateReceiptDto } from '../application/dto/create/receipt/update.dto';
 import { ExcelExportService } from '@src/common/utils/excel-export.service';
 import { Response } from 'express';
+import { TokenDto } from '@src/common/validations/dto/token.dto';
+import { verifyHashData } from '@src/common/utils/server/hash-data.util';
+import { ManageDomainException } from '../domain/exceptions/manage-domain.exception';
 
 @Controller('receipts')
 export class ReceiptController {
@@ -52,6 +55,26 @@ export class ReceiptController {
     @Query() dto: ReceiptQueryDto,
   ): Promise<ResponseResult<ReceiptResponse>> {
     const result = await this._receiptService.getAll(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get('by-token')
+  async getByToken(
+    @Query() dto: TokenDto,
+  ): Promise<ResponseResult<ReceiptResponse>> {
+    const verify = await verifyHashData(dto.token);
+    if (!verify) {
+      throw new ManageDomainException(
+        'errors.invalid_token',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const id = verify.id;
+    const result = await this._receiptService.getOne(id);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
