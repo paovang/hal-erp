@@ -114,9 +114,9 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
         .innerJoinAndSelect('documents.receipts', 'receipts')
         .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
 
-        .where('documents.status = :status', {
-          status: EnumDocumentStatus.SUCCESS,
-        })
+      // .where('documents.status = :status', {
+      //   status: EnumDocumentStatus.SUCCESS,
+      // })
     );
 
     //  return manager
