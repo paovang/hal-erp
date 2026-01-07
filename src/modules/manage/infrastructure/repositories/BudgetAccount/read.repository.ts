@@ -198,42 +198,19 @@ export class ReadBudgetAccountRepository
     manager: EntityManager,
   ): Promise<ResponseResult<ReportBudgetInterface>> {
     // ---------------- QUERY ----------------
+    // Fetch companies with all nested relations needed for mapper calculation
     const reportQuery = manager
       .createQueryBuilder(CompanyOrmEntity, 'company')
-      .leftJoin('company.budget_accounts', 'ba')
-
-      // Total allocated amount for ALL budget accounts of the company 730000000
-      .addSelect(
-        `(
-        SELECT COALESCE(SUM(ib.allocated_amount), 0)
-        FROM increase_budgets ib
-        WHERE ib.budget_account_id IN (
-          SELECT id FROM budget_accounts WHERE company_id = company.id
-        )
-      ) AS total_budget`,
+      .leftJoinAndSelect('company.budget_accounts', 'ba')
+      .leftJoinAndSelect('ba.budget_items', 'budget_items')
+      .leftJoinAndSelect(
+        'budget_items.increase_budget_detail',
+        'increase_budget_detail',
       )
-
-      // Total used amount for ALL budget accounts of the company
-      .addSelect(
-        `(
-        SELECT COALESCE(SUM(dt.amount),0)
-        FROM document_transactions dt
-        WHERE dt.budget_item_id IN (
-          SELECT bi.id
-          FROM budget_items bi
-          WHERE bi.budget_account_id IN (
-            SELECT id FROM budget_accounts WHERE company_id = company.id
-          )
-        )
-      ) AS used_amount`,
-      )
-
-      .addSelect('company.id', 'id')
-      .addSelect('company.name', 'name')
-      .addSelect('company.logo', 'logo')
-
-      // Only group by company
-      .groupBy('company.id');
+      .leftJoinAndSelect(
+        'budget_items.document_transactions',
+        'document_transactions',
+      );
 
     // ---------------- FILTERS ----------------
     if (query.company_id) {
@@ -255,55 +232,11 @@ export class ReadBudgetAccountRepository
     }
 
     // ---------------- EXECUTE QUERY ----------------
-    const result = await reportQuery.getRawMany();
+    const companies = await reportQuery.getMany();
 
-    // ---------------- PROCESS RESULTS ----------------
-    const reportData: ReportBudgetInterface = {
-      budget_overruns: {
-        amount: 0,
-        total: 0,
-        budget: [],
-      },
-      within_budget: {
-        amount: 0,
-        total: 0,
-        budget: [],
-      },
-    };
-
-    for (const row of result) {
-      const totalBudget = Number(row.total_budget);
-      const usedAmount = Number(row.used_amount);
-      const remainingAmount = totalBudget - usedAmount;
-
-      const logo_url = row?.logo
-        ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${row.logo}`
-        : '';
-
-      const companyReport = {
-        id: row.id,
-        name: row.name,
-        logo: logo_url,
-        allocated_amount: totalBudget,
-        total:
-          remainingAmount < 0 ? Math.abs(remainingAmount) : remainingAmount,
-      };
-
-      if (remainingAmount < 0) {
-        // Budget overrun
-        reportData.budget_overruns.amount += 1;
-        reportData.budget_overruns.total += Math.abs(remainingAmount);
-        reportData.budget_overruns.budget.push(companyReport);
-      } else {
-        // Within budget
-        reportData.within_budget.amount += 1;
-        reportData.within_budget.total += remainingAmount;
-        reportData.within_budget.budget.push(companyReport);
-      }
-    }
-
-    // ---------------- RETURN ----------------
-    return reportData;
+    // ---------------- CALCULATE USING MAPPER ----------------
+    // Uses the SAME calculation logic as toEntity() for consistency
+    return this._dataAccessMapper.calculateCompanyReportBudget(companies);
   }
 
   async getReportToUseBudget(
@@ -317,10 +250,14 @@ export class ReadBudgetAccountRepository
       .addSelect(
         `
       (
-        SELECT COALESCE(SUM(ib.allocated_amount), 0)
-        FROM increase_budgets ib
-        WHERE ib.budget_account_id IN (
-          SELECT id FROM budget_accounts WHERE company_id = company.id
+        SELECT COALESCE(SUM(ibd.allocated_amount), 0)
+        FROM increase_budget_details ibd
+        WHERE ibd.budget_item_id IN (
+          SELECT bi.id
+          FROM budget_items bi
+          WHERE bi.budget_account_id IN (
+            SELECT id FROM budget_accounts WHERE company_id = company.id
+          )
         )
       )`,
         'total_budget',

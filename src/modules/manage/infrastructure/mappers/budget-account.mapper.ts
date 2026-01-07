@@ -9,6 +9,8 @@ import { BudgetAccountId } from '../../domain/value-objects/budget-account-id.vo
 import { DepartmentDataAccessMapper } from './department.mapper';
 import { EnumBudgetType } from '../../application/constants/status-key.const';
 import { CompanyDataAccessMapper } from './company.mapper';
+import { CompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/company.orm';
+import { ReportBudgetInterface } from '@src/common/application/interfaces/report-budget.interface';
 
 @Injectable()
 export class BudgetAccountDataAccessMapper {
@@ -58,6 +60,7 @@ export class BudgetAccountDataAccessMapper {
     const increase_amount = (ormData.budget_items ?? [])
       .flatMap((item) => item.increase_budget_detail ?? [])
       .reduce((sum, d) => sum + Number(d.allocated_amount ?? 0), 0);
+    console.log('increase_amount', increase_amount);
 
     const totalUsedAmount = (ormData.budget_items ?? [])
       .flatMap((item) => item.document_transactions ?? [])
@@ -110,5 +113,77 @@ export class BudgetAccountDataAccessMapper {
     // }
 
     return build.build();
+  }
+
+  /**
+   * Calculate company report budget from ORM entities
+   * Uses the SAME calculation logic as toEntity() for consistency
+   */
+  calculateCompanyReportBudget(
+    companies: CompanyOrmEntity[],
+  ): ReportBudgetInterface {
+    const reportData: ReportBudgetInterface = {
+      budget_overruns: {
+        amount: 0,
+        total: 0,
+        budget: [],
+      },
+      within_budget: {
+        amount: 0,
+        total: 0,
+        budget: [],
+      },
+    };
+
+    for (const company of companies) {
+      // Aggregate from all budget_accounts using the same logic as toEntity()
+      let increase_amount = 0;
+      let used_amount = 0;
+
+      for (const ba of company.budget_accounts ?? []) {
+        // Same calculation as toEntity() line 58-60
+        const ba_increase = (ba.budget_items ?? [])
+          .flatMap((item) => item.increase_budget_detail ?? [])
+          .reduce((sum, d) => sum + Number(d.allocated_amount ?? 0), 0);
+        increase_amount += ba_increase;
+
+        // Same calculation as toEntity() line 63-65
+        const ba_used = (ba.budget_items ?? [])
+          .flatMap((item) => item.document_transactions ?? [])
+          .reduce((sum, d) => sum + Number(d.amount ?? 0), 0);
+        used_amount += ba_used;
+      }
+
+      console.log('increase_amount from mapper', increase_amount);
+
+      const remainingAmount = increase_amount - used_amount;
+
+      const logo_url = company.logo
+        ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${company.logo}`
+        : '';
+
+      const companyReport = {
+        id: company.id,
+        name: company.name ?? '',
+        logo: logo_url,
+        allocated_amount: increase_amount,
+        total:
+          remainingAmount < 0 ? Math.abs(remainingAmount) : remainingAmount,
+      };
+
+      if (remainingAmount < 0) {
+        // Budget overrun
+        reportData.budget_overruns.amount += 1;
+        reportData.budget_overruns.total += Math.abs(remainingAmount);
+        reportData.budget_overruns.budget.push(companyReport);
+      } else {
+        // Within budget
+        reportData.within_budget.amount += 1;
+        reportData.within_budget.total += remainingAmount;
+        reportData.within_budget.budget.push(companyReport);
+      }
+    }
+
+    return reportData;
   }
 }

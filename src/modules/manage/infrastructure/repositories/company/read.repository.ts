@@ -385,21 +385,16 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
   async getReport(
     manager: EntityManager,
   ): Promise<ResponseResult<ReportCompanyInterface>> {
-    const result = await manager
+    // Fetch all companies with their relations
+    const companies = await manager
       .createQueryBuilder(CompanyOrmEntity, 'company')
-      .leftJoin('company.budget_accounts', 'ba')
-      .leftJoin('ba.increase_budgets', 'ib')
-      .leftJoin('company.company_users', 'user') // join company users
-      .select('COUNT(DISTINCT company.id)', 'total_companies') // count companies
-      .addSelect('COALESCE(SUM(ib.allocated_amount), 0)', 'total_allocated') // sum allocated_amount
-      .addSelect('COUNT(DISTINCT user.id)', 'total_users') // count unique users across companies
-      .getRawOne();
+      .leftJoinAndSelect('company.budget_accounts', 'ba')
+      .leftJoinAndSelect('ba.increase_budgets', 'ib')
+      .leftJoinAndSelect('company.company_users', 'user')
+      .getMany();
 
-    return {
-      total_companies: Number(result.total_companies),
-      total_allocated: Number(result.total_allocated),
-      total_users: Number(result.total_users),
-    };
+    // Use mapper to calculate statistics (avoids JOIN duplication)
+    return this._dataAccessMapper.calculateReportStats(companies);
   }
 
   async getReportReceipt(

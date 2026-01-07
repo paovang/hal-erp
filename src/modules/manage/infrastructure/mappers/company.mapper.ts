@@ -6,6 +6,7 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { Injectable } from '@nestjs/common';
+import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 
 @Injectable()
 export class CompanyDataAccessMapper {
@@ -104,5 +105,32 @@ export class CompanyDataAccessMapper {
       .setTotalUsedAmount(total_used_amount);
 
     return builder.build();
+  }
+
+  /**
+   * Calculate company report statistics from ORM entities
+   * This avoids SQL JOIN duplication issues
+   */
+  calculateReportStats(companies: CompanyOrmEntity[]): ReportCompanyInterface {
+    let total_users = 0;
+    let total_allocated = 0;
+
+    for (const company of companies) {
+      // Count users for this company
+      total_users += company.company_users?.length ?? 0;
+
+      // Sum allocated_amount from increase_budgets
+      for (const ba of company.budget_accounts ?? []) {
+        for (const ib of ba.increase_budgets ?? []) {
+          total_allocated += Number(ib.allocated_amount ?? 0);
+        }
+      }
+    }
+
+    return {
+      total_companies: companies.length,
+      total_allocated,
+      total_users,
+    };
   }
 }
