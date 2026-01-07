@@ -64,14 +64,14 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
       // increase_amount (increase_budget_detail)
       .addSelect(
         `
-      (
-        SELECT COALESCE(SUM(ibd.allocated_amount), 0)
-        FROM increase_budget_detail ibd
-        INNER JOIN budget_items bi ON bi.id = ibd.budget_item_id
-        INNER JOIN budget_accounts ba ON ba.id = bi.budget_account_id
-        WHERE ba.company_id = c.id
-      )
-      `,
+  (
+    SELECT COALESCE(SUM(ibd.allocated_amount), 0)
+    FROM increase_budget_details ibd
+    INNER JOIN budget_items bi ON bi.id = ibd.budget_item_id
+    INNER JOIN budget_accounts ba ON ba.id = bi.budget_account_id
+    WHERE ba.company_id = c.id
+  )
+  `,
         'increase_amount',
       )
 
