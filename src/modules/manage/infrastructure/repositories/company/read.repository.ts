@@ -19,7 +19,25 @@ import { EligiblePersons } from '@src/modules/manage/application/constants/statu
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/document.orm';
+type CompanyIda = string;
 
+type NumberMap = Record<CompanyIda, number>;
+
+type ReceiptSummaryMap = Record<
+  CompanyIda,
+  {
+    totalReceipts: number;
+    totalReceiptsPadding: number;
+  }
+>;
+
+type BudgetSummaryMap = Record<
+  CompanyIda,
+  {
+    allocated: number;
+    increase: number;
+  }
+>;
 @Injectable()
 export class ReadCompanyRepository implements IReadCompanyRepository {
   constructor(
@@ -32,123 +50,163 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
     private readonly _documentTypeOrm: Repository<DocumentOrmEntity>,
   ) {}
 
+  async getUsersSummary(
+    query: reportHalGroupQueryDto,
+    manager: EntityManager,
+  ): Promise<NumberMap> {
+    const qb = manager
+      .createQueryBuilder()
+      .select('cu.company_id', 'companyId')
+      .addSelect('COUNT(*)', 'totalUsers')
+      .from('company_users', 'cu');
+
+    if (query.company_id) {
+      qb.where('cu.company_id = :id', { id: Number(query.company_id) });
+    }
+
+    const rows = await qb.groupBy('cu.company_id').getRawMany();
+
+    const result: NumberMap = {};
+    for (const r of rows) {
+      result[r.companyId] = Number(r.totalUsers);
+    }
+
+    return result;
+  }
+  async getReceiptsSummary(
+    query: reportHalGroupQueryDto,
+    manager: EntityManager,
+  ): Promise<ReceiptSummaryMap> {
+    const qb = manager
+      .createQueryBuilder()
+      .select('d.company_id', 'companyId')
+      .addSelect('COUNT(r.id)', 'totalReceipts')
+      .addSelect(
+        `SUM(CASE WHEN d.status = 'pending' THEN 1 ELSE 0 END)`,
+        'totalReceiptsPadding',
+      )
+      .from('documents', 'd')
+      .leftJoin('receipts', 'r', 'r.document_id = d.id');
+
+    if (query.company_id) {
+      qb.where('d.company_id = :id', { id: Number(query.company_id) });
+    }
+
+    const rows = await qb.groupBy('d.company_id').getRawMany();
+
+    const result: ReceiptSummaryMap = {};
+    for (const r of rows) {
+      result[r.companyId] = {
+        totalReceipts: Number(r.totalReceipts),
+        totalReceiptsPadding: Number(r.totalReceiptsPadding),
+      };
+    }
+
+    return result;
+  }
+  async getBudgetSummary(
+    query: reportHalGroupQueryDto,
+    manager: EntityManager,
+  ): Promise<BudgetSummaryMap> {
+    const allocatedRows = await manager
+      .createQueryBuilder()
+      .select('ba.company_id', 'companyId')
+      .addSelect('SUM(ba.allocated_amount)', 'allocated')
+      .from('budget_accounts', 'ba')
+      .groupBy('ba.company_id')
+      .getRawMany();
+
+    const increaseRows = await manager
+      .createQueryBuilder()
+      .select('ba.company_id', 'companyId')
+      .addSelect('SUM(ib.allocated_amount)', 'increase')
+      .from('increase_budgets', 'ib')
+      .innerJoin('budget_accounts', 'ba', 'ba.id = ib.budget_account_id')
+      .groupBy('ba.company_id')
+      .getRawMany();
+
+    const result: BudgetSummaryMap = {};
+
+    for (const r of allocatedRows) {
+      result[r.companyId] = {
+        allocated: Number(r.allocated),
+        increase: 0,
+      };
+    }
+
+    for (const r of increaseRows) {
+      if (!result[r.companyId]) {
+        result[r.companyId] = { allocated: 0, increase: 0 };
+      }
+      result[r.companyId].increase = Number(r.increase);
+    }
+
+    return result;
+  }
+  async getUsedBudgetSummary(
+    query: reportHalGroupQueryDto,
+    manager: EntityManager,
+  ): Promise<NumberMap> {
+    const qb = manager
+      .createQueryBuilder()
+      .select('ba.company_id', 'companyId')
+      .addSelect('SUM(dt.amount)', 'used')
+      .from('document_transactions', 'dt')
+      .innerJoin('budget_items', 'bi', 'bi.id = dt.budget_item_id')
+      .innerJoin('budget_accounts', 'ba', 'ba.id = bi.budget_account_id')
+      .groupBy('ba.company_id');
+
+    const rows = await qb.getRawMany();
+
+    const result: NumberMap = {};
+    for (const r of rows) {
+      result[r.companyId] = Number(r.used);
+    }
+
+    return result;
+  }
+
   async getHalGroupState(
     query: reportHalGroupQueryDto,
     manager: EntityManager,
-  ): Promise<ResponseResult<any>> {
-    const qb = this._companyRepository
-      .createQueryBuilder('companies')
-      .leftJoin('companies.company_users', 'company_users')
-      .leftJoin('companies.departments', 'departments')
-      .leftJoin('companies.documents', 'documents')
-      .leftJoin('documents.receipts', 'receipts')
-      .leftJoin(
-        'companies.documents',
-        'documentsPadding',
-        'documentsPadding.status = :status',
-        { status: 'pending' },
-      )
-      .leftJoin('documentsPadding.receipts', 'receiptsPadding')
+  ): Promise<{
+    totalUsers: number;
+    totalReceipts: number;
+    totalReceiptsPadding: number;
+    allocated_amount: number;
+    increase_amount: number;
+    totalUsedAmount: number;
+    total_budget: number;
+  }> {
+    const [users, receipts, budgets, usedBudgets] = await Promise.all([
+      this.getUsersSummary(query, manager),
+      this.getReceiptsSummary(query, manager),
+      this.getBudgetSummary(query, manager),
+      this.getUsedBudgetSummary(query, manager),
+    ]);
 
-      // =======================
-      // BUDGET RELATIONS
-      // =======================
-      .leftJoin('companies.budget_accounts', 'budget_accounts')
-      .leftJoin('budget_accounts.increase_budgets', 'increase_budgets')
-      .leftJoin('budget_accounts.budget_items', 'budget_items')
-      .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
-      .leftJoin('budget_items.document_transactions', 'document_transactions')
+    let totalUsers = 0;
+    let totalReceipts = 0;
+    let totalReceiptsPadding = 0;
+    let allocated_amount = 0;
+    let increase_amount = 0;
+    let totalUsedAmount = 0;
 
-      .select('companies.id', 'companyId')
-      .addSelect('companies.name', 'companyName')
+    const companyIds = new Set<CompanyIda>([
+      ...Object.keys(users),
+      ...Object.keys(receipts),
+      ...Object.keys(budgets),
+      ...Object.keys(usedBudgets),
+    ]);
 
-      // SUMMARY BASE
-      .addSelect('COUNT(DISTINCT company_users.id)', 'totalUsers')
-      .addSelect('COUNT(DISTINCT receipts.id)', 'totalReceipts')
-      .addSelect('COUNT(DISTINCT receiptsPadding.id)', 'totalReceiptsPadding')
-
-      // =======================
-      // BUDGET SUMMARY FIELDS
-      // =======================
-
-      // allocated_amount (รวมทุก budget ของบริษัท)
-      .addSelect(
-        'SUM(DISTINCT budget_accounts.allocated_amount)',
-        'allocated_amount',
-      )
-
-      // increase_amount
-      .addSelect(
-        'SUM(DISTINCT increase_budgets.allocated_amount)',
-        'increase_amount',
-      )
-
-      // totalUsedAmount จาก document_transactions.amount
-      .addSelect(
-        'SUM(DISTINCT document_transactions.amount)',
-        'totalUsedAmount',
-      )
-
-      // total_budget = allocated + increase - used
-      .addSelect(
-        `
-      (
-        COALESCE(SUM(DISTINCT budget_accounts.allocated_amount), 0)
-        +
-        COALESCE(SUM(DISTINCT increase_budgets.allocated_amount), 0)
-        -
-        COALESCE(SUM(DISTINCT document_transactions.amount), 0)
-      )
-    `,
-        'total_budget',
-      )
-
-      .groupBy('companies.id');
-
-    // optional filters
-    if (query.company_id) {
-      qb.where('companies.id = :id', { id: Number(query.company_id) });
+    for (const id of companyIds) {
+      totalUsers += users[id] ?? 0;
+      totalReceipts += receipts[id]?.totalReceipts ?? 0;
+      totalReceiptsPadding += receipts[id]?.totalReceiptsPadding ?? 0;
+      allocated_amount += budgets[id]?.allocated ?? 0;
+      increase_amount += budgets[id]?.increase ?? 0;
+      totalUsedAmount += usedBudgets[id] ?? 0;
     }
-    if (query.department_id) {
-      qb.andWhere('departments.id = :id', {
-        id: Number(query.department_id),
-      });
-    }
-
-    const company = await qb.getRawMany();
-
-    const totalUsers = company.reduce(
-      (sum, item) => sum + Number(item.totalUsers),
-      0,
-    );
-    const totalReceipts = company.reduce(
-      (sum, item) => sum + Number(item.totalReceipts),
-      0,
-    );
-    const totalReceiptsPadding = company.reduce(
-      (sum, item) => sum + Number(item.totalReceiptsPadding),
-      0,
-    );
-
-    const allocated_amount = company.reduce(
-      (sum, item) => sum + Number(item.allocated_amount),
-      0,
-    );
-
-    const increase_amount = company.reduce(
-      (sum, item) => sum + Number(item.increase_amount),
-      0,
-    );
-
-    const totalUsedAmount = company.reduce(
-      (sum, item) => sum + Number(item.totalUsedAmount),
-      0,
-    );
-
-    const total_budget = company.reduce(
-      (sum, item) => sum + Number(item.total_budget),
-      0,
-    );
 
     return {
       totalUsers,
@@ -157,7 +215,7 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
       allocated_amount,
       increase_amount,
       totalUsedAmount,
-      total_budget,
+      total_budget: allocated_amount + increase_amount - totalUsedAmount,
     };
   }
 
