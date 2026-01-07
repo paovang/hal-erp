@@ -15,89 +15,106 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
   ) {}
-  async reportCompany(manager: EntityManager): Promise<any> {
-    const query = await manager
-      .createQueryBuilder(CompanyOrmEntity, 'company')
-      .leftJoinAndSelect('company.company_users', 'company_users')
-      .leftJoinAndSelect('company_users.user', 'user')
-      .leftJoinAndSelect('company.budget_accounts', 'budget_accounts')
-      .leftJoinAndSelect('budget_accounts.increase_budgets', 'increase_budgets')
-      .leftJoinAndSelect('budget_accounts.budget_items', 'budget_items')
-      .leftJoinAndSelect(
-        'company.documents',
-        'documents',
-        'documents.status = :status',
-        { status: 'pending' },
+  async reportCompany(manager: EntityManager): Promise<any[]> {
+    const rows = await manager
+      .createQueryBuilder()
+      .select('c.id', 'companyId')
+      .addSelect('c.name', 'companyName')
+      .addSelect('c.logo', 'logo')
+
+      // users count
+      .addSelect(
+        `(SELECT COUNT(*) FROM company_users cu WHERE cu.company_id = c.id)`,
+        'userCount',
       )
-      .innerJoinAndSelect('documents.receipts', 'receipts')
-      .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
 
-      .loadRelationCountAndMap(
-        'company.approvalWorkflowCount',
-        'company.documents',
-        'documentsCount',
-        (qb) =>
-          qb
-            .innerJoin('documentsCount.receipts', 'receiptsCount')
-            .where('documentsCount.status = :status', { status: 'pending' }),
+      // pending documents with receipts count
+      .addSelect(
+        `
+      (
+        SELECT COUNT(r.id)
+        FROM documents d
+        INNER JOIN receipts r ON r.document_id = d.id
+        WHERE d.company_id = c.id
+        AND d.status = 'pending'
       )
-      .leftJoinAndSelect(
-        'budget_items.increase_budget_detail',
-        'increase_budget_detail',
+      `,
+        'approvalWorkflowCount',
       )
-      .leftJoinAndSelect(
-        'budget_items.document_transactions',
-        'document_transactions',
+
+      // budget rule count
+      .addSelect(
+        `(SELECT COUNT(*) FROM budget_approval_rules br WHERE br.company_id = c.id)`,
+        'budgetRuleCount',
       )
-      .loadRelationCountAndMap(
-        'company.budgetRuleCount',
-        'company.budget_approval_rules',
+
+      // allocated_amount (increase_budgets)
+      .addSelect(
+        `
+      (
+        SELECT COALESCE(SUM(ib.allocated_amount), 0)
+        FROM increase_budgets ib
+        INNER JOIN budget_accounts ba ON ba.id = ib.budget_account_id
+        WHERE ba.company_id = c.id
       )
-      .loadRelationCountAndMap('company.userCount', 'company.company_users');
+      `,
+        'allocated_amount',
+      )
 
-    const data = await query.getMany();
+      // increase_amount (increase_budget_detail)
+      .addSelect(
+        `
+      (
+        SELECT COALESCE(SUM(ibd.allocated_amount), 0)
+        FROM increase_budget_detail ibd
+        INNER JOIN budget_items bi ON bi.id = ibd.budget_item_id
+        INNER JOIN budget_accounts ba ON ba.id = bi.budget_account_id
+        WHERE ba.company_id = c.id
+      )
+      `,
+        'increase_amount',
+      )
 
-    const result = data.map((company) => {
-      // รวม allocated_amount ของ increase_budgets
-      const allocated_amount =
-        company.budget_accounts
-          ?.flatMap((ba) => ba.increase_budgets ?? [])
-          .reduce((sum, b) => sum + Number(b.allocated_amount ?? 0), 0) ?? 0;
+      // used amount
+      .addSelect(
+        `
+      (
+        SELECT COALESCE(SUM(dt.amount), 0)
+        FROM document_transactions dt
+        INNER JOIN budget_items bi ON bi.id = dt.budget_item_id
+        INNER JOIN budget_accounts ba ON ba.id = bi.budget_account_id
+        WHERE ba.company_id = c.id
+      )
+      `,
+        'totalUsedAmount',
+      )
 
-      // รวม increase_amount ของ increase_budget_detail ใน budget_items
-      const increase_amount =
-        company.budget_accounts
-          ?.flatMap((ba) => ba.budget_items ?? [])
-          .flatMap((bi) => bi.increase_budget_detail ?? [])
-          .reduce((sum, d) => sum + Number(d.allocated_amount ?? 0), 0) ?? 0;
+      .from('companies', 'c')
+      .getRawMany();
 
-      // รวม totalUsedAmount ของ document_transactions
-      const totalUsedAmount =
-        company.budget_accounts
-          ?.flatMap((ba) => ba.budget_items ?? [])
-          .flatMap((bi) => bi.document_transactions ?? [])
-          .reduce((sum, dt) => sum + Number(dt.amount ?? 0), 0) ?? 0;
-
-      const total_budget = allocated_amount - increase_amount;
-      const balance_amount = increase_amount - totalUsedAmount;
+    return rows.map((r) => {
+      const allocated = Number(r.allocated_amount);
+      const increase = Number(r.increase_amount);
+      const used = Number(r.totalUsedAmount);
 
       return {
-        ...company,
-        logo: company?.logo
-          ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${company.logo}`
+        companyId: r.companyId,
+        companyName: r.companyName,
+        logo: r.logo
+          ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${r.logo}`
           : null,
-        // company_users: company.company_users?.map((cu) => {
-        //   const { password, ...user } = cu.user;
-        //   return user;
-        // }),
-        allocated_amount,
-        increase_amount,
-        totalUsedAmount,
-        total_budget,
-        balance_amount,
+
+        userCount: Number(r.userCount),
+        approvalWorkflowCount: Number(r.approvalWorkflowCount),
+        budgetRuleCount: Number(r.budgetRuleCount),
+
+        allocated_amount: allocated,
+        increase_amount: increase,
+        totalUsedAmount: used,
+
+        total_budget: allocated - increase,
+        balance_amount: increase - used,
       };
     });
-
-    return result;
   }
 }
