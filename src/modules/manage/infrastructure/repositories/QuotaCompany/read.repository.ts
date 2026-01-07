@@ -34,6 +34,8 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
     company_id?: number,
     roles?: string[],
   ): Promise<ResponseResult<QuotaCompanyEntity>> {
+    // const quotas = await this._quotaOrm.find();
+    // console.log('quotas', quotas);
     const queryBuilder = await this.createBaseQuery(manager);
     query.sort_by = 'quota_companies.id';
     // const quota = await this._quotaOrm.find({
@@ -57,7 +59,9 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
       //   roles.includes(EligiblePersons.COMPANY_ADMIN) ||
       //   roles.includes(EligiblePersons.COMPANY_USER)
       // ) {
+
       if (company_id) {
+        // console.log('company_id', company_id);
         queryBuilder.where('quota_companies.company_id = :company_id', {
           company_id,
         });
@@ -99,25 +103,23 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
 
   private createBaseQuery(manager: EntityManager) {
     // console.log('manager');
-    return (
-      manager
-        .createQueryBuilder(QuotaCompanyOrmEntity, 'quota_companies')
-        .leftJoinAndSelect('quota_companies.company', 'company')
-        .leftJoinAndSelect('quota_companies.vendor_product', 'vendor_product')
-        .leftJoinAndSelect('vendor_product.products', 'products')
-        .leftJoinAndSelect('products.product_type', 'product_type')
-        .leftJoinAndSelect('products.unit', 'unit')
-        .leftJoinAndSelect('vendor_product.vendors', 'vendors')
+    return manager
+      .createQueryBuilder(QuotaCompanyOrmEntity, 'quota_companies')
+      .leftJoinAndSelect('quota_companies.company', 'company')
+      .leftJoinAndSelect('quota_companies.vendor_product', 'vendor_product')
+      .leftJoinAndSelect('vendor_product.products', 'products')
+      .leftJoinAndSelect('products.product_type', 'product_type')
+      .leftJoinAndSelect('products.unit', 'unit')
+      .leftJoinAndSelect('vendor_product.vendors', 'vendors');
 
-        // 🔴 จุดสำคัญ
-        .innerJoinAndSelect('company.documents', 'documents')
-        .innerJoinAndSelect('documents.receipts', 'receipts')
-        .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
+    // 🔴 จุดสำคัญ
+    // .innerJoinAndSelect('company.documents', 'documents')
+    // .innerJoinAndSelect('documents.receipts', 'receipts')
+    // .innerJoinAndSelect('receipts.receipt_items', 'receipt_items')
 
-      // .where('documents.status = :status', {
-      //   status: EnumDocumentStatus.SUCCESS,
-      // })
-    );
+    // .where('documents.status = :status', {
+    //   status: EnumDocumentStatus.SUCCESS,
+    // })
 
     //  return manager
     // .createQueryBuilder(QuotaCompanyOrmEntity, 'quota_companies')

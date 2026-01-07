@@ -18,7 +18,7 @@ export class WriteQuotaRepository implements IWriteQuotaCompanyRepository {
     entity: QuotaCompanyEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<QuotaCompanyEntity>> {
-    console.log('object', entity);
+    // console.log('object', entity);
     return this._dataAccessMapper.toEntity(
       await manager.save(
         this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
