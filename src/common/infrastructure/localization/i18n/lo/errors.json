@@ -76,5 +76,6 @@
   "quota_limit_exceeded": "ເກີນຂີດຈຳກັດໂຄຕ້າແລ້ວ, ໂຄຕ້າເຫຼືອງຢູ່: {property} ໜ່ວຍ.",
   "not_approve_po_yet": "ໃບສັ່ງຊື້ຍັງບໍ່ໄດ້ຖືກອະນຸມັດສຳເລັດເທື່ອ",
   "receipt_exist": "ໃບເບີກຈ່າຍມີໃນລະບົບແລ້ວ",
-  "invalid_file_type": "ປະເພດໄຟລ໌ {property} ບໍ່ຖືກຕ້ອງ"
+  "invalid_file_type": "ປະເພດໄຟລ໌ {property} ບໍ່ຖືກຕ້ອງ",
+  "invalid_token": "ບໍ່ມີ token ຫຼື token ບໍ່ຖືກຕ້ອງ"
 }

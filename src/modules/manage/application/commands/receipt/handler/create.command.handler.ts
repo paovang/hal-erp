@@ -69,6 +69,7 @@ import { StatusEnum } from '@src/common/enums/status.enum';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
+import { hashData } from '@src/common/utils/server/hash-data.util';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -353,6 +354,14 @@ export class CreateCommandHandler
         // Step 5: Map and join the titles
         const titles = requestItems.map((item) => item.title).join(', ');
 
+        const token = await hashData(
+          receipt_id,
+          user_approval_step_id,
+          user.id,
+          user.tel,
+          user.email,
+        );
+
         // send approval request server to server
         await sendApprovalRequest(
           user_approval_step_id,
@@ -362,6 +371,7 @@ export class CreateCommandHandler
           department_name,
           EnumRequestApprovalType.RC,
           titles,
+          token,
         );
 
         // await this.handleApprovalStepCall(

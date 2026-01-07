@@ -76,5 +76,6 @@
   "quota_limit_exceeded": "Quota limit exceeded, there is still a quota available: {property} Unit",
   "not_approve_po_yet": "Purchase Order not approved yet",
   "receipt_exist": "Receipt already exists",
-  "invalid_file_type": "Invalid file type {property}"
+  "invalid_file_type": "Invalid file type {property}",
+  "invalid_token": "Invalid token or token not found"
 }
