@@ -253,26 +253,26 @@ export class AddStepCommandHandler
           .join(', ');
 
         // send approval request server to server
-        await sendApprovalRequest(
-          user_approval_step_id,
-          total,
-          user,
-          user_id,
-          department_name,
-          EnumRequestApprovalType.PR,
-          titles,
-        );
+        // await sendApprovalRequest(
+        //   user_approval_step_id,
+        //   total,
+        //   user,
+        //   user_id,
+        //   department_name,
+        //   EnumRequestApprovalType.PR,
+        //   titles,
+        // );
 
-        await handleApprovalStep({
-          a_w_s,
-          total,
-          user_id,
-          user_approval_step_id,
-          manager,
-          dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-          writeDocumentApprover: this._writeDocumentApprover,
-          getApprover: this.getApprover.bind(this),
-        });
+        // await handleApprovalStep({
+        //   a_w_s,
+        //   total,
+        //   user_id,
+        //   user_approval_step_id,
+        //   manager,
+        //   dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+        //   writeDocumentApprover: this._writeDocumentApprover,
+        //   getApprover: this.getApprover.bind(this),
+        // });
 
         return pr_entity;
       },
