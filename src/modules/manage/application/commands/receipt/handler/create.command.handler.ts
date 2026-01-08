@@ -555,24 +555,24 @@ export class CreateCommandHandler
     return (user_approval_step as any)._id._value;
   }
 
-  private async handleApprovalStepCall(
-    a_w_s: any,
-    total: number,
-    user_id: number,
-    user_approval_step_id: number,
-    manager: EntityManager,
-  ) {
-    await handleApprovalStep({
-      a_w_s,
-      total,
-      user_id,
-      user_approval_step_id,
-      manager,
-      dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-      writeDocumentApprover: this._writeDocumentApprover,
-      getApprover: this.getApprover.bind(this),
-    });
-  }
+  // private async handleApprovalStepCall(
+  //   a_w_s: any,
+  //   total: number,
+  //   user_id: number,
+  //   user_approval_step_id: number,
+  //   manager: EntityManager,
+  // ) {
+  //   await handleApprovalStep({
+  //     a_w_s,
+  //     total,
+  //     user_id,
+  //     user_approval_step_id,
+  //     manager,
+  //     dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+  //     writeDocumentApprover: this._writeDocumentApprover,
+  //     getApprover: this.getApprover.bind(this),
+  //   });
+  // }
 
   private async checkCurrency(
     currency: number,

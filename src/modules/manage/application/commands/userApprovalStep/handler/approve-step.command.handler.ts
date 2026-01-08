@@ -23,8 +23,6 @@ import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/databa
 import {
   EnumDocumentTransactionType,
   EnumPrOrPo,
-  EnumRequestApprovalType,
-  EnumWorkflowStep,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
@@ -79,7 +77,6 @@ import { BudgetItemOrmEntity } from '@src/common/infrastructure/database/typeorm
 import { DocumentStatusOrmEntity } from '@src/common/infrastructure/database/typeorm/document-statuse.orm';
 import { IReadBudgetItemRepository } from '@src/modules/manage/domain/ports/output/budget-item-repository.interace';
 import { verifyOtp } from '@src/common/utils/server/verify-otp.util';
-import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
 import { DepartmentUserOrmEntity } from '@src/common/infrastructure/database/typeorm/department-user.orm';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { assertOrThrow } from '@src/common/utils/assert.util';
@@ -91,8 +88,6 @@ import { DomainException } from '@src/common/domain/exceptions/domain.exception'
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 import { CurrencyEnum } from '@src/common/enums/currency.enum';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
-import { hashData } from '@src/common/utils/server/hash-data.util';
-import { DepartmentApproverOrmEntity } from '@src/common/infrastructure/database/typeorm/department-approver.orm';
 
 interface CustomApprovalDto
   extends Omit<
@@ -379,17 +374,17 @@ export class ApproveStepCommandHandler
             const user_approval_step_id = (userApprovalStep as any)._id._value;
             let total = 0;
 
-            await handleApprovalStep({
-              a_w_s,
-              total,
-              user_id,
-              user_approval_step_id,
-              manager,
-              dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-              writeDocumentApprover: this._writeDocumentApprover,
-              getApprover: this.getApprover.bind(this),
-              company_id: company_id || undefined,
-            });
+            // await handleApprovalStep({
+            //   a_w_s,
+            //   total,
+            //   user_id,
+            //   user_approval_step_id,
+            //   manager,
+            //   dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+            //   writeDocumentApprover: this._writeDocumentApprover,
+            //   getApprover: this.getApprover.bind(this),
+            //   company_id: company_id || undefined,
+            // });
 
             if (query.dto.type === EnumPrOrPo.PR) {
               // get pr data
@@ -421,50 +416,42 @@ export class ApproveStepCommandHandler
                 0,
               );
 
-              // start
-              const email = [];
+              // // send approval request server to server
+              // const token = await hashData(
+              //   purchase_request.id,
+              //   user_approval_step_id,
+              //   user.id,
+              //   user.tel,
+              //   user.email,
+              // );
+              // await sendApprovalRequest(
+              //   user_approval_step_id,
+              //   total,
+              //   user,
+              //   user_id,
+              //   department_name,
+              //   EnumRequestApprovalType.PR,
+              //   titlesString,
+              //   token,
+              // );
 
-              if (a_w_s.type === EnumWorkflowStep.DEPARTMENT) {
-                const department_approvers = await manager.find(
-                  DepartmentApproverOrmEntity,
-                  {
-                    where: { department_id: a_w_s.department_id },
-                    relations: ['users'],
-                  },
-                );
+              const model_id = purchase_request.id;
 
-                if (department_approvers.length === 0) {
-                  throw new ManageDomainException(
-                    'errors.please_set_department_approver',
-                    HttpStatus.NOT_FOUND,
-                  );
-                }
-
-                for (const department_approver of department_approvers) {
-                  if (department_approver.users?.email) {
-                    email.push(department_approver.users.email);
-                  }
-                }
-                // send approval request server to server
-                const token = await hashData(
-                  purchase_request.id,
-                  user_approval_step_id,
-                  user.id,
-                  user.tel,
-                  user.email,
-                );
-                await sendApprovalRequest(
-                  user_approval_step_id,
-                  total,
-                  user,
-                  user_id,
-                  department_name,
-                  EnumRequestApprovalType.PR,
-                  titlesString,
-                  token,
-                  email,
-                );
-              }
+              await handleApprovalStep({
+                a_w_s,
+                total,
+                user_id,
+                user_approval_step_id,
+                manager,
+                dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+                writeDocumentApprover: this._writeDocumentApprover,
+                getApprover: this.getApprover.bind(this),
+                company_id: company_id || undefined,
+                model_id,
+                user,
+                department_name,
+                titlesString,
+              });
 
               // end
             } else if (query.dto.type === EnumPrOrPo.PO) {
@@ -642,30 +629,48 @@ export class ApproveStepCommandHandler
 
               // if (a_w_s.is_otp === true) {
               // send approval request server to server
-              const token = await hashData(
-                po.id,
-                user_approval_step_id,
-                user.id,
-                user.tel,
-                user.email,
-              );
+              // const token = await hashData(
+              //   po.id,
+              //   user_approval_step_id,
+              //   user.id,
+              //   user.tel,
+              //   user.email,
+              // );
 
-              await sendApprovalRequest(
-                user_approval_step_id,
-                total,
-                user,
-                user_id,
-                department_name,
-                EnumRequestApprovalType.PO,
-                titlesString,
-                token,
-              );
+              // await sendApprovalRequest(
+              //   user_approval_step_id,
+              //   total,
+              //   user,
+              //   user_id,
+              //   department_name,
+              //   EnumRequestApprovalType.PO,
+              //   titlesString,
+              //   token,
+              // );
               // }
 
               total = po.purchase_order_items.reduce(
                 (sum, item) => sum + Number(item.total || 0),
                 0,
               );
+
+              const model_id = po.id;
+
+              await handleApprovalStep({
+                a_w_s,
+                total,
+                user_id,
+                user_approval_step_id,
+                manager,
+                dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+                writeDocumentApprover: this._writeDocumentApprover,
+                getApprover: this.getApprover.bind(this),
+                company_id: company_id || undefined,
+                model_id,
+                user,
+                department_name,
+                titlesString,
+              });
             } else if (query.dto.type === EnumPrOrPo.R) {
               const receipt = await manager.findOne(ReceiptOrmEntity, {
                 where: { document_id: step.user_approvals.document_id },
@@ -712,25 +717,43 @@ export class ApproveStepCommandHandler
                 0,
               );
 
-              // if (a_w_s.is_otp === true) {
-              const token = await hashData(
-                receipt.id,
-                user_approval_step_id,
-                user.id,
-                user.tel,
-                user.email,
-              );
-              // send approval request server to server
-              await sendApprovalRequest(
-                user_approval_step_id,
+              const model_id = receipt.id;
+
+              await handleApprovalStep({
+                a_w_s,
                 total,
-                user,
                 user_id,
+                user_approval_step_id,
+                manager,
+                dataDocumentApproverMapper: this._dataDocumentApproverMapper,
+                writeDocumentApprover: this._writeDocumentApprover,
+                getApprover: this.getApprover.bind(this),
+                company_id: company_id || undefined,
+                model_id,
+                user,
                 department_name,
-                EnumRequestApprovalType.RC,
                 titlesString,
-                token,
-              );
+              });
+
+              // // if (a_w_s.is_otp === true) {
+              // const token = await hashData(
+              //   receipt.id,
+              //   user_approval_step_id,
+              //   user.id,
+              //   user.tel,
+              //   user.email,
+              // );
+              // // send approval request server to server
+              // await sendApprovalRequest(
+              //   user_approval_step_id,
+              //   total,
+              //   user,
+              //   user_id,
+              //   department_name,
+              //   EnumRequestApprovalType.RC,
+              //   titlesString,
+              //   token,
+              // );
               // }
             } else {
               throw new ManageDomainException(
