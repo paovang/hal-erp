@@ -21,10 +21,14 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
       .select('c.id', 'companyId')
       .addSelect('c.name', 'companyName')
       .addSelect('c.logo', 'logo')
+
+      // users count
       .addSelect(
         `(SELECT COUNT(*) FROM company_users cu WHERE cu.company_id = c.id)`,
         'userCount',
       )
+
+      // pending documents with receipts count
       .addSelect(
         `
       (
@@ -37,10 +41,14 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
       `,
         'approvalWorkflowCount',
       )
+
+      // budget rule count
       .addSelect(
         `(SELECT COUNT(*) FROM budget_approval_rules br WHERE br.company_id = c.id)`,
         'budgetRuleCount',
       )
+
+      // allocated_amount (increase_budgets)
       .addSelect(
         `
       (
@@ -52,18 +60,22 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
       `,
         'allocated_amount',
       )
+
+      // increase_amount (increase_budget_detail)
       .addSelect(
         `
-      (
-        SELECT COALESCE(SUM(ibd.allocated_amount), 0)
-        FROM increase_budget_details ibd
-        INNER JOIN budget_items bi ON bi.id = ibd.budget_item_id
-        INNER JOIN budget_accounts ba ON ba.id = bi.budget_account_id
-        WHERE ba.company_id = c.id
-      )
-      `,
+  (
+    SELECT COALESCE(SUM(ibd.allocated_amount), 0)
+    FROM increase_budget_details ibd
+    INNER JOIN budget_items bi ON bi.id = ibd.budget_item_id
+    INNER JOIN budget_accounts ba ON ba.id = bi.budget_account_id
+    WHERE ba.company_id = c.id
+  )
+  `,
         'increase_amount',
       )
+
+      // used amount
       .addSelect(
         `
       (
@@ -76,16 +88,8 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
       `,
         'totalUsedAmount',
       )
+
       .from('companies', 'c')
-      // กรองเฉพาะที่ approvalWorkflowCount > 0
-      .having(
-        `(SELECT COUNT(r.id)
-        FROM documents d
-        INNER JOIN receipts r ON r.document_id = d.id
-        WHERE d.company_id = c.id
-        AND d.status = 'pending'
-      ) > 0`,
-      )
       .getRawMany();
 
     return rows.map((r) => {
@@ -99,12 +103,15 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
         logo: r.logo
           ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${r.logo}`
           : null,
+
         userCount: Number(r.userCount),
         approvalWorkflowCount: Number(r.approvalWorkflowCount),
         budgetRuleCount: Number(r.budgetRuleCount),
+
         allocated_amount: allocated,
         increase_amount: increase,
         totalUsedAmount: used,
+
         total_budget: allocated - increase,
         balance_amount: increase - used,
       };
