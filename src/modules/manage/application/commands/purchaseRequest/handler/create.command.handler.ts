@@ -337,13 +337,10 @@ export class CreateCommandHandler
           .map((item) => item.title)
           .join(', ');
 
-        const approval_rules = [user.email];
-
         const token = await hashData(
           pr_id,
           user_approval_step_id,
           user.id,
-          user.tel,
           user.email,
         );
 
@@ -357,7 +354,6 @@ export class CreateCommandHandler
           EnumRequestApprovalType.PR,
           titles,
           token,
-          approval_rules,
         );
 
         const d_approver: CustomDocumentApprover = {

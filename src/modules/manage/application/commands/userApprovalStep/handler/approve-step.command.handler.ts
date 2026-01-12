@@ -56,6 +56,7 @@ import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/type
 import path from 'path';
 import { createMockMulterFile } from '@src/common/utils/services/file-utils.service';
 import { IWriteDocumentAttachmentRepository } from '@src/modules/manage/domain/ports/output/document-attachment.interface';
+import { UserDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user.mapper';
 import { DocumentAttachmentDataMapper } from '../../../mappers/document-attachment.mapper';
 import { DocumentAttachmentInterface } from '../interface/document-attachment.interface';
 import { IWriteReceiptRepository } from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
@@ -123,6 +124,7 @@ export class ApproveStepCommandHandler
     @Inject(WRITE_DOCUMENT_APPROVER_REPOSITORY)
     private readonly _writeDocumentApprover: IWriteDocumentApproverRepository,
     private readonly _dataDocumentApproverMapper: DocumentApproverDataMapper,
+    private readonly _userDataAccessMapper: UserDataAccessMapper,
 
     @Inject(WRITE_DOCUMENT_ATTACHMENT_REPOSITORY)
     private readonly _writeDocumentAttachment: IWriteDocumentAttachmentRepository,
@@ -416,25 +418,6 @@ export class ApproveStepCommandHandler
                 0,
               );
 
-              // // send approval request server to server
-              // const token = await hashData(
-              //   purchase_request.id,
-              //   user_approval_step_id,
-              //   user.id,
-              //   user.tel,
-              //   user.email,
-              // );
-              // await sendApprovalRequest(
-              //   user_approval_step_id,
-              //   total,
-              //   user,
-              //   user_id,
-              //   department_name,
-              //   EnumRequestApprovalType.PR,
-              //   titlesString,
-              //   token,
-              // );
-
               const model_id = purchase_request.id;
 
               await handleApprovalStep({
@@ -445,10 +428,10 @@ export class ApproveStepCommandHandler
                 manager,
                 dataDocumentApproverMapper: this._dataDocumentApproverMapper,
                 writeDocumentApprover: this._writeDocumentApprover,
+                userDataAccessMapper: this._userDataAccessMapper,
                 getApprover: this.getApprover.bind(this),
-                company_id: company_id || undefined,
+                // company_id: company_id || undefined,
                 model_id,
-                user,
                 department_name,
                 titlesString,
               });
@@ -627,28 +610,6 @@ export class ApproveStepCommandHandler
                 }
               }
 
-              // if (a_w_s.is_otp === true) {
-              // send approval request server to server
-              // const token = await hashData(
-              //   po.id,
-              //   user_approval_step_id,
-              //   user.id,
-              //   user.tel,
-              //   user.email,
-              // );
-
-              // await sendApprovalRequest(
-              //   user_approval_step_id,
-              //   total,
-              //   user,
-              //   user_id,
-              //   department_name,
-              //   EnumRequestApprovalType.PO,
-              //   titlesString,
-              //   token,
-              // );
-              // }
-
               total = po.purchase_order_items.reduce(
                 (sum, item) => sum + Number(item.total || 0),
                 0,
@@ -664,10 +625,10 @@ export class ApproveStepCommandHandler
                 manager,
                 dataDocumentApproverMapper: this._dataDocumentApproverMapper,
                 writeDocumentApprover: this._writeDocumentApprover,
+                userDataAccessMapper: this._userDataAccessMapper,
                 getApprover: this.getApprover.bind(this),
-                company_id: company_id || undefined,
+                // company_id: company_id || undefined,
                 model_id,
-                user,
                 department_name,
                 titlesString,
               });
@@ -727,34 +688,13 @@ export class ApproveStepCommandHandler
                 manager,
                 dataDocumentApproverMapper: this._dataDocumentApproverMapper,
                 writeDocumentApprover: this._writeDocumentApprover,
+                userDataAccessMapper: this._userDataAccessMapper,
                 getApprover: this.getApprover.bind(this),
-                company_id: company_id || undefined,
+                // company_id: company_id || undefined,
                 model_id,
-                user,
                 department_name,
                 titlesString,
               });
-
-              // // if (a_w_s.is_otp === true) {
-              // const token = await hashData(
-              //   receipt.id,
-              //   user_approval_step_id,
-              //   user.id,
-              //   user.tel,
-              //   user.email,
-              // );
-              // // send approval request server to server
-              // await sendApprovalRequest(
-              //   user_approval_step_id,
-              //   total,
-              //   user,
-              //   user_id,
-              //   department_name,
-              //   EnumRequestApprovalType.RC,
-              //   titlesString,
-              //   token,
-              // );
-              // }
             } else {
               throw new ManageDomainException(
                 'errors.not_found',
