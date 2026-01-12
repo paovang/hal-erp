@@ -44,7 +44,6 @@ import {
   EnumRequestApprovalType,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
-import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
 import { IWriteUserApprovalRepository } from '@src/modules/manage/domain/ports/output/user-approval-repository.interface';
 import { UserApprovalDataMapper } from '../../../mappers/user-approval.mapper';
 import { IWriteUserApprovalStepRepository } from '@src/modules/manage/domain/ports/output/user-approval-step-repository.interface';
@@ -358,7 +357,6 @@ export class CreateCommandHandler
           receipt_id,
           user_approval_step_id,
           user.id,
-          user.tel,
           user.email,
         );
 
@@ -374,14 +372,6 @@ export class CreateCommandHandler
           token,
         );
 
-        // await this.handleApprovalStepCall(
-        //   a_w_s,
-        //   total,
-        //   user_id,
-        //   user_approval_step_id,
-        //   manager,
-        // );
-
         const d_approver: CustomDocumentApprover = {
           user_approval_step_id,
           user_id: user_id ?? 0,
@@ -392,7 +382,6 @@ export class CreateCommandHandler
 
         await this._writeDocumentApprover.create(d_approver_entity, manager);
 
-        // return responseReceipt;
         return await this._readRepo.findOne(new ReceiptId(receipt_id), manager);
       },
     );

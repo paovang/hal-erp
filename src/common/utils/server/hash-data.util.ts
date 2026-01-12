@@ -11,7 +11,6 @@ export interface HashDataPayload {
   id: number;
   step_id: number;
   user_id: number;
-  tel: string;
   email: string;
 }
 
@@ -19,31 +18,12 @@ export async function hashData(
   id: number,
   step_id: number,
   user_id: number,
-  tel: string,
   email: string,
 ): Promise<string> {
-  let format_tel = tel ? String(tel).trim() : '';
-
-  if (!tel.match(/^\d+$/)) {
-    throw new ManageDomainException(
-      'Invalid tel: must contain digits only',
-      HttpStatus.BAD_REQUEST,
-    );
-  }
-
-  // 2. Specific prefix check (020 -> 20)
-  if (format_tel.startsWith('020')) {
-    format_tel = format_tel.substring(1);
-  }
-
-  if (!format_tel.startsWith('20')) {
-    format_tel = '20' + format_tel;
-  }
   const payload: HashDataPayload = {
     id,
     step_id,
     user_id,
-    tel: format_tel,
     email,
   };
   return sign(payload, SECRET_KEY, { expiresIn: '1y' });

@@ -463,7 +463,6 @@ export class CreateCommandHandler
       po_id,
       user_approval_step_id,
       user_id,
-      user.tel,
       user.email,
     );
 

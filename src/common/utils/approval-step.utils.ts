@@ -15,6 +15,8 @@ import { UserOrmEntity } from '../infrastructure/database/typeorm/user.orm';
 import { assertOrThrow } from './assert.util';
 import { hashData } from './server/hash-data.util';
 import { sendApprovalRequest } from './server/send-data.uitl';
+import { UserDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user.mapper';
+import { ApprovalRuleInterface } from '../application/interfaces/approval-rule.interface';
 
 interface CustomDocumentApprover {
   user_approval_step_id: number;
@@ -29,14 +31,13 @@ interface ApprovalStepHandlerParams {
   manager: EntityManager;
   dataDocumentApproverMapper: DocumentApproverDataMapper;
   writeDocumentApprover: IWriteDocumentApproverRepository;
+  userDataAccessMapper: UserDataAccessMapper;
   getApprover: (
     sum_total: number,
     manager: EntityManager,
     company_id?: number,
   ) => Promise<BudgetApprovalRuleOrmEntity[]>;
-  company_id?: number;
   model_id: number;
-  user: any;
   department_name: string;
   titlesString: string;
 }
@@ -49,19 +50,19 @@ export async function handleApprovalStep({
   manager,
   dataDocumentApproverMapper,
   writeDocumentApprover,
+  userDataAccessMapper,
   getApprover,
-  company_id,
   model_id,
-  user,
   department_name,
   titlesString,
 }: ApprovalStepHandlerParams) {
+  let token = '';
+  const approval_rules: ApprovalRuleInterface[] = [];
   if (!a_w_s) {
     throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND, {
       property: 'approval workflow step',
     });
   }
-  const mail: string[] = [];
 
   switch (a_w_s.type) {
     case EnumWorkflowStep.DEPARTMENT: {
@@ -86,34 +87,59 @@ export async function handleApprovalStep({
           user_id: department_approver?.user_id ?? 0,
         };
 
-        // Push user email to mail array
-        if (department_approver?.users?.email) {
-          mail.push(department_approver.users.email);
+        const user = await manager.findOne(UserOrmEntity, {
+          where: { id: d_approver.user_id },
+        });
+
+        if (!user) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.NOT_FOUND,
+            { property: 'user' },
+          );
         }
 
         const d_approver_entity =
           await dataDocumentApproverMapper.toEntity(d_approver);
 
         await writeDocumentApprover.create(d_approver_entity, manager);
+        token = await hashData(
+          model_id,
+          user_approval_step_id,
+          department_approver?.user_id ?? 0,
+          user.email ?? '',
+        );
+
+        approval_rules.push({
+          email: user.email ?? '',
+          token: token,
+        });
       }
       // send approval request server to server
-      const token = await hashData(
-        model_id,
-        user_approval_step_id,
-        user.id,
-        user.tel,
-        user.email,
-      );
+      const user = await manager.findOne(UserOrmEntity, {
+        where: { id: department_approvers[0]?.user_id },
+      });
+
+      if (!user) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+          { property: 'user' },
+        );
+      }
+
+      const userEntity = userDataAccessMapper.toEntity(user);
 
       await sendApprovalRequest(
         user_approval_step_id,
         total,
-        user,
-        user_id,
+        userEntity,
+        user.id,
         department_name,
         EnumRequestApprovalType.PR,
         titlesString,
-        token,
+        token[0],
+        approval_rules,
       );
       break;
     }
@@ -131,7 +157,6 @@ export async function handleApprovalStep({
 
       const department = await manager.findOne(DepartmentOrmEntity, {
         where: { id: department_user?.department_id },
-        relations: ['users'],
       });
 
       assertOrThrow(
@@ -153,15 +178,51 @@ export async function handleApprovalStep({
         user_id: department?.department_head_id ?? 0,
       };
 
-      // Push department head email to mail array
-      if (department?.users?.email) {
-        mail.push(department.users.email);
-      }
-
       const d_approver_entity =
         await dataDocumentApproverMapper.toEntity(d_approver);
 
       await writeDocumentApprover.create(d_approver_entity, manager);
+
+      const user = await manager.findOne(UserOrmEntity, {
+        where: { id: department_head },
+      });
+
+      if (!user) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+          { property: 'user' },
+        );
+      }
+
+      // send approval request server to server
+      const token = await hashData(
+        model_id,
+        user_approval_step_id,
+        department?.department_head_id ?? 0,
+        user.email ?? '',
+      );
+
+      approval_rules.push({
+        email: user.email ?? '',
+        token: token,
+      });
+
+      console.log('token pr', token);
+
+      const userEntity = userDataAccessMapper.toEntity(user);
+
+      await sendApprovalRequest(
+        user_approval_step_id,
+        total,
+        userEntity,
+        department?.department_head_id ?? 0,
+        department_name,
+        EnumRequestApprovalType.PR,
+        titlesString,
+        token,
+        approval_rules,
+      );
       break;
     }
     case EnumWorkflowStep.SPECIFIC_USER: {
@@ -170,20 +231,50 @@ export async function handleApprovalStep({
         where: { id: a_w_s.user_id },
       });
 
+      if (!specific_user) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+          { property: 'user' },
+        );
+      }
+
       const d_approver: CustomDocumentApprover = {
         user_approval_step_id,
         user_id: a_w_s.user_id ?? 0,
       };
 
-      // Push specific user email to mail array
-      if (specific_user?.email) {
-        mail.push(specific_user.email);
-      }
-
       const d_approver_entity =
         await dataDocumentApproverMapper.toEntity(d_approver);
 
       await writeDocumentApprover.create(d_approver_entity, manager);
+
+      // send approval request server to server
+      const token = await hashData(
+        model_id,
+        user_approval_step_id,
+        a_w_s.user_id ?? 0,
+        specific_user.email ?? '',
+      );
+
+      approval_rules.push({
+        email: specific_user.email ?? '',
+        token: token,
+      });
+
+      const userEntity = userDataAccessMapper.toEntity(specific_user);
+
+      await sendApprovalRequest(
+        user_approval_step_id,
+        total,
+        userEntity,
+        a_w_s.user_id ?? 0,
+        department_name,
+        EnumRequestApprovalType.PR,
+        titlesString,
+        token,
+        approval_rules,
+      );
       break;
     }
     case EnumWorkflowStep.CONDITION: {
@@ -194,17 +285,67 @@ export async function handleApprovalStep({
           user_id: user_approver?.approver_id ?? 0,
         };
 
+        const user = await manager.findOne(UserOrmEntity, {
+          where: { id: user_approver?.approver_id },
+        });
+
+        if (!user) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.NOT_FOUND,
+            { property: 'user' },
+          );
+        }
+
         const d_approver_entity =
           await dataDocumentApproverMapper.toEntity(d_approver);
 
         await writeDocumentApprover.create(d_approver_entity, manager);
+        token = await hashData(
+          model_id,
+          user_approval_step_id,
+          a_w_s.user_id ?? 0,
+          user.email ?? '',
+        );
+
+        approval_rules.push({
+          email: user.email ?? '',
+          token: token,
+        });
       }
+
+      const user = await manager.findOne(UserOrmEntity, {
+        where: { id: user_can_approve[0].approver_id },
+      });
+
+      if (!user) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+          { property: 'user' },
+        );
+      }
+
+      // send approval request server to server
+
+      const userEntity = userDataAccessMapper.toEntity(user);
+
+      await sendApprovalRequest(
+        user_approval_step_id,
+        total,
+        userEntity,
+        a_w_s.user_id ?? 0,
+        department_name,
+        EnumRequestApprovalType.PR,
+        titlesString,
+        token,
+        approval_rules,
+      );
       break;
     }
     case EnumWorkflowStep.LINE_MANAGER: {
       const user_line_manager = await manager.findOne(DepartmentUserOrmEntity, {
         where: { user_id },
-        relations: ['line_manager'],
       });
 
       assertOrThrow(
@@ -227,15 +368,49 @@ export async function handleApprovalStep({
         user_id: user_line_manager?.line_manager_id ?? 0,
       };
 
-      // Push line manager email to mail array
-      if (user_line_manager?.line_manager?.email) {
-        mail.push(user_line_manager.line_manager.email);
-      }
-
       const d_approver_entity =
         await dataDocumentApproverMapper.toEntity(d_approver);
 
       await writeDocumentApprover.create(d_approver_entity, manager);
+
+      const user = await manager.findOne(UserOrmEntity, {
+        where: { id: user_id },
+      });
+
+      if (!user) {
+        throw new ManageDomainException(
+          'errors.not_found',
+          HttpStatus.NOT_FOUND,
+          { property: 'user' },
+        );
+      }
+
+      // send approval request server to server
+      const token = await hashData(
+        model_id,
+        user_approval_step_id,
+        a_w_s.user_id ?? 0,
+        user.email ?? '',
+      );
+
+      approval_rules.push({
+        email: user.email ?? '',
+        token: token,
+      });
+
+      const userEntity = userDataAccessMapper.toEntity(user);
+
+      await sendApprovalRequest(
+        user_approval_step_id,
+        total,
+        userEntity,
+        a_w_s.user_id ?? 0,
+        department_name,
+        EnumRequestApprovalType.PR,
+        titlesString,
+        token,
+        approval_rules,
+      );
       break;
     }
     default:
@@ -247,7 +422,4 @@ export async function handleApprovalStep({
         },
       );
   }
-
-  console.log('Collected emails:', mail);
-  return mail;
 }

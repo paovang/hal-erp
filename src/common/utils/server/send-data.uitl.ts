@@ -6,6 +6,7 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { EnumRequestApprovalType } from '@src/modules/manage/application/constants/status-key.const';
+import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
 
 export async function sendApprovalRequest(
   user_approval_step_id: number,
@@ -16,7 +17,7 @@ export async function sendApprovalRequest(
   type: EnumRequestApprovalType,
   titles?: string,
   token?: string,
-  approval_rules?: string[],
+  approval_rules: ApprovalRuleInterface[] = [],
 ) {
   let link = '';
   const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
@@ -73,9 +74,9 @@ export async function sendApprovalRequest(
     },
     token: token ?? null,
     link: link,
-    approval_rules: approval_rules ?? [],
+    approval_rules: approval_rules,
   };
-  console.log('object to send approval', send_data_to_approval);
+
   const apiUrl = process.env.APPROVAL_API_URL || 'http://127.0.0.1:3001';
   try {
     const response = await axios.post(
