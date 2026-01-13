@@ -67,7 +67,7 @@ import { CurrencySeeder } from './seeders/currecy.seeder';
     SeederService,
     HelperSeeder,
     PermissionGroupSeeder,
-    PermissionSeeder,
+    // PermissionSeeder,
     RoleSeeder,
     ProvinceSeeder,
     UserSeeder,
