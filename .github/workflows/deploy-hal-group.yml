@@ -1,6 +1,6 @@
 name: Build and Deploy NestJS with pnpm
 
-#test 1
+#test
 on:
   push:
     branches:
@@ -31,7 +31,7 @@ jobs:
       - name: Setup SSH agent and add key
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+          ssh-private-key: ${{ secrets.DEPLOY_HAL_GROUP_SSH_KEY }}
 
       - name: Add server to known_hosts to avoid host verification error
         run: ssh-keyscan -H 139.59.227.188 >> ~/.ssh/known_hosts
