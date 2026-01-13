@@ -30,7 +30,6 @@ export class PermissionSeeder {
       .tz(Timezone.LAOS)
       .format(DateFormat.DATETIME_FORMAT);
 
-    // Verify that permission groups exist before seeding permissions
     const groupCount = await _permissionGroupRepository.count();
     if (groupCount === 0) {
       throw new Error(
