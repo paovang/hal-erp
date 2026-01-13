@@ -21,7 +21,7 @@ export class SeederService {
     private readonly transactionManagerService: ITransactionManagerService,
     @Inject() private _departmentSeeder: DepartmentSeeder,
     @Inject() private _permissionGroupSeeder: PermissionGroupSeeder,
-    // @Inject() private _permissionSeeder: PermissionSeeder,
+    @Inject() private _permissionSeeder: PermissionSeeder,
     @Inject() private _roleSeederSeeder: RoleSeeder,
     @Inject() private _provinceSeeder: ProvinceSeeder,
     @Inject() private _userSeeder: UserSeeder,
@@ -37,7 +37,7 @@ export class SeederService {
         async (manager) => {
           await this._departmentSeeder.seed(manager);
           await this._permissionGroupSeeder.seed(manager);
-          // await this._permissionSeeder.seed(manager);
+          await this._permissionSeeder.seed(manager);
           await this._roleSeederSeeder.seed(manager);
           await this._provinceSeeder.seed(manager);
           await this._userSeeder.seed(manager);
