@@ -81,6 +81,14 @@ export class UserSeeder {
         created_at: now as unknown as Date,
         updated_at: now as unknown as Date,
       },
+      {
+        username: 'group',
+        email: 'group@example.com',
+        password: await bcrypt.hash('group@2026', 12),
+        roles: [superAdminRole],
+        created_at: now as unknown as Date,
+        updated_at: now as unknown as Date,
+      },
     ];
 
     /* ------------------------------------------------------------------ */
