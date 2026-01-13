@@ -27,6 +27,7 @@ export class PermissionGroupSeeder {
 
     const items = [
       {
+        id: 1,
         name: 'department',
         display_name: 'Department',
         type: 'admin',
@@ -34,6 +35,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 2,
         name: 'unit',
         display_name: 'Unit',
         type: 'all',
@@ -41,6 +43,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 3,
         name: 'position',
         display_name: 'Position',
         type: 'all',
@@ -48,6 +51,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 4,
         name: 'role',
         display_name: 'Role',
         type: 'admin',
@@ -55,6 +59,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 5,
         name: 'user',
         display_name: 'User',
         type: 'admin',
@@ -62,6 +67,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 6,
         name: 'permission',
         display_name: 'Permission',
         type: 'all',
@@ -69,6 +75,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 7,
         name: 'document-type',
         display_name: 'Document Type',
         type: 'all',
@@ -76,6 +83,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 8,
         name: 'department-user',
         display_name: 'Department User',
         type: 'all',
@@ -83,6 +91,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 9,
         name: 'department-approver',
         display_name: 'Department Approver',
         type: 'admin',
@@ -90,6 +99,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 10,
         name: 'currency',
         display_name: 'Currency',
         type: 'all',
@@ -97,13 +107,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
-        name: 'document-type',
-        display_name: 'Document Type',
-        type: 'admin',
-        created_at: currentDateTime,
-        updated_at: currentDateTime,
-      },
-      {
+        id: 11,
         name: 'vendor',
         display_name: 'Vendor',
         type: 'all',
@@ -111,6 +115,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 12,
         name: 'vendor-bank-account',
         display_name: 'Vendor Bank Account',
         type: 'all',
@@ -118,6 +123,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 13,
         name: 'budget-account',
         display_name: 'Budget Account',
         type: 'all',
@@ -125,6 +131,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 14,
         name: 'budget-item',
         display_name: 'Budget Item',
         type: 'all',
@@ -132,6 +139,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 15,
         name: 'budget-item-detail',
         display_name: 'Budget Item Detail',
         type: 'all',
@@ -139,6 +147,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 16,
         name: 'budget-approval-rule',
         display_name: 'Budget Approval Rule',
         type: 'all',
@@ -146,6 +155,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 17,
         name: 'approval-workflow',
         display_name: 'Approval Workflow',
         type: 'all',
@@ -153,6 +163,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 18,
         name: 'approval-workflow-step',
         display_name: 'Approval Workflow Step',
         type: 'all',
@@ -160,6 +171,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 19,
         name: 'document',
         display_name: 'Document',
         type: 'all',
@@ -167,6 +179,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 20,
         name: 'purchase-request',
         display_name: 'Purchase Request',
         type: 'all',
@@ -174,6 +187,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 21,
         name: 'purchase-request-item',
         display_name: 'Purchase Request Item',
         type: 'all',
@@ -181,6 +195,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 22,
         name: 'purchase-order',
         display_name: 'Purchase Order',
         type: 'all',
@@ -188,6 +203,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 23,
         name: 'purchase-order-item',
         display_name: 'Purchase Order Item',
         type: 'all',
@@ -195,6 +211,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 24,
         name: 'purchase-order-selected-vendor',
         display_name: 'Purchase Order Selected Vendor',
         type: 'all',
@@ -202,6 +219,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 25,
         name: 'user-approval',
         display_name: 'User Approval',
         type: 'all',
@@ -209,6 +227,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 26,
         name: 'user-approval-step',
         display_name: 'User Approval Step',
         type: 'all',
@@ -216,6 +235,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 27,
         name: 'receipt',
         display_name: 'Receipt',
         type: 'all',
@@ -223,6 +243,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 28,
         name: 'receipt-item',
         display_name: 'Receipt Item',
         type: 'all',
@@ -230,6 +251,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 29,
         name: 'company',
         display_name: 'Company',
         type: 'all',
@@ -237,13 +259,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
-        name: 'company',
-        display_name: 'Company',
-        type: 'all',
-        created_at: currentDateTime,
-        updated_at: currentDateTime,
-      },
-      {
+        id: 30,
         name: 'company-user',
         display_name: 'Company User',
         type: 'all',
@@ -251,6 +267,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 31,
         name: 'category',
         display_name: 'Category',
         type: 'all',
@@ -258,6 +275,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 32,
         name: 'increase-budget',
         display_name: 'Increase Budget',
         type: 'all',
@@ -265,6 +283,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 33,
         name: 'increase-budget-detail',
         display_name: 'Increase Budget Detail',
         type: 'all',
@@ -272,6 +291,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 34,
         name: 'product-type',
         display_name: 'Product Type',
         type: 'all',
@@ -279,6 +299,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 35,
         name: 'product',
         display_name: 'Product',
         type: 'all',
@@ -286,6 +307,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 36,
         name: 'quota-company',
         display_name: 'Quota Company',
         type: 'all',
@@ -293,6 +315,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 37,
         name: 'vendor-product',
         display_name: 'Vendor Product',
         type: 'all',
@@ -300,6 +323,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 38,
         name: 'vat',
         display_name: 'Vat',
         type: 'all',
@@ -307,6 +331,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 39,
         name: 'bank',
         display_name: 'Bank',
         type: 'all',
@@ -314,6 +339,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 40,
         name: 'budget-approval',
         display_name: 'Budget Approval',
         type: 'all',
@@ -321,6 +347,7 @@ export class PermissionGroupSeeder {
         updated_at: currentDateTime,
       },
       {
+        id: 41,
         name: 'department-rule',
         display_name: 'Department Rule',
         type: 'all',
