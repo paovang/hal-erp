@@ -361,8 +361,20 @@ export class PermissionGroupSeeder {
         where: { name: item.name },
       });
       if (!existingItem) {
-        const items = _respository.create(item);
-        await _respository.save(items);
+        // Use raw SQL to insert with specific ID
+        await manager.query(
+          `INSERT INTO "permission_groups" ("id", "name", "display_name", "type", "created_at", "updated_at")
+           VALUES ($1, $2, $3, $4, $5, $6)
+           ON CONFLICT ("id") DO NOTHING`,
+          [
+            item.id,
+            item.name,
+            item.display_name,
+            item.type,
+            item.created_at,
+            item.updated_at,
+          ],
+        );
       }
     }
     await this._helper.executingLog(this.SEEDER_NAME, seederLogRepository);
