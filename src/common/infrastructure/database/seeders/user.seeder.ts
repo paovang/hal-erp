@@ -81,6 +81,7 @@ export class UserSeeder {
         created_at: now as unknown as Date,
         updated_at: now as unknown as Date,
       },
+      // role group
       {
         username: 'group',
         email: 'group@example.com',
