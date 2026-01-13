@@ -3,6 +3,7 @@ import { HelperSeeder } from './helper.seeder';
 import { EntityManager } from 'typeorm';
 import { SeederLogOrmEntity } from '../typeorm/seeder-log.orm';
 import { PermissionOrmEntity } from '../typeorm/permission.orm';
+import { PermissionGroupOrmEntity } from '../typeorm/permission-group.orm';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
@@ -22,9 +23,20 @@ export class PermissionSeeder {
     if (isExecute) return [];
 
     const _repository = manager.getRepository(PermissionOrmEntity);
+    const _permissionGroupRepository = manager.getRepository(
+      PermissionGroupOrmEntity,
+    );
     const currentDateTime = moment
       .tz(Timezone.LAOS)
       .format(DateFormat.DATETIME_FORMAT);
+
+    // Verify that permission groups exist before seeding permissions
+    const groupCount = await _permissionGroupRepository.count();
+    if (groupCount === 0) {
+      throw new Error(
+        'Permission groups do not exist. Please run permission group seeder first by clearing seeder_logs table.',
+      );
+    }
 
     // Define your mapping here
     const permissionGroupMapping: Record<string, number> = {
