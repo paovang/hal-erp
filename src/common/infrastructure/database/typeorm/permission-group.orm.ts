@@ -5,7 +5,7 @@ import {
   Entity,
   Index,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,7 +18,7 @@ export enum EnumType {
 
 @Entity('permission_groups')
 export class PermissionGroupOrmEntity {
-  @PrimaryGeneratedColumn({ unsigned: true })
+  @PrimaryColumn({ type: 'int', unsigned: true })
   id!: number;
 
   @Index()
