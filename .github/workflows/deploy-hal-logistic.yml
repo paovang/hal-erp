@@ -34,7 +34,7 @@ jobs:
           ssh-private-key: ${{ secrets.DEPLOY_HAL_LOGISTIC_SSH_KEY }}
 
       - name: Add server to known_hosts to avoid host verification error
-        run: ssh-keyscan -H 139.59.227.188 >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H 157.245.150.128 >> ~/.ssh/known_hosts
 
       # Copy Project
       - name: Copy project to server
