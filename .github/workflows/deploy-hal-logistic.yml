@@ -44,20 +44,20 @@ jobs:
             --exclude .git \
             --exclude .github \
             --exclude '.env*' \
-            ./ root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }}:/var/www/hal_group_api/
+            ./ root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }}:/root/project/back-end-erp/
 
       # Create .env
       - name: Create .env file on server
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
-            echo '${{ secrets.ENV_HAL_LOGISTIC_CONTENT }}' > /var/www/hal_group_api/.env
+            echo '${{ secrets.ENV_HAL_LOGISTIC_CONTENT }}' > /root/project/back-end-erp/.env
           "
 
       # Install Dependencies On Server
       - name: Install dependencies on server
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
-            cd /var/www/hal_group_api &&
+            cd /root/project/back-end-erp &&
             pnpm install &&
             pnpm add ts-node tsconfig-paths
           "
@@ -66,7 +66,7 @@ jobs:
       - name: Generate database migrations
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
-            cd /var/www/hal_group_api &&
+            cd /root/project/back-end-erp &&
             pnpm run migration:generate || true
           "
 
@@ -74,7 +74,7 @@ jobs:
       - name: Run database migrations
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
-            cd /var/www/hal_group_api &&
+            cd /root/project/back-end-erp &&
             pnpm run migration:run
           "
 
@@ -82,7 +82,7 @@ jobs:
       - name: Seed database
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
-            cd /var/www/hal_group_api &&
+            cd /root/project/back-end-erp &&
             pnpm run db:seed
           "
 
@@ -90,10 +90,10 @@ jobs:
       - name: Restart server app
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
-            cd /var/www/hal_group_api &&
-            if pm2 list | grep -q 'apis'; then
-              pm2 restart apis;
+            cd /root/project/back-end-erp &&
+            if pm2 list | grep -q 'backend-api'; then
+              pm2 restart backend-api;
             else
-              pm2 start dist/main.js --name apis;
+              pm2 start dist/main.js --name backend-api;
             fi
           "
