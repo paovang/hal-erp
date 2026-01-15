@@ -89,7 +89,7 @@ jobs:
       # Restart Server
       - name: Restart server app
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
             cd /root/project/back-end-erp &&
             if pm2 list | grep -q 'backend-api'; then
               pm2 restart backend-api;
