@@ -49,14 +49,14 @@ jobs:
       # Create .env
       - name: Create .env file on server
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
             echo '${{ secrets.ENV_HAL_LOGISTIC_CONTENT }}' > /var/www/hal_group_api/.env
           "
 
       # Install Dependencies On Server
       - name: Install dependencies on server
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
             cd /var/www/hal_group_api &&
             pnpm install &&
             pnpm add ts-node tsconfig-paths
@@ -65,7 +65,7 @@ jobs:
       # Migration Generate
       - name: Generate database migrations
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
             cd /var/www/hal_group_api &&
             pnpm run migration:generate || true
           "
@@ -73,7 +73,7 @@ jobs:
       # Migration Run
       - name: Run database migrations
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
             cd /var/www/hal_group_api &&
             pnpm run migration:run
           "
@@ -81,7 +81,7 @@ jobs:
       # Seed Data
       - name: Seed database
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
             cd /var/www/hal_group_api &&
             pnpm run db:seed
           "
