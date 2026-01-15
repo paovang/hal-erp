@@ -13,7 +13,7 @@ async function bootstrap() {
   app.enableCors({ origin: '*' });
   app.setGlobalPrefix('api');
 
-  // Serve static files 1
+  // Serve static files
   app.use('/assets', express.static(join(__dirname, '..', 'assets')));
 
   app.use(I18nMiddleware);
