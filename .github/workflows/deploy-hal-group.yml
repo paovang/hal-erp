@@ -1,6 +1,6 @@
 name: Build and Deploy NestJS with pnpm
 
-#test 1
+#test
 on:
   push:
     branches:
