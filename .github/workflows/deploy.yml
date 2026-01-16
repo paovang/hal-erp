@@ -51,13 +51,6 @@ jobs:
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "echo '${{ secrets.ENV_CONTENT }}' > /var/www/apis/.env"
 
       # Install Dependencies On Server
-      # - name: Install dependencies on server
-      #   run: |
-      #     ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
-      #       cd /var/www/apis &&
-      #       pnpm install &&
-      #       pnpm add ts-node tsconfig-paths
-      #     "
       - name: Install dependencies on server
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
