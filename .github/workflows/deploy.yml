@@ -3,7 +3,7 @@ name: Build and Deploy NestJS with pnpm
 on:
   push:
     branches:
-      - master  
+      - master
 
 jobs:
   build_and_deploy:
@@ -51,14 +51,24 @@ jobs:
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "echo '${{ secrets.ENV_CONTENT }}' > /var/www/apis/.env"
 
       # Install Dependencies On Server
+      # - name: Install dependencies on server
+      #   run: |
+      #     ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
+      #       cd /var/www/apis &&
+      #       pnpm install &&
+      #       pnpm add ts-node tsconfig-paths
+      #     "
       - name: Install dependencies on server
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
-            cd /var/www/apis && 
+            export NVM_DIR=\"/root/.nvm\" &&
+            [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" &&
+            nvm use 24 &&
+            cd /var/www/apis &&
             pnpm install &&
             pnpm add ts-node tsconfig-paths
           "
-          
+
       # Migration Generate
       - name: Generate database migrations
         run: |
