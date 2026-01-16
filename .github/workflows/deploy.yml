@@ -54,10 +54,7 @@ jobs:
       - name: Install dependencies on server
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
-            export NVM_DIR=\"/root/.nvm\" &&
-            [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" &&
-            nvm use 24 &&
-            cd /var/www/apis &&
+            cd /var/www/apis && 
             pnpm install &&
             pnpm add ts-node tsconfig-paths
           "
