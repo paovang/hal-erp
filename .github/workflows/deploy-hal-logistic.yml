@@ -57,7 +57,7 @@ jobs:
       - name: Install dependencies on server
         run: |
           ssh root@${{ secrets.DEPLOY_SERVER_HAL_LOGISTIC_IP }} "
-            cd /root/project/back-end-erp && npm install -g pnpm &&
+            cd /root/project/back-end-erp &&
             pnpm install &&
             pnpm add ts-node tsconfig-paths
           "
