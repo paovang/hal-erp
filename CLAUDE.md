@@ -25,6 +25,7 @@ pnpm run test                   # Run unit tests
 pnpm run test:e2e               # Run end-to-end tests
 pnpm run test:cov               # Run tests with coverage
 pnpm run test:watch             # Watch mode for tests
+pnpm run test -- <path/to/test> # Run specific test file
 ```
 
 ### Database Operations
@@ -43,7 +44,8 @@ pnpm run format                 # Format code with Prettier
 
 ### Production Deployment
 ```bash
-pnpm run deploy                 # Deploy dist/ to production server (via SCP)
+pnpm run deploy                 # Deploy to main server (134.209.101.30)
+pnpm run deploy-hal-group       # Deploy to HAL Group server (139.59.227.188)
 ```
 
 ## Architecture Overview
@@ -107,7 +109,7 @@ import { Y } from '@common/...'           // Points to src/common/
 - **Authentication**: JWT via `@core-system/auth` package
 - **Validation**: class-validator + class-transformer
 - **File Storage**: AWS S3 + CloudFront
-- **i18n**: nestjs-i18n (translation files in `assets/i18n/`)
+- **i18n**: nestjs-i18n (translation files in `src/common/infrastructure/localization/i18n/`)
 - **Testing**: Jest
 
 ## Key Conventions
@@ -150,8 +152,9 @@ import { Y } from '@common/...'           // Points to src/common/
 
 - Unit tests: co-located with source files as `*.spec.ts`
 - E2E tests: in `test/` directory
-- Test configuration: `jest.config.js` and `test/jest-e2e.json`
+- Test configuration: `jest.config.js` (embedded in package.json) and `test/jest-e2e.json`
 - Use Jest's mocking for external dependencies
+- Run specific test: `pnpm run test -- path/to/test.spec.ts`
 
 ## Important Files
 

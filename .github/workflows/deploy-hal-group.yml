@@ -1,9 +1,10 @@
 name: Build and Deploy NestJS with pnpm
 
+#test 124
 on:
   push:
     branches:
-      - master
+      - fixe
 
 jobs:
   build_and_deploy:
@@ -30,10 +31,10 @@ jobs:
       - name: Setup SSH agent and add key
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+          ssh-private-key: ${{ secrets.DEPLOY_HAL_GROUP_SSH_KEY }}
 
       - name: Add server to known_hosts to avoid host verification error
-        run: ssh-keyscan -H 134.209.101.30 >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H 139.59.227.188 >> ~/.ssh/known_hosts
 
       # Copy Project
       - name: Copy dist folder to server
@@ -43,18 +44,18 @@ jobs:
             --exclude '.git' \
             --exclude '.github' \
             --exclude '.env*' \
-            . root@${{ secrets.DEPLOY_SERVER_IP }}:/var/www/apis/
+            . root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }}:/var/www/hal_group_api/
 
       # Create .env
       - name: Create .env file on server
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "echo '${{ secrets.ENV_CONTENT }}' > /var/www/apis/.env"
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "echo '${{ secrets.ENV_HAL_GROUP_CONTENT }}' > /var/www/hal_group_api/.env"
 
       # Install Dependencies On Server
       - name: Install dependencies on server
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
-            cd /var/www/apis && 
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+            cd /var/www/hal_group_api && 
             pnpm install &&
             pnpm add ts-node tsconfig-paths
           "
@@ -62,32 +63,32 @@ jobs:
       # Migration Generate
       - name: Generate database migrations
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
-            cd /var/www/apis && 
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+            cd /var/www/hal_group_api && 
             (pnpm run migration:generate || true)
           "
 
       # Migration Run
       - name: Run database migrations
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
-            cd /var/www/apis && 
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+            cd /var/www/hal_group_api && 
             pnpm run migration:run
           "
 
       # Seed Data
       - name: Seed database
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
-            cd /var/www/apis && 
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+            cd /var/www/hal_group_api && 
             pnpm run db:seed
           "
 
       # Restart Server
       - name: Restart server app (optional)
         run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
-            cd /var/www/apis &&
+          ssh root@${{ secrets.DEPLOY_SERVER_HAL_GROUP_IP }} "
+            cd /var/www/hal_group_api &&
             if pm2 list | grep -q 'apis'; then
               pm2 restart apis;
             else

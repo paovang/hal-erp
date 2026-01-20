@@ -238,6 +238,7 @@ export class PermissionSeeder {
       ([name, groupId]) => ({
         name,
         guard_name: 'api',
+        display_name: this.toTitleCase(name),
         permission_group_id: groupId,
         created_at: currentDateTime,
         updated_at: currentDateTime,
