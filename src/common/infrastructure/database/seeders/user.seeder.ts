@@ -58,25 +58,25 @@ export class UserSeeder {
 
     const items: SeedItem[] = [
       {
-        username: 'admin',
-        email: 'admin@example.com',
-        password: await bcrypt.hash('admin123', 12),
+        username: 'admin-hal-group',
+        email: 'adminHalGroup@gmail.com',
+        password: await bcrypt.hash('admin-hal-group@26', 12),
         roles: [adminRole],
         created_at: now as unknown as Date,
         updated_at: now as unknown as Date,
       },
       {
-        username: 'super-admin',
-        email: 'super-admin@example.com',
-        password: await bcrypt.hash('super-admin123', 12),
+        username: 'super-admin-hal-group',
+        email: 'super-admin-hal-group@gmail.com',
+        password: await bcrypt.hash('super-admin-hal-group@26', 12),
         roles: [superAdminRole],
         created_at: now as unknown as Date,
         updated_at: now as unknown as Date,
       },
       {
-        username: 'user',
-        email: 'user@example.com',
-        password: await bcrypt.hash('user123', 12),
+        username: 'user-hal-group',
+        email: 'user-hal-group@gmail.com',
+        password: await bcrypt.hash('user-hal-group@26', 12),
         roles: [userRole],
         created_at: now as unknown as Date,
         updated_at: now as unknown as Date,
@@ -84,7 +84,7 @@ export class UserSeeder {
       // role group
       {
         username: 'group',
-        email: 'group@example.com',
+        email: 'group@gmail.com',
         password: await bcrypt.hash('group@2026', 12),
         roles: [superAdminRole],
         created_at: now as unknown as Date,
