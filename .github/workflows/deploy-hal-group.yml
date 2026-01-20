@@ -4,7 +4,7 @@ name: Build and Deploy NestJS with pnpm
 on:
   push:
     branches:
-      - fixe
+      - halgroup
 
 jobs:
   build_and_deploy:
