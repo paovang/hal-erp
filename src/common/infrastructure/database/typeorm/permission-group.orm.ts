@@ -30,6 +30,10 @@ export class PermissionGroupOrmEntity {
   display_name: string;
 
   @Index()
+  @Column({ type: 'varchar', length: 255, nullable: true, unique: true })
+  display_name_lo: string;
+
+  @Index()
   @Column({ type: 'enum', enum: EnumType, default: EnumType.ALL })
   type: string;
 
