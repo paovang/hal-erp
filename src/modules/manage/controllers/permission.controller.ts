@@ -23,7 +23,6 @@ export class PermissionController {
     @Query() dto: PermissionQueryDto,
   ): Promise<ResponseResult<PermissionGroupResponse>> {
     const result = await this._roleService.getAll(dto);
-    console.log('object', result);
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
