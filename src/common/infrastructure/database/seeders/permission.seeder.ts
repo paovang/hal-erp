@@ -239,6 +239,10 @@ export class PermissionSeeder {
         name,
         guard_name: 'api',
         display_name: this.toTitleCase(name),
+<<<<<<< HEAD
+=======
+        display_name_lo: this.toTitleCaseLo(name),
+>>>>>>> master
         permission_group_id: groupId,
         created_at: currentDateTime,
         updated_at: currentDateTime,
@@ -248,13 +252,26 @@ export class PermissionSeeder {
       const existingItem = await _repository.findOne({
         where: { name: item.name },
       });
+<<<<<<< HEAD
       if (existingItem && existingItem.display_name == null) {
         existingItem.display_name = item.display_name;
         await _repository.save(existingItem);
       }
+=======
+
+>>>>>>> master
       if (!existingItem) {
+        // Insert new permission
         const createdItem = _repository.create(item);
         await _repository.save(createdItem);
+      } else if (
+        !existingItem.display_name_lo ||
+        existingItem.display_name_lo === null
+      ) {
+        // Update existing permission if display_name_lo is missing
+        existingItem.display_name_lo = item.display_name_lo;
+        existingItem.updated_at = new Date();
+        await _repository.save(existingItem);
       }
     }
 
@@ -265,5 +282,104 @@ export class PermissionSeeder {
     return str
       .replace(/-/g, ' ')
       .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
+  private toTitleCaseLo(str: string): string {
+    // Lao language translations for common permission terms
+    const laoTranslations: Record<string, string> = {
+      // Actions
+      create: 'ສ້າງ',
+      read: 'ເບີ່ງ',
+      update: 'ແກ້ໄຂ',
+      delete: 'ລຶບ',
+
+      // Compound terms (must come before individual words for priority matching)
+      'document-type': 'ປະເພດເອກະສານ',
+      'department-user': 'ຜູ້ໃຊ້ພະແນກ',
+      'department-approver': 'ຜູ້ອະນຸມັດພະແນກ',
+      'vendor-bank-account': 'ບັນຊີທະນາຄານຜູ້ສະໜອງ',
+      'budget-account': 'ບັນຊີງົບປະມານ',
+      'budget-item': 'ລາຍການງົບປະມານ',
+      'budget-item-detail': 'ລາຍລະອຽດລາຍການງົບປະມານ',
+      'budget-approval-rule': 'ກົດລະບຽບອະນຸມັດງົບປະມານ',
+      'approval-workflow': 'ຂະບວນການອະນຸມັດ',
+      'approval-workflow-step': 'ຂັ້ນຕອນຂະບວນການອະນຸມັດ',
+      'purchase-request': 'ຄຳຮ້ອງສັ່ງຊື້',
+      'purchase-request-item': 'ລາຍການຄຳຮ້ອງສັ່ງຊື້',
+      'purchase-order': 'ຄຳສັ່ງຊື້',
+      'purchase-order-item': 'ລາຍການຄຳສັ່ງຊື້',
+      'purchase-selected-vendor': 'ເລືອກຜູ້ສະໜອງ',
+      'user-approval': 'ການອະນຸມັດເອກະສານ',
+      'user-approval-step': 'ຂັ້ນຕອນການອະນຸມັດເອກະສານ',
+      'receipt-item': 'ລາຍການໃບເບີກຈ່າຍ',
+      'company-user': 'ຜູ້ໃຊ້ບໍລິສັດ',
+      'increase-budget': 'ຂໍເພີ່ມງົບປະມານ',
+      'increase-budget-detail': 'ລາຍລະອຽດການຂໍເພີ່ມງົບປະມານ',
+      'product-type': 'ປະເພດສິນຄ້າ',
+      'quota-company': 'ໂຄຕ້າບໍລິສັດ',
+      'vendor-product': 'ສິນຄ້າຜູ້ສະໜອງ',
+      'budget-approval': 'ອະນຸມັດງົບປະມານ',
+      'department-rule': 'ກົດລະບຽບພະແນກ',
+
+      // Individual words (fallback)
+      department: 'ພະແນກ',
+      unit: 'ຫົວໜ່ວຍ',
+      position: 'ຕຳແໜ່ງ',
+      role: 'ບົດບາດ',
+      user: 'ຜູ້ໃຊ້',
+      permission: 'ສິດອະນຸຍາດ',
+      currency: 'ສະກຸນເງິນ',
+      vendor: 'ຜູ້ສະໜອງ',
+      bank: 'ທະນາຄານ',
+      account: 'ບັນຊີ',
+      budget: 'ງົບປະມານ',
+      item: 'ລາຍການ',
+      detail: 'ລາຍລະອຽດ',
+      approval: 'ການອະນຸມັດ',
+      approver: 'ຜູ້ອະນຸມັດ',
+      workflow: 'ຂະບວນການ',
+      step: 'ຂັ້ນຕອນ',
+      document: 'ເອກະສານ',
+      type: 'ປະເພດ',
+      request: 'ຄຳຮ້ອງສັ່ງ',
+      order: 'ຄຳສັ່ງ',
+      selected: 'ເລືອກ',
+      receipt: 'ໃບເບີກຈ່າຍ',
+      company: 'ບໍລິສັດ',
+      category: 'ໝວດໝູ່',
+      increase: 'ເພີ່ມ',
+      product: 'ສິນຄ້າ',
+      quota: 'ໂຄຕ້າ',
+      vat: 'ອາກອມ',
+      rule: 'ກົດລະບຽບ',
+    };
+
+    // Convert permission name to Lao
+    // Extract the action (create, read, update, delete)
+    const parts = str.split('-');
+    const action = parts[0];
+
+    // Try to match compound phrases first, then individual words
+    let result = '';
+    if (parts.length > 1) {
+      // Join the remaining parts to form the resource name
+      const resourceName = parts.slice(1).join('-');
+
+      // Check if the resource name is in translations (for compound terms)
+      if (laoTranslations[resourceName]) {
+        result = `${laoTranslations[action] || action} ${laoTranslations[resourceName]}`;
+      } else {
+        // Split compound terms and translate each word
+        const resourceParts = parts.slice(1);
+        const translatedParts = resourceParts.map(
+          (part) => laoTranslations[part] || part,
+        );
+        result = `${laoTranslations[action] || action} ${translatedParts.join(' ')}`;
+      }
+    } else {
+      result = laoTranslations[str] || str;
+    }
+
+    return result.trim();
   }
 }

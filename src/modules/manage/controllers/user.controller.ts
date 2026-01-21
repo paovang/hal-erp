@@ -112,6 +112,12 @@ export class UserController {
     );
   }
 
+  @Public()
+  @Get('test')
+  async getTest(): Promise<any> {
+    return 'test success';
+  }
+
   @Get(':id')
   async getOne(@Param('id') id: number): Promise<ResponseResult<UserResponse>> {
     const result = await this._userService.getOne(id);

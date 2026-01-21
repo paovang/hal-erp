@@ -5,6 +5,7 @@ export class PermissionBuilder {
   permissionId: PermissionId;
   name: string;
   display_name: string;
+  display_name_lo: string;
   type: string;
   createdAt!: Date;
   updatedAt!: Date | null;
@@ -22,6 +23,11 @@ export class PermissionBuilder {
 
   setDisplayName(display_name: string): this {
     this.display_name = display_name;
+    return this;
+  }
+
+  setDisplayNameLo(display_name_lo: string): this {
+    this.display_name_lo = display_name_lo;
     return this;
   }
 

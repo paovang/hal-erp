@@ -16,6 +16,7 @@ export class PermissionDataAccessMapper {
         .setId(new PermissionId(ormData.id))
         .setName(ormData.name)
         .setDisplayName(ormData.display_name)
+        .setDisplayNameLo(ormData.display_name_lo)
         .setCreatedAt(ormData.created_at)
         .setUpdatedAt(ormData.updated_at)
         .setDeletedAt(ormData.deleted_at)
@@ -50,6 +51,7 @@ export class PermissionDataAccessMapper {
         .setId(new PermissionId(p.id))
         .setName(p.name)
         .setDisplayName(p.display_name)
+        .setDisplayNameLo(p.display_name_lo)
         .setCreatedAt(p.created_at)
         .setUpdatedAt(p.updated_at)
         .setDeletedAt(p.deleted_at)
@@ -60,6 +62,7 @@ export class PermissionDataAccessMapper {
       .setId(new PermissionGroupId(ormData.id))
       .setName(ormData.name)
       .setDisplayName(ormData.display_name)
+      .setDisplayNameLo(ormData.display_name_lo)
       .setType(ormData.type)
       .setPermissions(permissions)
       .build();

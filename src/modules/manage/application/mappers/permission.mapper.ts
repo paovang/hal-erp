@@ -23,6 +23,7 @@ export class PermissionDataMapper {
     response.id = entity.getId().value;
     response.name = entity.name;
     response.display_name = entity.displayName;
+    response.display_name_lo = entity.displayNameLo;
     response.type = entity.type;
 
     response.permissions = entity.permissions.map((p) => {
@@ -30,6 +31,7 @@ export class PermissionDataMapper {
       permission.id = p.getId().value;
       permission.name = p.name;
       permission.display_name = p.displayName;
+      permission.display_name_lo = p.displayNameLo;
       return permission;
     });
 

@@ -35,6 +35,10 @@ export class PermissionOrmEntity {
   display_name: string;
 
   @Index()
+  @Column({ type: 'varchar', length: 255, nullable: true, unique: true })
+  display_name_lo: string;
+
+  @Index()
   @Column({ nullable: true })
   permission_group_id?: number;
   @ManyToOne(

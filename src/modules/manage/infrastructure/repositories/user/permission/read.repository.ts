@@ -65,6 +65,8 @@ export class ReadPermissionRepository implements IReadPermissionRoleRepository {
         'permission_groups.name',
         'permissions.name',
         'permission_groups.display_name',
+        'permission_groups.display_name_lo',
+        'permissions.display_name_lo',
       ],
       dateColumn: '',
       filterByColumns: [],

@@ -11,6 +11,9 @@ export class PermissionResponse {
   display_name: string;
 
   @ApiProperty()
+  display_name_lo: string;
+
+  @ApiProperty()
   type: string;
 
   @ApiProperty()
@@ -29,6 +32,9 @@ export class PermissionGroupResponse {
 
   @ApiProperty()
   display_name: string;
+
+  @ApiProperty()
+  display_name_lo: string;
 
   @ApiProperty()
   type: string;

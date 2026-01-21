@@ -6,6 +6,7 @@ import { PermissionEntity } from './permission.entity';
 export class PermissionGroupEntity extends Entity<PermissionGroupId> {
   private readonly _name: string;
   private readonly _displayName: string;
+  private readonly _displayNameLo: string;
   private readonly _type: string;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
@@ -17,6 +18,7 @@ export class PermissionGroupEntity extends Entity<PermissionGroupId> {
     this.setId(builder.permissionGroupId);
     this._name = builder.name;
     this._displayName = builder.display_name;
+    this._displayNameLo = builder.display_name_lo;
     this._type = builder.type;
     this._permissions = builder.permissions ?? [];
   }
@@ -27,6 +29,10 @@ export class PermissionGroupEntity extends Entity<PermissionGroupId> {
 
   get displayName(): string {
     return this._displayName;
+  }
+
+  get displayNameLo(): string {
+    return this._displayNameLo;
   }
 
   get type(): string {
