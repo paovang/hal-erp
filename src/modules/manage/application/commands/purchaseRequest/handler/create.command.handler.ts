@@ -298,6 +298,8 @@ export class CreateCommandHandler
         const user_approval_entity =
           this._dataUserApprovalMapper.toEntity(merge);
 
+        console.log('user_approval_entity', user_approval_entity);
+
         const user_approval = await this._writeUserApproval.create(
           user_approval_entity,
           manager,

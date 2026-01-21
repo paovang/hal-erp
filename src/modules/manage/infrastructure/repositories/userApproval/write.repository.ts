@@ -20,11 +20,25 @@ export class WriteUserApprovalRepository
     entity: UserApprovalEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<UserApprovalEntity>> {
-    return this._dataAccessMapper.toEntity(
-      await manager.save(
-        this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
-      ),
+    // return this._dataAccessMapper.toEntity(
+    //   await manager.save(
+    //     this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
+    //   ),
+    // );
+
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.CREATE,
     );
+
+    console.log('OrmEntity', OrmEntity);
+    try {
+      return this._dataAccessMapper.toEntity(
+        await manager.save(UserApprovalOrmEntity, OrmEntity),
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   async update(
