@@ -58,7 +58,7 @@ export async function sendApprovalRequest(
   const apiUrl = process.env.APPROVAL_API_URL || 'http://127.0.0.1:3001';
   try {
     const response = await axios.post(
-      `${apiUrl}/create`,
+      `${apiUrl}/approval/create`,
       send_data_to_approval,
       {
         headers: {
