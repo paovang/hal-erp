@@ -81,6 +81,40 @@ export class UserSeeder {
         created_at: now as unknown as Date,
         updated_at: now as unknown as Date,
       },
+      ////////////////////////////////////
+      {
+        username: 'adminHalLogistic',
+        email: 'adminHalLogistic@gmail.com',
+        password: await bcrypt.hash('admin_halLogistic@26!', 12),
+        roles: [adminRole],
+        created_at: now as unknown as Date,
+        updated_at: now as unknown as Date,
+      },
+      {
+        username: 'super-adminHalLogistic',
+        email: 'super_adminHalLogistic@gmail.com',
+        password: await bcrypt.hash('hal_halLogistic@26!', 12),
+        roles: [superAdminRole],
+        created_at: now as unknown as Date,
+        updated_at: now as unknown as Date,
+      },
+      {
+        username: 'user-halLogistic',
+        email: 'user_halLogistic@gmail.com',
+        password: await bcrypt.hash('user_halLogistic@26!', 12),
+        roles: [userRole],
+        created_at: now as unknown as Date,
+        updated_at: now as unknown as Date,
+      },
+      // role group
+      {
+        username: 'halLogistic',
+        email: 'halLogistic@gmail.com',
+        password: await bcrypt.hash('halLogistic@26!', 12),
+        roles: [superAdminRole],
+        created_at: now as unknown as Date,
+        updated_at: now as unknown as Date,
+      },
     ];
 
     /* ------------------------------------------------------------------ */
