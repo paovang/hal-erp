@@ -293,22 +293,15 @@ export class CreateCommandHandler
           status: STATUS_KEY.PENDING,
         };
 
-        console.log('merge', merge);
-
         const user_approval_entity =
           this._dataUserApprovalMapper.toEntity(merge);
-
-        console.log('user_approval_entity', user_approval_entity);
 
         const user_approval = await this._writeUserApproval.create(
           user_approval_entity,
           manager,
         );
 
-        console.log('user_approval', user_approval);
-
         const ua_id = (user_approval as any)._id._value;
-        console.log('ua_id', ua_id);
 
         const pendingDto: CustomApprovalDto = {
           user_approval_id: ua_id,
