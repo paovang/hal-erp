@@ -248,7 +248,7 @@ export class PermissionSeeder {
       const existingItem = await _repository.findOne({
         where: { name: item.name },
       });
-      if (existingItem && !existingItem.display_name) {
+      if (existingItem && existingItem.display_name == null) {
         existingItem.display_name = item.display_name;
         await _repository.save(existingItem);
       }
