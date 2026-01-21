@@ -239,10 +239,7 @@ export class PermissionSeeder {
         name,
         guard_name: 'api',
         display_name: this.toTitleCase(name),
-<<<<<<< HEAD
-=======
         display_name_lo: this.toTitleCaseLo(name),
->>>>>>> master
         permission_group_id: groupId,
         created_at: currentDateTime,
         updated_at: currentDateTime,
@@ -252,14 +249,6 @@ export class PermissionSeeder {
       const existingItem = await _repository.findOne({
         where: { name: item.name },
       });
-<<<<<<< HEAD
-      if (existingItem && existingItem.display_name == null) {
-        existingItem.display_name = item.display_name;
-        await _repository.save(existingItem);
-      }
-=======
-
->>>>>>> master
       if (!existingItem) {
         // Insert new permission
         const createdItem = _repository.create(item);
