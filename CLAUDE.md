@@ -34,6 +34,11 @@ pnpm run migration:generate     # Generate new migration (creates file in src/co
 pnpm run migration:run          # Apply pending migrations
 pnpm run migration:revert       # Rollback last migration
 pnpm run db:seed                # Seed database with initial data
+
+# Production migration commands (use after build)
+pnpm run migration-dev:generate # Generate migration from dist/
+pnpm run migration-dev:run      # Apply migration from dist/
+pnpm run db-dev:seed            # Seed database from dist/
 ```
 
 ### Code Quality
@@ -60,14 +65,25 @@ Each business module follows this three-layer structure:
 src/modules/{module-name}/
 ├── application/                # Application services, use cases, CQRS handlers
 │   ├── commands/              # Write operations (create, update, delete)
+│   │   ├── {entity}/          # Entity-specific commands
+│   │   │   ├── create.command.ts
+│   │   │   ├── update-command.ts
+│   │   │   ├── delete.command.ts
+│   │   │   └── handler/       # Command handlers implementing ICommandHandler
 │   ├── queries/               # Read operations (get, list, search)
+│   │   └── handler/           # Query handlers implementing IQueryHandler
 │   ├── services/              # Application services
 │   ├── dto/                   # Data transfer objects (validation)
+│   │   ├── create/            # DTOs for write operations
+│   │   ├── query/             # DTOs for query parameters
+│   │   └── response/          # Response DTOs
 │   └── mappers/               # Map between entities and DTOs
+├── controllers/               # REST API controllers (NestJS)
 ├── domain/                    # Core business logic (no external dependencies)
 │   ├── entities/              # Domain entities with business rules
 │   ├── events/                # Domain events for cross-module communication
 │   ├── repositories/          # Repository interfaces (contracts)
+│   │   └── {name}-repository.interface.ts
 │   └── value-objects/         # Value objects (immutable)
 └── infrastructure/            # External concerns
     ├── repositories/          # TypeORM repository implementations
@@ -110,6 +126,8 @@ import { Y } from '@common/...'           // Points to src/common/
 - **Validation**: class-validator + class-transformer
 - **File Storage**: AWS S3 + CloudFront
 - **i18n**: nestjs-i18n (translation files in `src/common/infrastructure/localization/i18n/`)
+  - Supported languages: English (`en/`), Lao (`lo/`)
+  - Use custom i18n error formatter for validation errors
 - **Testing**: Jest
 
 ## Key Conventions
@@ -119,12 +137,17 @@ import { Y } from '@common/...'           // Points to src/common/
 - Files: kebab-case directories, PascalCase files
 - Repository interfaces: `{name}-repository.interface.ts`
 - Repository implementations: `read.repository.ts`, `write.repository.ts` (or just `{name}.repository.ts`)
+- Command files: `{action}.command.ts` (e.g., `create.command.ts`, `update-command.ts`)
+- Command handlers: `{action}-command.handler.ts` in `handler/` subdirectory
+- Query handlers: `{entity}-query.handler.ts` in `queries/handler/` subdirectory
 
 ### Database Entities
 - Use TypeORM decorators (`@Entity`, `@Column`, etc.)
 - Soft deletes enabled (use `@DeleteDateColumn`)
 - Timestamps with `@CreateDateColumn` and `@UpdateDateColumn`
 - Multi-tenant: include `company_id` where applicable
+- Database connection name pattern: `WRITE_CONNECTION_NAME` (defined in data-source.ts)
+- Entity files in `src/common/infrastructure/database/typeorm/` use `.orm.` suffix (e.g., `user.orm.ts`)
 
 ### Validation
 - DTOs use `class-validator` decorators
@@ -135,11 +158,28 @@ import { Y } from '@common/...'           // Points to src/common/
 - Use domain-specific exceptions in `application/exceptions/`
 - Global exception filter with i18n support
 - Standardized error response format
+- Laravel-style error response structure
+
+### File Upload Handling
+- Use `FileInterceptor` from `@nestjs/platform-express` with `multerStorage` utility
+- Apply `FileValidationInterceptor` for custom validation
+- Use `FileMimeTypeValidator` and `FileSizeValidator` for file restrictions
+- Image optimization via `IImageOptimizeService` before S3 upload
+- Define allowed MIME types as constants (e.g., `PROFILE_IMAGE_ALLOW_MIME_TYPE`)
+- Upload to AWS S3 via `IAmazonS3ImageService`
 
 ### Company Context
 - Most operations require company scoping
 - Use guards/decorators to extract company from JWT
 - Filter queries by company_id automatically
+- Use `@Public()` decorator from `@core-system/auth` for public endpoints
+- Use `@Inject()` with custom inject keys for dependency injection
+
+### Dependency Injection Patterns
+- Define inject keys in `application/constants/inject-key.const` (module-level) or `src/common/constants/inject-key.const` (global)
+- Use string constants for injection tokens instead of class references
+- Pattern: `@Inject(SERVICE_KEY) private readonly _service: IServiceInterface`
+- This enables loose coupling and easier testing
 
 ## Database Migration Workflow
 
@@ -179,3 +219,5 @@ import { Y } from '@common/...'           // Points to src/common/
 - Input validation on all endpoints
 - File upload restrictions (type, size)
 - Guards protect protected routes
+- Password hashing with bcrypt
+- Use `@Public()` decorator to bypass JWT authentication on specific endpoints
