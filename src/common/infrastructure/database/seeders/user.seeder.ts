@@ -108,15 +108,9 @@ export class UserSeeder {
       },
       // role group
       {
-<<<<<<< HEAD
         username: 'halLogistic',
         email: 'halLogistic@gmail.com',
         password: await bcrypt.hash('halLogistic@26!', 12),
-=======
-        username: 'group',
-        email: 'group@gmail.com',
-        password: await bcrypt.hash('group@26!', 12),
->>>>>>> halgroup
         roles: [superAdminRole],
         created_at: now as unknown as Date,
         updated_at: now as unknown as Date,
