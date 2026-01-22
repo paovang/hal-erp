@@ -19,6 +19,8 @@ import { EligiblePersons } from '@src/modules/manage/application/constants/statu
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/document.orm';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
+import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
 type CompanyIda = string;
 
 type NumberMap = Record<CompanyIda, number>;
@@ -48,6 +50,7 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
     private readonly _companyRepository: Repository<CompanyOrmEntity>,
     @InjectRepository(DocumentOrmEntity)
     private readonly _documentTypeOrm: Repository<DocumentOrmEntity>,
+    private readonly _userContextService: UserContextService,
   ) {}
 
   async getUsersSummary(
@@ -77,6 +80,16 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
     query: reportHalGroupQueryDto,
     manager: EntityManager,
   ): Promise<ReceiptSummaryMap> {
+    const user = this._userContextService.getAuthUser()?.user;
+    const user_id = user?.id;
+    const qb1 = await manager
+      .createQueryBuilder(ReceiptOrmEntity, 'r')
+      .leftJoin('documents', 'd', 'd.id = r.document_id')
+      .select('d.company_id', 'companyId')
+      // .select('r.document_id', 'documentId')
+      .getRawMany();
+
+    console.log(qb1);
     const qb = manager
       .createQueryBuilder()
       .select('d.company_id', 'companyId')
@@ -104,6 +117,8 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
 
     return result;
   }
+
+  //////////////////////////////////////////////////////
   async getBudgetSummary(
     query: reportHalGroupQueryDto,
     manager: EntityManager,
