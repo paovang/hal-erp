@@ -32,7 +32,7 @@ import {
 } from '@src/common/constants/inject-key.const';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
-import { DataSource, EntityManager, In } from 'typeorm';
+import { DataSource, EntityManager, In, IsNull, Not } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
 import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
@@ -188,7 +188,10 @@ export class CreateCommandHandler
         const check_workflow_status = await manager.findOne(
           ApprovalWorkflowOrmEntity,
           {
-            where: { document_type_id: document_type_id },
+            where: {
+              document_type_id: document_type_id,
+              company_id: company_id !== null ? company_id : Not(IsNull()),
+            },
           },
         );
 

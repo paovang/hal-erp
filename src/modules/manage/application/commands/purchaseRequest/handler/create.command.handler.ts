@@ -30,7 +30,7 @@ import {
 } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager, In } from 'typeorm';
+import { DataSource, EntityManager, In, IsNull, Not } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import path from 'path';
 import { createMockMulterFile } from '@src/common/utils/services/file-utils.service';
@@ -174,6 +174,16 @@ export class CreateCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        const user = this._userContextService.getAuthUser()?.user;
+        const user_id = user.id;
+        let company_id: number | null | undefined = null;
+        const company = await manager.findOne(CompanyUserOrmEntity, {
+          where: {
+            user_id: user_id,
+          },
+        });
+
+        company_id = company?.company_id ?? null;
         const check_document_type = await findOneOrFail(
           manager,
           DocumentTypeOrmEntity,
@@ -187,7 +197,10 @@ export class CreateCommandHandler
         const check_workflow_status = await manager.findOne(
           ApprovalWorkflowOrmEntity,
           {
-            where: { document_type_id: document_type_id },
+            where: {
+              document_type_id: document_type_id,
+              company_id: company_id !== null ? company_id : Not(IsNull()),
+            },
           },
         );
 
@@ -213,16 +226,16 @@ export class CreateCommandHandler
           '../../../../../../../assets/uploads/',
         );
 
-        const user = this._userContextService.getAuthUser()?.user;
-        const user_id = user.id;
-        let company_id: number | null | undefined = null;
-        const company = await manager.findOne(CompanyUserOrmEntity, {
-          where: {
-            user_id: user_id,
-          },
-        });
+        // const user = this._userContextService.getAuthUser()?.user;
+        // const user_id = user.id;
+        // let company_id: number | null | undefined = null;
+        // const company = await manager.findOne(CompanyUserOrmEntity, {
+        //   where: {
+        //     user_id: user_id,
+        //   },
+        // });
 
-        company_id = company?.company_id ?? null;
+        // company_id = company?.company_id ?? null;
 
         const department = await findOneOrFail(
           manager,
