@@ -38,16 +38,12 @@ export async function verifyOtp(
   };
 
   try {
-    const response = await axios.post(
-      `${apiUrl}/approval/verify-otp`,
-      playLoad,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-secret-key': process.env.APPROVAL_SECRET_KEY,
-        },
+    const response = await axios.post(`${apiUrl}/verify-otp`, playLoad, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-secret-key': process.env.APPROVAL_SECRET_KEY,
       },
-    );
+    });
 
     if (response.status !== 200 && response.status !== 201) {
       throw new ManageDomainException(

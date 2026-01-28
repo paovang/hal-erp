@@ -25,7 +25,7 @@ export async function sendOtpUtil(
   const apiUrl = process.env.APPROVAL_API_URL || 'http://127.0.0.1:3001';
 
   try {
-    const response = await axios.post(`${apiUrl}/approval/send-otp`, playLoad, {
+    const response = await axios.post(`${apiUrl}/send-otp`, playLoad, {
       headers: {
         'Content-Type': 'application/json',
         'x-secret-key': process.env.APPROVAL_SECRET_KEY,
