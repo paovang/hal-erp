@@ -70,6 +70,7 @@ import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeor
 import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
 import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 import { hashData } from '@src/common/utils/server/hash-data.util';
+import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
@@ -344,6 +345,13 @@ export class CreateCommandHandler
           user.email,
         );
 
+        const approval_rules: ApprovalRuleInterface[] = [
+          {
+            token: token,
+            email: user.email,
+          },
+        ];
+
         // send approval request server to server
         await sendApprovalRequest(
           user_approval_step_id,
@@ -354,6 +362,7 @@ export class CreateCommandHandler
           EnumRequestApprovalType.PR,
           titles,
           token,
+          approval_rules,
         );
 
         const d_approver: CustomDocumentApprover = {
