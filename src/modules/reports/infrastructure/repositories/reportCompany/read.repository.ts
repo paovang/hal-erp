@@ -92,29 +92,30 @@ export class ReportReadCompanyRepository implements IReportCompanuRepository {
       .from('companies', 'c')
       .getRawMany();
 
-    return rows.map((r) => {
-      const allocated = Number(r.allocated_amount);
-      const increase = Number(r.increase_amount);
-      const used = Number(r.totalUsedAmount);
+    return rows
+      .filter((r) => Number(r.approvalWorkflowCount) > 0)
+      .map((r) => {
+        const allocated = Number(r.allocated_amount);
+        const increase = Number(r.increase_amount);
+        const used = Number(r.totalUsedAmount);
+        return {
+          companyId: r.companyId,
+          companyName: r.companyName,
+          logo: r.logo
+            ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${r.logo}`
+            : null,
 
-      return {
-        companyId: r.companyId,
-        companyName: r.companyName,
-        logo: r.logo
-          ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${r.logo}`
-          : null,
+          userCount: Number(r.userCount),
+          approvalWorkflowCount: Number(r.approvalWorkflowCount),
+          budgetRuleCount: Number(r.budgetRuleCount),
 
-        userCount: Number(r.userCount),
-        approvalWorkflowCount: Number(r.approvalWorkflowCount),
-        budgetRuleCount: Number(r.budgetRuleCount),
+          allocated_amount: allocated,
+          increase_amount: increase,
+          totalUsedAmount: used,
 
-        allocated_amount: allocated,
-        increase_amount: increase,
-        totalUsedAmount: used,
-
-        total_budget: allocated - increase,
-        balance_amount: increase - used,
-      };
-    });
+          total_budget: allocated - increase,
+          balance_amount: increase - used,
+        };
+      });
   }
 }

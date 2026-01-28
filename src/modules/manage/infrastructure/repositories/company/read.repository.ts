@@ -20,7 +20,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ReportCompanyInterface } from '@src/common/application/interfaces/report-company.intergace';
 import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/document.orm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
-import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
+import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
 type CompanyIda = string;
 
 type NumberMap = Record<CompanyIda, number>;
@@ -81,37 +81,40 @@ export class ReadCompanyRepository implements IReadCompanyRepository {
     manager: EntityManager,
   ): Promise<ReceiptSummaryMap> {
     const user = this._userContextService.getAuthUser()?.user;
-    const user_id = user?.id;
-    const qb1 = await manager
-      .createQueryBuilder(ReceiptOrmEntity, 'r')
-      .leftJoin('documents', 'd', 'd.id = r.document_id')
-      .select('d.company_id', 'companyId')
-      // .select('r.document_id', 'documentId')
-      .getRawMany();
+    const userId = user?.id;
 
-    console.log(qb1);
     const qb = manager
-      .createQueryBuilder()
+      .createQueryBuilder(UserApprovalStepOrmEntity, 'step')
+      .leftJoin('step.user_approvals', 'ua')
+      .leftJoin('ua.documents', 'd')
+      .leftJoin('d.receipts', 'r')
       .select('d.company_id', 'companyId')
-      .addSelect('COUNT(r.id)', 'totalReceipts')
+      .addSelect('COUNT(step.id)', 'totalReceipts')
       .addSelect(
-        `SUM(CASE WHEN d.status = 'pending' THEN 1 ELSE 0 END)`,
-        'totalReceiptsPadding',
+        `COUNT(DISTINCT CASE WHEN step.status_id = :pendingStatus THEN r.id END)`,
+        'totalReceiptsPending',
       )
-      .from('documents', 'd')
-      .leftJoin('receipts', 'r', 'r.document_id = d.id');
+      .where('step.approver_id = :userId', { userId })
+      .andWhere('step.deleted_at IS NULL')
+      .andWhere('ua.deleted_at IS NULL')
+      .andWhere('d.deleted_at IS NULL')
+      .andWhere('r.deleted_at IS NULL')
+      .setParameter('pendingStatus', 1);
 
     if (query.company_id) {
-      qb.where('d.company_id = :id', { id: Number(query.company_id) });
+      qb.andWhere('d.company_id = :companyId', {
+        companyId: Number(query.company_id),
+      });
     }
 
     const rows = await qb.groupBy('d.company_id').getRawMany();
 
     const result: ReceiptSummaryMap = {};
-    for (const r of rows) {
-      result[r.companyId] = {
-        totalReceipts: Number(r.totalReceipts),
-        totalReceiptsPadding: Number(r.totalReceiptsPadding),
+
+    for (const row of rows) {
+      result[row.companyId] = {
+        totalReceipts: Number(row.totalReceipts),
+        totalReceiptsPadding: Number(row.totalReceiptsPending),
       };
     }
 
