@@ -217,7 +217,15 @@ export class ApproveStepCommandHandler
         let tel = user?.tel ? String(user.tel).trim() : '';
 
         if (!tel.match(/^\d+$/)) {
-          throw new Error('Invalid tel: must contain digits only');
+          throw new ManageDomainException(
+            'errors.invalid_tel',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        // 2. Specific prefix check (020 -> 20)
+        if (tel.startsWith('020')) {
+          tel = tel.substring(1);
         }
 
         if (!tel.startsWith('20')) {

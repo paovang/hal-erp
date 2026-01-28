@@ -37,6 +37,8 @@ export async function verifyOtp(
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
   };
 
+  console.log('playLoad', playLoad);
+
   try {
     const response = await axios.post(`${apiUrl}/verify-otp`, playLoad, {
       headers: {
