@@ -857,7 +857,7 @@ export class ApproveStepCommandHandler
 
           await this.checkDataAndUpdateUserApproval(query, manager);
           try {
-            if (step.is_otp === true) {
+            if (query.dto.is_otp === true) {
               // Verify OTP
               await verifyOtp(query, status, tel);
             }
@@ -890,7 +890,7 @@ export class ApproveStepCommandHandler
         await this.RejectUserApproval(query, manager);
 
         try {
-          if (step.is_otp === true) {
+          if (query.dto.is_otp === true) {
             // Verify OTP
             await verifyOtp(query, status, tel);
           }
