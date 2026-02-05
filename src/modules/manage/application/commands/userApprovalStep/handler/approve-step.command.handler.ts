@@ -40,7 +40,7 @@ import {
 } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, IsNull, Not } from 'typeorm';
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/document.orm';
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
@@ -324,6 +324,9 @@ export class ApproveStepCommandHandler
             where: {
               approval_workflow_id: approvalWorkflow.id,
               step_number: currentStepNumber + 1,
+              approval_workflows: {
+                company_id: company_id !== null ? company_id : Not(IsNull()),
+              },
             },
           });
 
@@ -332,6 +335,9 @@ export class ApproveStepCommandHandler
               where: {
                 approval_workflow_id: approvalWorkflow.id,
                 step_number: currentStepNumber + 2,
+                approval_workflows: {
+                  company_id: company_id !== null ? company_id : Not(IsNull()),
+                },
               },
             });
           }
