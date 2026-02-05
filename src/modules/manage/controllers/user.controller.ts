@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Inject,
   Param,
   Post,
@@ -42,6 +43,8 @@ import { multerStorage } from '@src/common/utils/multer.utils';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { verifyHashData } from '@src/common/utils/server/hash-data.util';
+import { ManageDomainException } from '../domain/exceptions/manage-domain.exception';
 
 @Controller('users')
 export class UserController {
@@ -112,14 +115,32 @@ export class UserController {
     );
   }
 
-  @Public()
-  @Get('test')
-  async getTest(): Promise<any> {
-    return 'test success';
-  }
-
   @Get(':id')
   async getOne(@Param('id') id: number): Promise<ResponseResult<UserResponse>> {
+    const result = await this._userService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Public()
+  @Get('by-token/:token')
+  async verifyOTP(
+    // @Query() token_dto: TokenDto,
+    @Param('token') token: string,
+  ): Promise<ResponseResult<UserResponse>> {
+    const verify = await verifyHashData(token);
+    if (!verify) {
+      throw new ManageDomainException(
+        'errors.invalid_token',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    console.log('verify', verify);
+    const id = verify.user_id;
+
     const result = await this._userService.getOne(id);
 
     return this._transformResultService.execute(

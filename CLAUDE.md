@@ -54,7 +54,6 @@ pnpm run deploy                 # Deploy dist/ to production server (via SCP)
 
 ## Architecture Overview
 
-<<<<<<< HEAD
 This is a **NestJS ERP system** following **Domain-Driven Design (DDD)** with **Clean Architecture** and **CQRS** patterns.
 
 ### Layer Structure
