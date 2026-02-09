@@ -19,6 +19,7 @@ import { BudgetItemDataMapper } from '../application/mappers/budget-item.mapper'
 import { CreateBudgetItemDto } from '../application/dto/create/BudgetItem/create.dto';
 import { BudgetItemQueryDto } from '../application/dto/query/budget-item.dto';
 import { UpdateBudgetItemDto } from '../application/dto/create/BudgetItem/update.dto';
+import { Public } from '@core-system/auth';
 
 @Controller('budget-items')
 export class BudgetItemController {
@@ -54,6 +55,7 @@ export class BudgetItemController {
     );
   }
 
+  @Public()
   @Get('report')
   async getReportBudgetItems(
     @Query() query: BudgetItemQueryDto,
@@ -77,6 +79,7 @@ export class BudgetItemController {
     );
   }
 
+  @Public()
   @Get('item/:id')
   async GetItemId(
     @Param('id') id: number,
