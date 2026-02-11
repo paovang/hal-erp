@@ -27,6 +27,7 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
   private readonly _document: DocumentEntity | null;
   private readonly _user_approval: UserApprovalEntity | null;
   private _step: number | 0;
+  private readonly is_created_rc: boolean | null;
 
   private constructor(builder: PurchaseOrderBuilder) {
     super();
@@ -49,6 +50,7 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
     this._document = builder.document ?? null;
     this._user_approval = builder.user_approval ?? null;
     this._step = builder.step;
+    this.is_created_rc = builder.is_created_rc;
   }
 
   get purchase_request_id(): number {
@@ -73,6 +75,10 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
 
   get purposes(): string {
     return this._purposes;
+  }
+
+  get isCreatedRc(): boolean | null {
+    return this.is_created_rc;
   }
 
   get createdAt(): Date {

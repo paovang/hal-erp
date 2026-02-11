@@ -24,6 +24,9 @@ export class PurchaseRequestResponse {
   purposes: string;
 
   @ApiProperty()
+  is_created_po: boolean | null;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()

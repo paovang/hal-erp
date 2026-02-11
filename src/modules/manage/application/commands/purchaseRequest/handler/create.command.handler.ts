@@ -71,6 +71,7 @@ import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/databas
 import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 import { hashData } from '@src/common/utils/server/hash-data.util';
 import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
+import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-account.orm';
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
@@ -250,6 +251,20 @@ export class CreateCommandHandler
 
         const department_id = (department as any).department_id;
 
+        const budget = await manager.findOne(BudgetAccountOrmEntity, {
+          where: {
+            department_id: department_id,
+          },
+        });
+
+        if (!budget) {
+          throw new ManageDomainException(
+            'errors.department_not_have_budget',
+            HttpStatus.BAD_REQUEST,
+            { property: 'Budget' },
+          );
+        }
+
         const get_department_name = await findOneOrFail(
           manager,
           DepartmentOrmEntity,
@@ -387,9 +402,17 @@ export class CreateCommandHandler
   ): Promise<number> {
     const result = await manager
       .createQueryBuilder(PurchaseRequestItemOrmEntity, 'item')
+      .leftJoin('item.purchase_requests', 'purchase_requests')
+      .leftJoin('purchase_requests.purchase_orders', 'purchase_orders')
+      .leftJoin('purchase_orders.receipts', 'receipts')
+      .leftJoin('receipts.documents', 'documents')
+      .leftJoin('documents.user_approvals', 'user_approvals')
       .select('SUM(item.quantity)', 'totalQuantity')
       .where('item.quota_company_id IS NOT NULL')
       .andWhere('item.quota_company_id = :quotaId', { quotaId })
+      .andWhere('user_approvals.status_id = :approvedStatus', {
+        approvedStatus: STATUS_KEY.APPROVED,
+      })
       .getRawOne<{ totalQuantity: string | null }>();
 
     const totalQuantity = parseInt(result?.totalQuantity || '0') || 0;

@@ -23,6 +23,7 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
   private _workflow_step_total: number | 0;
   private _step: number | 0;
   private readonly _company: CompanyEntity | null;
+  private readonly is_created_po: boolean | null;
 
   private constructor(builder: PurchaseRequestBuilder) {
     super();
@@ -42,6 +43,7 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
     this._workflow_step_total = builder.workflow_step_total;
     this._step = builder.step;
     this._company = builder.company ?? null;
+    this.is_created_po = builder.is_created_po;
   }
 
   get document_id(): number {
@@ -62,6 +64,10 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
 
   get purposes(): string {
     return this._purposes;
+  }
+
+  get isCreatedPo(): boolean | null {
+    return this.is_created_po;
   }
 
   get createdAt(): Date {

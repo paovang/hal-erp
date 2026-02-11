@@ -69,6 +69,7 @@ export class PurchaseOrderDataMapper {
       .tz(entity.expired_date, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.purposes = entity.purposes;
+    response.is_created_rc = entity.isCreatedRc;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);

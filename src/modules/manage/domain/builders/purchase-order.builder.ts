@@ -26,6 +26,7 @@ export class PurchaseOrderBuilder {
   document: DocumentEntity | null;
   user_approval: UserApprovalEntity | null;
   step: number | 0;
+  is_created_rc: boolean | null;
 
   setPurchaseOrderId(value: PurchaseOrderId): this {
     this.purchaseOrderId = value;
@@ -59,6 +60,11 @@ export class PurchaseOrderBuilder {
 
   setPurposes(purposes: string): this {
     this.purposes = purposes;
+    return this;
+  }
+
+  setIsCreatedRc(is_created_rc: boolean | null): this {
+    this.is_created_rc = is_created_rc;
     return this;
   }
 

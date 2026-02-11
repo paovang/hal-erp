@@ -75,6 +75,9 @@ export class PurchaseOrderDataAccessMapper {
 
     const total = sub_total + vat;
 
+    const rc = ormData.receipts;
+    const isCreatedRc = rc && rc.length > 0 ? true : false;
+
     const builder = PurchaseOrderEntity.builder()
       .setPurchaseOrderId(new PurchaseOrderId(ormData.id))
       .setPurchaseRequestId(ormData.purchase_request_id ?? 0)
@@ -82,6 +85,7 @@ export class PurchaseOrderDataAccessMapper {
       .setOrderDate(ormData.order_date ?? new Date())
       .setExpiredDate(ormData.expired_date ?? new Date())
       .setPurposes(ormData.purposes ?? '')
+      .setIsCreatedRc(isCreatedRc)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .setSubTotal(sub_total)

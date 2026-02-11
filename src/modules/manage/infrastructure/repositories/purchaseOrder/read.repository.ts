@@ -47,6 +47,7 @@ import {
   selectPurchaseRequestItems,
   selectPurchaseRequests,
   selectQuotaCompany,
+  selectReceipt,
   // selectQuotesVendorBankAccounts,
   selectRequestItems,
   selectRequestItemUnits,
@@ -183,6 +184,7 @@ export class ReadPurchaseOrderRepository
       ...selectVendorProduct,
       ...selectProducts,
       ...selectVendors,
+      ...selectReceipt,
     ];
 
     const query = manager
@@ -253,6 +255,7 @@ export class ReadPurchaseOrderRepository
       .leftJoin('document_approver.users', 'doc_approver_user')
       .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
       .leftJoin('doc_dept_user.departments', 'departments_approver')
+      .leftJoin('purchase_orders.receipts', 'receipts')
       // add select
       .addSelect(selectFields);
 

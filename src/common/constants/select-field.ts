@@ -568,6 +568,8 @@ export const selectPoPositions = [
   'po_positions.updated_at',
 ];
 
+export const selectReceipt = ['receipts.id', 'receipts.receipt_number'];
+
 // receipt item
 export const selectReceiptItems = [
   'receipt_items.id',

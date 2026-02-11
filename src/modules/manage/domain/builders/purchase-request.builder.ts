@@ -22,6 +22,7 @@ export class PurchaseRequestBuilder {
   workflow_step_total: number | 0;
   step: number | 0;
   company: CompanyEntity | null;
+  is_created_po: boolean | null;
 
   setPurchaseRequestId(value: PurchaseRequestId): this {
     this.purchaseRequestId = value;
@@ -50,6 +51,11 @@ export class PurchaseRequestBuilder {
 
   setPurposes(purposes: string): this {
     this.purposes = purposes;
+    return this;
+  }
+
+  setIsCreatedPo(is_created_po: boolean | null): this {
+    this.is_created_po = is_created_po;
     return this;
   }
 

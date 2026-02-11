@@ -23,6 +23,7 @@ import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/databa
 import {
   EnumDocumentTransactionType,
   EnumPrOrPo,
+  EnumRequestApprovalType,
   STATUS_KEY,
 } from '../../../constants/status-key.const';
 import { ApprovalDto } from '../../../dto/create/userApprovalStep/update-statue.dto';
@@ -434,6 +435,7 @@ export class ApproveStepCommandHandler
                 model_id,
                 department_name,
                 titlesString,
+                document_type: EnumRequestApprovalType.PR,
               });
 
               // end
@@ -631,6 +633,7 @@ export class ApproveStepCommandHandler
                 model_id,
                 department_name,
                 titlesString,
+                document_type: EnumRequestApprovalType.PO,
               });
             } else if (query.dto.type === EnumPrOrPo.R) {
               const receipt = await manager.findOne(ReceiptOrmEntity, {
@@ -694,6 +697,7 @@ export class ApproveStepCommandHandler
                 model_id,
                 department_name,
                 titlesString,
+                document_type: EnumRequestApprovalType.RC,
               });
             } else {
               throw new ManageDomainException(

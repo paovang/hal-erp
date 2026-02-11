@@ -65,6 +65,9 @@ export class PurchaseRequestDataAccessMapper {
 
     const totalWorkflowStep = 0;
 
+    const po = ormData.purchase_orders;
+    const isCreatedPo = po && po.length > 0 ? true : false;
+
     const builder = PurchaseRequestEntity.builder()
       .setPurchaseRequestId(new PurchaseRequestId(ormData.id))
       .setDocumentId(ormData.document_id ?? 0)
@@ -72,6 +75,7 @@ export class PurchaseRequestDataAccessMapper {
       .setRequestedDate(ormData.requested_date ?? new Date())
       .setExpiredDate(ormData.expired_date ?? new Date())
       .setPurposes(ormData.purposes ?? '')
+      .setIsCreatedPo(isCreatedPo)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .setDeletedAt(ormData.deleted_at)

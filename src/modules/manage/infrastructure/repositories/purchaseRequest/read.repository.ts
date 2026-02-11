@@ -30,6 +30,7 @@ import {
   selectPositionApprover,
   selectPositions,
   selectProducts,
+  selectPurchaseOrders,
   selectPurchaseRequestItems,
   selectQuotaCompany,
   selectStatus,
@@ -166,6 +167,7 @@ export class ReadPurchaseRequestRepository
       ...selectVendorProduct,
       ...selectProducts,
       ...selectVendors,
+      ...selectPurchaseOrders,
     ];
 
     const query = manager
@@ -206,6 +208,7 @@ export class ReadPurchaseRequestRepository
       .leftJoin('document_approver.users', 'doc_approver_user')
       .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
       .leftJoin('doc_dept_user.departments', 'departments_approver')
+      .leftJoin('purchase_requests.purchase_orders', 'purchase_orders')
       .addSelect(selectFields);
 
     if (

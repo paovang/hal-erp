@@ -24,6 +24,9 @@ export class PurchaseOrderResponse {
   purposes: string;
 
   @ApiProperty()
+  is_created_rc: boolean | null;
+
+  @ApiProperty()
   created_at: string;
 
   @ApiProperty()

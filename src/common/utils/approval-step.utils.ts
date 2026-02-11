@@ -40,6 +40,7 @@ interface ApprovalStepHandlerParams {
   model_id: number;
   department_name: string;
   titlesString: string;
+  document_type: EnumRequestApprovalType;
 }
 
 export async function handleApprovalStep({
@@ -55,6 +56,7 @@ export async function handleApprovalStep({
   model_id,
   department_name,
   titlesString,
+  document_type,
 }: ApprovalStepHandlerParams) {
   let token = '';
   const approval_rules: ApprovalRuleInterface[] = [];
@@ -130,17 +132,18 @@ export async function handleApprovalStep({
 
       const userEntity = userDataAccessMapper.toEntity(user);
 
-      await sendApprovalRequest(
+      await sendApprovalRequestBetweenServer(
         user_approval_step_id,
         total,
         userEntity,
         user.id,
         department_name,
-        EnumRequestApprovalType.PR,
+        document_type,
         titlesString,
         token[0],
         approval_rules,
       );
+
       break;
     }
     case EnumWorkflowStep.DEPARTMENT_HEAD: {
@@ -208,17 +211,15 @@ export async function handleApprovalStep({
         token: token,
       });
 
-      console.log('token pr', token);
-
       const userEntity = userDataAccessMapper.toEntity(user);
 
-      await sendApprovalRequest(
+      await sendApprovalRequestBetweenServer(
         user_approval_step_id,
         total,
         userEntity,
         department?.department_head_id ?? 0,
         department_name,
-        EnumRequestApprovalType.PR,
+        document_type,
         titlesString,
         token,
         approval_rules,
@@ -264,13 +265,13 @@ export async function handleApprovalStep({
 
       const userEntity = userDataAccessMapper.toEntity(specific_user);
 
-      await sendApprovalRequest(
+      await sendApprovalRequestBetweenServer(
         user_approval_step_id,
         total,
         userEntity,
         a_w_s.user_id ?? 0,
         department_name,
-        EnumRequestApprovalType.PR,
+        document_type,
         titlesString,
         token,
         approval_rules,
@@ -330,13 +331,13 @@ export async function handleApprovalStep({
 
       const userEntity = userDataAccessMapper.toEntity(user);
 
-      await sendApprovalRequest(
+      await sendApprovalRequestBetweenServer(
         user_approval_step_id,
         total,
         userEntity,
         a_w_s.user_id ?? 0,
         department_name,
-        EnumRequestApprovalType.PR,
+        document_type,
         titlesString,
         token,
         approval_rules,
@@ -400,13 +401,13 @@ export async function handleApprovalStep({
 
       const userEntity = userDataAccessMapper.toEntity(user);
 
-      await sendApprovalRequest(
+      await sendApprovalRequestBetweenServer(
         user_approval_step_id,
         total,
         userEntity,
         a_w_s.user_id ?? 0,
         department_name,
-        EnumRequestApprovalType.PR,
+        document_type,
         titlesString,
         token,
         approval_rules,
@@ -421,5 +422,61 @@ export async function handleApprovalStep({
           property: 'workflow step',
         },
       );
+  }
+
+  async function sendApprovalRequestBetweenServer(
+    user_approval_step_id: number,
+    total: number,
+    userEntity: any,
+    user_id: number,
+    department_name: string,
+    type: EnumRequestApprovalType,
+    titlesString: string,
+    token: string,
+    approval_rules: ApprovalRuleInterface[],
+  ) {
+    if (type === EnumRequestApprovalType.PR) {
+      await sendApprovalRequest(
+        user_approval_step_id,
+        total,
+        userEntity,
+        user_id,
+        department_name,
+        EnumRequestApprovalType.PR,
+        titlesString,
+        token,
+        approval_rules,
+      );
+    } else if (type === EnumRequestApprovalType.PO) {
+      await sendApprovalRequest(
+        user_approval_step_id,
+        total,
+        userEntity,
+        user_id,
+        department_name,
+        EnumRequestApprovalType.PO,
+        titlesString,
+        token,
+        approval_rules,
+      );
+    } else if (type === EnumRequestApprovalType.RC) {
+      await sendApprovalRequest(
+        user_approval_step_id,
+        total,
+        userEntity,
+        user_id,
+        department_name,
+        EnumRequestApprovalType.RC,
+        titlesString,
+        token,
+        approval_rules,
+      );
+    } else {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.BAD_REQUEST,
+        { property: `${type}` },
+      );
+    }
   }
 }
