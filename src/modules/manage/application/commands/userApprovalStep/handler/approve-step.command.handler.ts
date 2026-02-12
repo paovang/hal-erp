@@ -88,7 +88,6 @@ import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
 import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
-import { CurrencyEnum } from '@src/common/enums/currency.enum';
 
 interface CustomApprovalDto
   extends Omit<
@@ -533,22 +532,22 @@ export class ApproveStepCommandHandler
                   );
 
                   // 5. Exchange rate
-                  const exchange_rate = await manager.findOne(
-                    ExchangeRateOrmEntity,
-                    {
-                      where: {
-                        from_currency_id: vendor_bank_account?.currency_id,
-                        to_currency_id: CurrencyEnum.kIP,
-                        is_active: true,
-                      },
-                    },
-                  );
-                  assertOrThrow(
-                    exchange_rate,
-                    'errors.not_found',
-                    HttpStatus.NOT_FOUND,
-                    'exchange rate',
-                  );
+                  // const exchange_rate = await manager.findOne(
+                  //   ExchangeRateOrmEntity,
+                  //   {
+                  //     where: {
+                  //       from_currency_id: vendor_bank_account?.currency_id,
+                  //       to_currency_id: CurrencyEnum.kIP,
+                  //       is_active: true,
+                  //     },
+                  //   },
+                  // );
+                  // assertOrThrow(
+                  //   exchange_rate,
+                  //   'errors.not_found',
+                  //   HttpStatus.NOT_FOUND,
+                  //   'exchange rate',
+                  // );
 
                   // 6. Get currency info
                   // const currency = await this.getCurrency(
