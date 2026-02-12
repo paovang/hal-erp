@@ -305,7 +305,10 @@ export class ApproveStepCommandHandler
           const approvalWorkflow = await manager.findOne(
             ApprovalWorkflowOrmEntity,
             {
-              where: { document_type_id: document.document_type_id },
+              where: {
+                document_type_id: document.document_type_id,
+                company_id: company_id !== null ? company_id : Not(IsNull()),
+              },
             },
           );
 
