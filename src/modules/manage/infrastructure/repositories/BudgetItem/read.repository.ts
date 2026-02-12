@@ -272,15 +272,15 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          queryBuilder.where('budget_accounts.company_id = :company_id', {
-            company_id,
-          });
-        }
+      // if (
+      //   roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+      //   roles.includes(EligiblePersons.COMPANY_USER)
+      // ) {
+      // }
+      if (company_id) {
+        queryBuilder.where('budget_accounts.company_id = :company_id', {
+          company_id,
+        });
       }
       // if (department_id) {
       //   queryBuilder.andWhere(
