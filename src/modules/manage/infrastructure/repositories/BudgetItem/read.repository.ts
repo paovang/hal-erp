@@ -263,6 +263,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .addGroupBy('increase_budget_detail.id')
       .addGroupBy('budget_accounts.id')
       .addGroupBy('document_transactions.id')
+      .addGroupBy('company.id')
       .addGroupBy('departments.id');
 
     if (
