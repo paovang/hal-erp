@@ -234,6 +234,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .leftJoin('budget_accounts.departments', 'departments')
       .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
       .leftJoin('budget_items.document_transactions', 'document_transactions')
+      .leftJoin('budget_accounts.company', 'company')
 
       .addSelect([
         'budget_accounts.id',
@@ -255,6 +256,8 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'document_transactions.amount',
         'document_transactions.id',
         'document_transactions.budget_item_id',
+        'company.id',
+        'company.name',
       ])
       .groupBy('budget_items.id')
       .addGroupBy('increase_budget_detail.id')
