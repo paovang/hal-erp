@@ -221,6 +221,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     roles?: string[],
     // department_id?: number,
   ) {
+    console.log('data', company_id, roles);
     const queryBuilder = manager
       .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
       .select([
