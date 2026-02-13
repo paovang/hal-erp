@@ -270,19 +270,19 @@ export class CreateCommandHandler
           );
         }
 
-        const check_receipt = await manager.findOne(ReceiptOrmEntity, {
-          where: {
-            purchase_order_id: query.dto.purchase_order_id,
-          },
-        });
+        // const check_receipt = await manager.findOne(ReceiptOrmEntity, {
+        //   where: {
+        //     purchase_order_id: query.dto.purchase_order_id,
+        //   },
+        // });
 
-        if (check_receipt) {
-          throw new ManageDomainException(
-            'errors.receipt_exist',
-            HttpStatus.BAD_REQUEST,
-            { property: 'Receipt' },
-          );
-        }
+        // if (check_receipt) {
+        //   throw new ManageDomainException(
+        //     'errors.receipt_exist',
+        //     HttpStatus.BAD_REQUEST,
+        //     { property: 'Receipt' },
+        //   );
+        // }
 
         const department_name = (get_department_name as any).name;
 
