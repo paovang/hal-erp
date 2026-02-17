@@ -744,9 +744,14 @@ export class ApproveStepCommandHandler
                 );
               }
 
-              const check_budget = query.dto.purchase_order_items;
+              const check_budget = query.dto.purchase_order_items || [];
+              const check_po_budget = po.purchase_order_items || [];
 
-              if (Array.isArray(check_budget) && check_budget.length > 0) {
+              // if (
+              //   (Array.isArray(check_budget) && check_budget.length > 0) ||
+              //   (Array.isArray(check_po_budget) && check_po_budget.length > 0)
+              // ) {
+              if (check_budget.length > 0 || check_po_budget.length > 0) {
                 if (
                   roles.includes('budget-admin') ||
                   roles.includes('budget-user')
