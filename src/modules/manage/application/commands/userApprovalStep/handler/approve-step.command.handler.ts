@@ -460,12 +460,16 @@ export class ApproveStepCommandHandler
                 .map((prItem) => prItem.title)
                 .join(', ');
 
+              console.log('role', roles);
+
               if (
                 roles.includes('budget-admin') ||
                 roles.includes('budget-user')
               ) {
                 let sum_total = 0;
                 for (const item of query.dto.purchase_order_items) {
+                  console.log('item', item);
+
                   if (!item.id) {
                     throw new ManageDomainException(
                       'errors.is_required',
