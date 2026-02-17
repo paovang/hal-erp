@@ -32,6 +32,7 @@ import { BudgetItemDataMapper } from '../application/mappers/budget-item.mapper'
 import { TokenDto } from '@src/common/validations/dto/token.dto';
 import { ManageDomainException } from '../domain/exceptions/manage-domain.exception';
 import { verifyHashData } from '@src/common/utils/server/hash-data.util';
+import { Public } from '@core-system/auth';
 
 @Controller('purchase-orders')
 export class PurchaseOrderController {
@@ -59,6 +60,7 @@ export class PurchaseOrderController {
     );
   }
 
+  @Public()
   @Get('by-token')
   async getByToken(
     @Query() dto: TokenDto,

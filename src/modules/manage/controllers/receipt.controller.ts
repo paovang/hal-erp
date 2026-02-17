@@ -26,6 +26,7 @@ import { Response } from 'express';
 import { TokenDto } from '@src/common/validations/dto/token.dto';
 import { verifyHashData } from '@src/common/utils/server/hash-data.util';
 import { ManageDomainException } from '../domain/exceptions/manage-domain.exception';
+import { Public } from '@core-system/auth';
 
 @Controller('receipts')
 export class ReceiptController {
@@ -62,6 +63,7 @@ export class ReceiptController {
     );
   }
 
+  @Public()
   @Get('by-token')
   async getByToken(
     @Query() dto: TokenDto,
