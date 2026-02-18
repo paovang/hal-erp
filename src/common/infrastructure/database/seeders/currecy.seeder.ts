@@ -35,8 +35,8 @@ export class CurrencySeeder {
       },
       {
         id: 2,
-        name: 'USD',
-        code: 'US Dollar',
+        name: 'US Dollar',
+        code: 'USD',
         created_at: currentDateTime,
         updated_at: currentDateTime,
       },

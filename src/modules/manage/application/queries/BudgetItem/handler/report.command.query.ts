@@ -43,6 +43,7 @@ export class GetReportQueryHandler
     const company_id = company_user?.company_id ?? undefined;
     const roles = user?.roles?.map((r: any) => r.name) ?? [];
     // const department_id = departmentUser?.department_id ?? null;
+    console.log('company_id', company_id);
     return await this._readRepo.report(
       query.query,
       query.manager,

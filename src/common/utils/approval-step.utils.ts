@@ -68,6 +68,7 @@ export async function handleApprovalStep({
 
   switch (a_w_s.type) {
     case EnumWorkflowStep.DEPARTMENT: {
+      console.log('a_w_s.department_id', a_w_s.department_id);
       const department_approvers = await manager.find(
         DepartmentApproverOrmEntity,
         {
@@ -75,6 +76,7 @@ export async function handleApprovalStep({
           relations: ['users'],
         },
       );
+      console.log('department_approvers', department_approvers);
 
       if (department_approvers.length === 0) {
         throw new ManageDomainException(

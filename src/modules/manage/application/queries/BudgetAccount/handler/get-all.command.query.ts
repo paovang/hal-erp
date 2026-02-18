@@ -44,6 +44,8 @@ export class GetAllQueryHandler
     const roles = user?.roles?.map((r: any) => r.name) ?? [];
     const department_id = departmentUser?.department_id ?? null;
 
+    console.log('company_id', company_id);
+
     const data = await this._readRepo.findAll(
       query.dto,
       query.manager,

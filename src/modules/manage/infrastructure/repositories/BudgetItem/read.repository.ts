@@ -221,6 +221,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     roles?: string[],
     // department_id?: number,
   ) {
+    console.log('data', company_id, roles);
     const queryBuilder = manager
       .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
       .select([
@@ -234,6 +235,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       .leftJoin('budget_accounts.departments', 'departments')
       .leftJoin('budget_items.increase_budget_detail', 'increase_budget_detail')
       .leftJoin('budget_items.document_transactions', 'document_transactions')
+      .leftJoin('budget_accounts.company', 'company')
 
       .addSelect([
         'budget_accounts.id',
@@ -255,11 +257,14 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
         'document_transactions.amount',
         'document_transactions.id',
         'document_transactions.budget_item_id',
+        'company.id',
+        'company.name',
       ])
       .groupBy('budget_items.id')
       .addGroupBy('increase_budget_detail.id')
       .addGroupBy('budget_accounts.id')
       .addGroupBy('document_transactions.id')
+      .addGroupBy('company.id')
       .addGroupBy('departments.id');
 
     if (
@@ -267,15 +272,15 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
       !roles.includes(EligiblePersons.SUPER_ADMIN) &&
       !roles.includes(EligiblePersons.ADMIN)
     ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          queryBuilder.where('budget_accounts.company_id = :company_id', {
-            company_id,
-          });
-        }
+      // if (
+      //   roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+      //   roles.includes(EligiblePersons.COMPANY_USER)
+      // ) {
+      // }
+      if (company_id) {
+        queryBuilder.where('budget_accounts.company_id = :company_id', {
+          company_id,
+        });
       }
       // if (department_id) {
       //   queryBuilder.andWhere(

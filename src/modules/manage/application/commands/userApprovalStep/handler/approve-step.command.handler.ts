@@ -40,7 +40,7 @@ import {
 } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, IsNull, Not } from 'typeorm';
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
 import { DocumentOrmEntity } from '@src/common/infrastructure/database/typeorm/document.orm';
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
@@ -325,7 +325,10 @@ export class ApproveStepCommandHandler
           const approvalWorkflow = await manager.findOne(
             ApprovalWorkflowOrmEntity,
             {
-              where: { document_type_id: document.document_type_id },
+              where: {
+                document_type_id: document.document_type_id,
+                company_id: company_id !== null ? company_id : Not(IsNull()),
+              },
             },
           );
 
@@ -344,6 +347,9 @@ export class ApproveStepCommandHandler
             where: {
               approval_workflow_id: approvalWorkflow.id,
               step_number: currentStepNumber + 1,
+              approval_workflows: {
+                company_id: company_id !== null ? company_id : Not(IsNull()),
+              },
             },
           });
 
@@ -352,6 +358,9 @@ export class ApproveStepCommandHandler
               where: {
                 approval_workflow_id: approvalWorkflow.id,
                 step_number: currentStepNumber + 2,
+                approval_workflows: {
+                  company_id: company_id !== null ? company_id : Not(IsNull()),
+                },
               },
             });
           }
@@ -568,22 +577,22 @@ export class ApproveStepCommandHandler
                   );
 
                   // 5. Exchange rate
-                  const exchange_rate = await manager.findOne(
-                    ExchangeRateOrmEntity,
-                    {
-                      where: {
-                        from_currency_id: vendor_bank_account?.currency_id,
-                        to_currency_id: CurrencyEnum.kIP,
-                        is_active: true,
-                      },
-                    },
-                  );
-                  assertOrThrow(
-                    exchange_rate,
-                    'errors.not_found',
-                    HttpStatus.NOT_FOUND,
-                    'exchange rate',
-                  );
+                  // const exchange_rate = await manager.findOne(
+                  //   ExchangeRateOrmEntity,
+                  //   {
+                  //     where: {
+                  //       from_currency_id: vendor_bank_account?.currency_id,
+                  //       to_currency_id: CurrencyEnum.kIP,
+                  //       is_active: true,
+                  //     },
+                  //   },
+                  // );
+                  // assertOrThrow(
+                  //   exchange_rate,
+                  //   'errors.not_found',
+                  //   HttpStatus.NOT_FOUND,
+                  //   'exchange rate',
+                  // );
 
                   console.log('object', sum_total, check_budget);
 
