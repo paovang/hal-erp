@@ -16,6 +16,10 @@ import { StatusEnum } from '@src/common/enums/status.enum';
 import { ApproveDto } from '../../../dto/create/ApprovalWorkflow/approve.dto';
 import { ApprovalWorkflowId } from '@src/modules/manage/domain/value-objects/approval-workflow-id.vo';
 import { ApprovalWorkflowOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow.orm';
+import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
+import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -27,39 +31,50 @@ export class DeleteCommandHandler
     @Inject(WRITE_APPROVAL_WORKFLOW_REPOSITORY)
     private readonly _writeWorkflow: IWriteApprovalWorkflowRepository,
     private readonly _dataMapperWorkflow: ApprovalWorkflowDataMapper,
+    @Inject(TRANSACTION_MANAGER_SERVICE)
+    private readonly _transactionManagerService: ITransactionManagerService,
+    @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
+    private readonly _dataSource: DataSource,
   ) {}
 
   async execute(query: DeleteCommand): Promise<void> {
-    await this.checkData(query);
-    const workflow = await this._write.delete(
-      new ApprovalWorkflowStepId(query.id),
-      query.manager,
-    );
+    return await this._transactionManagerService.runInTransaction(
+      this._dataSource,
+      async (manager) => {
+        await this.checkData(query);
+        const workflow = await this._write.delete(
+          new ApprovalWorkflowStepId(query.id),
+          manager,
+        );
 
-    const step = await findOneOrFail(
-      query.manager,
-      ApprovalWorkflowStepOrmEntity,
-      {
-        id: query.id,
+        const step = await findOneOrFail(
+          manager,
+          ApprovalWorkflowStepOrmEntity,
+          {
+            id: query.id,
+          },
+        );
+
+        const approval_id = (step as any).approval_workflow_id;
+
+        const status = StatusEnum.PENDING;
+        const dto = status as unknown as ApproveDto;
+
+        const entityWork = this._dataMapperWorkflow.toEntityApprove(dto);
+        await entityWork.initializeUpdateSetId(
+          new ApprovalWorkflowId(approval_id),
+        );
+        await entityWork.validateExistingIdForUpdate();
+
+        /** Check Exits Department Id */
+        await findOneOrFail(manager, ApprovalWorkflowOrmEntity, {
+          id: entityWork.getId().value,
+        });
+
+        await this._writeWorkflow.remove(entityWork, manager);
+        return workflow;
       },
     );
-
-    const approval_id = (step as any).approval_workflow_id;
-
-    const status = StatusEnum.PENDING;
-    const dto = status as unknown as ApproveDto;
-
-    const entityWork = this._dataMapperWorkflow.toEntityApprove(dto);
-    await entityWork.initializeUpdateSetId(new ApprovalWorkflowId(approval_id));
-    await entityWork.validateExistingIdForUpdate();
-
-    /** Check Exits Department Id */
-    await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {
-      id: entityWork.getId().value,
-    });
-
-    await this._writeWorkflow.rejected(entityWork, query.manager);
-    return workflow;
   }
 
   private async checkData(query: DeleteCommand): Promise<void> {
