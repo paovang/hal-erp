@@ -45,9 +45,9 @@ export class UpdateCommandHandler
       ApprovalWorkflowOrmEntity,
       {
         where: {
-          document_type_id: query.dto.documentTypeId,
-          company_id: company_id ? Not(company_id) : IsNull(),
           id: Not(query.id),
+          document_type_id: query.dto.documentTypeId,
+          company_id: company_id ? company_id : IsNull(),
         },
       },
     );
