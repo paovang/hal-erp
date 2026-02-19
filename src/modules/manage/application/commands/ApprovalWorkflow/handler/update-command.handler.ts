@@ -47,6 +47,7 @@ export class UpdateCommandHandler
         where: {
           document_type_id: query.dto.documentTypeId,
           company_id: company_id ? Not(company_id) : IsNull(),
+          id: Not(query.id),
         },
       },
     );
@@ -58,64 +59,6 @@ export class UpdateCommandHandler
         { property: 'documentTypeId' },
       );
     }
-
-    // if (
-    //   roles.includes(EligiblePersons.SUPER_ADMIN) ||
-    //   roles.includes(EligiblePersons.ADMIN)
-    // ) {
-    //   const documentType = await query.manager.findOne(
-    //     ApprovalWorkflowOrmEntity,
-    //     {
-    //       where: {
-    //         document_type_id: query.dto.documentTypeId,
-    //         company_id: IsNull(),
-    //       },
-    //     },
-    //   );
-
-    //   if (documentType) {
-    //     throw new ManageDomainException(
-    //       'errors.document_type_already_exists',
-    //       HttpStatus.BAD_REQUEST,
-    //       { property: 'documentTypeId' },
-    //     );
-    //   }
-    // } else {
-    // const company_user = await findOneOrFail(
-    //   query.manager,
-    //   CompanyUserOrmEntity,
-    //   {
-    //     user_id: user_id,
-    //   },
-    //   `company user id ${user_id}`,
-    // );
-
-    // company_id = company_user.company_id;
-    // if (!company_id)
-    //   throw new ManageDomainException(
-    //     'errors.not_found',
-    //     HttpStatus.NOT_FOUND,
-    //     { property: 'company_id' },
-    //   );
-
-    // const documentType = await query.manager.findOne(
-    //   ApprovalWorkflowOrmEntity,
-    //   {
-    //     where: {
-    //       document_type_id: query.dto.documentTypeId,
-    //       company_id: Not(company_id),
-    //     },
-    //   },
-    // );
-
-    // if (documentType) {
-    //   throw new ManageDomainException(
-    //     'errors.document_type_already_exists',
-    //     HttpStatus.BAD_REQUEST,
-    //     { property: 'documentTypeId' },
-    //   );
-    // }
-    // }
 
     const entity = this._dataMapper.toEntity(
       query.dto,
