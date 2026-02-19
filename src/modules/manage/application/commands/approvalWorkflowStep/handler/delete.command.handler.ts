@@ -41,12 +41,6 @@ export class DeleteCommandHandler
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
-        await this.checkData(query);
-        const workflow = await this._write.delete(
-          new ApprovalWorkflowStepId(query.id),
-          manager,
-        );
-
         const step = await findOneOrFail(
           manager,
           ApprovalWorkflowStepOrmEntity,
@@ -72,6 +66,12 @@ export class DeleteCommandHandler
         });
 
         await this._writeWorkflow.remove(entityWork, manager);
+
+        await this.checkData(query);
+        const workflow = await this._write.delete(
+          new ApprovalWorkflowStepId(query.id),
+          manager,
+        );
         return workflow;
       },
     );
