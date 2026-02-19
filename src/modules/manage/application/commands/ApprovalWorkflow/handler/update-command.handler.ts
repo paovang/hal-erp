@@ -14,7 +14,6 @@ import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeo
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 import { IsNull, Not } from 'typeorm';
-import { EligiblePersons } from '../../../constants/status-key.const';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -34,65 +33,89 @@ export class UpdateCommandHandler
     const user = this._userContextService.getAuthUser()?.user;
     const user_id = user.id;
 
-    const roles = user?.roles?.map((r: any) => r.name) ?? [];
+    const company = await query.manager.findOne(CompanyUserOrmEntity, {
+      where: {
+        user_id: user_id,
+      },
+    });
 
-    if (
-      roles.includes(EligiblePersons.SUPER_ADMIN) ||
-      roles.includes(EligiblePersons.ADMIN)
-    ) {
-      const documentType = await query.manager.findOne(
-        ApprovalWorkflowOrmEntity,
-        {
-          where: {
-            document_type_id: query.dto.documentTypeId,
-            company_id: IsNull(),
-          },
+    company_id = company?.company_id ?? null;
+
+    const documentType = await query.manager.findOne(
+      ApprovalWorkflowOrmEntity,
+      {
+        where: {
+          document_type_id: query.dto.documentTypeId,
+          company_id: company_id ? Not(company_id) : IsNull(),
         },
+      },
+    );
+
+    if (documentType) {
+      throw new ManageDomainException(
+        'errors.document_type_already_exists',
+        HttpStatus.BAD_REQUEST,
+        { property: 'documentTypeId' },
       );
-
-      if (documentType) {
-        throw new ManageDomainException(
-          'errors.document_type_already_exists',
-          HttpStatus.BAD_REQUEST,
-          { property: 'documentTypeId' },
-        );
-      }
-    } else {
-      const company_user = await findOneOrFail(
-        query.manager,
-        CompanyUserOrmEntity,
-        {
-          user_id: user_id,
-        },
-        `company user id ${user_id}`,
-      );
-
-      company_id = company_user.company_id;
-      if (!company_id)
-        throw new ManageDomainException(
-          'errors.not_found',
-          HttpStatus.NOT_FOUND,
-          { property: 'company_id' },
-        );
-
-      const documentType = await query.manager.findOne(
-        ApprovalWorkflowOrmEntity,
-        {
-          where: {
-            document_type_id: query.dto.documentTypeId,
-            company_id: Not(company_id),
-          },
-        },
-      );
-
-      if (documentType) {
-        throw new ManageDomainException(
-          'errors.document_type_already_exists',
-          HttpStatus.BAD_REQUEST,
-          { property: 'documentTypeId' },
-        );
-      }
     }
+
+    // if (
+    //   roles.includes(EligiblePersons.SUPER_ADMIN) ||
+    //   roles.includes(EligiblePersons.ADMIN)
+    // ) {
+    //   const documentType = await query.manager.findOne(
+    //     ApprovalWorkflowOrmEntity,
+    //     {
+    //       where: {
+    //         document_type_id: query.dto.documentTypeId,
+    //         company_id: IsNull(),
+    //       },
+    //     },
+    //   );
+
+    //   if (documentType) {
+    //     throw new ManageDomainException(
+    //       'errors.document_type_already_exists',
+    //       HttpStatus.BAD_REQUEST,
+    //       { property: 'documentTypeId' },
+    //     );
+    //   }
+    // } else {
+    // const company_user = await findOneOrFail(
+    //   query.manager,
+    //   CompanyUserOrmEntity,
+    //   {
+    //     user_id: user_id,
+    //   },
+    //   `company user id ${user_id}`,
+    // );
+
+    // company_id = company_user.company_id;
+    // if (!company_id)
+    //   throw new ManageDomainException(
+    //     'errors.not_found',
+    //     HttpStatus.NOT_FOUND,
+    //     { property: 'company_id' },
+    //   );
+
+    // const documentType = await query.manager.findOne(
+    //   ApprovalWorkflowOrmEntity,
+    //   {
+    //     where: {
+    //       document_type_id: query.dto.documentTypeId,
+    //       company_id: Not(company_id),
+    //     },
+    //   },
+    // );
+
+    // if (documentType) {
+    //   throw new ManageDomainException(
+    //     'errors.document_type_already_exists',
+    //     HttpStatus.BAD_REQUEST,
+    //     { property: 'documentTypeId' },
+    //   );
+    // }
+    // }
 
     const entity = this._dataMapper.toEntity(
       query.dto,
