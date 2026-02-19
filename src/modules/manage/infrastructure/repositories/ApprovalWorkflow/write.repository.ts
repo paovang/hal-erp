@@ -70,6 +70,28 @@ export class WriteApprovalWorkflowRepository
     }
   }
 
+  async pending(
+    entity: ApprovalWorkflowEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.PENDING,
+    );
+
+    try {
+      await manager.update(
+        ApprovalWorkflowOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async approved(
     entity: ApprovalWorkflowEntity,
     manager: EntityManager,
@@ -99,6 +121,28 @@ export class WriteApprovalWorkflowRepository
     const OrmEntity = this._dataAccessMapper.toOrmEntity(
       entity,
       OrmEntityMethod.REJECTED,
+    );
+
+    try {
+      await manager.update(
+        ApprovalWorkflowOrmEntity,
+        entity.getId().value,
+        OrmEntity,
+      );
+
+      return this._dataAccessMapper.toEntity(OrmEntity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async remove(
+    entity: ApprovalWorkflowEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
+    const OrmEntity = this._dataAccessMapper.toOrmEntity(
+      entity,
+      OrmEntityMethod.DELETE,
     );
 
     try {

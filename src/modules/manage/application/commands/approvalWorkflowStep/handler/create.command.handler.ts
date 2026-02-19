@@ -19,6 +19,9 @@ import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.
 import { EntityManager } from 'typeorm';
 import { IWriteApprovalWorkflowRepository } from '@src/modules/manage/domain/ports/output/approval-workflow-repository.interface';
 import { ApprovalWorkflowDataMapper } from '../../../mappers/approval-workflow.mapper';
+import { ApprovalWorkflowId } from '@src/modules/manage/domain/value-objects/approval-workflow-id.vo';
+import { StatusEnum } from '@src/common/enums/status.enum';
+import { ApproveDto } from '../../../dto/create/ApprovalWorkflow/approve.dto';
 
 @CommandHandler(CreateCommand)
 export class CreateCommandHandler
@@ -102,19 +105,19 @@ export class CreateCommandHandler
     const step = this._dataMapperStep.toEntity(mergeData, query.id);
     const res = await this._writeStep.create(step, query.manager);
 
-    // const status = StatusEnum.PENDING;
-    // const dto = status as unknown as ApproveDto;
+    const status = StatusEnum.PENDING;
+    const dto = status as unknown as ApproveDto;
 
-    // const entity = this._dataMapper.toEntityApprove(dto);
-    // await entity.initializeUpdateSetId(new ApprovalWorkflowId(query.id));
-    // await entity.validateExistingIdForUpdate();
+    const entity = this._dataMapper.toEntityApprove(dto);
+    await entity.initializeUpdateSetId(new ApprovalWorkflowId(query.id));
+    await entity.validateExistingIdForUpdate();
 
-    // /** Check Exits Department Id */
-    // await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {
-    //   id: entity.getId().value,
-    // });
+    /** Check Exits Department Id */
+    await findOneOrFail(query.manager, ApprovalWorkflowOrmEntity, {
+      id: entity.getId().value,
+    });
 
-    // await this._write.pending(entity, query.manager);
+    await this._write.pending(entity, query.manager);
 
     return res;
   }

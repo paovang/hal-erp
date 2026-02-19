@@ -40,4 +40,14 @@ export interface IWriteApprovalWorkflowRepository {
     entity: ApprovalWorkflowEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
+
+  pending(
+    entity: ApprovalWorkflowEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
+
+  remove(
+    entity: ApprovalWorkflowEntity,
+    manager: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 }
