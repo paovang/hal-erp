@@ -4,6 +4,7 @@ export enum OrmEntityMethod {
   DELETE = 'delete',
   APPROVED = 'approved',
   REJECTED = 'rejected',
+  PENDING = 'pending',
 }
 
 export enum DocumentEntityMode {

@@ -74,7 +74,6 @@ export class WriteApprovalWorkflowRepository
     entity: ApprovalWorkflowEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
-    console.log('entity', entity);
     const OrmEntity = this._dataAccessMapper.toOrmEntity(
       entity,
       OrmEntityMethod.APPROVED,
