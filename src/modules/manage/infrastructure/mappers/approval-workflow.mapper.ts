@@ -49,6 +49,7 @@ export class ApprovalWorkflowDataAccessMapper {
     }
 
     if (method === OrmEntityMethod.APPROVED) {
+      console.log('status', status);
       mediaOrmEntity.status = approvalWorkflowEntity.status;
     }
     mediaOrmEntity.updated_at = new Date(now);
