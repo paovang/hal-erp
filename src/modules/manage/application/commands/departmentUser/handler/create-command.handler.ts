@@ -156,13 +156,29 @@ export class CreateCommandHandler
         const result = await this._write.create(departmentUserEntity, manager);
         const user_id = (result as any)._userID;
 
-        // company user
+        // company user - check if already exists before creating
         if (company_id && company_id > 0) {
-          const mapToEntityCompanyUser = this._dataCompanyUserMapper.toEntity(
-            company_id || 0,
-            id,
+          const existingCompanyUser = await manager.findOne(
+            CompanyUserOrmEntity,
+            {
+              where: {
+                company_id: company_id,
+                user_id: id,
+              },
+              withDeleted: true, // Check including soft-deleted records
+            },
           );
-          await this._writeCompanyUser.create(mapToEntityCompanyUser, manager);
+
+          if (!existingCompanyUser) {
+            const mapToEntityCompanyUser = this._dataCompanyUserMapper.toEntity(
+              company_id || 0,
+              id,
+            );
+            await this._writeCompanyUser.create(
+              mapToEntityCompanyUser,
+              manager,
+            );
+          }
         }
         //end
 

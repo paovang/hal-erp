@@ -118,6 +118,11 @@ import { X } from '@src/modules/...'; // Points to src/
 import { Y } from '@common/...'; // Points to src/common/
 ```
 
+From tsconfig.json paths:
+- `@src/*` → `src/*`
+- `@common/*` → `src/common/*`
+- `@core-system/auth` → External auth package
+
 ## Technology Stack
 
 - **Framework**: NestJS 10.x with TypeScript
@@ -203,6 +208,35 @@ import { Y } from '@common/...'; // Points to src/common/
 - Use Jest's mocking for external dependencies
 - Run specific test: `pnpm run test -- path/to/test.spec.ts`
 
+## CQRS Handler Patterns
+
+### Command Handlers (Write Operations)
+- Implement `ICommandHandler<TCommand>` from `@nestjs/cqrs`
+- Use `EntityManager` for transactional database operations
+- Execute in write database connection
+- Return void or the created entity ID
+
+### Query Handlers (Read Operations)
+- Implement `IQueryHandler<TQuery>` from `@nestjs/cqrs`
+- Use read database connection for queries
+- Return `ResponseResult<T>` with pagination metadata
+- Never modify data
+
+## Entity Base Class
+
+Domain entities extend `Entity<ID>` from `@common/domain/entities/entity.ts`:
+- Generic ID type support
+- Built-in equality comparison and hash code generation
+- `updateIfNotNull` helper for partial updates
+- Builder pattern support: `Entity.builder().withProperty(value).build()`
+
+## Transaction Management
+
+- Use custom `ITransactionManager` for complex operations
+- Transaction boundaries wrap business operations
+- Automatic rollback on errors
+- Commands use transactions by default via EntityManager
+
 ## Important Files
 
 - `src/main.ts` - Application entry point
@@ -217,6 +251,7 @@ import { Y } from '@common/...'; // Points to src/common/
 - **Approval API** - External approval workflow service (configured via env vars)
 - **AWS S3** - File storage for uploads and documents
 - **Redis** - Caching layer (optional)
+- **SMTP** - Email notifications via `@nestjs-modules/mailer`
 
 ## Security Notes
 
@@ -226,3 +261,6 @@ import { Y } from '@common/...'; // Points to src/common/
 - Input validation on all endpoints
 - File upload restrictions (type, size)
 - Guards protect protected routes
+
+# currentDate
+Today's date is 2026-02-24.
