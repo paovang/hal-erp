@@ -1252,7 +1252,11 @@ export class ApproveStepCommandHandler
       } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
         payment_total = sum_total / rate;
       } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
-        payment_total = sum_total * 1;
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
+        payment_total = sum_total * rate;
       } else {
         throw new ManageDomainException(
           'errors.not_found',
