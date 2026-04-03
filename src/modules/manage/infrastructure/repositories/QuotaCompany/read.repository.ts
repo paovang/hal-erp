@@ -62,7 +62,7 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
 
       if (company_id) {
         // console.log('company_id', company_id);
-        queryBuilder.where('quota_companies.company_id = :company_id', {
+        queryBuilder.andWhere('quota_companies.company_id = :company_id', {
           company_id,
         });
       }
@@ -92,11 +92,24 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
         product_id: query.product_id,
       });
     }
+
+    if (query.search) {
+      queryBuilder.andWhere('products.name ILIKE :search', {
+        search: `%${query.search}%`,
+      });
+    }
+
+    if (query.year) {
+      queryBuilder.andWhere('EXTRACT(YEAR FROM quota_companies.year) = :year', {
+        year: query.year,
+      });
+    }
+
     const data = await this._paginationService.paginate(
       queryBuilder,
       query,
       this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
-      this.getFilterOptions(),
+      // this.getFilterOptions(),
     );
     return data;
   }
@@ -142,13 +155,13 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
 
   // vendor, product
 
-  private getFilterOptions(): FilterOptions {
-    return {
-      searchColumns: ['quota_companies.year'],
-      dateColumn: '',
-      filterByColumns: [],
-    };
-  }
+  // private getFilterOptions(): FilterOptions {
+  //   return {
+  //     searchColumns: ['quota_companies.year', 'products.name'],
+  //     dateColumn: '',
+  //     filterByColumns: [],
+  //   };
+  // }
 
   async findOne(
     id: QuotaCompanyId,
