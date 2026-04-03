@@ -21,7 +21,7 @@ export class QuotaCompanyQueryDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
-    description: 'can be department id',
+    description: 'can be vendor id',
   })
   @IsOptional()
   @IsString()
@@ -34,4 +34,12 @@ export class QuotaCompanyQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   product_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'can be code, name',
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
