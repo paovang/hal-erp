@@ -78,5 +78,6 @@
   "receipt_exist": "ໃບເບີກຈ່າຍມີໃນລະບົບແລ້ວ",
   "invalid_file_type": "ປະເພດໄຟລ໌ {property} ບໍ່ຖືກຕ້ອງ",
   "invalid_token": "ບໍ່ມີ token ຫຼື token ບໍ່ຖືກຕ້ອງ",
-  "department_not_have_budget": "ພະແນກນີ້ບໍ່ມີງົບປະມານ"
+  "department_not_have_budget": "ພະແນກນີ້ບໍ່ມີງົບປະມານ",
+  "invalid_tel": "ເບີໂທບໍ່ຖືກຕ້ອງ {property} ກະລຸນາກວດສອບກ່ອນ"
 }

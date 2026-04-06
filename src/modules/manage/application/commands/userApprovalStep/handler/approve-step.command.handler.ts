@@ -88,7 +88,6 @@ import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
 import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
-import { CurrencyEnum } from '@src/common/enums/currency.enum';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 
 interface CustomApprovalDto
@@ -675,6 +674,19 @@ export class ApproveStepCommandHandler
                 roles.includes('account-admin') ||
                 roles.includes('account-user')
               ) {
+                // if (!receipt.account_code) {
+                //   if (!query.dto.account_code) {
+                //     throw new ManageDomainException(
+                //       'errors.account_code_required',
+                //       HttpStatus.BAD_REQUEST,
+                //     );
+                //   }
+
+                //   await this.registerAccount(query, manager, receipt.id);
+                // } else {
+                //   await this.insertDataInTransaction(manager, receipt);
+                // }
+
                 if (!receipt.account_code) {
                   if (!query.dto.account_code) {
                     throw new ManageDomainException(
@@ -684,7 +696,6 @@ export class ApproveStepCommandHandler
                   }
 
                   await this.registerAccount(query, manager, receipt.id);
-                } else {
                   await this.insertDataInTransaction(manager, receipt);
                 }
               }
