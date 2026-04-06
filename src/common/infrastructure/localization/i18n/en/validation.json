@@ -22,5 +22,6 @@
   "ARRAY_UNIQUE": "{property} each value in the array must be unique.",
   "ARRAY_MIN_SIZE": "{property} must contain at least {constraint1} item(s).",
   "INVALID_USER_OBJECT": "Invalid user object.",
-  "PASSWORD_MISMATCH": "Password and confirm password mismatch"
+  "PASSWORD_MISMATCH": "Password and confirm password mismatch",
+  "INVALID_PHONE_FORMAT": "must be a valid phone number format"
 }
