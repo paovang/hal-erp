@@ -37,7 +37,7 @@ export class SendOTPCommandHandler
       tel = '20' + tel;
     }
 
-    if (tel.length < 10) {
+    if (tel.length < 10 || tel.length > 10) {
       throw new ManageDomainException(
         'errors.invalid_tel',
         HttpStatus.BAD_REQUEST,
