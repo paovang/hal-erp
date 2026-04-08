@@ -39,6 +39,14 @@ export async function sendApprovalRequest(
     tel = '20' + tel;
   }
 
+  if (tel.length < 10 || tel.length > 10) {
+    throw new ManageDomainException(
+      'errors.invalid_tel',
+      HttpStatus.BAD_REQUEST,
+      { property: `${tel}` },
+    );
+  }
+
   if (type === EnumRequestApprovalType.PR) {
     link = process.env.LINK_PR || 'http://127.0.0.1:3000';
   } else if (type === EnumRequestApprovalType.PO) {

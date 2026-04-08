@@ -27,11 +27,18 @@ export class CreateUserDto {
   @IsEmail({}, { message: i18nValidationMessage('validation.IS_EMAIL') })
   readonly email: string;
 
-  @ApiProperty()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @Length(6, 20, { message: i18nValidationMessage('validation.TEL_LENGTH') })
-  @Matches(/^\d+$/, { message: i18nValidationMessage('validation.IS_NUMBER') })
-  readonly tel: string;
+  @ApiProperty({
+    example: '020 99999382',
+    description: 'Phone number of the approver',
+    required: true,
+  })
+  @IsString({
+    message: i18nValidationMessage('validation.IS_STRING'),
+  })
+  @Matches(/^20\d{8}$/, {
+    message: i18nValidationMessage('validation.INVALID_PHONE_FORMAT'),
+  })
+  tel: string;
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
