@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DocumentCategoryResponse } from './document-category.response';
 
-export class DocumentTypeResponse {
+export class DocumentCategoryResponse {
   @ApiProperty()
   id: number;
 
@@ -10,12 +9,6 @@ export class DocumentTypeResponse {
 
   @ApiProperty()
   name: string;
-
-  @ApiProperty()
-  category_id: number;
-
-  @ApiProperty()
-  category: DocumentCategoryResponse | null;
 
   @ApiProperty()
   created_at: string;

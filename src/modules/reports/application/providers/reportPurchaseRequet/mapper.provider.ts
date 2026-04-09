@@ -35,6 +35,8 @@ import { QuotaCompanyDataMapper } from '@src/modules/manage/application/mappers/
 import { ProductDataMapper } from '@src/modules/manage/application/mappers/product.mapper';
 import { VendorProductDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/vendor-product.mapper';
 import { VendorProductDataMapper } from '@src/modules/manage/application/mappers/vendor-product.mapper';
+import { DocumentCategoryDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document-category.mapper';
+import { DocumentCategoryDataMapper } from '@src/modules/manage/application/mappers/document-category.mapper';
 
 export const ReportPurchaseRequestMapperProviders: Provider[] = [
   ReportPurchaseRequestDataAccessMapper,
@@ -73,4 +75,6 @@ export const ReportPurchaseRequestMapperProviders: Provider[] = [
   ProductDataMapper,
   VendorProductDataAccessMapper,
   VendorProductDataMapper,
+  DocumentCategoryDataAccessMapper,
+  DocumentCategoryDataMapper,
 ];

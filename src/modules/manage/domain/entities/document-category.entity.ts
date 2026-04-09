@@ -1,39 +1,31 @@
 import { Entity } from '@src/common/domain/entities/entity';
 import { DocumentTypeId } from '../value-objects/document-type-id.vo';
-import { DocumentTypeBuilder } from '../builders/document-type.builder';
-import { DocumentCategoryEntity } from './document-category.entity';
+import { DocumentCategoryBuilder } from '../builders/document-category.builder';
+import { DocumentCategoryCode } from '@src/common/infrastructure/database/typeorm/document-category.orm';
 
-export class DocumentTypeEntity extends Entity<DocumentTypeId> {
-  private readonly _code: string;
+export class DocumentCategoryEntity extends Entity<DocumentTypeId> {
+  private readonly _code: DocumentCategoryCode;
   private readonly _name: string;
-  private readonly _categoryId: number;
-  private readonly _category: DocumentCategoryEntity | null;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
 
-  private constructor(builder: DocumentTypeBuilder) {
+  private constructor(builder: DocumentCategoryBuilder) {
     super();
-    this.setId(builder.documentTypeId);
+    this.setId(builder.documentCategoryId);
     this._code = builder.code;
     this._name = builder.name;
-    this._categoryId = builder.categoryId;
-    this._category = builder.category ?? null;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
   }
 
-  get code(): string {
+  get code(): DocumentCategoryCode {
     return this._code;
   }
 
   get name(): string {
     return this._name;
-  }
-
-  get categoryId(): number {
-    return this._categoryId;
   }
 
   get createdAt(): Date {
@@ -48,20 +40,16 @@ export class DocumentTypeEntity extends Entity<DocumentTypeId> {
     return this._deletedAt;
   }
 
-  get category(): DocumentCategoryEntity | null {
-    return this._category;
+  public static builder(): DocumentCategoryBuilder {
+    return new DocumentCategoryBuilder();
   }
 
-  public static builder(): DocumentTypeBuilder {
-    return new DocumentTypeBuilder();
-  }
-
-  static create(builder: DocumentTypeBuilder): DocumentTypeEntity {
-    return new DocumentTypeEntity(builder);
+  static create(builder: DocumentCategoryBuilder): DocumentCategoryEntity {
+    return new DocumentCategoryEntity(builder);
   }
 
   static getEntityName() {
-    return 'document_type';
+    return 'document_category';
   }
 
   async validateExistingIdForUpdate() {

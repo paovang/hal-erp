@@ -15,6 +15,7 @@ import { VatSeeder } from './seeders/vat.seeder';
 import { BankSeeder } from './seeders/bank.seeder';
 import { CurrencySeeder } from './seeders/currecy.seeder';
 import { DocumentStatusSeeder } from './seeders/document-status.seeder';
+import { DocumentCategorySeeder } from './seeders/document-category.seeder';
 
 @Global()
 @Module({
@@ -76,6 +77,7 @@ import { DocumentStatusSeeder } from './seeders/document-status.seeder';
     BankSeeder,
     CurrencySeeder,
     DocumentStatusSeeder,
+    DocumentCategorySeeder,
   ],
 })
 export class TypeOrmRepositoryModule {}

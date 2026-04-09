@@ -32,13 +32,14 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
   ): Promise<ResponseResult<DocumentTypeEntity>> {
     const status = query.status as StatusEnum;
     const company_id = Number(query.company_id);
+    const category = query.category ? Number(query.category) : null;
     const queryBuilder = await this.createBaseQuery(
       manager,
       status,
       company_id,
+      category,
     );
     query.sort_by = 'document_types.id';
-
     const data = await this._paginationService.paginate(
       queryBuilder,
       query,
@@ -63,10 +64,16 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
     manager: EntityManager,
     status?: StatusEnum,
     company_id?: number,
+    category?: number | null,
   ) {
     const query = manager
       .createQueryBuilder(DocumentTypeOrmEntity, 'document_types')
+      .leftJoinAndSelect(
+        'document_types.document_category',
+        'document_category',
+      )
       .leftJoin('document_types.approval_workflows', 'approval_workflows');
+
     if (status) {
       query.andWhere('approval_workflows.status = :status', { status });
     }
@@ -74,6 +81,9 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
       query.andWhere('approval_workflows.company_id = :company_id', {
         company_id,
       });
+    }
+    if (category) {
+      query.andWhere('document_category.id = :category', { category });
     }
     return query;
   }

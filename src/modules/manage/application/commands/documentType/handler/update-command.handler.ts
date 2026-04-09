@@ -11,6 +11,7 @@ import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
 import { _checkColumnDuplicate } from '@src/common/utils/check-column-duplicate-orm.util';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
+import { DocumentCategoryOrmEntity } from '@src/common/infrastructure/database/typeorm/document-category.orm';
 
 @CommandHandler(UpdateCommand)
 export class UpdateCommandHandler
@@ -35,6 +36,10 @@ export class UpdateCommandHandler
 
     await findOneOrFail(query.manager, DocumentTypeOrmEntity, {
       id: query.id,
+    });
+
+    await findOneOrFail(query.manager, DocumentCategoryOrmEntity, {
+      id: query.dto.categoryId,
     });
 
     await _checkColumnDuplicate(

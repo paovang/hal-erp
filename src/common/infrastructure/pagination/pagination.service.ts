@@ -190,7 +190,6 @@ export class PaginationService implements IPaginationService {
       .take(limit)
       .skip((page - 1) * limit)
       .getRawAndEntities();
-
     // Merge subquery fields into entities before mapping
     const mappedData = entities.map((entity, idx) => ({
       ...entity,
