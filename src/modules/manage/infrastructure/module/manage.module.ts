@@ -43,6 +43,7 @@ import { CompanyUserController } from '../../controllers/company-user.controller
 import { VendorProductController } from '../../controllers/vendor-product.controller';
 import { QuotaCompanyController } from '../../controllers/quota-company.controller';
 import { MailModule } from '@src/common/infrastructure/mail/mail.module';
+import { DocumentCategoryController } from '../../controllers/document-category.controller';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { MailModule } from '@src/common/infrastructure/mail/mail.module';
   controllers: [
     DepartmentController,
     DocumentTypeController,
+    DocumentCategoryController,
     UserController,
     RoleController,
     PermissionController,

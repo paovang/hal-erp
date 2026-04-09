@@ -1,3 +1,4 @@
+import { DocumentCategoryEntity } from '../entities/document-category.entity';
 import { DocumentTypeEntity } from '../entities/document-type.entity';
 import { DocumentTypeId } from '../value-objects/document-type-id.vo';
 
@@ -5,6 +6,8 @@ export class DocumentTypeBuilder {
   documentTypeId: DocumentTypeId;
   code: string;
   name: string;
+  categoryId: number;
+  category: DocumentCategoryEntity;
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -21,6 +24,16 @@ export class DocumentTypeBuilder {
 
   setName(name: string): this {
     this.name = name;
+    return this;
+  }
+
+  setCategoryId(categoryId: number): this {
+    this.categoryId = categoryId;
+    return this;
+  }
+
+  setCategory(category: DocumentCategoryEntity): this {
+    this.category = category;
     return this;
   }
 

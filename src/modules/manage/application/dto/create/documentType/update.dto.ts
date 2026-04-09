@@ -1,6 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { CreateDocumentTypeDto } from './create.dto';
-import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 import { NoSpecialChars } from '@src/common/validations/NoSpecialChars.validator';
 
@@ -15,4 +15,9 @@ export class UpdateDocumentTypeDto extends OmitType(CreateDocumentTypeDto, [
     message: i18nValidationMessage('validation.NO_SPECIAL_CHARS'),
   })
   code: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  readonly categoryId: number;
 }

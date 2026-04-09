@@ -4,6 +4,8 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Relation,
@@ -11,6 +13,7 @@ import {
 } from 'typeorm';
 import { ApprovalWorkflowOrmEntity } from './approval-workflow.orm';
 import { DocumentOrmEntity } from './document.orm';
+import { DocumentCategoryOrmEntity } from './document-category.orm';
 
 @Entity('document_types')
 export class DocumentTypeOrmEntity {
@@ -44,4 +47,15 @@ export class DocumentTypeOrmEntity {
 
   @OneToMany(() => DocumentOrmEntity, (documents) => documents.document_types)
   documents: Relation<DocumentOrmEntity[]>;
+
+  @ManyToOne(
+    () => DocumentCategoryOrmEntity,
+    (document_category) => document_category.document_types,
+  )
+  @JoinColumn({ name: 'document_category_id' })
+  document_category: Relation<DocumentCategoryOrmEntity>;
+
+  @Index()
+  @Column({ nullable: true, name: 'document_category_id' })
+  document_category_id?: number;
 }

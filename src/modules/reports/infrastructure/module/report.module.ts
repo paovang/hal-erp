@@ -8,6 +8,7 @@ import { ReportPurchaseRequestController } from '../../controllers/report-purcha
 import { ReportPurchaseOrderController } from '../../controllers/report-purchase-order.controller';
 import { ReportReceiptController } from '../../controllers/report-receipt.controller';
 import { ReportCompanyController } from '../../controllers/report-company.controller';
+import { DocumentCategoryDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/document-category.mapper';
 
 @Module({
   imports: [

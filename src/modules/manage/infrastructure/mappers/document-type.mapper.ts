@@ -5,8 +5,16 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
-
+import {
+  DocumentCategoryDataAccessMapper,
+  TestFuc,
+} from './document-category.mapper';
+import { Injectable } from '@nestjs/common';
+@Injectable()
 export class DocumentTypeDataAccessMapper {
+  constructor(
+    private readonly categoryMapper: DocumentCategoryDataAccessMapper,
+  ) {} // private readonly testFuc: TestFuc, // private readonly categoryMapper: DocumentCategoryDataAccessMapper,
   toOrmEntity(
     documentTypeEntity: DocumentTypeEntity,
     method: OrmEntityMethod,
@@ -20,6 +28,7 @@ export class DocumentTypeDataAccessMapper {
     }
     mediaOrmEntity.code = documentTypeEntity.code;
     mediaOrmEntity.name = documentTypeEntity.name;
+    mediaOrmEntity.document_category_id = documentTypeEntity.categoryId;
 
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = documentTypeEntity.createdAt ?? new Date(now);
@@ -31,12 +40,19 @@ export class DocumentTypeDataAccessMapper {
   }
 
   toEntity(ormData: DocumentTypeOrmEntity): DocumentTypeEntity {
-    return DocumentTypeEntity.builder()
+    // console.log('ormData', ormData);
+    const builder = DocumentTypeEntity.builder()
       .setDocumentTypeId(new DocumentTypeId(ormData.id))
       .setCode(ormData.code)
       .setName(ormData.name)
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at)
-      .build();
+      .setUpdatedAt(ormData.updated_at);
+    if (ormData.document_category_id)
+      builder.setCategoryId(ormData.document_category_id);
+    if (ormData.document_category)
+      builder.setCategory(
+        this.categoryMapper.toEntity(ormData.document_category),
+      );
+    return builder.build();
   }
 }
