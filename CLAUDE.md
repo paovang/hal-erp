@@ -121,7 +121,6 @@ import { Y } from '@common/...'; // Points to src/common/
 From tsconfig.json paths:
 - `@src/*` → `src/*`
 - `@common/*` → `src/common/*`
-- `@core-system/auth` → External auth package
 
 ## Technology Stack
 
@@ -262,5 +261,3 @@ Domain entities extend `Entity<ID>` from `@common/domain/entities/entity.ts`:
 - File upload restrictions (type, size)
 - Guards protect protected routes
 
-# currentDate
-Today's date is 2026-02-24.

@@ -289,10 +289,12 @@ export class CreateCommandHandler
         const document_number = await this.generateDocumentNumber(manager);
         // const code = po?.purchase_requests?.documents?.departments?.code;
 
-        const receipt_number = await this.generateReceiptNumber(
-          manager,
-          poRest,
-        );
+        // const receipt_number = await this.generateReceiptNumber(
+        //   manager,
+        //   poRest,
+        // );
+
+        const receipt_number = await this.generateRCNumber(manager, poRest);
 
         const document_id = await this.createDocument(
           query,
@@ -430,25 +432,25 @@ export class CreateCommandHandler
     );
   }
 
-  private async generateReceiptNumber(
-    manager: EntityManager,
-    poRest: string,
-  ): Promise<string> {
-    return await this._codeGeneratorUtil.generateSequentialUniqueCode(
-      LENGTH_RECEIPT_CODE,
-      async (generatedCode: string) => {
-        try {
-          await findOneOrFail(manager, ReceiptOrmEntity, {
-            receipt_number: generatedCode,
-          });
-          return false;
-        } catch {
-          return true;
-        }
-      },
-      poRest,
-    );
-  }
+  // private async generateReceiptNumber(
+  //   manager: EntityManager,
+  //   poRest: string,
+  // ): Promise<string> {
+  //   return await this._codeGeneratorUtil.generateSequentialUniqueCode(
+  //     LENGTH_RECEIPT_CODE,
+  //     async (generatedCode: string) => {
+  //       try {
+  //         await findOneOrFail(manager, ReceiptOrmEntity, {
+  //           receipt_number: generatedCode,
+  //         });
+  //         return false;
+  //       } catch {
+  //         return true;
+  //       }
+  //     },
+  //     poRest,
+  //   );
+  // }
 
   private async createDocument(
     query: CreateCommand,
@@ -773,5 +775,28 @@ export class CreateCommandHandler
     }
     const { amount } = vat;
     return amount;
+  }
+
+  private async generateRCNumber(
+    manager: EntityManager,
+    departmentCode: string,
+  ): Promise<string> {
+    const latestRC = await manager
+      .getRepository(ReceiptOrmEntity)
+      .createQueryBuilder('rc')
+      .orderBy('rc.id', 'DESC')
+      .getOne();
+
+    let nextNumber = 1;
+    if (latestRC?.receipt_number) {
+      const numericPart = latestRC.receipt_number.split('/')[0];
+      nextNumber = (parseInt(numericPart, 10) || 0) + 1;
+    }
+
+    return (
+      nextNumber.toString().padStart(LENGTH_RECEIPT_CODE, '0') +
+      '/' +
+      departmentCode
+    );
   }
 }

@@ -320,20 +320,21 @@ export class CreateCommandHandler
 
         const prefix = department_code + '/' + pr_department_code;
 
-        const code = await this._codeGeneratorUtil.generateSequentialUniqueCode(
-          LENGTH_PURCHASE_ORDER_CODE,
-          async (generatedCode: string) => {
-            try {
-              await findOneOrFail(manager, PurchaseOrderOrmEntity, {
-                po_number: generatedCode,
-              });
-              return false;
-            } catch {
-              return true;
-            }
-          },
-          prefix,
-        );
+        // const code = await this._codeGeneratorUtil.generateSequentialUniqueCode(
+        //   LENGTH_PURCHASE_ORDER_CODE,
+        //   async (generatedCode: string) => {
+        //     try {
+        //       await findOneOrFail(manager, PurchaseOrderOrmEntity, {
+        //         po_number: generatedCode,
+        //       });
+        //       return false;
+        //     } catch {
+        //       return true;
+        //     }
+        //   },
+        //   prefix,
+        // );
+        const code = await this.generatePoNumber(manager, prefix);
         console.log('po_number', code);
 
         const DEntity = this._dataDMapper.toEntity(
@@ -691,5 +692,28 @@ export class CreateCommandHandler
     }, 0);
 
     return total;
+  }
+
+  private async generatePoNumber(
+    manager: EntityManager,
+    departmentCode: string,
+  ): Promise<string> {
+    const latestPo = await manager
+      .getRepository(PurchaseOrderOrmEntity)
+      .createQueryBuilder('po')
+      .orderBy('po.id', 'DESC')
+      .getOne();
+
+    let nextNumber = 1;
+    if (latestPo?.po_number) {
+      const numericPart = latestPo.po_number.split('/')[0];
+      nextNumber = (parseInt(numericPart, 10) || 0) + 1;
+    }
+
+    return (
+      nextNumber.toString().padStart(LENGTH_PURCHASE_ORDER_CODE, '0') +
+      '/' +
+      departmentCode
+    );
   }
 }
