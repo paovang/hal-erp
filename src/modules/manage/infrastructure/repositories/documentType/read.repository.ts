@@ -83,7 +83,7 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
       });
     }
     if (category) {
-      query.andWhere('document_category.id = :category', { category });
+      query.andWhere('document_category.code = :category', { category });
     }
     return query;
   }
