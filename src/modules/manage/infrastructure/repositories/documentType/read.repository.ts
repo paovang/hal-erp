@@ -15,6 +15,7 @@ import { DocumentTypeQueryDto } from '@src/modules/manage/application/dto/query/
 import { DocumentTypeId } from '@src/modules/manage/domain/value-objects/document-type-id.vo';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { StatusEnum } from '@src/common/enums/status.enum';
+import { DocumentCategoryCode } from '@src/common/infrastructure/database/typeorm/document-category.orm';
 
 @Injectable()
 export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
@@ -32,12 +33,11 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
   ): Promise<ResponseResult<DocumentTypeEntity>> {
     const status = query.status as StatusEnum;
     const company_id = Number(query.company_id);
-    const category = query.category ? Number(query.category) : null;
     const queryBuilder = await this.createBaseQuery(
       manager,
       status,
       company_id,
-      category,
+      query.category,
     );
     query.sort_by = 'document_types.id';
     const data = await this._paginationService.paginate(
@@ -64,7 +64,7 @@ export class ReadDocumentTypeRepository implements IReadDocumentTypeRepository {
     manager: EntityManager,
     status?: StatusEnum,
     company_id?: number,
-    category?: number | null,
+    category?: DocumentCategoryCode | null,
   ) {
     const query = manager
       .createQueryBuilder(DocumentTypeOrmEntity, 'document_types')

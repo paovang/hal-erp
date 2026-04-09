@@ -80,6 +80,7 @@ export class ReadPurchaseRequestRepository
     roles?: string[],
     company_id?: number,
   ): Promise<ResponseResult<PurchaseRequestEntity>> {
+    console.log('query test');
     const filterCompanyId = Number(query.company_id);
     const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(
