@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { DocumentCategoryCode } from '@src/common/infrastructure/database/typeorm/document-category.orm';
 import { PaginationDto } from '@src/common/validations/dto/pagination.dto';
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class DocumentTypeQueryDto extends PaginationDto {
   @ApiProperty({
@@ -20,6 +21,8 @@ export class DocumentTypeQueryDto extends PaginationDto {
   company_id?: string;
 
   @IsOptional()
-  @IsString()
-  category?: string;
+  @IsEnum(DocumentCategoryCode, {
+    message: `category must be a valid DocumentCategoryCode`,
+  })
+  category?: DocumentCategoryCode;
 }
