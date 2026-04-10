@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 import { i18nValidationMessage } from 'nestjs-i18n';
 
@@ -23,7 +23,8 @@ export class CreateVendorProductDto {
   readonly price: number;
 
   @ApiProperty()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsOptional()
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   @Type(() => Number)
   readonly currency_id: number;
