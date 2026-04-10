@@ -276,20 +276,7 @@ export class CreateCommandHandler
 
         const department_name = (get_department_name as any).name;
         const department_code = (get_department_name as any).code;
-        const code = await this._codeGeneratorUtil.generateSequentialUniqueCode(
-          LENGTH_PURCHASE_REQUEST_CODE,
-          async (generatedCode: string) => {
-            try {
-              await findOneOrFail(manager, PurchaseRequestOrmEntity, {
-                pr_number: generatedCode,
-              });
-              return false;
-            } catch {
-              return true;
-            }
-          },
-          department_code,
-        );
+        const code = await this.generatePrNumber(manager, department_code);
 
         const DEntity = this._dataDMapper.toEntity(
           query.dto.document,
@@ -392,6 +379,29 @@ export class CreateCommandHandler
 
         return await this._read.findOne(new PurchaseRequestId(pr_id), manager);
       },
+    );
+  }
+
+  private async generatePrNumber(
+    manager: EntityManager,
+    departmentCode: string,
+  ): Promise<string> {
+    const latestPr = await manager
+      .getRepository(PurchaseRequestOrmEntity)
+      .createQueryBuilder('pr')
+      .orderBy('pr.id', 'DESC')
+      .getOne();
+
+    let nextNumber = 1;
+    if (latestPr?.pr_number) {
+      const numericPart = latestPr.pr_number.split('/')[0];
+      nextNumber = (parseInt(numericPart, 10) || 0) + 1;
+    }
+
+    return (
+      nextNumber.toString().padStart(LENGTH_PURCHASE_REQUEST_CODE, '0') +
+      '/' +
+      departmentCode
     );
   }
 

@@ -289,10 +289,12 @@ export class CreateCommandHandler
         const document_number = await this.generateDocumentNumber(manager);
         // const code = po?.purchase_requests?.documents?.departments?.code;
 
-        const receipt_number = await this.generateReceiptNumber(
-          manager,
-          poRest,
-        );
+        // const receipt_number = await this.generateReceiptNumber(
+        //   manager,
+        //   poRest,
+        // );
+
+        const receipt_number = await this.generateRCNumber(manager, poRest);
 
         const document_id = await this.createDocument(
           query,
@@ -430,25 +432,25 @@ export class CreateCommandHandler
     );
   }
 
-  private async generateReceiptNumber(
-    manager: EntityManager,
-    poRest: string,
-  ): Promise<string> {
-    return await this._codeGeneratorUtil.generateSequentialUniqueCode(
-      LENGTH_RECEIPT_CODE,
-      async (generatedCode: string) => {
-        try {
-          await findOneOrFail(manager, ReceiptOrmEntity, {
-            receipt_number: generatedCode,
-          });
-          return false;
-        } catch {
-          return true;
-        }
-      },
-      poRest,
-    );
-  }
+  // private async generateReceiptNumber(
+  //   manager: EntityManager,
+  //   poRest: string,
+  // ): Promise<string> {
+  //   return await this._codeGeneratorUtil.generateSequentialUniqueCode(
+  //     LENGTH_RECEIPT_CODE,
+  //     async (generatedCode: string) => {
+  //       try {
+  //         await findOneOrFail(manager, ReceiptOrmEntity, {
+  //           receipt_number: generatedCode,
+  //         });
+  //         return false;
+  //       } catch {
+  //         return true;
+  //       }
+  //     },
+  //     poRest,
+  //   );
+  // }
 
   private async createDocument(
     query: CreateCommand,
@@ -693,14 +695,14 @@ export class CreateCommandHandler
         'exchange rate',
       );
 
-      // const currency = await this.getCurrency(
-      //   exchange_rate!.from_currency_id,
-      //   manager,
-      // );
-      // const payment_currency = await this.getCurrency(
-      //   exchange_rate!.to_currency_id,
-      //   manager,
-      // );
+      const currency = await this.getCurrency(
+        exchange_rate!.from_currency_id,
+        manager,
+      );
+      const payment_currency = await this.getCurrency(
+        exchange_rate!.to_currency_id,
+        manager,
+      );
 
       let payment_total = 0;
       let sum_total = 0;
@@ -708,7 +710,7 @@ export class CreateCommandHandler
       const quantity = Number(purchase_order_item?.quantity ?? 0);
       const price = Number(purchase_order_item?.price ?? 0);
       const get_total = Number(purchase_order_item?.total ?? 0);
-      // const rate = Number(exchange_rate?.rate ?? 0);
+      const rate = Number(exchange_rate?.rate ?? 0);
 
       // if (purchase_order_item?.is_vat === SelectStatus.TRUE) {
       //   vat = Number(purchase_order_item?.vat) ?? 0;
@@ -720,25 +722,60 @@ export class CreateCommandHandler
       sum_total = get_total;
       payment_total = sum_total;
 
-      // if (currency.code === 'USD' && payment_currency.code === 'LAK') {
-      //   payment_total = sum_total / rate;
-      // } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
-      //   payment_total = sum_total * rate;
-      // } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
-      //   payment_total = sum_total * rate;
-      // } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
-      //   payment_total = sum_total / rate;
-      // } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
-      //   payment_total = sum_total * rate;
-      // } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
-      //   payment_total = sum_total * rate;
-      // } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
-      //   payment_total = sum_total / rate;
-      // } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
-      //   payment_total = sum_total * rate;
-      // } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
-      //   payment_total = sum_total * rate;
-      // }
+      if (currency.code === 'USD' && payment_currency.code === 'LAK') {
+        payment_total = sum_total / rate;
+      } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
+        payment_total = sum_total / rate;
+      } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
+        payment_total = sum_total / rate;
+      } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
+        payment_total = sum_total * rate;
+      } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
+        payment_total = sum_total * rate;
+      } // CNH to THB
+      else if (currency.code === 'CNH' && payment_currency.code === 'THB') {
+        payment_total = sum_total * rate;
+      }
+      // THB to CNH
+      else if (currency.code === 'THB' && payment_currency.code === 'CNH') {
+        payment_total = sum_total / rate;
+      }
+      // CNH to LAK
+      else if (currency.code === 'CNH' && payment_currency.code === 'LAK') {
+        payment_total = sum_total / rate;
+      }
+      // LAK to CNH
+      else if (currency.code === 'LAK' && payment_currency.code === 'CNH') {
+        payment_total = sum_total * rate;
+      }
+      // CNH to USD
+      else if (currency.code === 'CNH' && payment_currency.code === 'USD') {
+        payment_total = sum_total * rate;
+      }
+      // USD to CNH
+      else if (currency.code === 'USD' && payment_currency.code === 'CNH') {
+        payment_total = sum_total / rate;
+      }
+      // CNH to CNH
+      else if (currency.code === 'CNH' && payment_currency.code === 'CNH') {
+        payment_total = sum_total * rate;
+      } else {
+        throw new ManageDomainException(
+          'errors.currency_not_supported',
+          HttpStatus.BAD_REQUEST,
+          {
+            property: `Currency ${currency.code} to ${payment_currency.code}`,
+          },
+        );
+      }
 
       const interface_item: ReceiptInterItemInterface = {
         receipt_id: receipt_id,
@@ -773,5 +810,28 @@ export class CreateCommandHandler
     }
     const { amount } = vat;
     return amount;
+  }
+
+  private async generateRCNumber(
+    manager: EntityManager,
+    departmentCode: string,
+  ): Promise<string> {
+    const latestRC = await manager
+      .getRepository(ReceiptOrmEntity)
+      .createQueryBuilder('rc')
+      .orderBy('rc.id', 'DESC')
+      .getOne();
+
+    let nextNumber = 1;
+    if (latestRC?.receipt_number) {
+      const numericPart = latestRC.receipt_number.split('/')[0];
+      nextNumber = (parseInt(numericPart, 10) || 0) + 1;
+    }
+
+    return (
+      nextNumber.toString().padStart(LENGTH_RECEIPT_CODE, '0') +
+      '/' +
+      departmentCode
+    );
   }
 }

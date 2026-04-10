@@ -83,6 +83,9 @@ export class ReceiptItemOrmEntity {
   @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
   vat?: number;
 
+  @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
+  rate?: number;
+
   @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
   payment_total?: number;
 
