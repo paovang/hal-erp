@@ -34,7 +34,10 @@ export class DocumentTypeController {
   async create(
     @Body() dto: CreateDocumentTypeDto,
   ): Promise<ResponseResult<DocumentTypeResponse>> {
-    const result = await this._documentTypeService.create(dto);
+    const result = await this._documentTypeService.create({
+      ...dto,
+      categoryId: 1,
+    });
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
@@ -71,7 +74,10 @@ export class DocumentTypeController {
     @Param('id') id: number,
     @Body() dto: UpdateDocumentTypeDto,
   ): Promise<ResponseResult<DocumentTypeResponse>> {
-    const result = await this._documentTypeService.update(id, dto);
+    const result = await this._documentTypeService.update(id, {
+      ...dto,
+      categoryId: 1,
+    });
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

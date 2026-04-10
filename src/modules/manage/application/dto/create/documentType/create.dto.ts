@@ -20,7 +20,7 @@ export class CreateDocumentTypeDto {
   readonly code: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  // @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly categoryId: number;
 }
