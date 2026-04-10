@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CurrencyResponse } from './currency.response';
 
 export class VendorProductResponse {
   @ApiProperty()
@@ -30,4 +31,10 @@ export class VendorProductResponse {
 
   @ApiProperty()
   updated_at: string;
+
+  @ApiProperty()
+  currency_id: number;
+
+  @ApiProperty({ required: false })
+  currency?: CurrencyResponse;
 }

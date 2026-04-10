@@ -1,10 +1,13 @@
 import { Entity } from '@src/common/domain/entities/entity';
 import { VendorProductId } from '../value-objects/vendor-product-id.vo';
 import { VendorProductBuilder } from '../builders/vendor-product.builder';
+import { CurrencyEntity } from './currency.entity';
 
 export class VendorProductEntity extends Entity<VendorProductId> {
   private readonly _vendorId: number;
   private readonly _productId: number;
+  private readonly _currencyId: number;
+  private readonly _currency?: CurrencyEntity;
   private readonly _vendor?: { id: number; name: string };
   private readonly _product?: { id: number; name: string };
   private readonly _price: number;
@@ -20,6 +23,8 @@ export class VendorProductEntity extends Entity<VendorProductId> {
     this._vendor = builder.vendor;
     this._product = builder.product;
     this._price = builder.price;
+    this._currencyId = builder.currencyId;
+    this._currency = builder.currency;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -31,6 +36,14 @@ export class VendorProductEntity extends Entity<VendorProductId> {
 
   get productId(): number {
     return this._productId;
+  }
+
+  get currencyId(): number {
+    return this._currencyId;
+  }
+
+  get currency(): CurrencyEntity | undefined {
+    return this._currency;
   }
 
   get vendor(): { id: number; name: string } | undefined {

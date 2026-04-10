@@ -6,9 +6,11 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { VendorProductResponse } from '../dto/response/vendor-product.response';
 import { UpdateVendorProductDto } from '../dto/create/vendor-product/update.dto';
+import { CurrencyDataMapper } from './currency.mapper';
 
 @Injectable()
 export class VendorProductDataMapper {
+  constructor(private readonly currencyDataMapper: CurrencyDataMapper) {}
   /** Mapper Dto To Entity */
   toEntity(
     dto: CreateVendorProductDto | UpdateVendorProductDto,
@@ -27,6 +29,10 @@ export class VendorProductDataMapper {
       builder.setPrice(dto.price);
     }
 
+    if ('currency_id' in dto && dto.currency_id) {
+      builder.setCurrencyId(dto.currency_id);
+    }
+
     return builder.build();
   }
 
@@ -39,13 +45,18 @@ export class VendorProductDataMapper {
     response.vendor = entity.vendor;
     response.product = entity.product;
     response.price = entity.price;
+    response.currency_id = entity.currencyId;
+    response.currency = entity.currency
+      ? this.currencyDataMapper.toResponse(entity.currency)
+      : undefined;
+
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.updated_at = moment
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
-
+    // console.log('Mapped VendorProductResponse:', entity);
     return response;
   }
 }

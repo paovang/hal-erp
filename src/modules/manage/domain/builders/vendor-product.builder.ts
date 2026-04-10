@@ -1,9 +1,12 @@
+import { CurrencyEntity } from '../entities/currency.entity';
 import { VendorProductEntity } from '../entities/vendor-product.entity';
 import { VendorProductId } from '../value-objects/vendor-product-id.vo';
 
 export class VendorProductBuilder {
   vendorProductId: VendorProductId;
   vendorId: number;
+  currencyId: number;
+  currency?: CurrencyEntity;
   productId: number;
   vendor?: { id: number; name: string };
   product?: { id: number; name: string };
@@ -14,6 +17,16 @@ export class VendorProductBuilder {
 
   setVendorProductId(value: VendorProductId): this {
     this.vendorProductId = value;
+    return this;
+  }
+
+  setCurrencyId(currencyId: number): this {
+    this.currencyId = currencyId;
+    return this;
+  }
+
+  setCurrency(currency: CurrencyEntity): this {
+    this.currency = currency;
     return this;
   }
 

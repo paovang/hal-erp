@@ -21,4 +21,10 @@ export class CreateVendorProductDto {
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   @Type(() => Number)
   readonly price: number;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  @Type(() => Number)
+  readonly currency_id: number;
 }

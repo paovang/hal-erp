@@ -13,6 +13,7 @@ import {
 import { VendorOrmEntity } from './vendor.orm';
 import { ProductOrmEntity } from './product.orm';
 import { QuotaCompanyOrmEntity } from './quota-company.orm';
+import { CurrencyOrmEntity } from './currency.orm';
 
 @Entity('vendor_products')
 export class VendorProductOrmEntity {
@@ -36,6 +37,12 @@ export class VendorProductOrmEntity {
 
   @Column({ type: 'decimal', precision: 18, scale: 2, default: 0.0 })
   price: number;
+
+  @Column({ type: 'bigint', unsigned: true, nullable: true })
+  currency_id?: number;
+  @ManyToOne(() => CurrencyOrmEntity)
+  @JoinColumn({ name: 'currency_id' })
+  currency: Relation<CurrencyOrmEntity>;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

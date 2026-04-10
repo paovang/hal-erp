@@ -73,7 +73,8 @@ export class ReadVendorProductRepository
     return manager
       .createQueryBuilder(VendorProductOrmEntity, 'vendor_products')
       .leftJoinAndSelect('vendor_products.vendors', 'vendor')
-      .leftJoinAndSelect('vendor_products.products', 'product');
+      .leftJoinAndSelect('vendor_products.products', 'product')
+      .leftJoinAndSelect('vendor_products.currency', 'currency');
   }
 
   private getFilterOptions(): FilterOptions {

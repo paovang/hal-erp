@@ -5,8 +5,10 @@ import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import moment from 'moment-timezone';
 import { VendorProductId } from '../../domain/value-objects/vendor-product-id.vo';
 import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
+import { CurrencyDataAccessMapper } from './currency.mapper';
 
 export class VendorProductDataAccessMapper {
+  constructor() {} // private readonly currencyDataAccessMapper: CurrencyDataAccessMapper,
   toOrmEntity(
     vendorProductEntity: VendorProductEntity,
     method: OrmEntityMethod,
@@ -22,6 +24,7 @@ export class VendorProductDataAccessMapper {
     vendorProductOrmEntity.vendor_id = vendorProductEntity.vendorId;
     vendorProductOrmEntity.product_id = vendorProductEntity.productId;
     vendorProductOrmEntity.price = vendorProductEntity.price;
+    vendorProductOrmEntity.currency_id = vendorProductEntity.currencyId;
 
     if (method === OrmEntityMethod.CREATE) {
       vendorProductOrmEntity.created_at =
@@ -42,6 +45,7 @@ export class VendorProductDataAccessMapper {
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .setDeletedAt(ormData.deleted_at);
+    if (ormData.currency_id) builder.setCurrencyId(ormData.currency_id);
 
     // Set vendor and product if they exist
     if (ormData.vendors && ormData.vendors.name) {
@@ -58,6 +62,11 @@ export class VendorProductDataAccessMapper {
       });
     }
 
+    if (ormData.currency) {
+      builder.setCurrency(
+        new CurrencyDataAccessMapper().toEntity(ormData.currency),
+      );
+    }
     return builder.build();
   }
 }
