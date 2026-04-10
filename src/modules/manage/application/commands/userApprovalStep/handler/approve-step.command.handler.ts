@@ -813,9 +813,6 @@ export class ApproveStepCommandHandler
                       manager,
                     );
 
-                    console.log('calculate', check_budget);
-                    console.log('sum_total', sum_total);
-
                     if (sum_total > check_budget) {
                       throw new ManageDomainException(
                         'errors.insufficient_budget',
@@ -879,11 +876,8 @@ export class ApproveStepCommandHandler
                   }
 
                   await this.registerAccount(query, manager, receipt.id);
+                  await this.insertDataInTransaction(manager, receipt);
                 }
-              }
-
-              if (receipt.account_code) {
-                await this.insertDataInTransaction(manager, receipt);
               }
             }
           }
@@ -1254,19 +1248,28 @@ export class ApproveStepCommandHandler
       }
       const rate = Number(exchange_rate?.rate ?? 0);
       let payment_total = 0;
-      if (currency.code === 'USD' && payment_currency.code === 'LAK') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
+      // if (currency.code === 'USD' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total * rate;
+
+      if (currency.code === 'LAK' && payment_currency.code === 'USD') {
         payment_total = sum_total * rate;
       } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
-        payment_total = sum_total / rate;
+        payment_total = sum_total * rate;
       } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
         payment_total = sum_total * rate;
-      } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
+      } else if (currency.code === 'LAK' && payment_currency.code === 'CNH') {
         payment_total = sum_total * rate;
       } else {
         throw new ManageDomainException(
