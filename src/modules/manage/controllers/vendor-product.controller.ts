@@ -35,10 +35,7 @@ export class VendorProductController {
   async create(
     @Body() dto: CreateVendorProductDto,
   ): Promise<ResponseResult<VendorProductResponse>> {
-    const result = await this._vendorProductService.create({
-      ...dto,
-      currency_id: 3,
-    });
+    const result = await this._vendorProductService.create(dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
@@ -75,10 +72,7 @@ export class VendorProductController {
     @Param('id') id: number,
     @Body() dto: UpdateVendorProductDto,
   ): Promise<ResponseResult<VendorProductResponse>> {
-    const result = await this._vendorProductService.update(id, {
-      ...dto,
-      currency_id: 3,
-    });
+    const result = await this._vendorProductService.update(id, dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
