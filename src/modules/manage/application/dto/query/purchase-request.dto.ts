@@ -54,7 +54,7 @@ export class PurchaseRequestQueryDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
-    description: 'Filter by purchase request type id',
+    description: 'Filter by type (all or only_user)',
   })
   @IsOptional()
   @IsEnum(PurchaseRequestType)

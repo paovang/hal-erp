@@ -72,6 +72,7 @@ import {
 } from '@src/modules/manage/application/constants/status-key.const';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
+import { PurchaseRequestType } from '@src/modules/manage/application/dto/query/purchase-request.dto';
 
 @Injectable()
 export class ReadPurchaseOrderRepository
@@ -97,6 +98,7 @@ export class ReadPurchaseOrderRepository
       roles,
       user_id,
       company_id,
+      query.type,
     );
     query.sort_by = 'purchase_orders.id';
 
@@ -136,6 +138,7 @@ export class ReadPurchaseOrderRepository
     roles?: string[],
     user_id?: number,
     company_id?: number,
+    type?: PurchaseRequestType,
   ) {
     const selectFields = [
       ...selectPurchaseOrderItems,
@@ -274,9 +277,11 @@ export class ReadPurchaseOrderRepository
           });
         }
       } else {
-        query.andWhere('document_approver.user_id = :user_id', {
-          user_id,
-        });
+        if (type && (type = PurchaseRequestType.only_user)) {
+          query.andWhere('document_approver.user_id = :user_id', {
+            user_id,
+          });
+        }
       }
     }
 

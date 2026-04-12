@@ -231,7 +231,7 @@ export class ReadPurchaseRequestRepository
           });
         }
       } else {
-        if (type && (type = PurchaseRequestType.all)) {
+        if (type && (type = PurchaseRequestType.only_user)) {
           query.andWhere('document_approver.user_id = :user_id', {
             user_id,
           });

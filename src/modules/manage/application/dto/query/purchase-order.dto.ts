@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationDto } from '@src/common/validations/dto/pagination.dto';
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { PurchaseRequestType } from './purchase-request.dto';
 
 export class PurchaseOrderQueryDto extends PaginationDto {
   @ApiProperty({
@@ -33,4 +34,12 @@ export class PurchaseOrderQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   company_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by type (all or only_user)',
+  })
+  @IsOptional()
+  @IsEnum(PurchaseRequestType)
+  type?: PurchaseRequestType;
 }
