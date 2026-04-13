@@ -273,6 +273,7 @@ export class CreateCommandHandler
           },
           `department id: ${department_id}`,
         );
+        console.log('get_department_name', get_department_name);
 
         const department_name = (get_department_name as any).name;
         const department_code = (get_department_name as any).code;
@@ -389,10 +390,12 @@ export class CreateCommandHandler
     const latestPr = await manager
       .getRepository(PurchaseRequestOrmEntity)
       .createQueryBuilder('pr')
-      .orderBy('pr.id', 'DESC')
+      .where('pr.pr_number IS NOT NULL')
+      .orderBy(`CAST(SPLIT_PART(pr.pr_number, '/', 1) AS INTEGER)`, 'DESC')
       .getOne();
 
     let nextNumber = 1;
+
     if (latestPr?.pr_number) {
       const numericPart = latestPr.pr_number.split('/')[0];
       nextNumber = (parseInt(numericPart, 10) || 0) + 1;

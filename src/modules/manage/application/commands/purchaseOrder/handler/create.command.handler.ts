@@ -335,7 +335,6 @@ export class CreateCommandHandler
         //   prefix,
         // );
         const code = await this.generatePoNumber(manager, prefix);
-        console.log('po_number', code);
 
         const DEntity = this._dataDMapper.toEntity(
           query.dto.document,

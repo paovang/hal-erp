@@ -179,7 +179,7 @@ export class UpdateCommandHandler
       .andWhere('step.id != :id', { id: query.id })
       .getRawOne();
 
-    console.log('object', existingMaxStepNumber);
+    // console.log('object', existingMaxStepNumber);
 
     const maxStepNumber = existingMaxStepNumber?.max
       ? Number(existingMaxStepNumber.max)
