@@ -47,7 +47,11 @@ import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/por
 import { DocumentApproverDataMapper } from '../../../mappers/document-approver.mapper';
 import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-approval-rule.orm';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
-import { handleApprovalStep } from '@src/common/utils/approval-step.utils';
+import {
+  handleApprovalStep,
+  sendApprovalNotification,
+  ApprovalNotificationData,
+} from '@src/common/utils/approval-step.utils';
 import { UserApprovalStepId } from '@src/modules/manage/domain/value-objects/user-approval-step-id.vo';
 import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
 import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
@@ -86,7 +90,7 @@ import { ExchangeRateOrmEntity } from '@src/common/infrastructure/database/typeo
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
 import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
-import { DomainException } from '@src/common/domain/exceptions/domain.exception';
+// import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 
@@ -159,7 +163,15 @@ export class ApproveStepCommandHandler
   async execute(
     query: ApproveStepCommand,
   ): Promise<ResponseResult<UserApprovalStepEntity>> {
-    return await this._transactionManagerService.runInTransaction(
+    // เก็บข้อมูลสำหรับเรียก external services หลัง transaction commit
+    let notificationData = null as ApprovalNotificationData | null;
+    let otpData = null as {
+      query: ApproveStepCommand;
+      status: string;
+      tel: string;
+    } | null;
+
+    const result = await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
         let user: any;
@@ -429,7 +441,7 @@ export class ApproveStepCommandHandler
 
               const model_id = purchase_request.id;
 
-              await handleApprovalStep({
+              notificationData = await handleApprovalStep({
                 a_w_s,
                 total,
                 user_id,
@@ -631,7 +643,7 @@ export class ApproveStepCommandHandler
 
               const model_id = po.id;
 
-              await handleApprovalStep({
+              notificationData = await handleApprovalStep({
                 a_w_s,
                 total,
                 user_id,
@@ -707,7 +719,7 @@ export class ApproveStepCommandHandler
 
               const model_id = receipt.id;
 
-              await handleApprovalStep({
+              notificationData = await handleApprovalStep({
                 a_w_s,
                 total,
                 user_id,
@@ -883,18 +895,12 @@ export class ApproveStepCommandHandler
           }
 
           await this.checkDataAndUpdateUserApproval(query, manager);
-          try {
-            if (query.dto.is_otp === true) {
-              // Verify OTP
-              await verifyOtp(query, status, tel);
-            }
-          } catch (error) {
-            throw new DomainException(
-              'errors.otp_verification_failed',
-              HttpStatus.BAD_REQUEST,
-              { details: (error as Error).message },
-            );
+
+          // เก็บข้อมูล OTP ไว้เรียกหลัง transaction commit
+          if (query.dto.is_otp === true) {
+            otpData = { query, status, tel };
           }
+
           return approvedStepEntity;
         }
 
@@ -916,23 +922,37 @@ export class ApproveStepCommandHandler
 
         await this.RejectUserApproval(query, manager);
 
-        try {
-          if (query.dto.is_otp === true) {
-            // Verify OTP
-            await verifyOtp(query, status, tel);
-          }
-        } catch (error: any) {
-          console.log('error', error.message);
-          throw new ManageDomainException(
-            'errors.otp_verification_failed',
-            HttpStatus.BAD_REQUEST,
-            { property: `${error.message}` },
-          );
+        // เก็บข้อมูล OTP ไว้เรียกหลัง transaction commit
+        if (query.dto.is_otp === true) {
+          otpData = { query, status, tel };
         }
 
         return approvedStepEntity;
       },
     );
+
+    // === หลัง transaction commit สำเร็จ — เรียก external services ===
+
+    // ส่ง approval notification ไป Approval Server
+    if (notificationData) {
+      await sendApprovalNotification(notificationData);
+    }
+
+    // Verify OTP กับ Approval Server
+    if (otpData) {
+      try {
+        await verifyOtp(otpData.query, otpData.status, otpData.tel);
+      } catch (error: any) {
+        console.log('error', error.message);
+        throw new ManageDomainException(
+          'errors.otp_verification_failed',
+          HttpStatus.BAD_REQUEST,
+          { property: `${error.message}` },
+        );
+      }
+    }
+
+    return result;
   }
 
   private async RejectUserApproval(

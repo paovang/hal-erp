@@ -59,7 +59,10 @@ import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/re
 import { VatOrmEntity } from '@src/common/infrastructure/database/typeorm/vat.orm';
 import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
-import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
+import {
+  ApprovalNotificationData,
+  sendApprovalNotification,
+} from '@src/common/utils/approval-step.utils';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
 import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
@@ -152,7 +155,9 @@ export class CreateCommandHandler
   ) {}
 
   async execute(query: CreateCommand): Promise<ResponseResult<ReceiptEntity>> {
-    return await this._transactionManagerService.runInTransaction(
+    let notificationData = null as ApprovalNotificationData | null;
+
+    const result = await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
@@ -370,18 +375,18 @@ export class CreateCommandHandler
           },
         ];
 
-        // send approval request server to server
-        await sendApprovalRequest(
+        // เก็บข้อมูลสำหรับส่งหลัง transaction commit (ไม่ส่งตรงนี้)
+        notificationData = {
           user_approval_step_id,
           total,
-          user,
+          userEntity: user,
           user_id,
           department_name,
-          EnumRequestApprovalType.RC,
-          titles,
+          type: EnumRequestApprovalType.RC,
+          titlesString: titles,
           token,
           approval_rules,
-        );
+        };
 
         const d_approver: CustomDocumentApprover = {
           user_approval_step_id,
@@ -396,6 +401,13 @@ export class CreateCommandHandler
         return await this._readRepo.findOne(new ReceiptId(receipt_id), manager);
       },
     );
+
+    // === หลัง transaction commit สำเร็จ — ส่ง notification ไป Approval Server ===
+    if (notificationData) {
+      await sendApprovalNotification(notificationData);
+    }
+
+    return result;
   }
 
   private async getDepartmentId(

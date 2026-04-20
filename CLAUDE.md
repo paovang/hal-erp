@@ -25,9 +25,11 @@ pnpm run start:prod             # Run production build
 
 ```bash
 pnpm run test                   # Run unit tests
+pnpm run test -- path/to/file   # Run a single test file
 pnpm run test:e2e               # Run end-to-end tests
 pnpm run test:cov               # Run tests with coverage
 pnpm run test:watch             # Watch mode for tests
+pnpm run test:debug             # Debug tests with inspector
 ```
 
 ### Database Operations
@@ -125,13 +127,17 @@ From tsconfig.json paths:
 ## Technology Stack
 
 - **Framework**: NestJS 10.x with TypeScript
-- **Database**: PostgreSQL with TypeORM 0.3.x
+- **Database**: PostgreSQL with TypeORM 0.3.x (separate read/write connections for CQRS)
 - **Authentication**: JWT via `@core-system/auth` package
+- **Request Context**: `nestjs-cls` via `UserContextService` for per-request auth isolation
 - **Validation**: class-validator + class-transformer
 - **File Storage**: AWS S3 + CloudFront
 - **i18n**: nestjs-i18n (translation files in `src/common/infrastructure/localization/i18n/`)
   - Supported languages: English (`en/`), Lao (`lo/`)
   - Use custom i18n error formatter for validation errors
+- **Dates/Timezone**: moment-timezone, configured for Laos timezone
+- **Excel Export**: exceljs for report generation
+- **API Docs**: Swagger via `@nestjs/swagger`
 - **Testing**: Jest
 
 ## Key Conventions
@@ -205,7 +211,6 @@ From tsconfig.json paths:
 - E2E tests: in `test/` directory
 - Test configuration: `jest.config.js` (embedded in package.json) and `test/jest-e2e.json`
 - Use Jest's mocking for external dependencies
-- Run specific test: `pnpm run test -- path/to/test.spec.ts`
 
 ## CQRS Handler Patterns
 
@@ -236,12 +241,34 @@ Domain entities extend `Entity<ID>` from `@common/domain/entities/entity.ts`:
 - Automatic rollback on errors
 - Commands use transactions by default via EntityManager
 
+## API Runtime Configuration
+
+Configured in `src/main.ts`:
+- Global route prefix: `/api`
+- CORS: enabled for all origins
+- Global pipes: `I18nValidationPipe` (auto-transform, whitelist DTOs)
+- Global filters: `CustomI18nValidationExceptionFilter`
+- Static files served at `/assets` from `dist/assets`
+- Port: 3000 (or `PORT` env var)
+
+## Request Context Pattern
+
+The `UserContextService` (wrapping `nestjs-cls`) provides per-request auth context without passing user through method chains:
+```typescript
+const authUser = this._userContextService.getAuthUser();
+```
+Controllers and handlers use this to access the authenticated user and their company scope. Role checks (SUPER_ADMIN/ADMIN see all companies, others scoped to their own) happen in handlers.
+
+## Provider Registration
+
+Each module registers all its providers (services, repositories, handlers) via an `AllRegisterProviders` array in `application/providers/index.ts`. When adding a new service or repository, add it to this array.
+
 ## Important Files
 
-- `src/main.ts` - Application entry point
+- `src/main.ts` - Application entry point (global prefix, pipes, filters)
 - `src/app.module.ts` - Root module
-- `src/common/infrastructure/database/data-source.ts` - TypeORM data source configuration
-- `.env` - Environment variables (use `.env.example` as template)
+- `src/common/infrastructure/database/data-source.ts` - TypeORM data source configuration (read/write connections)
+- `.env` - Environment variables
 - `nest-cli.json` - NestJS CLI configuration (watch assets for i18n changes)
 
 ## External Dependencies
@@ -251,13 +278,4 @@ Domain entities extend `Entity<ID>` from `@common/domain/entities/entity.ts`:
 - **AWS S3** - File storage for uploads and documents
 - **Redis** - Caching layer (optional)
 - **SMTP** - Email notifications via `@nestjs-modules/mailer`
-
-## Security Notes
-
-- JWT-based authentication via `@core-system/auth`
-- Role-based access control (RBAC) with permissions
-- Company-level data isolation (multi-tenancy)
-- Input validation on all endpoints
-- File upload restrictions (type, size)
-- Guards protect protected routes
 

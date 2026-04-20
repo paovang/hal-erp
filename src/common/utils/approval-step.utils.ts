@@ -23,6 +23,21 @@ interface CustomDocumentApprover {
   user_id: number;
 }
 
+/**
+ * ข้อมูลที่ต้องส่งไป Approval Server หลังจาก transaction commit สำเร็จ
+ */
+export interface ApprovalNotificationData {
+  user_approval_step_id: number;
+  total: number;
+  userEntity: any;
+  user_id: number;
+  department_name: string;
+  type: EnumRequestApprovalType;
+  titlesString: string;
+  token: string;
+  approval_rules: ApprovalRuleInterface[];
+}
+
 interface ApprovalStepHandlerParams {
   a_w_s: any; // ApprovalWorkflowStepOrmEntity;
   total: number;
@@ -57,9 +72,12 @@ export async function handleApprovalStep({
   department_name,
   titlesString,
   document_type,
-}: ApprovalStepHandlerParams) {
+}: ApprovalStepHandlerParams): Promise<ApprovalNotificationData> {
   let token = '';
   const approval_rules: ApprovalRuleInterface[] = [];
+  let notificationUserId = 0;
+  let notificationUserEntity: any = null;
+
   if (!a_w_s) {
     throw new ManageDomainException('errors.not_found', HttpStatus.NOT_FOUND, {
       property: 'approval workflow step',
@@ -119,7 +137,7 @@ export async function handleApprovalStep({
           token: token,
         });
       }
-      // send approval request server to server
+
       const user = await manager.findOne(UserOrmEntity, {
         where: { id: department_approvers[0]?.user_id },
       });
@@ -132,19 +150,8 @@ export async function handleApprovalStep({
         );
       }
 
-      const userEntity = userDataAccessMapper.toEntity(user);
-
-      await sendApprovalRequestBetweenServer(
-        user_approval_step_id,
-        total,
-        userEntity,
-        user.id,
-        department_name,
-        document_type,
-        titlesString,
-        token[0],
-        approval_rules,
-      );
+      notificationUserEntity = userDataAccessMapper.toEntity(user);
+      notificationUserId = user.id;
 
       break;
     }
@@ -200,8 +207,7 @@ export async function handleApprovalStep({
         );
       }
 
-      // send approval request server to server
-      const token = await hashData(
+      token = await hashData(
         model_id,
         user_approval_step_id,
         department?.department_head_id ?? 0,
@@ -213,23 +219,12 @@ export async function handleApprovalStep({
         token: token,
       });
 
-      const userEntity = userDataAccessMapper.toEntity(user);
+      notificationUserEntity = userDataAccessMapper.toEntity(user);
+      notificationUserId = department?.department_head_id ?? 0;
 
-      await sendApprovalRequestBetweenServer(
-        user_approval_step_id,
-        total,
-        userEntity,
-        department?.department_head_id ?? 0,
-        department_name,
-        document_type,
-        titlesString,
-        token,
-        approval_rules,
-      );
       break;
     }
     case EnumWorkflowStep.SPECIFIC_USER: {
-      // Fetch user with email
       const specific_user = await manager.findOne(UserOrmEntity, {
         where: { id: a_w_s.user_id },
       });
@@ -252,8 +247,7 @@ export async function handleApprovalStep({
 
       await writeDocumentApprover.create(d_approver_entity, manager);
 
-      // send approval request server to server
-      const token = await hashData(
+      token = await hashData(
         model_id,
         user_approval_step_id,
         a_w_s.user_id ?? 0,
@@ -265,19 +259,9 @@ export async function handleApprovalStep({
         token: token,
       });
 
-      const userEntity = userDataAccessMapper.toEntity(specific_user);
+      notificationUserEntity = userDataAccessMapper.toEntity(specific_user);
+      notificationUserId = a_w_s.user_id ?? 0;
 
-      await sendApprovalRequestBetweenServer(
-        user_approval_step_id,
-        total,
-        userEntity,
-        a_w_s.user_id ?? 0,
-        department_name,
-        document_type,
-        titlesString,
-        token,
-        approval_rules,
-      );
       break;
     }
     case EnumWorkflowStep.CONDITION: {
@@ -329,21 +313,9 @@ export async function handleApprovalStep({
         );
       }
 
-      // send approval request server to server
+      notificationUserEntity = userDataAccessMapper.toEntity(user);
+      notificationUserId = a_w_s.user_id ?? 0;
 
-      const userEntity = userDataAccessMapper.toEntity(user);
-
-      await sendApprovalRequestBetweenServer(
-        user_approval_step_id,
-        total,
-        userEntity,
-        a_w_s.user_id ?? 0,
-        department_name,
-        document_type,
-        titlesString,
-        token,
-        approval_rules,
-      );
       break;
     }
     case EnumWorkflowStep.LINE_MANAGER: {
@@ -388,8 +360,7 @@ export async function handleApprovalStep({
         );
       }
 
-      // send approval request server to server
-      const token = await hashData(
+      token = await hashData(
         model_id,
         user_approval_step_id,
         a_w_s.user_id ?? 0,
@@ -401,19 +372,9 @@ export async function handleApprovalStep({
         token: token,
       });
 
-      const userEntity = userDataAccessMapper.toEntity(user);
+      notificationUserEntity = userDataAccessMapper.toEntity(user);
+      notificationUserId = a_w_s.user_id ?? 0;
 
-      await sendApprovalRequestBetweenServer(
-        user_approval_step_id,
-        total,
-        userEntity,
-        a_w_s.user_id ?? 0,
-        department_name,
-        document_type,
-        titlesString,
-        token,
-        approval_rules,
-      );
       break;
     }
     default:
@@ -426,59 +387,36 @@ export async function handleApprovalStep({
       );
   }
 
-  async function sendApprovalRequestBetweenServer(
-    user_approval_step_id: number,
-    total: number,
-    userEntity: any,
-    user_id: number,
-    department_name: string,
-    type: EnumRequestApprovalType,
-    titlesString: string,
-    token: string,
-    approval_rules: ApprovalRuleInterface[],
-  ) {
-    if (type === EnumRequestApprovalType.PR) {
-      await sendApprovalRequest(
-        user_approval_step_id,
-        total,
-        userEntity,
-        user_id,
-        department_name,
-        EnumRequestApprovalType.PR,
-        titlesString,
-        token,
-        approval_rules,
-      );
-    } else if (type === EnumRequestApprovalType.PO) {
-      await sendApprovalRequest(
-        user_approval_step_id,
-        total,
-        userEntity,
-        user_id,
-        department_name,
-        EnumRequestApprovalType.PO,
-        titlesString,
-        token,
-        approval_rules,
-      );
-    } else if (type === EnumRequestApprovalType.RC) {
-      await sendApprovalRequest(
-        user_approval_step_id,
-        total,
-        userEntity,
-        user_id,
-        department_name,
-        EnumRequestApprovalType.RC,
-        titlesString,
-        token,
-        approval_rules,
-      );
-    } else {
-      throw new ManageDomainException(
-        'errors.not_found',
-        HttpStatus.BAD_REQUEST,
-        { property: `${type}` },
-      );
-    }
-  }
+  // Return ข้อมูลสำหรับส่ง notification หลัง transaction commit
+  return {
+    user_approval_step_id,
+    total,
+    userEntity: notificationUserEntity,
+    user_id: notificationUserId,
+    department_name,
+    type: document_type,
+    titlesString,
+    token,
+    approval_rules,
+  };
+}
+
+/**
+ * ส่ง approval request ไป external server
+ * เรียกฟังก์ชันนี้หลังจาก transaction commit สำเร็จแล้วเท่านั้น
+ */
+export async function sendApprovalNotification(
+  data: ApprovalNotificationData,
+): Promise<void> {
+  await sendApprovalRequest(
+    data.user_approval_step_id,
+    data.total,
+    data.userEntity,
+    data.user_id,
+    data.department_name,
+    data.type,
+    data.titlesString,
+    data.token,
+    data.approval_rules,
+  );
 }

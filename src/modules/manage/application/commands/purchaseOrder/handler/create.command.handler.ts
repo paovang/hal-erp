@@ -68,7 +68,10 @@ import { DocumentApproverDataMapper } from '../../../mappers/document-approver.m
 import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 import { assertOrThrow } from '@src/common/utils/assert.util';
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
-import { sendApprovalRequest } from '@src/common/utils/server/send-data.uitl';
+import {
+  ApprovalNotificationData,
+  sendApprovalNotification,
+} from '@src/common/utils/approval-step.utils';
 import { UserEntity } from '@src/modules/manage/domain/entities/user.entity';
 import { DepartmentOrmEntity } from '@src/common/infrastructure/database/typeorm/department.orm';
 import { DocumentTypeOrmEntity } from '@src/common/infrastructure/database/typeorm/document-type.orm';
@@ -163,7 +166,9 @@ export class CreateCommandHandler
   async execute(
     query: CreateCommand,
   ): Promise<ResponseResult<PurchaseOrderEntity>> {
-    return await this._transactionManagerService.runInTransaction(
+    let notificationData = null as ApprovalNotificationData | null;
+
+    const result = await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
@@ -365,8 +370,8 @@ export class CreateCommandHandler
 
         const total = await this.calculateTotal(query, manager);
 
-        // save user approval
-        await this.saveUserApproval(
+        // save user approval (return ข้อมูลสำหรับส่ง notification หลัง commit)
+        notificationData = await this.saveUserApproval(
           query,
           manager,
           document_id,
@@ -376,10 +381,16 @@ export class CreateCommandHandler
           po_id,
         );
 
-        // return po_result;
         return await this._read.findOne(new PurchaseOrderId(po_id), manager);
       },
     );
+
+    // === หลัง transaction commit สำเร็จ — ส่ง notification ไป Approval Server ===
+    if (notificationData) {
+      await sendApprovalNotification(notificationData);
+    }
+
+    return result;
   }
 
   private async saveUserApproval(
@@ -390,7 +401,7 @@ export class CreateCommandHandler
     user_id: number,
     user: UserEntity,
     po_id: number,
-  ): Promise<void> {
+  ): Promise<ApprovalNotificationData> {
     const department = await findOneOrFail(manager, DepartmentUserOrmEntity, {
       user_id: user_id,
     });
@@ -478,19 +489,6 @@ export class CreateCommandHandler
       },
     ];
 
-    // send approval request server to server
-    await sendApprovalRequest(
-      user_approval_step_id,
-      total,
-      user,
-      user_id,
-      department_name,
-      EnumRequestApprovalType.PO,
-      titles,
-      token,
-      approval_rules,
-    );
-
     const d_approver: CustomDocumentApprover = {
       user_approval_step_id,
       user_id: user_id ?? 0,
@@ -500,6 +498,19 @@ export class CreateCommandHandler
       await this._dataDocumentApproverMapper.toEntity(d_approver);
 
     await this._writeDocumentApprover.create(d_approver_entity, manager);
+
+    // return ข้อมูลสำหรับส่ง notification หลัง transaction commit
+    return {
+      user_approval_step_id,
+      total,
+      userEntity: user,
+      user_id,
+      department_name,
+      type: EnumRequestApprovalType.PO,
+      titlesString: titles,
+      token,
+      approval_rules,
+    };
   }
 
   private async saveSelectedVendor(
