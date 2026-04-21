@@ -277,6 +277,10 @@ export class ReadPurchaseOrderRepository
           });
         }
       } else {
+        // query.andWhere('document_approver.user_id = :user_id', {
+        //   user_id,
+        // });
+
         switch (type) {
           case PurchaseRequestType.only_user:
             query.andWhere('document_approver.user_id = :user_id', {
@@ -285,14 +289,13 @@ export class ReadPurchaseOrderRepository
             break;
 
           case PurchaseRequestType.all:
-            query.andWhere(
-              `departments.id IN (
-          SELECT du.department_id 
-          FROM department_users du 
-          WHERE du.user_id = :user_id
-        )`,
-              { user_id },
-            );
+            // query.andWhere(
+            //   `document_approver.id IN (SELECT document_approver.id FROM document_approver WHERE document_approver.user_id = :user_id)`,
+            //   { user_id },
+            // );
+            query.andWhere('document_approver.user_id = :user_id', {
+              user_id,
+            });
             break;
         }
       }
