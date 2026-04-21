@@ -67,6 +67,7 @@ import countStatusAmounts from '@src/common/utils/status-amount.util';
 import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
+import { PurchaseRequestType } from '@src/modules/manage/application/dto/query/purchase-request.dto';
 
 @Injectable()
 export class ReadReceiptRepository implements IReadReceiptRepository {
@@ -102,6 +103,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       payment_type,
       company_id,
       companyID,
+      query.type,
     );
     query.sort_by = 'receipts.id';
 
@@ -149,6 +151,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     payment_type?: string,
     company_id?: number,
     companyID?: number,
+    type?: PurchaseRequestType,
   ) {
     const selectFields = [
       ...selectReceiptItems,
@@ -274,7 +277,10 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
           query.andWhere('documents.company_id = :company_id', { company_id });
         }
       } else {
-        query.andWhere('document_approver.user_id = :user_id', { user_id });
+        // query.andWhere('document_approver.user_id = :user_id', { user_id });
+        if (type && (type = PurchaseRequestType.only_user)) {
+          query.andWhere('document_approver.user_id = :user_id', { user_id });
+        }
       }
     }
 

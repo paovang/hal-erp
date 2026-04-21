@@ -7,7 +7,10 @@ import {
   IPaginationService,
   ResponseResult,
 } from '@src/common/infrastructure/pagination/pagination.interface';
-import { PurchaseRequestQueryDto } from '@src/modules/manage/application/dto/query/purchase-request.dto';
+import {
+  PurchaseRequestQueryDto,
+  PurchaseRequestType,
+} from '@src/modules/manage/application/dto/query/purchase-request.dto';
 import { PurchaseRequestEntity } from '@src/modules/manage/domain/entities/purchase-request.entity';
 import { IReadPurchaseRequestRepository } from '@src/modules/manage/domain/ports/output/purchase-request-repository.interface';
 import { EntityManager, Repository } from 'typeorm';
@@ -80,7 +83,6 @@ export class ReadPurchaseRequestRepository
     roles?: string[],
     company_id?: number,
   ): Promise<ResponseResult<PurchaseRequestEntity>> {
-    console.log('query test');
     const filterCompanyId = Number(query.company_id);
     const filterOptions = this.getFilterOptions();
     const queryBuilder = await this.createBaseQuery(
@@ -89,6 +91,7 @@ export class ReadPurchaseRequestRepository
       user_id,
       roles,
       company_id,
+      query.type,
     );
     query.sort_by = 'purchase_requests.id';
 
@@ -140,6 +143,7 @@ export class ReadPurchaseRequestRepository
     user_id?: number,
     roles?: string[],
     company_id?: number,
+    type?: PurchaseRequestType,
   ) {
     const selectFields = [
       ...selectUnits,
@@ -227,9 +231,11 @@ export class ReadPurchaseRequestRepository
           });
         }
       } else {
-        query.andWhere('document_approver.user_id = :user_id', {
-          user_id,
-        });
+        if (type && (type = PurchaseRequestType.only_user)) {
+          query.andWhere('document_approver.user_id = :user_id', {
+            user_id,
+          });
+        }
       }
     }
 
