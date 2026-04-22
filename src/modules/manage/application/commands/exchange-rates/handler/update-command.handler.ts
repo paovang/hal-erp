@@ -55,7 +55,7 @@ export class UpdateExchangeRateCommandHandler
     await findOneOrFail(query.manager, ExchangeRateOrmEntity, {
       id: entity.getId().value,
     });
-    console.log('ac:', entity);
+    // console.log('ac:', entity);
     return await this._write.update(entity, query.manager);
   }
   private async checkCurrency(

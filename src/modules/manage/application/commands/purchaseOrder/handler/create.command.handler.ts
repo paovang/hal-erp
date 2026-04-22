@@ -340,7 +340,6 @@ export class CreateCommandHandler
         //   prefix,
         // );
         const code = await this.generatePoNumber(manager, prefix);
-        console.log('po_number', code);
 
         const DEntity = this._dataDMapper.toEntity(
           query.dto.document,
@@ -710,9 +709,14 @@ export class CreateCommandHandler
     departmentCode: string,
   ): Promise<string> {
     const latestPo = await manager
+      // .getRepository(PurchaseOrderOrmEntity)
+      // .createQueryBuilder('po')
+      // .orderBy('po.id', 'DESC')
+      // .getOne();
       .getRepository(PurchaseOrderOrmEntity)
       .createQueryBuilder('po')
-      .orderBy('po.id', 'DESC')
+      .where('po.po_number IS NOT NULL')
+      .orderBy(`CAST(SPLIT_PART(po.po_number, '/', 1) AS INTEGER)`, 'DESC')
       .getOne();
 
     let nextNumber = 1;
@@ -727,4 +731,28 @@ export class CreateCommandHandler
       departmentCode
     );
   }
+  // private async generatePrNumber(
+  //   manager: EntityManager,
+  //   departmentCode: string,
+  // ): Promise<string> {
+  //   const latestPr = await manager
+  //     .getRepository(PurchaseRequestOrmEntity)
+  //     .createQueryBuilder('pr')
+  //     .where('pr.pr_number IS NOT NULL')
+  //     .orderBy(`CAST(SPLIT_PART(pr.pr_number, '/', 1) AS INTEGER)`, 'DESC')
+  //     .getOne();
+
+  //   let nextNumber = 1;
+
+  //   if (latestPr?.pr_number) {
+  //     const numericPart = latestPr.pr_number.split('/')[0];
+  //     nextNumber = (parseInt(numericPart, 10) || 0) + 1;
+  //   }
+
+  //   return (
+  //     nextNumber.toString().padStart(LENGTH_PURCHASE_REQUEST_CODE, '0') +
+  //     '/' +
+  //     departmentCode
+  //   );
+  // }
 }

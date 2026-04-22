@@ -22,11 +22,11 @@ export async function sendOtpUtil(
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
     token: 'your-token',
   };
-  console.log('playLoad', playLoad);
+  // console.log('playLoad', playLoad);
 
   const apiUrl = process.env.APPROVAL_API_URL || 'http://127.0.0.1:3001';
-  console.log('playLoad', playLoad);
-  console.log('apiUrl', apiUrl);
+  // console.log('playLoad', playLoad);
+  // console.log('apiUrl', apiUrl);
   try {
     const response = await axios.post(`${apiUrl}/send-otp`, playLoad, {
       headers: {

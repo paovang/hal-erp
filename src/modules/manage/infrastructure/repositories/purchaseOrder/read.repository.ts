@@ -277,10 +277,25 @@ export class ReadPurchaseOrderRepository
           });
         }
       } else {
-        if (type && (type = PurchaseRequestType.only_user)) {
-          query.andWhere('document_approver.user_id = :user_id', {
-            user_id,
-          });
+        // query.andWhere('document_approver.user_id = :user_id', {
+        //   user_id,
+        // });
+        switch (type) {
+          case PurchaseRequestType.only_user:
+            query.andWhere('document_approver.user_id = :user_id', {
+              user_id,
+            });
+            break;
+          case PurchaseRequestType.all:
+            query.andWhere(
+              `departments_approver.id IN (
+              SELECT du.department_id
+              FROM department_users du
+              WHERE du.user_id = :user_id
+            )`,
+              { user_id },
+            );
+            break;
         }
       }
     }

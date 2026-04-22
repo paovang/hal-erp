@@ -57,7 +57,7 @@ export class CreateCommandHandler
     let res: ResponseResult<DepartmentApproverEntity> | null = null;
     let users: DepartmentApproverOrmEntity | null = null;
     for (const userId of query.dto.user_id) {
-      console.log('company', company);
+      // console.log('company', company);
       if (!company_id || company_id === null) {
         users = await query.manager.findOne(DepartmentApproverOrmEntity, {
           where: { user_id: userId },

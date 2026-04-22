@@ -33,6 +33,7 @@ export class PurchaseRequestDataMapper {
     }
 
     if (pr_code) {
+      console.log('pr_code', pr_code);
       builder.setPrNumber(pr_code);
     }
 

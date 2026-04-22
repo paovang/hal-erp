@@ -33,7 +33,7 @@ export class DeleteBankCommandHandler
     await findOneOrFail(query.manager, BankOrmEntity, {
       id: query.id,
     });
-    console.log('del:', query);
+    // console.log('del:', query);
     await checkRelationOrThrow(
       query.manager,
       VendorBankAccountOrmEntity,

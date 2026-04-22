@@ -188,9 +188,6 @@ export class ApproveStepCommandHandler
           user_id = user?.id;
         }
 
-        console.log('user', user);
-        console.log('user_id', user_id);
-
         // const user = this._userContextService.getAuthUser()?.user;
         // const user_id = user?.id;
 
@@ -480,16 +477,12 @@ export class ApproveStepCommandHandler
                 .map((prItem) => prItem.title)
                 .join(', ');
 
-              console.log('role', roles);
-
               if (
                 roles.includes('budget-admin') ||
                 roles.includes('budget-user')
               ) {
                 let sum_total = 0;
                 for (const item of query.dto.purchase_order_items) {
-                  console.log('item', item);
-
                   if (!item.id) {
                     throw new ManageDomainException(
                       'errors.is_required',
@@ -604,8 +597,6 @@ export class ApproveStepCommandHandler
                   //   HttpStatus.NOT_FOUND,
                   //   'exchange rate',
                   // );
-
-                  console.log('object', sum_total, check_budget);
 
                   // const exchage = await this.exchange(query, manager);
 
@@ -759,8 +750,6 @@ export class ApproveStepCommandHandler
           if (!a_w_s) {
             // ກໍລະນິບໍ່ມິ step ຕໍ່ໄປແລ້ວ
             if (query.dto.type === EnumPrOrPo.PO) {
-              console.log('purchase order');
-
               const po = await manager.findOne(PurchaseOrderOrmEntity, {
                 where: { document_id: step.user_approvals.document_id },
                 relations: [

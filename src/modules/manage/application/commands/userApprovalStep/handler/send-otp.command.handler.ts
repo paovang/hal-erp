@@ -45,8 +45,6 @@ export class SendOTPCommandHandler
       );
     }
 
-    console.log('tel', tel);
-
     // Validate id
     if (isNaN(query.id)) {
       throw new ManageDomainException(
