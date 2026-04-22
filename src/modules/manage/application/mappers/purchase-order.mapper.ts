@@ -98,6 +98,9 @@ export class PurchaseOrderDataMapper {
         return this.purchaseOrderItemMapper.toResponse(item);
       }) ?? null;
 
+    response.user_last_approval =
+      response.user_approval?.approval_step?.find((i) => i.status_id === 1)
+        ?.doc_approver?.[0]?.user?.username ?? null;
     // response.selected_vendor = entity.selectedVendor
     //   ? entity.selectedVendor.map((vendor) =>
     //       this.selectedVendorMapper.toResponse(vendor),

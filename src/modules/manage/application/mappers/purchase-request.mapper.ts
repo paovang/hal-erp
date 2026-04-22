@@ -92,11 +92,14 @@ export class PurchaseRequestDataMapper {
     response.user_approval = entity.user_approval
       ? this.userApprovalMapper.toResponse(entity.user_approval)
       : null;
-
     response.purchase_request_item =
       entity.purchaseRequestItems?.map((item) => {
         return this.purchaseRequestItemDataMapper.toResponse(item);
       }) ?? null;
+
+    response.user_last_approval =
+      response.user_approval?.approval_step?.find((i) => i.status_id === 1)
+        ?.doc_approver?.[0]?.user?.username ?? null;
 
     return response;
   }

@@ -127,6 +127,10 @@ export class ReceiptDataMapper {
       entity.item?.map((item) => this._receiptItemMapper.toResponse(item)) ??
       null;
 
+    response.user_last_approval =
+      response.user_approval?.approval_step?.find((i) => i.status_id === 1)
+        ?.doc_approver?.[0]?.user?.username ?? null;
+
     return response;
   }
 }

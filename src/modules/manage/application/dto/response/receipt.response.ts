@@ -83,4 +83,7 @@ export class ReceiptResponse {
 
   @ApiProperty()
   user_approval: UserApprovalResponse | null;
+
+  @ApiProperty()
+  user_last_approval: string | null;
 }

@@ -59,6 +59,8 @@ export class PurchaseOrderResponse {
   @ApiProperty()
   purchase_order_item: PurchaseOrderItemResponse[] | null;
 
+  @ApiProperty()
+  user_last_approval: string | null;
   // @ApiProperty()
   // selected_vendor: PurchaseOrderSelectedVendorResponse[] | null;
 }

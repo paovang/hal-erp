@@ -51,5 +51,8 @@ export class PurchaseRequestResponse {
   user_approval: UserApprovalResponse | null;
 
   @ApiProperty()
+  user_last_approval: string | null;
+
+  @ApiProperty()
   purchase_request_item: PurchaseRequestItemResponse[] | null;
 }
