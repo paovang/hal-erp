@@ -280,22 +280,21 @@ export class ReadPurchaseOrderRepository
         // query.andWhere('document_approver.user_id = :user_id', {
         //   user_id,
         // });
-
         switch (type) {
           case PurchaseRequestType.only_user:
             query.andWhere('document_approver.user_id = :user_id', {
               user_id,
             });
             break;
-
           case PurchaseRequestType.all:
-            // query.andWhere(
-            //   `document_approver.id IN (SELECT document_approver.id FROM document_approver WHERE document_approver.user_id = :user_id)`,
-            //   { user_id },
-            // );
-            query.andWhere('document_approver.user_id = :user_id', {
-              user_id,
-            });
+            query.andWhere(
+              `departments_approver.id IN (
+              SELECT du.department_id
+              FROM department_users du
+              WHERE du.user_id = :user_id
+            )`,
+              { user_id },
+            );
             break;
         }
       }
