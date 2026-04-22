@@ -292,14 +292,14 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
             break;
 
           case PurchaseRequestType.all:
-            //     query.andWhere(
-            //       `departments.id IN (
-            //   SELECT du.department_id
-            //   FROM department_users du
-            //   WHERE du.user_id = :user_id
-            // )`,
-            //       { user_id },
-            //     );
+            query.andWhere(
+              `departments_approver.id IN (
+              SELECT du.department_id
+              FROM department_users du
+              WHERE du.user_id = :user_id
+            )`,
+              { user_id },
+            );
             query.andWhere('document_approver.user_id = :user_id', {
               user_id,
             });
