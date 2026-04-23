@@ -85,6 +85,106 @@ export class ReadPurchaseOrderRepository
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
   ) {}
+  async findAll(
+    query: PurchaseOrderQueryDto,
+    manager: EntityManager,
+    user_id?: number,
+    roles?: string[],
+    company_id?: number,
+  ): Promise<ResponseResult<PurchaseOrderEntity>> {
+    const filterCompanyId = Number(query.company_id);
+    const queryBuilder = await this.createBaseQuery(
+      manager,
+      roles,
+      user_id,
+      company_id,
+      query.type,
+    );
+
+    query.sort_by = 'purchase_orders.id';
+
+    if (filterCompanyId) {
+      queryBuilder.andWhere('po_documents.company_id = :filterCompanyId', {
+        filterCompanyId,
+      });
+    }
+
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const [idRoqs, totalRow] = await Promise.all([
+      queryBuilder
+        .clone()
+        .select('purchase_orders.id', 'id')
+        .groupBy('purchase_orders.id')
+        .orderBy('purchase_orders.id', 'DESC')
+        .limit(limit)
+        .offset(offset)
+        .getRawMany<{ id: number }>(),
+      queryBuilder
+        .clone()
+        .select('COUNT(DISTINCT purchase_orders.id)', 'count')
+        .getRawOne<{ count: number }>(),
+    ]);
+    const total = Number(totalRow?.count || 0);
+    const ids = idRoqs.map((id) => id.id);
+
+    let items: PurchaseOrderOrmEntity[] = [];
+
+    if (ids.length > 0) {
+      const fullQuery = await this.createBaseQuery(manager);
+      items = await fullQuery
+        .where('purchase_orders.id IN (:...ids)', { ids })
+        .orderBy('purchase_orders.id', 'DESC')
+        .getMany();
+    }
+
+    const mappedItems = await Promise.all(
+      items.map(async (item) => {
+        const user_approval_step = await manager
+          .createQueryBuilder(UserApprovalStepOrmEntity, 'steps')
+          .innerJoin('steps.user_approvals', 'user_approvals')
+          .where('user_approvals.document_id = :id', { id: item.document_id })
+          .getCount();
+
+        const workflow_step = await manager
+          .createQueryBuilder(ApprovalWorkflowStepOrmEntity, 'steps')
+          .innerJoin('steps.approval_workflows', 'approval_workflows')
+          .where('approval_workflows.document_type_id = :id', {
+            id: item.documents.document_type_id,
+          })
+          .getCount();
+
+        const step = workflow_step - user_approval_step;
+        return this._dataAccessMapper.toEntity(item, step);
+      }),
+    );
+
+    const status = await countStatusAmounts(
+      manager,
+      EnumPrOrPo.PO,
+      user_id,
+      roles,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      company_id,
+      filterCompanyId,
+    );
+
+    return {
+      status,
+      pagination: {
+        page,
+        limit,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+      data: mappedItems,
+    };
+  }
   // async findAll(
   //   query: PurchaseOrderQueryDto,
   //   manager: EntityManager,
@@ -133,108 +233,122 @@ export class ReadPurchaseOrderRepository
   //     status: status,
   //   };
   // }
-  async findAll(
-    query: PurchaseOrderQueryDto,
-    manager: EntityManager,
-    user_id?: number,
-    roles?: string[],
-    company_id?: number,
-  ): Promise<ResponseResult<PurchaseOrderEntity>> {
-    const filterCompanyId = Number(query.company_id);
-    query.sort_by = 'purchase_orders.id';
+  // async findAll(
+  //   query: PurchaseOrderQueryDto,
+  //   manager: EntityManager,
+  //   user_id?: number,
+  //   roles?: string[],
+  //   company_id?: number,
+  // ): Promise<ResponseResult<PurchaseOrderEntity>> {
+  //   const filterCompanyId = Number(query.company_id);
+  //   query.sort_by = 'purchase_orders.id';
 
-    // --- Step 1: ดึง IDs ด้วย subquery ---
-    const idQueryBuilder = await this.createBaseQuery(
-      manager,
-      roles,
-      user_id,
-      company_id,
-      query.type,
-    );
+  //   // --- Step 1: ดึง IDs ด้วย subquery ---
+  //   const idQueryBuilder = await this.createBaseQuery(
+  //     manager,
+  //     roles,
+  //     user_id,
+  //     company_id,
+  //     query.type,
+  //   );
 
-    if (filterCompanyId) {
-      idQueryBuilder.andWhere('po_documents.company_id = :filterCompanyId', {
-        filterCompanyId,
-      });
-    }
+  //   if (filterCompanyId) {
+  //     idQueryBuilder.andWhere('po_documents.company_id = :filterCompanyId', {
+  //       filterCompanyId,
+  //     });
+  //   }
 
-    const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 10;
-    const offset = (page - 1) * limit;
+  //   const page = Number(query.page) || 1;
+  //   const limit = Number(query.limit) || 10;
+  //   const offset = (page - 1) * limit;
+  //   const baseIdQuery = idQueryBuilder
+  //     .select('purchase_orders.id', 'id')
+  //     .groupBy('purchase_orders.id')
+  //     .orderBy('purchase_orders.id', 'DESC');
+  //   const [idRows, totalRow] = await Promise.all([
+  //     baseIdQuery
+  //       .clone()
+  //       .limit(limit)
+  //       .offset(offset)
+  //       .getRawMany<{ id: number }>(),
+  //     baseIdQuery
+  //       .clone()
+  //       .select('COUNT(DISTINCT purchase_orders.id)', 'count')
+  //       .getRawOne<{ count: string }>(),
+  //   ]);
+  //   // ใช้ groupBy แทน DISTINCT เพื่อหลีกเลี่ยง PostgreSQL error
+  //   const idRows = await idQueryBuilder
+  //     .select('purchase_orders.id', 'id')
+  //     .groupBy('purchase_orders.id')
+  //     .orderBy('purchase_orders.id', 'DESC')
+  //     .limit(limit)
+  //     .offset(offset)
+  //     .getRawMany<{ id: number }>();
 
-    // ใช้ groupBy แทน DISTINCT เพื่อหลีกเลี่ยง PostgreSQL error
-    const idRows = await idQueryBuilder
-      .select('purchase_orders.id', 'id')
-      .groupBy('purchase_orders.id')
-      .orderBy('purchase_orders.id', 'DESC')
-      .limit(limit)
-      .offset(offset)
-      .getRawMany<{ id: number }>();
+  //   const totalRow = await idQueryBuilder
+  //     .select('COUNT(DISTINCT purchase_orders.id)', 'count')
+  //     .getRawOne<{ count: string }>();
 
-    const totalRow = await idQueryBuilder
-      .select('COUNT(DISTINCT purchase_orders.id)', 'count')
-      .getRawOne<{ count: string }>();
+  //   const total = Number(totalRow?.count ?? 0);
+  //   const ids = idRows.map((r) => Number(r.id));
 
-    const total = Number(totalRow?.count ?? 0);
-    const ids = idRows.map((r) => Number(r.id));
+  //   // --- Step 2: Fetch ข้อมูลเต็มจาก IDs ---
+  //   let items: PurchaseOrderOrmEntity[] = [];
 
-    // --- Step 2: Fetch ข้อมูลเต็มจาก IDs ---
-    let items: PurchaseOrderOrmEntity[] = [];
+  //   if (ids.length > 0) {
+  //     const fullQuery = await this.createBaseQuery(manager); // ไม่ใส่ role filter ซ้ำ
+  //     items = await fullQuery
+  //       .where('purchase_orders.id IN (:...ids)', { ids })
+  //       .orderBy('purchase_orders.id', 'DESC')
+  //       .getMany();
+  //   }
 
-    if (ids.length > 0) {
-      const fullQuery = await this.createBaseQuery(manager); // ไม่ใส่ role filter ซ้ำ
-      items = await fullQuery
-        .where('purchase_orders.id IN (:...ids)', { ids })
-        .orderBy('purchase_orders.id', 'DESC')
-        .getMany();
-    }
+  //   // --- Step 3: Map พร้อมนับ approval steps ---
+  //   const mappedItems = await Promise.all(
+  //     items.map(async (item) => {
+  //       const user_approval_step = await manager
+  //         .createQueryBuilder(UserApprovalStepOrmEntity, 'steps')
+  //         .innerJoin('steps.user_approvals', 'user_approvals')
+  //         .where('user_approvals.document_id = :id', { id: item.document_id })
+  //         .getCount();
 
-    // --- Step 3: Map พร้อมนับ approval steps ---
-    const mappedItems = await Promise.all(
-      items.map(async (item) => {
-        const user_approval_step = await manager
-          .createQueryBuilder(UserApprovalStepOrmEntity, 'steps')
-          .innerJoin('steps.user_approvals', 'user_approvals')
-          .where('user_approvals.document_id = :id', { id: item.document_id })
-          .getCount();
+  //       const workflow_step = await manager
+  //         .createQueryBuilder(ApprovalWorkflowStepOrmEntity, 'steps')
+  //         .innerJoin('steps.approval_workflows', 'approval_workflows')
+  //         .where('approval_workflows.document_type_id = :id', {
+  //           id: item.documents.document_type_id,
+  //         })
+  //         .getCount();
 
-        const workflow_step = await manager
-          .createQueryBuilder(ApprovalWorkflowStepOrmEntity, 'steps')
-          .innerJoin('steps.approval_workflows', 'approval_workflows')
-          .where('approval_workflows.document_type_id = :id', {
-            id: item.documents.document_type_id,
-          })
-          .getCount();
+  //       const step = workflow_step - user_approval_step;
+  //       return this._dataAccessMapper.toEntity(item, step);
+  //     }),
+  //   );
 
-        const step = workflow_step - user_approval_step;
-        return this._dataAccessMapper.toEntity(item, step);
-      }),
-    );
-
-    // --- Step 4: Status amounts ---
-    const status = await countStatusAmounts(
-      manager,
-      EnumPrOrPo.PO,
-      user_id,
-      roles,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      company_id,
-      filterCompanyId,
-    );
-    return {
-      status,
-      pagination: {
-        page,
-        limit,
-        total,
-        total_pages: Math.ceil(total / limit),
-      },
-      data: mappedItems,
-    };
-  }
+  //   // --- Step 4: Status amounts ---
+  //   const status = await countStatusAmounts(
+  //     manager,
+  //     EnumPrOrPo.PO,
+  //     user_id,
+  //     roles,
+  //     undefined,
+  //     undefined,
+  //     undefined,
+  //     undefined,
+  //     company_id,
+  //     filterCompanyId,
+  //   );
+  //   return {
+  //     status,
+  //     pagination: {
+  //       page,
+  //       limit,
+  //       total,
+  //       total_pages: Math.ceil(total / limit),
+  //     },
+  //     data: mappedItems,
+  //   };
+  // }
   private createBaseQuery(
     manager: EntityManager,
     roles?: string[],
