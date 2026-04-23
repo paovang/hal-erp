@@ -186,6 +186,8 @@ export class CreateCommandHandler
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user.id;
+        const from_mail = user.username;
+        console.log('from_mail', from_mail, user);
         let company_id: number | null | undefined = null;
         const company = await manager.findOne(CompanyUserOrmEntity, {
           where: {
@@ -362,6 +364,7 @@ export class CreateCommandHandler
           titlesString: titles,
           token,
           approval_rules,
+          from_mail,
         };
 
         const d_approver: CustomDocumentApprover = {

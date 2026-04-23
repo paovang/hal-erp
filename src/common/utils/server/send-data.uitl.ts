@@ -18,6 +18,7 @@ export async function sendApprovalRequest(
   titles?: string,
   token?: string,
   approval_rules: ApprovalRuleInterface[] = [],
+  from_mail?: string,
 ) {
   let link = '';
   const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
@@ -83,8 +84,9 @@ export async function sendApprovalRequest(
     token: token ?? null,
     link: link,
     approval_rules: approval_rules,
+    from_mail: from_mail,
   };
-
+  console.log('send_data_to_approval', send_data_to_approval);
   // console.log('send_data_to_approval', send_data_to_approval);
 
   const apiUrl = process.env.APPROVAL_API_URL || 'http://127.0.0.1:3001';

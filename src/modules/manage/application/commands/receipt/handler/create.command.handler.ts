@@ -73,6 +73,8 @@ import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeor
 import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 import { hashData } from '@src/common/utils/server/hash-data.util';
 import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
 
 interface ReceiptInterface {
   receipt_number: string;
@@ -260,6 +262,22 @@ export class CreateCommandHandler
           `purchase order id: ${query.dto.purchase_order_id}`,
         );
 
+        const pr = await manager.findOne(PurchaseRequestOrmEntity, {
+          where: {
+            id: check_po.purchase_request_id,
+          },
+        });
+
+        if (!pr) {
+          throw new ManageDomainException(
+            'errors.not_found',
+            HttpStatus.BAD_REQUEST,
+            { property: 'Purchase Request' },
+          );
+        }
+
+        const from = await this.from_user(pr?.document_id ?? 0, manager);
+
         const po_code = (check_po as any).po_number;
         const poRest = (po_code ?? '').replace(/^\d{4}\//, '');
 
@@ -275,29 +293,9 @@ export class CreateCommandHandler
           );
         }
 
-        // const check_receipt = await manager.findOne(ReceiptOrmEntity, {
-        //   where: {
-        //     purchase_order_id: query.dto.purchase_order_id,
-        //   },
-        // });
-
-        // if (check_receipt) {
-        //   throw new ManageDomainException(
-        //     'errors.receipt_exist',
-        //     HttpStatus.BAD_REQUEST,
-        //     { property: 'Receipt' },
-        //   );
-        // }
-
         const department_name = (get_department_name as any).name;
 
         const document_number = await this.generateDocumentNumber(manager);
-        // const code = po?.purchase_requests?.documents?.departments?.code;
-
-        // const receipt_number = await this.generateReceiptNumber(
-        //   manager,
-        //   poRest,
-        // );
 
         const receipt_number = await this.generateRCNumber(manager, poRest);
 
@@ -386,6 +384,7 @@ export class CreateCommandHandler
           titlesString: titles,
           token,
           approval_rules,
+          from_mail: from.username,
         };
 
         const d_approver: CustomDocumentApprover = {
@@ -443,26 +442,6 @@ export class CreateCommandHandler
       'D',
     );
   }
-
-  // private async generateReceiptNumber(
-  //   manager: EntityManager,
-  //   poRest: string,
-  // ): Promise<string> {
-  //   return await this._codeGeneratorUtil.generateSequentialUniqueCode(
-  //     LENGTH_RECEIPT_CODE,
-  //     async (generatedCode: string) => {
-  //       try {
-  //         await findOneOrFail(manager, ReceiptOrmEntity, {
-  //           receipt_number: generatedCode,
-  //         });
-  //         return false;
-  //       } catch {
-  //         return true;
-  //       }
-  //     },
-  //     poRest,
-  //   );
-  // }
 
   private async createDocument(
     query: CreateCommand,
@@ -566,25 +545,6 @@ export class CreateCommandHandler
     );
     return (user_approval_step as any)._id._value;
   }
-
-  // private async handleApprovalStepCall(
-  //   a_w_s: any,
-  //   total: number,
-  //   user_id: number,
-  //   user_approval_step_id: number,
-  //   manager: EntityManager,
-  // ) {
-  //   await handleApprovalStep({
-  //     a_w_s,
-  //     total,
-  //     user_id,
-  //     user_approval_step_id,
-  //     manager,
-  //     dataDocumentApproverMapper: this._dataDocumentApproverMapper,
-  //     writeDocumentApprover: this._writeDocumentApprover,
-  //     getApprover: this.getApprover.bind(this),
-  //   });
-  // }
 
   private async checkCurrency(
     currency: number,
@@ -845,5 +805,44 @@ export class CreateCommandHandler
       '/' +
       departmentCode
     );
+  }
+
+  private async from_user(
+    from_id: number,
+    manager: EntityManager,
+  ): Promise<UserOrmEntity> {
+    const document = await manager.findOne(DocumentOrmEntity, {
+      where: {
+        id: from_id,
+      },
+    });
+
+    if (!document) {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        {
+          property: `document ${from_id}`,
+        },
+      );
+    }
+
+    const requester = await manager.findOne(UserOrmEntity, {
+      where: {
+        id: document.requester_id,
+      },
+    });
+
+    if (!requester) {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        {
+          property: `user ${document.requester_id}`,
+        },
+      );
+    }
+
+    return requester;
   }
 }
