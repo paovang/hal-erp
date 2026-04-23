@@ -15,6 +15,7 @@ import { PurchaseRequestOrmEntity } from './purchase-request.orm';
 import { UnitOrmEntity } from './unit.orm';
 import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
 import { QuotaCompanyOrmEntity } from './quota-company.orm';
+import { CurrencyOrmEntity } from './currency.orm';
 
 @Entity('purchase_request_items')
 export class PurchaseRequestItemOrmEntity {
@@ -98,4 +99,11 @@ export class PurchaseRequestItemOrmEntity {
     (purchase_order_items) => purchase_order_items.purchase_request_items,
   )
   purchase_order_items: Relation<PurchaseOrderItemOrmEntity[]>;
+
+  @ManyToOne(() => CurrencyOrmEntity)
+  @JoinColumn({ name: 'currency_id' })
+  currency: Relation<CurrencyOrmEntity>;
+
+  @Column({ nullable: true, name: 'currency_id' })
+  currency_id?: number;
 }

@@ -17,6 +17,7 @@ import { SelectStatus } from '@src/modules/manage/application/constants/status-k
 import { PurchaseOrderSelectedVendorOrmEntity } from './purchase-order-selected-vendor.orm';
 import { ReceiptItemOrmEntity } from './receipt.item.orm';
 import { BudgetItemOrmEntity } from './budget-item.orm';
+import { CurrencyOrmEntity } from './currency.orm';
 
 @Entity('purchase_order_items')
 export class PurchaseOrderItemOrmEntity {
@@ -117,4 +118,11 @@ export class PurchaseOrderItemOrmEntity {
     (receipt_items) => receipt_items.purchase_order_items,
   )
   receipt_items: Relation<ReceiptItemOrmEntity[]>;
+
+  @ManyToOne(() => CurrencyOrmEntity)
+  @JoinColumn({ name: 'currency_id' })
+  currency: Relation<CurrencyOrmEntity>;
+
+  @Column({ nullable: true, name: 'currency_id' })
+  currency_id?: number;
 }

@@ -16,6 +16,7 @@ import { BudgetItemOrmEntity } from './budget-item.orm';
 import { EnumBudgetType } from '@src/modules/manage/application/constants/status-key.const';
 import { IncreaseBudgetOrmEntity } from './increase-budget.orm';
 import { CompanyOrmEntity } from './company.orm';
+import { CurrencyOrmEntity } from './currency.orm';
 
 @Entity('budget_accounts')
 export class BudgetAccountOrmEntity {
@@ -87,4 +88,11 @@ export class BudgetAccountOrmEntity {
     (increase_budgets) => increase_budgets.budget_account,
   )
   increase_budgets: Relation<IncreaseBudgetOrmEntity[]>;
+
+  @ManyToOne(() => CurrencyOrmEntity)
+  @JoinColumn({ name: 'currency_id' })
+  currency: Relation<CurrencyOrmEntity>;
+
+  @Column({ nullable: true, name: 'currency_id' })
+  currency_id?: number;
 }
