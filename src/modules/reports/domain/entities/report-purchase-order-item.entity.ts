@@ -130,7 +130,7 @@ export class ReportPurchaseOrderItemEntity extends Entity<ReportPurchaseOrderIte
 
   async validateExistingIdForUpdate() {
     if (!this.getId()) {
-      console.log('phoudvang');
+      // console.log('phoudvang');
       throw new BadRequestException(
         'users.user_is_not_in_correct_state_for_initialization',
       );

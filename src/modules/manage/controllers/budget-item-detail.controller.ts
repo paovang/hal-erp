@@ -61,7 +61,7 @@ export class BudgetItemDetailController {
     @Query() dto: BudgetItemDetailQueryDto,
   ): Promise<ResponseResult<BudgetItemDetailResponse>> {
     const result = await this._budgetItemDetailService.getAll(id, dto);
-    console.log('object', result);
+    // console.log('object', result);
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,

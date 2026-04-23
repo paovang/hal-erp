@@ -139,7 +139,7 @@ export class DepartmentController {
       USER_PROFILE_IMAGE_FOLDER,
     );
 
-    console.log('changeProfileImageDto:', s3ImageResponse);
+    // console.log('changeProfileImageDto:', s3ImageResponse);
   }
 
   @Post('/test-server')

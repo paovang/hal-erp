@@ -35,7 +35,7 @@ export class RolePermissionEntity extends Entity<RolePermissionId> {
 
   async validateExistingIdForUpdate() {
     if (!this.getId()) {
-      console.log('phoudvang');
+      // console.log('phoudvang');
       // throw new UserDomainException(
       //   'users.user_is_not_in_correct_state_for_initialization',
       // );

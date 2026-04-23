@@ -31,7 +31,7 @@ export class WriteUserApprovalRepository
       OrmEntityMethod.CREATE,
     );
 
-    console.log('OrmEntity', OrmEntity);
+    // console.log('OrmEntity', OrmEntity);
     try {
       return this._dataAccessMapper.toEntity(
         await manager.save(UserApprovalOrmEntity, OrmEntity),

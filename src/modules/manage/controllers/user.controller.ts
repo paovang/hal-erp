@@ -138,7 +138,7 @@ export class UserController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    console.log('verify', verify);
+    // console.log('verify', verify);
     const id = verify.user_id;
 
     const result = await this._userService.getOne(id);
@@ -168,7 +168,7 @@ export class UserController {
     @Body() dto: ChangePasswordDto,
   ): Promise<ResponseResult<UserResponse>> {
     const result = await this._userService.changePassword(id, dto);
-    console.log('result', result);
+    // console.log('result', result);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

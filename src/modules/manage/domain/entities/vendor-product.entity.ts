@@ -84,7 +84,7 @@ export class VendorProductEntity extends Entity<VendorProductId> {
 
   async validateExistingIdForUpdate() {
     if (!this.getId()) {
-      console.log('vendor-product validation error');
+      // console.log('vendor-product validation error');
     }
   }
 

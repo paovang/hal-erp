@@ -85,6 +85,7 @@ export class ReadPurchaseRequestRepository
   ): Promise<ResponseResult<PurchaseRequestEntity>> {
     const filterCompanyId = Number(query.company_id);
     const filterOptions = this.getFilterOptions();
+
     const queryBuilder = await this.createBaseQuery(
       manager,
       departmentId,
@@ -93,6 +94,7 @@ export class ReadPurchaseRequestRepository
       company_id,
       query.type,
     );
+
     query.sort_by = 'purchase_requests.id';
 
     if (filterCompanyId) {

@@ -49,8 +49,15 @@ export class WritePurchaseRequestRepository
     }
   }
 
-  async delete(id: PurchaseRequestId, manager: EntityManager): Promise<void> {
+  async delete(
+    id: PurchaseRequestId,
+    userId: number,
+    manager: EntityManager,
+  ): Promise<void> {
     try {
+      await manager.update(PurchaseRequestOrmEntity, id.value, {
+        removed_by_id: userId,
+      });
       await manager.softDelete(PurchaseRequestOrmEntity, id.value);
     } catch (error) {
       throw error;

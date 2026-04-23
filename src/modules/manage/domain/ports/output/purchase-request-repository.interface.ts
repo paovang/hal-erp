@@ -14,7 +14,11 @@ export interface IWritePurchaseRequestRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<PurchaseRequestEntity>>;
 
-  delete(id: PurchaseRequestId, manager: EntityManager): Promise<void>;
+  delete(
+    id: PurchaseRequestId,
+    user_id: number,
+    manager: EntityManager,
+  ): Promise<void>;
 }
 
 export interface IReadPurchaseRequestRepository {

@@ -86,9 +86,9 @@ export class CompanyDataAccessMapper {
         ?.reduce((sum: number, dt: any) => sum + Number(dt.amount ?? 0), 0) ??
       0;
 
-    console.log('receipt_count', receipt_count);
-    console.log('total_allocated_amount', total_allocated_amount);
-    console.log('total_used_amount', total_used_amount);
+    // console.log('receipt_count', receipt_count);
+    // console.log('total_allocated_amount', total_allocated_amount);
+    // console.log('total_used_amount', total_used_amount);
 
     const builder = CompanyEntity.builder()
       .setCompanyId(new CompanyId(ormData.id))

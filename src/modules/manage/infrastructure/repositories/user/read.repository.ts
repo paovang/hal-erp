@@ -73,7 +73,7 @@ export class ReadUserRepository implements IReadUserRepository {
       .leftJoinAndSelect('users.user_types', 'user_types')
       .leftJoinAndSelect('users.company_users', 'company_users');
 
-    console.log('company_id', company_id);
+    // console.log('company_id', company_id);
 
     if (company_id) {
       query.andWhere(

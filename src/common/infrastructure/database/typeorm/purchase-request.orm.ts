@@ -5,6 +5,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -14,6 +15,7 @@ import {
 import { DocumentOrmEntity } from './document.orm';
 import { PurchaseRequestItemOrmEntity } from './purchase-request-item.orm';
 import { PurchaseOrderOrmEntity } from './purchase-order.orm';
+import { UserOrmEntity } from './user.orm';
 
 @Entity('purchase_requests')
 export class PurchaseRequestOrmEntity {
@@ -72,4 +74,11 @@ export class PurchaseRequestOrmEntity {
     (purchase_orders) => purchase_orders.purchase_requests,
   )
   purchase_orders: Relation<PurchaseOrderOrmEntity[]>;
+
+  @ManyToOne(() => UserOrmEntity)
+  @JoinColumn({ name: 'removed_by' })
+  removed_by: Relation<UserOrmEntity>;
+
+  @Column({ nullable: true, name: 'removed_by' })
+  removed_by_id?: number;
 }

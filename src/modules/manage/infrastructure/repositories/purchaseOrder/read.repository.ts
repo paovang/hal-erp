@@ -100,6 +100,7 @@ export class ReadPurchaseOrderRepository
       company_id,
       query.type,
     );
+
     query.sort_by = 'purchase_orders.id';
 
     if (filterCompanyId) {
@@ -334,7 +335,6 @@ export class ReadPurchaseOrderRepository
       .getCount();
 
     const step = workflow_step - user_approval_step;
-
     return this._dataAccessMapper.toEntity(item, step);
   }
 
