@@ -75,6 +75,61 @@ export class ReadPurchaseRequestRepository
    * @param roles
    * @returns
    */
+  // async findAll(
+  //   query: PurchaseRequestQueryDto,
+  //   manager: EntityManager,
+  //   departmentId?: number,
+  //   user_id?: number,
+  //   roles?: string[],
+  //   company_id?: number,
+  // ): Promise<ResponseResult<PurchaseRequestEntity>> {
+  //   const filterCompanyId = Number(query.company_id);
+  //   const filterOptions = this.getFilterOptions();
+
+  //   const queryBuilder = await this.createBaseQuery(
+  //     manager,
+  //     departmentId,
+  //     user_id,
+  //     roles,
+  //     company_id,
+  //     query.type,
+  //   );
+
+  //   query.sort_by = 'purchase_requests.id';
+
+  //   if (filterCompanyId) {
+  //     queryBuilder.andWhere('documents.company_id = :filterCompanyId', {
+  //       filterCompanyId,
+  //     });
+  //   }
+
+  //   // Date filtering (single date)
+  //   this.applyDateFilter(queryBuilder, filterOptions.dateColumn, query.date);
+
+  //   const status = await countStatusAmounts(
+  //     manager,
+  //     EnumPrOrPo.PR,
+  //     user_id,
+  //     roles,
+  //     undefined,
+  //     undefined,
+  //     undefined,
+  //     undefined,
+  //     company_id,
+  //     filterCompanyId,
+  //   );
+  //   const data = await this._paginationService.paginate(
+  //     queryBuilder,
+  //     query,
+  //     this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+  //     filterOptions,
+  //   );
+
+  //   return {
+  //     ...data,
+  //     status: status,
+  //   };
+  // }
   async findAll(
     query: PurchaseRequestQueryDto,
     manager: EntityManager,
@@ -86,7 +141,10 @@ export class ReadPurchaseRequestRepository
     const filterCompanyId = Number(query.company_id);
     const filterOptions = this.getFilterOptions();
 
-    const queryBuilder = await this.createBaseQuery(
+    query.sort_by = 'purchase_requests.id';
+
+    // --- Step 1: ดึง IDs ---
+    const idQueryBuilder = await this.createBaseQuery(
       manager,
       departmentId,
       user_id,
@@ -95,17 +153,70 @@ export class ReadPurchaseRequestRepository
       query.type,
     );
 
-    query.sort_by = 'purchase_requests.id';
-
     if (filterCompanyId) {
-      queryBuilder.andWhere('documents.company_id = :filterCompanyId', {
+      idQueryBuilder.andWhere('documents.company_id = :filterCompanyId', {
         filterCompanyId,
       });
     }
 
-    // Date filtering (single date)
-    this.applyDateFilter(queryBuilder, filterOptions.dateColumn, query.date);
+    this.applyDateFilter(idQueryBuilder, filterOptions.dateColumn, query.date);
 
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const [idRows, totalRow] = await Promise.all([
+      idQueryBuilder
+        .clone()
+        .select('purchase_requests.id', 'id')
+        .groupBy('purchase_requests.id')
+        .orderBy('purchase_requests.id', 'DESC')
+        .limit(limit)
+        .offset(offset)
+        .getRawMany<{ id: number }>(),
+      idQueryBuilder
+        .clone()
+        .select('COUNT(DISTINCT purchase_requests.id)', 'count')
+        .getRawOne<{ count: string }>(),
+    ]);
+
+    const total = Number(totalRow?.count ?? 0);
+    const ids = idRows.map((r) => Number(r.id));
+
+    // --- Step 2: Fetch ข้อมูลเต็ม ---
+    let items: PurchaseRequestOrmEntity[] = [];
+
+    if (ids.length > 0) {
+      const fullQuery = await this.createBaseQuery(manager);
+      items = await fullQuery
+        .where('purchase_requests.id IN (:...ids)', { ids })
+        .orderBy('purchase_requests.id', 'DESC')
+        .getMany();
+    }
+
+    // --- Step 3: Map พร้อมนับ approval steps ---
+    const mappedItems = await Promise.all(
+      items.map(async (item) => {
+        const user_approval_step = await manager
+          .createQueryBuilder(UserApprovalStepOrmEntity, 'steps')
+          .innerJoin('steps.user_approvals', 'user_approvals')
+          .where('user_approvals.document_id = :id', { id: item.document_id })
+          .getCount();
+
+        const workflow_step = await manager
+          .createQueryBuilder(ApprovalWorkflowStepOrmEntity, 'steps')
+          .innerJoin('steps.approval_workflows', 'approval_workflows')
+          .where('approval_workflows.document_type_id = :id', {
+            id: item.documents.document_type_id,
+          })
+          .getCount();
+
+        const step = workflow_step - user_approval_step;
+        return this._dataAccessMapper.toEntity(item, step);
+      }),
+    );
+
+    // --- Step 4: Status amounts ---
     const status = await countStatusAmounts(
       manager,
       EnumPrOrPo.PR,
@@ -118,19 +229,18 @@ export class ReadPurchaseRequestRepository
       company_id,
       filterCompanyId,
     );
-    const data = await this._paginationService.paginate(
-      queryBuilder,
-      query,
-      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
-      filterOptions,
-    );
 
     return {
-      ...data,
-      status: status,
+      status,
+      pagination: {
+        page,
+        limit,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+      data: mappedItems,
     };
   }
-
   /**
    * Create base query
    * @param manager

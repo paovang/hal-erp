@@ -78,6 +78,67 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
   ) {}
+  // async findAll(
+  //   query: ReceiptQueryDto,
+  //   manager: EntityManager,
+  //   user_id?: number,
+  //   roles?: string[],
+  //   company_id?: number,
+  // ): Promise<ResponseResult<ReceiptEntity>> {
+  //   const department_id = Number(query.department_id);
+  //   const status_id = Number(query.status_id);
+  //   const start_date = query.start_date;
+  //   const end_date = query.end_date;
+  //   const payment_type = query.payment_type;
+  //   const companyID = Number(query.company_id);
+  //   const filterOptions = this.getFilterOptions();
+  //   const queryBuilder = await this.createBaseQuery(
+  //     manager,
+  //     user_id,
+  //     roles,
+  //     department_id,
+  //     status_id,
+  //     start_date,
+  //     end_date,
+  //     payment_type,
+  //     company_id,
+  //     companyID,
+  //     query.type,
+  //   );
+  //   query.sort_by = 'receipts.id';
+
+  //   // Date filtering (single date)
+  //   this.applyDateFilter(
+  //     queryBuilder,
+  //     filterOptions.dateColumn,
+  //     query.order_date,
+  //   );
+
+  //   const status = await countStatusAmounts(
+  //     manager,
+  //     EnumPrOrPo.R,
+  //     user_id,
+  //     roles,
+  //     department_id,
+  //     status_id,
+  //     start_date,
+  //     end_date,
+  //     company_id,
+  //     companyID,
+  //   );
+
+  //   const data = await this._paginationService.paginate(
+  //     queryBuilder,
+  //     query,
+  //     this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
+  //     this.getFilterOptions(),
+  //   );
+
+  //   return {
+  //     ...data,
+  //     status: status,
+  //   };
+  // }
   async findAll(
     query: ReceiptQueryDto,
     manager: EntityManager,
@@ -92,7 +153,11 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     const payment_type = query.payment_type;
     const companyID = Number(query.company_id);
     const filterOptions = this.getFilterOptions();
-    const queryBuilder = await this.createBaseQuery(
+
+    query.sort_by = 'receipts.id';
+
+    // --- Step 1: ดึง IDs ---
+    const idQueryBuilder = await this.createBaseQuery(
       manager,
       user_id,
       roles,
@@ -105,15 +170,69 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       companyID,
       query.type,
     );
-    query.sort_by = 'receipts.id';
 
-    // Date filtering (single date)
     this.applyDateFilter(
-      queryBuilder,
+      idQueryBuilder,
       filterOptions.dateColumn,
       query.order_date,
     );
 
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const [idRows, totalRow] = await Promise.all([
+      idQueryBuilder
+        .clone()
+        .select('receipts.id', 'id')
+        .groupBy('receipts.id')
+        .orderBy('receipts.id', 'DESC')
+        .limit(limit)
+        .offset(offset)
+        .getRawMany<{ id: number }>(),
+      idQueryBuilder
+        .clone()
+        .select('COUNT(DISTINCT receipts.id)', 'count')
+        .getRawOne<{ count: string }>(),
+    ]);
+
+    const total = Number(totalRow?.count ?? 0);
+    const ids = idRows.map((r) => Number(r.id));
+
+    // --- Step 2: Fetch ข้อมูลเต็ม ---
+    let items: ReceiptOrmEntity[] = [];
+
+    if (ids.length > 0) {
+      const fullQuery = await this.createBaseQuery(manager);
+      items = await fullQuery
+        .where('receipts.id IN (:...ids)', { ids })
+        .orderBy('receipts.id', 'DESC')
+        .getMany();
+    }
+
+    // --- Step 3: Map พร้อมนับ approval steps ---
+    const mappedItems = await Promise.all(
+      items.map(async (item) => {
+        const user_approval_step = await manager
+          .createQueryBuilder(UserApprovalStepOrmEntity, 'steps')
+          .innerJoin('steps.user_approvals', 'user_approvals')
+          .where('user_approvals.document_id = :id', { id: item.document_id })
+          .getCount();
+
+        const workflow_step = await manager
+          .createQueryBuilder(ApprovalWorkflowStepOrmEntity, 'steps')
+          .innerJoin('steps.approval_workflows', 'approval_workflows')
+          .where('approval_workflows.document_type_id = :id', {
+            id: item.documents.document_type_id,
+          })
+          .getCount();
+
+        const step = workflow_step - user_approval_step;
+        return this._dataAccessMapper.toEntity(item, step);
+      }),
+    );
+
+    // --- Step 4: Status amounts ---
     const status = await countStatusAmounts(
       manager,
       EnumPrOrPo.R,
@@ -127,19 +246,17 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       companyID,
     );
 
-    const data = await this._paginationService.paginate(
-      queryBuilder,
-      query,
-      this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
-      this.getFilterOptions(),
-    );
-
     return {
-      ...data,
-      status: status,
+      status,
+      pagination: {
+        page,
+        limit,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+      data: mappedItems,
     };
   }
-
   private createBaseQuery(
     manager: EntityManager,
     user_id?: number,
