@@ -424,6 +424,11 @@ export class ApproveStepCommandHandler
                 );
               }
 
+              const from = await this.from_user(
+                purchase_request?.document_id ?? 0,
+                manager,
+              );
+
               const titles = purchase_request.purchase_request_items
                 .map((item) => item.title)
                 .filter(Boolean);
@@ -453,6 +458,7 @@ export class ApproveStepCommandHandler
                 department_name,
                 titlesString,
                 document_type: EnumRequestApprovalType.PR,
+                from_mail: from.username,
               });
 
               // end
@@ -471,6 +477,26 @@ export class ApproveStepCommandHandler
                   { property: 'purchase order' },
                 );
               }
+
+              const purchase_request = await manager.findOne(
+                PurchaseRequestOrmEntity,
+                {
+                  where: { id: po.purchase_request_id },
+                },
+              );
+
+              if (!purchase_request) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'purchase request' },
+                );
+              }
+
+              const from = await this.from_user(
+                purchase_request?.document_id ?? 0,
+                manager,
+              );
 
               const titlesString = po.purchase_order_items
                 .flatMap((item) => item.purchase_request_items)
@@ -649,6 +675,7 @@ export class ApproveStepCommandHandler
                 department_name,
                 titlesString,
                 document_type: EnumRequestApprovalType.PO,
+                from_mail: from.username,
               });
             } else if (query.dto.type === EnumPrOrPo.R) {
               const receipt = await manager.findOne(ReceiptOrmEntity, {
@@ -667,6 +694,38 @@ export class ApproveStepCommandHandler
                 );
               }
 
+              const po = await manager.findOne(PurchaseOrderOrmEntity, {
+                where: { id: receipt.purchase_order_id },
+              });
+
+              if (!po) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'purchase order' },
+                );
+              }
+
+              const purchase_request = await manager.findOne(
+                PurchaseRequestOrmEntity,
+                {
+                  where: { id: po.purchase_request_id },
+                },
+              );
+
+              if (!purchase_request) {
+                throw new ManageDomainException(
+                  'errors.not_found',
+                  HttpStatus.NOT_FOUND,
+                  { property: 'purchase request' },
+                );
+              }
+
+              const from = await this.from_user(
+                purchase_request?.document_id ?? 0,
+                manager,
+              );
+
               const titlesString = receipt.receipt_items
                 .flatMap((receiptItem) => receiptItem.purchase_order_items)
                 .flatMap((poItem) => poItem.purchase_request_items)
@@ -677,19 +736,6 @@ export class ApproveStepCommandHandler
                 roles.includes('account-admin') ||
                 roles.includes('account-user')
               ) {
-                // if (!receipt.account_code) {
-                //   if (!query.dto.account_code) {
-                //     throw new ManageDomainException(
-                //       'errors.account_code_required',
-                //       HttpStatus.BAD_REQUEST,
-                //     );
-                //   }
-
-                //   await this.registerAccount(query, manager, receipt.id);
-                // } else {
-                //   await this.insertDataInTransaction(manager, receipt);
-                // }
-
                 if (!receipt.account_code) {
                   if (!query.dto.account_code) {
                     throw new ManageDomainException(
@@ -720,11 +766,11 @@ export class ApproveStepCommandHandler
                 writeDocumentApprover: this._writeDocumentApprover,
                 userDataAccessMapper: this._userDataAccessMapper,
                 getApprover: this.getApprover.bind(this),
-                // company_id: company_id || undefined,
                 model_id,
                 department_name,
                 titlesString,
                 document_type: EnumRequestApprovalType.RC,
+                from_mail: from.username,
               });
             } else {
               throw new ManageDomainException(
@@ -1313,5 +1359,44 @@ export class ApproveStepCommandHandler
     return await findOneOrFail(manager, CurrencyOrmEntity, {
       id: currency,
     });
+  }
+
+  private async from_user(
+    from_id: number,
+    manager: EntityManager,
+  ): Promise<UserOrmEntity> {
+    const document = await manager.findOne(DocumentOrmEntity, {
+      where: {
+        id: from_id,
+      },
+    });
+
+    if (!document) {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        {
+          property: `document ${from_id}`,
+        },
+      );
+    }
+
+    const requester = await manager.findOne(UserOrmEntity, {
+      where: {
+        id: document.requester_id,
+      },
+    });
+
+    if (!requester) {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        {
+          property: `user ${document.requester_id}`,
+        },
+      );
+    }
+
+    return requester;
   }
 }

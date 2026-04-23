@@ -81,6 +81,7 @@ import { StatusEnum } from '@src/common/enums/status.enum';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 import { hashData } from '@src/common/utils/server/hash-data.util';
 import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
+import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -251,6 +252,8 @@ export class CreateCommandHandler
           );
         }
 
+        const from = await this.from_user(pr?.document_id ?? 0, manager);
+
         const pr_doc = await findOneOrFail(
           manager,
           DocumentOrmEntity,
@@ -324,21 +327,6 @@ export class CreateCommandHandler
         const pr_department_code = (pr_department as any).code;
 
         const prefix = department_code + '/' + pr_department_code;
-
-        // const code = await this._codeGeneratorUtil.generateSequentialUniqueCode(
-        //   LENGTH_PURCHASE_ORDER_CODE,
-        //   async (generatedCode: string) => {
-        //     try {
-        //       await findOneOrFail(manager, PurchaseOrderOrmEntity, {
-        //         po_number: generatedCode,
-        //       });
-        //       return false;
-        //     } catch {
-        //       return true;
-        //     }
-        //   },
-        //   prefix,
-        // );
         const code = await this.generatePoNumber(manager, prefix);
 
         const DEntity = this._dataDMapper.toEntity(
@@ -378,6 +366,7 @@ export class CreateCommandHandler
           user_id,
           user,
           po_id,
+          from.username,
         );
 
         return await this._read.findOne(new PurchaseOrderId(po_id), manager);
@@ -400,6 +389,7 @@ export class CreateCommandHandler
     user_id: number,
     user: UserEntity,
     po_id: number,
+    from?: string,
   ): Promise<ApprovalNotificationData> {
     const department = await findOneOrFail(manager, DepartmentUserOrmEntity, {
       user_id: user_id,
@@ -509,6 +499,7 @@ export class CreateCommandHandler
       titlesString: titles,
       token,
       approval_rules,
+      from_mail: from,
     };
   }
 
@@ -731,28 +722,42 @@ export class CreateCommandHandler
       departmentCode
     );
   }
-  // private async generatePrNumber(
-  //   manager: EntityManager,
-  //   departmentCode: string,
-  // ): Promise<string> {
-  //   const latestPr = await manager
-  //     .getRepository(PurchaseRequestOrmEntity)
-  //     .createQueryBuilder('pr')
-  //     .where('pr.pr_number IS NOT NULL')
-  //     .orderBy(`CAST(SPLIT_PART(pr.pr_number, '/', 1) AS INTEGER)`, 'DESC')
-  //     .getOne();
+  private async from_user(
+    from_id: number,
+    manager: EntityManager,
+  ): Promise<UserOrmEntity> {
+    const document = await manager.findOne(DocumentOrmEntity, {
+      where: {
+        id: from_id,
+      },
+    });
 
-  //   let nextNumber = 1;
+    if (!document) {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        {
+          property: `document ${from_id}`,
+        },
+      );
+    }
 
-  //   if (latestPr?.pr_number) {
-  //     const numericPart = latestPr.pr_number.split('/')[0];
-  //     nextNumber = (parseInt(numericPart, 10) || 0) + 1;
-  //   }
+    const requester = await manager.findOne(UserOrmEntity, {
+      where: {
+        id: document.requester_id,
+      },
+    });
 
-  //   return (
-  //     nextNumber.toString().padStart(LENGTH_PURCHASE_REQUEST_CODE, '0') +
-  //     '/' +
-  //     departmentCode
-  //   );
-  // }
+    if (!requester) {
+      throw new ManageDomainException(
+        'errors.not_found',
+        HttpStatus.NOT_FOUND,
+        {
+          property: `user ${document.requester_id}`,
+        },
+      );
+    }
+
+    return requester;
+  }
 }
