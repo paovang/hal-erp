@@ -10,6 +10,7 @@ import { SelectStatus } from '../../application/constants/status-key.const';
 import { PurchaseOrderSelectedVendorDataAccessMapper } from './purchase-order-selected-vendor.mapper';
 import { BudgetItemDataAccessMapper } from './budget-item.mapper';
 import { PurchaseRequestItemDataAccessMapper } from './purchase-request-item.mapper';
+import { CurrencyDataAccessMapper } from './currency.mapper';
 
 @Injectable()
 export class PurchaseOrderItemDataAccessMapper {
@@ -17,6 +18,7 @@ export class PurchaseOrderItemDataAccessMapper {
     private readonly _budgetItem: BudgetItemDataAccessMapper,
     private readonly _purchaseRequestItem: PurchaseRequestItemDataAccessMapper,
     private readonly _selectedVendor: PurchaseOrderSelectedVendorDataAccessMapper,
+    private readonly currencyMapper: CurrencyDataAccessMapper,
   ) {}
 
   toOrmEntity(
@@ -80,6 +82,10 @@ export class PurchaseOrderItemDataAccessMapper {
 
     if (ormData.budget_item) {
       builder.setBudgetItem(this._budgetItem.toEntity(ormData.budget_item));
+    }
+
+    if (ormData.currency) {
+      builder.setCurrency(this.currencyMapper.toEntity(ormData.currency));
     }
 
     if (ormData.purchase_request_items) {

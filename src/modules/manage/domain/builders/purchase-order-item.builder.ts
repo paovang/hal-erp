@@ -1,4 +1,5 @@
 import { BudgetItemEntity } from '../entities/budget-item.entity';
+import { CurrencyEntity } from '../entities/currency.entity';
 import { PurchaseOrderItemEntity } from '../entities/purchase-order-item.entity';
 import { PurchaseOrderSelectedVendorEntity } from '../entities/purchase-order-selected-vendor.entity';
 import { PurchaseRequestItemEntity } from '../entities/purchase-request-item.entity';
@@ -23,6 +24,8 @@ export class PurchaseOrderItemBuilder {
   budgetItem: BudgetItemEntity | null;
   selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
   purchase_request_item: PurchaseRequestItemEntity | null;
+  currency_id: number;
+  currency: CurrencyEntity | null;
 
   setPurchaseOrderItemId(value: PurchaseOrderItemId): this {
     this.purchaseOrderItemId = value;
@@ -38,7 +41,15 @@ export class PurchaseOrderItemBuilder {
     this.purchase_request_item_id = value;
     return this;
   }
+  setCurrencyId(currency_id: number): this {
+    this.currency_id = currency_id;
+    return this;
+  }
 
+  setCurrency(currency: CurrencyEntity | null): this {
+    this.currency = currency;
+    return this;
+  }
   setBudgetItemId(budget_item_id: number): this {
     this.budget_item_id = budget_item_id;
     return this;

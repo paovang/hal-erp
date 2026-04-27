@@ -30,7 +30,6 @@ export class VendorProductController {
     private readonly _dataMapper: VendorProductDataMapper,
   ) {}
 
-  /** Create */
   @Post('')
   async create(
     @Body() dto: CreateVendorProductDto,

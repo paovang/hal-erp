@@ -1,3 +1,4 @@
+import { CurrencyEntity } from '../entities/currency.entity';
 import { PurchaseRequestItemEntity } from '../entities/purchase-request-item.entity';
 import { QuotaCompanyEntity } from '../entities/quota-company.entity';
 import { UnitEntity } from '../entities/unit.entity';
@@ -19,6 +20,8 @@ export class PurchaseRequestItemBuilder {
   deletedAt!: Date | null;
   unit: UnitEntity | null;
   quota_company: QuotaCompanyEntity | null;
+  currency_id: number;
+  currency: CurrencyEntity | null;
 
   setPurchaseRequestItemId(value: PurchaseRequestItemId): this {
     this.purchaseRequestItemId = value;
@@ -27,6 +30,16 @@ export class PurchaseRequestItemBuilder {
 
   setPurchaseRequestId(purchase_request_id: number): this {
     this.purchase_request_id = purchase_request_id;
+    return this;
+  }
+
+  setCurrencyId(currency_id: number): this {
+    this.currency_id = currency_id;
+    return this;
+  }
+
+  setCurrency(currency: CurrencyEntity | null): this {
+    this.currency = currency;
     return this;
   }
 

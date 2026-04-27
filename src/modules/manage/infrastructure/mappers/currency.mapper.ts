@@ -29,12 +29,13 @@ export class CurrencyDataAccessMapper {
   }
 
   toEntity(ormData: CurrencyOrmEntity): CurrencyEntity {
-    return CurrencyEntity.builder()
+    // console.log(ormData);
+    const entity = CurrencyEntity.builder()
       .setCurrencyId(new CurrencyId(ormData.id))
       .setCode(ormData.code)
       .setName(ormData.name ?? '')
       .setCreatedAt(ormData.created_at)
-      .setUpdatedAt(ormData.updated_at)
-      .build();
+      .setUpdatedAt(ormData.updated_at);
+    return entity.build();
   }
 }

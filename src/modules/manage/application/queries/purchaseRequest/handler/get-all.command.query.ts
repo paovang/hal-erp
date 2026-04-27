@@ -57,7 +57,6 @@ export class GetAllQueryHandler
     if (!data) {
       throw new ManageDomainException('error.not_found', HttpStatus.NOT_FOUND);
     }
-
     return data;
   }
 }

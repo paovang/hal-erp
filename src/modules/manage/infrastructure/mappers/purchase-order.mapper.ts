@@ -1,7 +1,7 @@
 import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
 import { PurchaseOrderEntity } from '../../domain/entities/purchase-order.entity';
 import { PurchaseOrderId } from '../../domain/value-objects/purchase-order-id.vo';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PurchaseOrderItemDataAccessMapper } from './purchase-order-item.mapper';
 import { PurchaseOrderSelectedVendorDataAccessMapper } from './purchase-order-selected-vendor.mapper';
 import { PurchaseRequestDataAccessMapper } from './purchase-request.mapper';
@@ -11,6 +11,9 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ExchangeRateOrmEntity } from '@src/common/infrastructure/database/typeorm/exchange-rate.orm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PurchaseOrderDataAccessMapper {
@@ -20,6 +23,8 @@ export class PurchaseOrderDataAccessMapper {
     private readonly _purchaseRequest: PurchaseRequestDataAccessMapper,
     private readonly _document: DocumentDataAccessMapper,
     private readonly _userApproval: UserApprovalDataAccessMapper,
+    @InjectRepository(ExchangeRateOrmEntity)
+    private readonly exchangeRateRepository: Repository<ExchangeRateOrmEntity>,
   ) {}
 
   toOrmEntity(
@@ -50,26 +55,51 @@ export class PurchaseOrderDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  toEntity(
+  async toEntity(
     ormData: PurchaseOrderOrmEntity,
     step: number = 0,
-  ): PurchaseOrderEntity {
+  ): Promise<PurchaseOrderEntity> {
     const items = ormData.purchase_order_items || [];
     interface PurchaseRequestItemLike {
       vat?: number;
       total?: number;
       [key: string]: any;
     }
+    const rateOrm = await this.exchangeRateRepository.find({
+      where: { to_currency: { code: 'LAK' } },
+      relations: ['from_currency', 'to_currency'],
+    });
 
+    const rateMap = new Map<string, number>(
+      rateOrm.map((item) => [String(item.from_currency.id), item.rate]),
+    );
     const sub_total: number = items.reduce(
-      (sum: number, item: PurchaseRequestItemLike) =>
-        sum + Number(item.total || 0),
+      // (sum: number, item: PurchaseRequestItemLike) =>
+      //   sum + Number(item.total || 0),
+      // 0,
+      (sum: number, item: PurchaseRequestItemLike) => {
+        const rate = rateMap.get(String(item.currency.id));
+        if (!rate)
+          throw new BadRequestException(
+            `Currency ${item.currency.id} to LAK is not found.`,
+          );
+        return sum + Number(item.total || 0) * rate;
+      },
       0,
     );
 
     const vat: number = items.reduce(
-      (sum: number, item: PurchaseRequestItemLike) =>
-        sum + Number(item.vat || 0),
+      // (sum: number, item: PurchaseRequestItemLike) =>
+      //   sum + Number(item.vat || 0),
+      // 0,
+      (sum: number, item: PurchaseRequestItemLike) => {
+        const rate = rateMap.get(String(item.currency.id));
+        if (!rate)
+          throw new BadRequestException(
+            `Currency ${item.currency.id} to LAK is not found.`,
+          );
+        return sum + Number(item.vat || 0) * rate;
+      },
       0,
     );
 
@@ -92,16 +122,16 @@ export class PurchaseOrderDataAccessMapper {
       .setVat(vat)
       .setTotal(total)
       .setStep(step);
-
     if (ormData.purchase_requests) {
       builder.setPurchaseRequest(
-        this._purchaseRequest.toEntity(ormData.purchase_requests),
+        await this._purchaseRequest.toEntity(ormData.purchase_requests),
       );
     }
 
     if (ormData.documents) {
       builder.setDocument(this._document.toEntity(ormData.documents));
     }
+
     if (ormData.documents && ormData.documents.user_approvals) {
       builder.setUserApproval(
         this._userApproval.toEntity(ormData.documents.user_approvals),

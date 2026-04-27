@@ -3,6 +3,7 @@ import { DepartmentId } from '@src/modules/manage/domain/value-objects/departmen
 import { UserEntity } from '../entities/user.entity';
 import { DepartmentType } from '@src/common/enums/department.enum';
 import { CompanyEntity } from '../entities/company.entity';
+import { BudgetAccountEntity } from '../entities/budget-account.entity';
 
 export class DepartmentBuilder {
   departmentId: DepartmentId;

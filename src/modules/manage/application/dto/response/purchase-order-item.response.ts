@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PurchaseOrderSelectedVendorResponse } from './purchase-order-selected-vendor.response';
 import { BudgetItemResponse } from './budget-item.response';
 import { PurchaseRequestItemResponse } from './purchase-request-item.response';
+import { CurrencyResponse } from './currency.response';
 
 export class PurchaseOrderItemResponse {
   @ApiProperty()
@@ -54,4 +55,7 @@ export class PurchaseOrderItemResponse {
 
   @ApiProperty()
   selected_vendor: PurchaseOrderSelectedVendorResponse[] | null;
+
+  @ApiProperty()
+  currency: CurrencyResponse | null;
 }

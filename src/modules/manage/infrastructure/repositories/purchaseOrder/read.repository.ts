@@ -404,6 +404,20 @@ export class ReadPurchaseOrderRepository
       ...selectProducts,
       ...selectVendors,
       ...selectReceipt,
+      ...[
+        'currencies.id',
+        'currencies.code',
+        'currencies.name',
+        'currencies.created_at',
+        'currencies.updated_at',
+      ],
+      ...[
+        'pr_currency.id',
+        'pr_currency.code',
+        'pr_currency.name',
+        'pr_currency.created_at',
+        'pr_currency.updated_at',
+      ],
     ];
 
     const query = manager
@@ -425,8 +439,11 @@ export class ReadPurchaseOrderRepository
       .leftJoin('users.user_signatures', 'user_signatures')
       .innerJoin('users.department_users', 'department_users')
       .innerJoin('department_users.positions', 'positions')
+      .leftJoin('purchase_order_items.currency', 'currencies')
 
       .innerJoin('purchase_request_items.units', 'units')
+
+      .leftJoin('purchase_request_items.currency', 'pr_currency')
 
       // purchase_order_items join with purchase request
       .innerJoin('purchase_order_items.purchase_request_items', 'request_items')

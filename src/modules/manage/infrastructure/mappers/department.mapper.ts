@@ -8,6 +8,7 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import { UserDataAccessMapper } from './user.mapper';
 import { Injectable } from '@nestjs/common';
 import { CompanyDataAccessMapper } from './company.mapper';
+import { BudgetAccountDataAccessMapper } from './budget-account.mapper';
 
 @Injectable()
 export class DepartmentDataAccessMapper {

@@ -8,12 +8,14 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { QuotaCompanyDataAccessMapper } from './quota-company.mapper';
+import { CurrencyDataAccessMapper } from './currency.mapper';
 
 @Injectable()
 export class PurchaseRequestItemDataAccessMapper {
   constructor(
     private readonly unitMapper: UnitDataAccessMapper,
     private readonly quotaCompany: QuotaCompanyDataAccessMapper,
+    private readonly currencyMapper: CurrencyDataAccessMapper,
   ) {}
 
   toOrmEntity(
@@ -71,6 +73,9 @@ export class PurchaseRequestItemDataAccessMapper {
       builder.setQuotaCompany(
         this.quotaCompany.toEntity(ormData.quota_company),
       );
+    }
+    if (ormData.currency) {
+      builder.setCurrency(this.currencyMapper.toEntity(ormData.currency));
     }
 
     return builder.build();

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
 import { PurchaseRequestEntity } from '../../domain/entities/purchase-request.entity';
 import { PurchaseRequestId } from '../../domain/value-objects/purchase-request-id.vo';
@@ -10,6 +10,9 @@ import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { CompanyDataAccessMapper } from './company.mapper';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ExchangeRateOrmEntity } from '@src/common/infrastructure/database/typeorm/exchange-rate.orm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PurchaseRequestDataAccessMapper {
@@ -18,6 +21,8 @@ export class PurchaseRequestDataAccessMapper {
     private readonly documentMapper: DocumentDataAccessMapper,
     private readonly userApprovalMapper: UserApprovalDataAccessMapper,
     private readonly company: CompanyDataAccessMapper,
+    @InjectRepository(ExchangeRateOrmEntity)
+    private readonly exchangeRateRepository: Repository<ExchangeRateOrmEntity>,
   ) {}
 
   toOrmEntity(
@@ -47,19 +52,37 @@ export class PurchaseRequestDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  toEntity(
+  async toEntity(
     ormData: PurchaseRequestOrmEntity,
     step: number = 0,
-  ): PurchaseRequestEntity {
+  ): Promise<PurchaseRequestEntity> {
     const items = ormData.purchase_request_items || [];
     interface PurchaseRequestItemLike {
       total_price?: number;
       [key: string]: any;
     }
+    // const total: number = items.reduce(
+    //   (sum: number, item: PurchaseRequestItemLike) =>
+    //     sum + Number(item.total_price || 0),
+    //   0,
+    // );
+    const rateOrm = await this.exchangeRateRepository.find({
+      where: { to_currency: { code: 'LAK' } },
+      relations: ['from_currency', 'to_currency'],
+    });
 
+    const rateMap = new Map<string, number>(
+      rateOrm.map((item) => [String(item.from_currency.id), item.rate]),
+    );
     const total: number = items.reduce(
-      (sum: number, item: PurchaseRequestItemLike) =>
-        sum + Number(item.total_price || 0),
+      (sum: number, item: PurchaseRequestItemLike) => {
+        const rate = rateMap.get(String(item.currency.id));
+        if (!rate)
+          throw new BadRequestException(
+            `Currency ${item.currency.id} to LAK is not found.`,
+          );
+        return sum + Number(item.total_price || 0) * rate;
+      },
       0,
     );
 
@@ -67,6 +90,7 @@ export class PurchaseRequestDataAccessMapper {
 
     const po = ormData.purchase_orders;
     const isCreatedPo = po && po.length > 0 ? true : false;
+    // console.log('t');
 
     const builder = PurchaseRequestEntity.builder()
       .setPurchaseRequestId(new PurchaseRequestId(ormData.id))

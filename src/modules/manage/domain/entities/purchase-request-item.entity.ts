@@ -4,6 +4,7 @@ import { PurchaseRequestItemBuilder } from '../builders/purchase-request-item.bu
 import { BadRequestException } from '@nestjs/common';
 import { UnitEntity } from './unit.entity';
 import { QuotaCompanyEntity } from './quota-company.entity';
+import { CurrencyEntity } from './currency.entity';
 
 export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
   private readonly _purchase_request_id: number;
@@ -20,6 +21,8 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
   private readonly _deletedAt: Date | null;
   private readonly _unit: UnitEntity | null;
   private readonly _quota_company: QuotaCompanyEntity | null;
+  private readonly _currency_id: number;
+  private readonly _currency: CurrencyEntity | null;
 
   private constructor(builder: PurchaseRequestItemBuilder) {
     super();
@@ -38,6 +41,8 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
     this._deletedAt = builder.deletedAt ?? null;
     this._unit = builder.unit ?? null;
     this._quota_company = builder.quota_company ?? null;
+    this._currency_id = builder.currency_id;
+    this._currency = builder.currency ?? null;
   }
 
   get purchase_request_id(): number {
@@ -46,6 +51,14 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
 
   get title(): string {
     return this._title;
+  }
+
+  get currency_id(): number {
+    return this._currency_id;
+  }
+
+  get currency(): CurrencyEntity | null {
+    return this._currency;
   }
 
   get file_name(): any {

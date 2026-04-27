@@ -2,7 +2,7 @@ import { OrmEntityMethod } from '@src/common/utils/orm-entity-method.enum';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ExchangeRateOrmEntity } from '@src/common/infrastructure/database/typeorm/exchange-rate.orm';
 import { ExchangeRateEntity } from '../../domain/entities/exchange-rate.entity';
 import { ExchangeRateId } from '../../domain/value-objects/exchange-rate-id.vo';
@@ -10,7 +10,10 @@ import { CurrencyDataAccessMapper } from './currency.mapper';
 
 @Injectable()
 export class ExchangeRateDataAccessMapper {
-  constructor(private readonly _currencyMapper: CurrencyDataAccessMapper) {}
+  constructor(
+    @Inject(forwardRef(() => CurrencyDataAccessMapper))
+    private readonly _currencyMapper: CurrencyDataAccessMapper,
+  ) {}
 
   toOrmEntity(
     exchangeRateEntity: ExchangeRateEntity,

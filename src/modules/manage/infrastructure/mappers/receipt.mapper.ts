@@ -5,12 +5,15 @@ import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
 import { DateFormat } from '@src/common/domain/value-objects/date-format.vo';
 import { ReceiptId } from '../../domain/value-objects/receitp-id.vo';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ReceiptItemDataAccessMapper } from './receipt-item.mapper';
 import { DocumentDataAccessMapper } from './document.mapper';
 import { UserApprovalDataAccessMapper } from './user-approval.mapper';
 import { CurrencyTotal } from '../../application/commands/receipt/interface/receipt.interface';
 import { DocumentAttachmentDataAccessMapper } from './document-attachment.mapper';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ExchangeRateOrmEntity } from '@src/common/infrastructure/database/typeorm/exchange-rate.orm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ReceiptDataAccessMapper {
@@ -19,6 +22,8 @@ export class ReceiptDataAccessMapper {
     private readonly documentMapper: DocumentDataAccessMapper,
     private readonly userApprovalMapper: UserApprovalDataAccessMapper,
     private readonly documentAttachmentMapper: DocumentAttachmentDataAccessMapper,
+    @InjectRepository(ExchangeRateOrmEntity)
+    private readonly exchangeRateRepository: Repository<ExchangeRateOrmEntity>,
   ) {}
   toOrmEntity(
     receiptEntity: ReceiptEntity,
@@ -48,23 +53,52 @@ export class ReceiptDataAccessMapper {
     return mediaOrmEntity;
   }
 
-  toEntity(ormData: ReceiptOrmEntity, step: number = 0): ReceiptEntity {
+  async toEntity(
+    ormData: ReceiptOrmEntity,
+    step: number = 0,
+  ): Promise<ReceiptEntity> {
     const items = ormData.receipt_items || [];
     interface PurchaseRequestItemLike {
       vat?: number;
       payment_total?: number;
       [key: string]: any;
     }
+    const rateOrm = await this.exchangeRateRepository.find({
+      where: { to_currency: { code: 'LAK' } },
+      relations: ['from_currency', 'to_currency'],
+    });
+
+    const rateMap = new Map<string, number>(
+      rateOrm.map((item) => [String(item.from_currency.id), item.rate]),
+    );
 
     const sub_total: number = items.reduce(
-      (sum: number, item: PurchaseRequestItemLike) =>
-        sum + Number(item.payment_total || 0),
+      // (sum: number, item: PurchaseRequestItemLike) =>
+      //   sum + Number(item.payment_total || 0),
+      // 0,
+      (sum: number, item: PurchaseRequestItemLike) => {
+        const rate = rateMap.get(String(item.currency.id));
+        if (!rate)
+          throw new BadRequestException(
+            `Currency ${item.currency.id} to LAK is not found.`,
+          );
+        return sum + Number(item.payment_total || 0) * rate;
+      },
       0,
     );
 
     const vat: number = items.reduce(
-      (sum: number, item: PurchaseRequestItemLike) =>
-        sum + Number(item.vat || 0),
+      // (sum: number, item: PurchaseRequestItemLike) =>
+      //   sum + Number(item.vat || 0),
+      // 0,
+      (sum: number, item: PurchaseRequestItemLike) => {
+        const rate = rateMap.get(String(item.currency.id));
+        if (!rate)
+          throw new BadRequestException(
+            `Currency ${item.currency.id} to LAK is not found.`,
+          );
+        return sum + Number(item.vat || 0) * rate;
+      },
       0,
     );
 

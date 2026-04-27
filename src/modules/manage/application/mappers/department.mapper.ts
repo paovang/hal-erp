@@ -8,12 +8,14 @@ import { CreateDepartmentDto } from '@src/modules/manage/application/dto/create/
 import { UpdateDepartmentDto } from '@src/modules/manage/application/dto/create/department/update.dto';
 import { UserDataMapper } from './user.mapper';
 import { CompanyDataMapper } from './company.mapper';
+import { BudgetAccountDataMapper } from './budget-account.mapper';
 
 @Injectable()
 export class DepartmentDataMapper {
   constructor(
     private readonly userDataMapper: UserDataMapper,
     private readonly company: CompanyDataMapper,
+    private readonly budget_account: BudgetAccountDataMapper,
   ) {}
   /** Mapper Dto To Entity */
   toEntity(
