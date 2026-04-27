@@ -1,6 +1,7 @@
 import { Entity } from '@src/common/domain/entities/entity';
 import { CurrencyId } from '../value-objects/currency-id.vo';
 import { CurrencyBuilder } from '../builders/currency.builder';
+import { ExchangeRateEntity } from './exchange-rate.entity';
 
 export class CurrencyEntity extends Entity<CurrencyId> {
   private readonly _code: string;
@@ -8,6 +9,7 @@ export class CurrencyEntity extends Entity<CurrencyId> {
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
+  // private readonly _to_currencies: ExchangeRateEntity[] | null;
 
   private constructor(builder: CurrencyBuilder) {
     super();
@@ -22,6 +24,10 @@ export class CurrencyEntity extends Entity<CurrencyId> {
   get code(): string {
     return this._code;
   }
+
+  // get to_currencies(): ExchangeRateEntity[] | null {
+  //   return this._to_currencies;
+  // }
 
   get name(): string {
     return this._name;

@@ -8,12 +8,14 @@ import { UnitDataMapper } from './unit.mapper';
 import { CreatePurchaseRequestItemDto } from '../dto/create/purchaseRequestItem/create.dto';
 import { UpdatePurchaseRequestItemDto } from '../dto/create/purchaseRequestItem/update.dto';
 import { QuotaCompanyDataMapper } from './quota-company.mapper';
+import { CurrencyDataMapper } from './currency.mapper';
 
 @Injectable()
 export class PurchaseRequestItemDataMapper {
   constructor(
     private readonly unit: UnitDataMapper,
     private readonly quotaCompany: QuotaCompanyDataMapper,
+    private readonly currency: CurrencyDataMapper,
   ) {}
 
   toEntity(
@@ -64,6 +66,7 @@ export class PurchaseRequestItemDataMapper {
 
   /** Mapper Entity To Response */
   toResponse(entity: PurchaseRequestItemEntity): PurchaseRequestItemResponse {
+    // console.log(entity);
     const file_name = entity?.file_name
       ? `${process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/${entity.file_name}`
       : '';
@@ -87,6 +90,9 @@ export class PurchaseRequestItemDataMapper {
       .format(DateFormat.DATETIME_READABLE_FORMAT);
 
     response.unit = entity.unit ? this.unit.toResponse(entity.unit) : null;
+    response.currency = entity.currency
+      ? this.currency.toResponse(entity.currency)
+      : null;
 
     response.quota_company = entity.quota_company
       ? this.quotaCompany.toResponse(entity.quota_company)

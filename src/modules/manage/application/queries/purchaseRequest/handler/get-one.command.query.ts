@@ -23,10 +23,11 @@ export class GetOneQueryHandler
     query: GetOneQuery,
   ): Promise<ResponseResult<PurchaseRequestEntity>> {
     await this.checkData(query);
-    return await this._readRepo.findOne(
+    const entity = await this._readRepo.findOne(
       new PurchaseRequestId(query.id),
       query.manager,
     );
+    return entity;
   }
 
   private async checkData(query: GetOneQuery): Promise<void> {

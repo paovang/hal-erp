@@ -20,6 +20,7 @@ import {
   selectApprover,
   selectApproverUserSignatures,
   selectCompany,
+  selectCurrencies,
   selectDepartments,
   selectDepartmentsApprover,
   selectDepartmentUserApprovers,
@@ -285,6 +286,15 @@ export class ReadPurchaseRequestRepository
       ...selectProducts,
       ...selectVendors,
       ...selectPurchaseOrders,
+      ...selectCurrencies,
+      ...[
+        'budget_currency.id',
+        'budget_currency.code',
+        'budget_currency.name',
+        'budget_currency.created_at',
+        'budget_currency.updated_at',
+      ],
+      ...['exchange_rate_to.id', 'exchange_rate_to.rate'],
     ];
 
     const query = manager
@@ -302,6 +312,9 @@ export class ReadPurchaseRequestRepository
       .leftJoin('users.department_users', 'department_users')
       .innerJoin('purchase_request_items.units', 'units')
       .innerJoin('purchase_request_items.quota_company', 'quota_company')
+
+      .leftJoin('purchase_request_items.currency', 'currencies')
+      .leftJoin('currencies.exchange_rate_to', 'exchange_rate_to')
 
       .leftJoin('quota_company.vendor_product', 'vendor_product')
       .leftJoin('vendor_product.products', 'products')
@@ -326,6 +339,8 @@ export class ReadPurchaseRequestRepository
       .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
       .leftJoin('doc_dept_user.departments', 'departments_approver')
       .leftJoin('purchase_requests.purchase_orders', 'purchase_orders')
+      .leftJoin('departments.budget_accounts', 'budget_accounts')
+      .leftJoin('budget_accounts.currency', 'budget_currency')
       .addSelect(selectFields);
 
     if (

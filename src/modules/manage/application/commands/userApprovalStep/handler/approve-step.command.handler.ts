@@ -2,7 +2,7 @@ import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import { ApproveStepCommand } from '../approve-step.command';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { UserApprovalStepEntity } from '@src/modules/manage/domain/entities/user-approval-step.entity';
-import { HttpStatus, Inject } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Inject } from '@nestjs/common';
 import {
   FILE_FOLDER,
   LENGTH_DOCUMENT_TRANSACTION_CODE,
@@ -1244,19 +1244,46 @@ export class ApproveStepCommandHandler
         manager,
       );
 
+      const rateOrm = await manager.getRepository(ExchangeRateOrmEntity).find({
+        where: { to_currency: { code: 'LAK' } },
+        relations: ['from_currency', 'to_currency'],
+      });
+
+      const rateMap = new Map<string, number>(
+        rateOrm.map((item) => [String(item.from_currency.id), item.rate]),
+      );
       // Sum total for all items in this group
       let sum_total = 0;
       for (const item of items) {
-        const purchase_order_item = await manager.findOne(
+        const purchase_order_item = await manager.findOneOrFail(
           PurchaseOrderItemOrmEntity,
-          { where: { id: item.purchase_order_item_id } },
+          {
+            where: { id: item.purchase_order_item_id },
+            relations: ['currency'],
+          },
         );
-        const vat = Number(purchase_order_item?.vat ?? 0);
-        const get_total = Number(purchase_order_item?.total ?? 0);
-        sum_total += get_total + vat;
+        // const vat = Number(purchase_order_item?.vat ?? 0);
+        // const get_total = Number(purchase_order_item?.total ?? 0);
+        const vat = () => {
+          const rate = rateMap.get(String(purchase_order_item.currency.id));
+          if (!rate)
+            throw new BadRequestException(
+              `Currency ${item.currency.id} to LAK is not found.`,
+            );
+          return Number(purchase_order_item.vat) * rate;
+        };
+        const get_total = () => {
+          const rate = rateMap.get(String(purchase_order_item.currency.id));
+          if (!rate)
+            throw new BadRequestException(
+              `Currency ${item.currency.id} to LAK is not found.`,
+            );
+          return Number(purchase_order_item.total) * rate;
+        };
+        sum_total += get_total() + vat();
       }
-      const rate = Number(exchange_rate?.rate ?? 0);
-      let payment_total = 0;
+      // const rate = Number(exchange_rate?.rate ?? 0);
+      // let payment_total = 0;
       // if (currency.code === 'USD' && payment_currency.code === 'LAK') {
       //   payment_total = sum_total * rate;
       // } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
@@ -1272,23 +1299,23 @@ export class ApproveStepCommandHandler
       // } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
       //   payment_total = sum_total * rate;
 
-      if (currency.code === 'LAK' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'CNH') {
-        payment_total = sum_total * rate;
-      } else {
-        throw new ManageDomainException(
-          'errors.not_found',
-          HttpStatus.NOT_FOUND,
-          {
-            property: `exchange rate ${currency.code} -> ${payment_currency.code}`,
-          },
-        );
-      }
+      // if (currency.code === 'LAK' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'CNH') {
+      //   payment_total = sum_total * rate;
+      // } else {
+      //   throw new ManageDomainException(
+      //     'errors.not_found',
+      //     HttpStatus.NOT_FOUND,
+      //     {
+      //       property: `exchange rate ${currency.code} -> ${payment_currency.code}`,
+      //     },
+      //   );
+      // }
 
       // Generate transaction number
       const transactionNumber =
@@ -1297,7 +1324,8 @@ export class ApproveStepCommandHandler
         document_id: receipt.document_id!,
         budget_item_detail_id: find_budget_item.id,
         transaction_number: transactionNumber,
-        amount: Number(payment_total) ?? 0,
+        amount: Number(sum_total) ?? 0,
+        // amount: Number(payment_total) ?? 0,
         transaction_type: EnumDocumentTransactionType.COMMIT,
       };
       const transactionEntity =

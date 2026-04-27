@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { BudgetAccountResponse } from '../dto/response/budget-account.response';
 import moment from 'moment-timezone';
 import { Timezone } from '@src/common/domain/value-objects/timezone.vo';
@@ -12,6 +12,7 @@ import { CompanyDataMapper } from './company.mapper';
 @Injectable()
 export class BudgetAccountDataMapper {
   constructor(
+    @Inject(forwardRef(() => DepartmentDataMapper))
     private readonly departmentDataMapper: DepartmentDataMapper,
     private readonly company: CompanyDataMapper,
   ) {}

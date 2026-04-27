@@ -5,6 +5,7 @@ import { PurchaseOrderItemBuilder } from '../builders/purchase-order-item.builde
 import { PurchaseOrderSelectedVendorEntity } from './purchase-order-selected-vendor.entity';
 import { BudgetItemEntity } from './budget-item.entity';
 import { PurchaseRequestItemEntity } from './purchase-request-item.entity';
+import { CurrencyEntity } from './currency.entity';
 
 export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   private readonly _purchase_order_id: number;
@@ -24,6 +25,8 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   private readonly _purchase_request_item: PurchaseRequestItemEntity | null;
   private readonly _budgetItem: BudgetItemEntity | null;
   private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
+  private readonly _currency_id: number;
+  private readonly _currency: CurrencyEntity | null;
 
   private constructor(builder: PurchaseOrderItemBuilder) {
     super();
@@ -45,6 +48,8 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     this._budgetItem = builder.budgetItem ?? null;
     this._selectedVendor = builder.selectedVendor ?? null;
     this._purchase_request_item = builder.purchase_request_item ?? null;
+    this._currency_id = builder.currency_id;
+    this._currency = builder.currency ?? null;
   }
 
   get purchase_order_id(): number {
@@ -53,6 +58,14 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
 
   get purchase_request_item_id(): number {
     return this._purchase_request_item_id;
+  }
+
+  get currency_id(): number {
+    return this._currency_id;
+  }
+
+  get currency(): CurrencyEntity | null {
+    return this._currency;
   }
 
   get budget_item_id(): number {

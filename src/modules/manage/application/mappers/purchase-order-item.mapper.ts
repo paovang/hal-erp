@@ -8,6 +8,7 @@ import { PurchaseOrderSelectedVendorDataMapper } from './purchase-order-selected
 import { UpdatePurchaseOrderBudgetItemDto } from '../dto/create/purchaseOrderItem/update.dto';
 import { BudgetItemDataMapper } from './budget-item.mapper';
 import { PurchaseRequestItemDataMapper } from './purchase-request-item.mapper';
+import { CurrencyDataMapper } from './currency.mapper';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -25,6 +26,7 @@ export class PurchaseOrderItemDataMapper {
     private readonly _budgetItem: BudgetItemDataMapper,
     private readonly _purchaseRequestItem: PurchaseRequestItemDataMapper,
     private readonly selectedVendorMapper: PurchaseOrderSelectedVendorDataMapper,
+    private readonly currency: CurrencyDataMapper,
   ) {}
 
   toEntity(
@@ -76,7 +78,6 @@ export class PurchaseOrderItemDataMapper {
     dto: UpdatePurchaseOrderBudgetItemDto,
   ): PurchaseOrderItemEntity {
     const builder = PurchaseOrderItemEntity.builder();
-
     if (dto.budget_item_id) {
       builder.setBudgetItemId(dto.budget_item_id);
     }
@@ -86,6 +87,7 @@ export class PurchaseOrderItemDataMapper {
 
   /** Mapper Entity To Response */
   toResponse(entity: PurchaseOrderItemEntity): PurchaseOrderItemResponse {
+    // console.log(entity);
     const response = new PurchaseOrderItemResponse();
     response.id = entity.getId().value;
     response.purchase_order_id = Number(entity.purchase_order_id);
@@ -117,6 +119,9 @@ export class PurchaseOrderItemDataMapper {
       ? entity.selectedVendor.map((vendor) =>
           this.selectedVendorMapper.toResponse(vendor),
         )
+      : null;
+    response.currency = entity.currency
+      ? this.currency.toResponse(entity.currency)
       : null;
 
     return response;

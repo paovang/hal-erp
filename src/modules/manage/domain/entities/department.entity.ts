@@ -4,6 +4,7 @@ import { DepartmentId } from '@src/modules/manage/domain/value-objects/departmen
 import { UserEntity } from './user.entity';
 import { DepartmentType } from '@src/common/enums/department.enum';
 import { CompanyEntity } from './company.entity';
+import { BudgetAccountEntity } from './budget-account.entity';
 
 export class DepartmentEntity extends Entity<DepartmentId> {
   private readonly _name: string;
