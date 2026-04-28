@@ -15,6 +15,8 @@ import { RECEIPT_APPLICATION_SERVICE } from '../application/constants/inject-key
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { ReceiptDataMapper } from '../application/mappers/receipt.mapper';
+import { PurchaseOrderDataMapper } from '../application/mappers/purchase-order.mapper';
+import { PurchaseRequestDataMapper } from '../application/mappers/purchase-request.mapper';
 import { IReceiptServiceInterface } from '../domain/ports/input/receipt-domain-service.interface';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ReceiptResponse } from '../application/dto/response/receipt.response';
@@ -36,6 +38,8 @@ export class ReceiptController {
     @Inject(TRANSFORM_RESULT_SERVICE)
     private readonly _transformResultService: ITransformResultService,
     private readonly _dataMapper: ReceiptDataMapper,
+    private readonly _purchaseOrderDataMapper: PurchaseOrderDataMapper,
+    private readonly _purchaseRequestDataMapper: PurchaseRequestDataMapper,
     private readonly _excelExportService: ExcelExportService,
   ) {}
 
@@ -82,6 +86,25 @@ export class ReceiptController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  @Get('/print/:receipt_id')
+  async printReceipt(
+    @Param('receipt_id') id: number,
+    @Query() query: ReceiptQueryDto,
+  ) {
+    const { receipt, purchase_order, purchase_request } =
+      await this._receiptService.getPrint(id, query);
+
+    return {
+      receipt: this._dataMapper.toResponse(receipt),
+      purchase_order: purchase_order
+        ? this._purchaseOrderDataMapper.toResponse(purchase_order)
+        : null,
+      purchase_request: purchase_request
+        ? this._purchaseRequestDataMapper.toResponse(purchase_request)
+        : null,
+    };
   }
 
   @Get(':id')
