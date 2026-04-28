@@ -13,6 +13,8 @@ import { GetOneQuery } from '../queries/receipt/get-one.query';
 import { UpdateReceiptDto } from '../dto/create/receipt/update.dto';
 import { UpdateCommand } from '../commands/receipt/update.command';
 import { DeleteCommand } from '../commands/receipt/delete.command';
+import { GetPrintQuery } from '../queries/receipt/get-print.query';
+import { ReceiptPrintResult } from '../../domain/ports/output/receipt-repository.interface';
 
 @Injectable()
 export class ReceiptService implements IReceiptServiceInterface {
@@ -38,6 +40,16 @@ export class ReceiptService implements IReceiptServiceInterface {
   ): Promise<ResponseResult<ReceiptEntity>> {
     return await this._queryBus.execute(
       new GetOneQuery(id, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getPrint(
+    id: number,
+    query: ReceiptQueryDto,
+    manager?: EntityManager,
+  ): Promise<ReceiptPrintResult> {
+    return await this._queryBus.execute(
+      new GetPrintQuery(id, query, manager ?? this._readEntityManager),
     );
   }
 
