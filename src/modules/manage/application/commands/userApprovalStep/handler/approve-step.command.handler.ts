@@ -1201,7 +1201,7 @@ export class ApproveStepCommandHandler
     manager: EntityManager,
     receipt: ReceiptOrmEntity,
   ): Promise<void> {
-    console.log('receipt', receipt);
+    console.log('1');
     // Group receipt_items by budget_item_id
     const grouped: Record<string, any[]> = {};
     for (const item of receipt.receipt_items) {
@@ -1298,6 +1298,7 @@ export class ApproveStepCommandHandler
       //   exchange_rate!.to_currency_id,
       //   manager,
       // );
+      console.log('2');
 
       // Sum total for all items in this group
       let sum_total = 0;
@@ -1372,7 +1373,7 @@ export class ApproveStepCommandHandler
       //     },
       //   );
       // }
-      console.log('test');
+      console.log('3');
       // Generate transaction number
       const transactionNumber =
         await this.generateDocumentTransactionNumber(manager);
