@@ -1389,16 +1389,6 @@ export class ApproveStepCommandHandler
     }
   }
 
-<<<<<<< HEAD
-  // private async getCurrency(
-  //   currency: number,
-  //   manager: EntityManager,
-  // ): Promise<CurrencyOrmEntity> {
-  //   return await findOneOrFail(manager, CurrencyOrmEntity, {
-  //     id: currency,
-  //   });
-  // }
-=======
   private async getCurrency(
     currency: number,
     manager: EntityManager,
@@ -1446,5 +1436,4 @@ export class ApproveStepCommandHandler
 
     return requester;
   }
->>>>>>> HalLogistic
 }
