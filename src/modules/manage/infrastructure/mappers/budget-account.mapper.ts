@@ -60,7 +60,7 @@ export class BudgetAccountDataAccessMapper {
     const increase_amount = (ormData.budget_items ?? [])
       .flatMap((item) => item.increase_budget_detail ?? [])
       .reduce((sum, d) => sum + Number(d.allocated_amount ?? 0), 0);
-    console.log('increase_amount', increase_amount);
+    // console.log('increase_amount', increase_amount);
 
     const totalUsedAmount = (ormData.budget_items ?? [])
       .flatMap((item) => item.document_transactions ?? [])
@@ -154,7 +154,7 @@ export class BudgetAccountDataAccessMapper {
         used_amount += ba_used;
       }
 
-      console.log('increase_amount from mapper', increase_amount);
+      // console.log('increase_amount from mapper', increase_amount);
 
       const remainingAmount = increase_amount - used_amount;
 

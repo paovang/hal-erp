@@ -52,7 +52,7 @@ export class BudgetAccountController {
     @Param('id') id: number,
     @Query() query: BudgetAccountQueryDto,
   ): Promise<ResponseResult<BudgetAccountResponse>> {
-    console.log('object');
+    // console.log('object');
     const result = await this._budgetAccountService.getReportBudgetAccounts(
       id,
       query,

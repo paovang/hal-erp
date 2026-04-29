@@ -6,6 +6,7 @@ import { PurchaseRequestItemEntity } from './purchase-request-item.entity';
 import { DocumentEntity } from './document.entity';
 import { UserApprovalEntity } from './user-approval.entity';
 import { CompanyEntity } from './company.entity';
+import { UserEntity } from './user.entity';
 
 export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
   private readonly _document_id: number;
@@ -24,6 +25,7 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
   private _step: number | 0;
   private readonly _company: CompanyEntity | null;
   private readonly is_created_po: boolean | null;
+  private readonly _removedBy: UserEntity | null;
 
   private constructor(builder: PurchaseRequestBuilder) {
     super();
@@ -44,6 +46,7 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
     this._step = builder.step;
     this._company = builder.company ?? null;
     this.is_created_po = builder.is_created_po;
+    this._removedBy = builder.removedBy ?? null;
   }
 
   get document_id(): number {
@@ -68,6 +71,10 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
 
   get isCreatedPo(): boolean | null {
     return this.is_created_po;
+  }
+
+  get removedBy(): UserEntity | null {
+    return this._removedBy;
   }
 
   get createdAt(): Date {
@@ -124,7 +131,7 @@ export class PurchaseRequestEntity extends Entity<PurchaseRequestId> {
 
   async validateExistingIdForUpdate() {
     if (!this.getId()) {
-      console.log('phoudvang');
+      // console.log('phoudvang');
       throw new BadRequestException(
         'users.user_is_not_in_correct_state_for_initialization',
       );

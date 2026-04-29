@@ -37,6 +37,7 @@ import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/por
 import { DocumentApproverId } from '@src/modules/manage/domain/value-objects/document-approver-id.vo';
 import { checkRelationOrThrow } from '@src/common/utils/check-relation-or-throw.util';
 import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 
 @CommandHandler(DeleteCommand)
 export class DeleteCommandHandler
@@ -64,12 +65,15 @@ export class DeleteCommandHandler
     private readonly _transactionManagerService: ITransactionManagerService,
     @InjectDataSource(process.env.WRITE_CONNECTION_NAME)
     private readonly _dataSource: DataSource,
+    private readonly _userContextService: UserContextService,
   ) {}
 
   async execute(query: DeleteCommand): Promise<void> {
     return await this._transactionManagerService.runInTransaction(
       this._dataSource,
       async (manager) => {
+        const user = this._userContextService.getAuthUser()?.user;
+        const user_id = user.id;
         await this.checkData(query);
 
         /** Check Exits Document Type Id */
@@ -92,6 +96,7 @@ export class DeleteCommandHandler
 
         return await this._write.delete(
           new PurchaseRequestId(query.id),
+          user_id,
           manager,
         );
       },

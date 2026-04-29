@@ -50,7 +50,7 @@ export class UserApprovalStepController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    console.log('verify', verify);
+    // console.log('verify', verify);
 
     const result = await this._userApprovalService.create(
       verify.step_id,

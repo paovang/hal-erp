@@ -55,7 +55,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
 
     // Assuming 'year' is an input parameter like '2025'
     const yearAsNumber = year ? Number(year) : null;
-    console.log('yearAsNumber', year);
+    // console.log('yearAsNumber', year);
 
     if (yearAsNumber) {
       queryBuilder.andWhere(
@@ -221,7 +221,7 @@ export class ReadBudgetItemRepository implements IReadBudgetItemRepository {
     roles?: string[],
     // department_id?: number,
   ) {
-    console.log('data', company_id, roles);
+    // console.log('data', company_id, roles);
     const queryBuilder = manager
       .createQueryBuilder(BudgetItemOrmEntity, 'budget_items')
       .select([

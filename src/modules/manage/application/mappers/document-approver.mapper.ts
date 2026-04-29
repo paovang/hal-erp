@@ -46,7 +46,7 @@ export class DocumentApproverDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.user = entity.user ? this.user.toResponse(entity.user) : null;
-    console.log('object', entity.department);
+    // console.log('object', entity.department);
     response.department = entity.department
       ? this.department.toResponse(entity.department)
       : null;

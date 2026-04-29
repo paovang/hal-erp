@@ -3,6 +3,7 @@ import { DocumentEntity } from '../entities/document.entity';
 import { PurchaseRequestItemEntity } from '../entities/purchase-request-item.entity';
 import { PurchaseRequestEntity } from '../entities/purchase-request.entity';
 import { UserApprovalEntity } from '../entities/user-approval.entity';
+import { UserEntity } from '../entities/user.entity';
 import { PurchaseRequestId } from '../value-objects/purchase-request-id.vo';
 
 export class PurchaseRequestBuilder {
@@ -23,6 +24,7 @@ export class PurchaseRequestBuilder {
   step: number | 0;
   company: CompanyEntity | null;
   is_created_po: boolean | null;
+  removedBy: UserEntity | null;
 
   setPurchaseRequestId(value: PurchaseRequestId): this {
     this.purchaseRequestId = value;
@@ -51,6 +53,11 @@ export class PurchaseRequestBuilder {
 
   setPurposes(purposes: string): this {
     this.purposes = purposes;
+    return this;
+  }
+
+  setRemovedBy(removedBy: UserEntity | null): this {
+    this.removedBy = removedBy;
     return this;
   }
 

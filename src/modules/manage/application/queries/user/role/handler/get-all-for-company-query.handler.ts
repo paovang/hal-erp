@@ -40,7 +40,7 @@ export class GetAllForCompanyQueryHandler
     });
 
     const company_id = company_user?.company_id ?? undefined;
-    console.log('company_id', company_id);
+    // console.log('company_id', company_id);
     const roles = user?.roles?.map((r: any) => r.name) ?? [];
     const department_id = departmentUser?.department_id ?? null;
     const data = await this._readRepo.findAllForCompany(

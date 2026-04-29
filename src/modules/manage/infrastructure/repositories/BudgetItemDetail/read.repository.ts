@@ -37,7 +37,7 @@ export class ReadBudgetItemDetailRepository
       this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
       this.getFilterOptions(),
     );
-    console.log('object', data);
+    // console.log('object', data);
     return data;
   }
 
