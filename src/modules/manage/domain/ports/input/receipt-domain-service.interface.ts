@@ -4,6 +4,7 @@ import { EntityManager } from 'typeorm';
 import { ReceiptEntity } from '../../entities/receipt.entity';
 import { ReceiptQueryDto } from '@src/modules/manage/application/dto/query/receipt.dto';
 import { UpdateReceiptDto } from '@src/modules/manage/application/dto/create/receipt/update.dto';
+import { ReceiptPrintResult } from '../output/receipt-repository.interface';
 
 export interface IReceiptServiceInterface {
   getAll(
@@ -15,6 +16,12 @@ export interface IReceiptServiceInterface {
     id: number,
     manager?: EntityManager,
   ): Promise<ResponseResult<ReceiptEntity>>;
+
+  getPrint(
+    id: number,
+    query: ReceiptQueryDto,
+    manager?: EntityManager,
+  ): Promise<ReceiptPrintResult>;
 
   create(
     dto: CreateReceiptDto,

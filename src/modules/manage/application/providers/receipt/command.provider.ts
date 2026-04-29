@@ -4,6 +4,7 @@ import { GetAllQueryHandler } from '../../queries/receipt/handler/get-all.comman
 import { GetOneQueryHandler } from '../../queries/receipt/handler/get-one.command.query';
 import { UpdateCommandHandler } from '../../commands/receipt/handler/update.command.handler';
 import { DeleteCommandHandler } from '../../commands/receipt/handler/delete.command.handler';
+import { GetPrintQueryHandler } from '../../queries/receipt/handler/get-print.command.query';
 
 export const ReceiptHandlersProviders: Provider[] = [
   CreateCommandHandler,
@@ -11,4 +12,5 @@ export const ReceiptHandlersProviders: Provider[] = [
   GetOneQueryHandler,
   UpdateCommandHandler,
   DeleteCommandHandler,
+  GetPrintQueryHandler,
 ];

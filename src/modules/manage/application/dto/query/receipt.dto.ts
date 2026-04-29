@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PaginationDto } from '@src/common/validations/dto/pagination.dto';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { PurchaseRequestType } from './purchase-request.dto';
+import { PrintEnum } from '@src/common/enums/print.enum';
 
 export class ReceiptQueryDto extends PaginationDto {
   @ApiProperty({
@@ -47,4 +48,9 @@ export class ReceiptQueryDto extends PaginationDto {
   @IsOptional()
   @IsEnum(PurchaseRequestType)
   type?: PurchaseRequestType;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(PrintEnum)
+  print?: PrintEnum;
 }

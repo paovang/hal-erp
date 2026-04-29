@@ -36,6 +36,7 @@ export interface ApprovalNotificationData {
   titlesString: string;
   token: string;
   approval_rules: ApprovalRuleInterface[];
+  from_mail?: string;
 }
 
 interface ApprovalStepHandlerParams {
@@ -56,6 +57,7 @@ interface ApprovalStepHandlerParams {
   department_name: string;
   titlesString: string;
   document_type: EnumRequestApprovalType;
+  from_mail?: string;
 }
 
 export async function handleApprovalStep({
@@ -72,6 +74,7 @@ export async function handleApprovalStep({
   department_name,
   titlesString,
   document_type,
+  from_mail,
 }: ApprovalStepHandlerParams): Promise<ApprovalNotificationData> {
   let token = '';
   const approval_rules: ApprovalRuleInterface[] = [];
@@ -398,6 +401,7 @@ export async function handleApprovalStep({
     titlesString,
     token,
     approval_rules,
+    from_mail,
   };
 }
 
@@ -418,5 +422,6 @@ export async function sendApprovalNotification(
     data.titlesString,
     data.token,
     data.approval_rules,
+    data.from_mail,
   );
 }

@@ -7,9 +7,14 @@ import {
   IPaginationService,
   ResponseResult,
 } from '@src/common/infrastructure/pagination/pagination.interface';
-import { IReadReceiptRepository } from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
+import {
+  IReadReceiptRepository,
+  ReceiptPrintResult,
+} from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
 import { EntityManager, Repository } from 'typeorm';
 import { ReceiptDataAccessMapper } from '../../mappers/receipt.mapper';
+import { PurchaseOrderDataAccessMapper } from '../../mappers/purchase-order.mapper';
+import { PurchaseRequestDataAccessMapper } from '../../mappers/purchase-request.mapper';
 import { ReceiptQueryDto } from '@src/modules/manage/application/dto/query/receipt.dto';
 import { ReceiptEntity } from '@src/modules/manage/domain/entities/receipt.entity';
 import {
@@ -38,10 +43,15 @@ import {
   selectDocuments,
   selectDocumentStatuses,
   selectDocumentTypes,
+  selectPoDepartments,
+  selectPoDepartmentUsers,
   selectPoDocuments,
   selectPoDocumentTypes,
+  selectPoPositions,
   selectPositionApprover,
   selectPositions,
+  selectPoUsers,
+  selectPoUserSignatures,
   selectPrDocuments,
   selectPrDocumentTypes,
   selectProducts,
@@ -51,14 +61,17 @@ import {
   selectPurchaseRequestItems,
   selectPurchaseRequests,
   selectQuotaCompany,
+  selectReceipt,
   selectReceiptBy,
   selectReceiptItems,
+  selectRequestItems,
   selectSelectedVendors,
   selectStatus,
   selectUnits,
   selectUserApprovals,
   selectUserApprovalSteps,
   selectUsers,
+  selectUserSignatures,
   selectVendorBankAccounts,
   selectVendorProduct,
   selectVendors,
@@ -68,6 +81,9 @@ import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.v
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
 import { PurchaseRequestType } from '@src/modules/manage/application/dto/query/purchase-request.dto';
+import { PurchaseOrderOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order.orm';
+import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
+import { PrintEnum } from '@src/common/enums/print.enum';
 
 @Injectable()
 export class ReadReceiptRepository implements IReadReceiptRepository {
@@ -75,6 +91,8 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     @InjectRepository(ReceiptOrmEntity)
     private readonly _receiptOrm: Repository<ReceiptOrmEntity>,
     private readonly _dataAccessMapper: ReceiptDataAccessMapper,
+    private readonly _purchaseOrderDataAccessMapper: PurchaseOrderDataAccessMapper,
+    private readonly _purchaseRequestDataAccessMapper: PurchaseRequestDataAccessMapper,
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
   ) {}
@@ -384,8 +402,12 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
       .leftJoin('doc_dept_user.departments', 'departments_approver')
       .addSelect(selectFields);
-
-    if (roles && !roles.includes(EligiblePersons.ADMIN)) {
+    // console.log(roles);
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.ADMIN) &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN)
+    ) {
       if (
         roles.includes(EligiblePersons.COMPANY_ADMIN) ||
         roles.includes(EligiblePersons.COMPANY_USER)
@@ -449,6 +471,307 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     return query;
   }
 
+  private createBasePurchaseOrderQuery(
+    manager: EntityManager,
+    roles?: string[],
+    user_id?: number,
+    company_id?: number,
+    type?: PurchaseRequestType,
+  ) {
+    const selectFields = [
+      ...selectPurchaseOrderItems,
+      ...selectPurchaseOrderSelectedVendors,
+      // ...selectPurchaseRequests,
+      // ...selectDocuments,
+      // ...selectDocumentTypes,
+      // ...selectUsers,
+      // ...selectUserSignatures,
+      // ...selectDepartments,
+      // ...selectDepartmentUsers,
+      // ...selectPositions,
+      // ...selectPurchaseRequestItems,
+      // ...selectUnits,
+      ...selectRequestItems,
+      // ...selectRequestItemUnits,
+      ...selectSelectedVendors,
+      ...selectCurrency,
+      ...selectVendorBankAccounts,
+      ...selectPoDocuments,
+      ...selectPoDepartments,
+      ...selectPoUsers,
+      ...selectPoDocumentTypes,
+      ...selectPoUserSignatures,
+      ...selectPoDepartmentUsers,
+      ...selectPoPositions,
+      // ...selectPurchaseRequestItems,
+
+      ...selectUserApprovals,
+      ...selectDocumentStatuses,
+      ...selectUserApprovalSteps,
+      ...selectApprover,
+      ...selectApproverUserSignatures,
+      ...selectStatus,
+      ...selectBanks,
+      ...selectBudgetItems,
+      ...selectDepartmentUserApprovers,
+      ...selectPositionApprover,
+      ...selectBudgetAccounts,
+      ...selectDocumentApprover,
+      ...selectDocApproverUser,
+      ...selectDocDeptUser,
+      ...selectDepartmentsApprover,
+      ...selectCompany,
+      ...selectQuotaCompany,
+      ...selectVendorProduct,
+      ...selectProducts,
+      ...selectVendors,
+      ...selectReceipt,
+    ];
+
+    const query = manager
+      .createQueryBuilder(PurchaseOrderOrmEntity, 'purchase_orders')
+      .innerJoin('purchase_orders.purchase_order_items', 'purchase_order_items')
+      .innerJoin(
+        'purchase_order_items.purchase_order_selected_vendors',
+        'purchase_order_selected_vendors',
+      )
+      // .innerJoin('purchase_orders.purchase_requests', 'purchase_requests')
+      // .innerJoin(
+      //   'purchase_requests.purchase_request_items',
+      //   'purchase_request_items',
+      // )
+      // .innerJoin('purchase_requests.documents', 'documents')
+      // .innerJoin('documents.departments', 'departments')
+      // .innerJoin('documents.users', 'users')
+      // .innerJoin('documents.document_types', 'document_types')
+      // .leftJoin('users.user_signatures', 'user_signatures')
+      // .innerJoin('users.department_users', 'department_users')
+      // .innerJoin('department_users.positions', 'positions')
+
+      // .innerJoin('purchase_request_items.units', 'units')
+
+      // purchase_order_items join with purchase request
+      .innerJoin('purchase_order_items.purchase_request_items', 'request_items')
+      .innerJoin('request_items.units', 'request_item_unit')
+      .leftJoin('purchase_order_items.budget_item', 'budget_items')
+      .leftJoin('budget_items.budget_accounts', 'budget_accounts')
+      .innerJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
+      // .leftJoin('selected_vendors.vendor_bank_accounts', 'vendor_bank_accounts')
+      .leftJoin('request_items.quota_company', 'quota_company')
+
+      .leftJoin('quota_company.vendor_product', 'vendor_product')
+      .leftJoin('vendor_product.products', 'products')
+      .leftJoin('vendor_product.vendors', 'vendors')
+      .leftJoin('products.product_type', 'product_type')
+
+      .leftJoin(
+        'purchase_order_selected_vendors.vendor_bank_account',
+        'vendor_bank_accounts',
+      )
+      .leftJoin('vendor_bank_accounts.banks', 'bank')
+      .leftJoin('vendor_bank_accounts.currencies', 'currency')
+
+      .innerJoin('purchase_orders.documents', 'po_documents')
+      .leftJoin('po_documents.company', 'company')
+      .innerJoin('po_documents.departments', 'po_departments')
+      .innerJoin('po_documents.users', 'po_users')
+      .innerJoin('po_documents.document_types', 'po_document_types')
+      .leftJoin('po_users.user_signatures', 'po_user_signatures')
+      .innerJoin('po_users.department_users', 'po_department_users')
+      .innerJoin('po_department_users.positions', 'po_positions')
+
+      .innerJoin('po_documents.user_approvals', 'user_approvals')
+      .innerJoin('user_approvals.document_statuses', 'document_statuses')
+      .innerJoin('user_approvals.user_approval_steps', 'user_approval_steps')
+      .leftJoin('user_approval_steps.approver', 'approver')
+      .leftJoin('approver.department_users', 'department_user_approver')
+      .leftJoin('department_user_approver.positions', 'position_approver')
+      .innerJoin('user_approval_steps.status', 'status')
+      .leftJoin('approver.user_signatures', 'approver_user_signatures')
+      .innerJoin(
+        'user_approval_steps.document_approvers',
+        'document_approver',
+        'document_approver.user_approval_step_id = user_approval_steps.id',
+      )
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
+      .leftJoin('purchase_orders.receipts', 'receipts')
+      // add select
+      .addSelect(selectFields);
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.andWhere('po_documents.company_id = :company_id', {
+            company_id,
+          });
+        }
+      } else {
+        // query.andWhere('document_approver.user_id = :user_id', {
+        //   user_id,
+        // });
+        switch (type) {
+          case PurchaseRequestType.only_user:
+            query.andWhere('document_approver.user_id = :user_id', {
+              user_id,
+            });
+            break;
+          case PurchaseRequestType.all:
+            query.andWhere(
+              `departments_approver.id IN (
+                SELECT du.department_id
+                FROM department_users du
+                WHERE du.user_id = :user_id
+              )`,
+              { user_id },
+            );
+            break;
+        }
+      }
+    }
+
+    return query;
+  }
+
+  /**
+   * Create base query
+   * @param manager
+   * @param departmentId
+   * @param user_id
+   * @param roles
+   * @returns
+   */
+  private createBasePurchaseRequestQuery(
+    manager: EntityManager,
+    departmentId?: number,
+    user_id?: number,
+    roles?: string[],
+    company_id?: number,
+    type?: PurchaseRequestType,
+  ) {
+    const selectFields = [
+      ...selectUnits,
+      ...selectDepartments,
+      ...selectUsers,
+      ...selectDocuments,
+      ...selectDocumentTypes,
+      ...selectPurchaseRequestItems,
+      ...selectUserSignatures,
+      ...selectDepartmentUsers,
+      ...selectPositions,
+      ...selectUserApprovals,
+      ...selectDocumentStatuses,
+      ...selectUserApprovalSteps,
+      ...selectApprover,
+      ...selectApproverUserSignatures,
+      ...selectStatus,
+      ...selectDepartmentUserApprovers,
+      ...selectPositionApprover,
+      ...selectDocumentApprover,
+      ...selectDocApproverUser,
+      ...selectDocDeptUser,
+      ...selectDepartmentsApprover,
+      ...selectCompany,
+      ...selectQuotaCompany,
+      ...selectVendorProduct,
+      ...selectProducts,
+      ...selectVendors,
+      ...selectPurchaseOrders,
+    ];
+
+    const query = manager
+      .createQueryBuilder(PurchaseRequestOrmEntity, 'purchase_requests')
+      .innerJoin(
+        'purchase_requests.purchase_request_items',
+        'purchase_request_items',
+      )
+      .innerJoin('purchase_requests.documents', 'documents')
+      .leftJoin('documents.departments', 'departments')
+      .leftJoin('documents.users', 'users')
+      .innerJoin('documents.document_types', 'document_types')
+      .leftJoin('documents.company', 'company')
+      .leftJoin('users.user_signatures', 'user_signatures')
+      .leftJoin('users.department_users', 'department_users')
+      .innerJoin('purchase_request_items.units', 'units')
+      .innerJoin('purchase_request_items.quota_company', 'quota_company')
+
+      .leftJoin('quota_company.vendor_product', 'vendor_product')
+      .leftJoin('vendor_product.products', 'products')
+      .leftJoin('vendor_product.vendors', 'vendors')
+      .leftJoin('products.product_type', 'product_type')
+
+      .leftJoin('department_users.positions', 'positions')
+      .innerJoin('documents.user_approvals', 'user_approvals')
+      .innerJoin('user_approvals.document_statuses', 'document_statuses')
+      .innerJoin('user_approvals.user_approval_steps', 'user_approval_steps')
+      .leftJoin('user_approval_steps.approver', 'approver')
+      .leftJoin('approver.department_users', 'department_user_approver')
+      .leftJoin('department_user_approver.positions', 'position_approver')
+      .leftJoin('user_approval_steps.status', 'status')
+      .leftJoin('approver.user_signatures', 'approver_user_signatures')
+      .innerJoin(
+        'user_approval_steps.document_approvers',
+        'document_approver',
+        'document_approver.user_approval_step_id = user_approval_steps.id',
+      )
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
+      .leftJoin('purchase_requests.purchase_orders', 'purchase_orders')
+      .addSelect(selectFields);
+
+    if (
+      roles &&
+      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
+      !roles.includes(EligiblePersons.ADMIN)
+    ) {
+      if (
+        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
+        roles.includes(EligiblePersons.COMPANY_USER)
+      ) {
+        if (company_id) {
+          query.where('documents.company_id = :company_id', {
+            company_id,
+          });
+        }
+      } else {
+        // if (type && (type = PurchaseRequestType.only_user)) {
+        //   query.andWhere('document_approver.user_id = :user_id', {
+        //     user_id,
+        //   });
+        // }
+        switch (type) {
+          case PurchaseRequestType.only_user:
+            query.andWhere('document_approver.user_id = :user_id', {
+              user_id,
+            });
+            break;
+
+          case PurchaseRequestType.all:
+            query.andWhere(
+              `departments_approver.id IN (
+                SELECT du.department_id
+                FROM department_users du
+                WHERE du.user_id = :user_id
+              )`,
+              { user_id },
+            );
+            break;
+        }
+      }
+    }
+
+    return query;
+  }
+
   private getFilterOptions(): FilterOptions {
     return {
       searchColumns: ['receipts.receipt_number', 'receipts.account_code'],
@@ -498,6 +821,43 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     const step = workflow_step - user_approval_step;
 
     return this._dataAccessMapper.toEntity(item, step);
+  }
+
+  async getPrint(
+    id: ReceiptId,
+    query: ReceiptQueryDto,
+    manager: EntityManager,
+  ): Promise<ReceiptPrintResult> {
+    const receipt = await this.createBaseQuery(manager)
+      .where('receipts.id = :id', { id: id.value })
+      .getOneOrFail();
+
+    if (query.print === PrintEnum.ABOUT_RECEIPT) {
+      return {
+        receipt: this._dataAccessMapper.toEntity(receipt),
+        purchase_order: null,
+        purchase_request: null,
+      };
+    }
+
+    const [purchase_order, purchase_request] = await Promise.all([
+      this.createBasePurchaseOrderQuery(manager)
+        .where('purchase_orders.id = :id', { id: receipt.purchase_orders.id })
+        .getOneOrFail(),
+      this.createBasePurchaseRequestQuery(manager)
+        .where('purchase_requests.id = :id', {
+          id: receipt.purchase_orders.purchase_requests.id,
+        })
+        .getOneOrFail(),
+    ]);
+
+    return {
+      receipt: this._dataAccessMapper.toEntity(receipt),
+      purchase_order:
+        this._purchaseOrderDataAccessMapper.toEntity(purchase_order),
+      purchase_request:
+        this._purchaseRequestDataAccessMapper.toEntity(purchase_request),
+    };
   }
 
   async countItem(
