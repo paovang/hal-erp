@@ -20,11 +20,12 @@ export class WritePurchaseOrderSelectedVendorRepository
     entity: PurchaseOrderSelectedVendorEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<PurchaseOrderSelectedVendorEntity>> {
-    return this._dataAccessMapper.toEntity(
+    const result = this._dataAccessMapper.toEntity(
       await manager.save(
         this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
       ),
     );
+    return result;
   }
 
   async update(

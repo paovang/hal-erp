@@ -394,13 +394,6 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
           query.andWhere('documents.company_id = :company_id', { company_id });
         }
       } else {
-        // query.andWhere('document_approver.user_id = :user_id', { user_id });
-        // if (type && (type = PurchaseRequestType.only_user)) {
-        //   query.andWhere('document_approver.user_id = :user_id', { user_id });
-        // }
-        //   query.andWhere('document_approver.user_id = :user_id', {
-        //     user_id,
-        //   });
         switch (type) {
           case PurchaseRequestType.only_user:
             query.andWhere('document_approver.user_id = :user_id', {
