@@ -834,7 +834,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
 
     if (query.print === PrintEnum.ABOUT_RECEIPT) {
       return {
-        receipt: this._dataAccessMapper.toEntity(receipt),
+        receipt: await this._dataAccessMapper.toEntity(receipt),
         purchase_order: null,
         purchase_request: null,
       };
@@ -852,11 +852,11 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     ]);
 
     return {
-      receipt: this._dataAccessMapper.toEntity(receipt),
+      receipt: await this._dataAccessMapper.toEntity(receipt),
       purchase_order:
-        this._purchaseOrderDataAccessMapper.toEntity(purchase_order),
+        await this._purchaseOrderDataAccessMapper.toEntity(purchase_order),
       purchase_request:
-        this._purchaseRequestDataAccessMapper.toEntity(purchase_request),
+        await this._purchaseRequestDataAccessMapper.toEntity(purchase_request),
     };
   }
 
