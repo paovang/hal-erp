@@ -43,6 +43,7 @@ export class PurchaseRequestItemDataAccessMapper {
     mediaOrmEntity.price = prItemEntity.price;
     mediaOrmEntity.total_price = prItemEntity.total_price;
     mediaOrmEntity.remark = prItemEntity.remark;
+    mediaOrmEntity.currency_id = prItemEntity.currency_id;
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = prItemEntity.createdAt ?? new Date(now);
     }

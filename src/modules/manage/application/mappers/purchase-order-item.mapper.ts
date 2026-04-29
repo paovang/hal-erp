@@ -18,6 +18,7 @@ interface CustomPurchaseOrderItemDto {
   total: number;
   is_vat: boolean;
   vat?: number;
+  currency_id?: number;
 }
 
 @Injectable()
@@ -69,6 +70,9 @@ export class PurchaseOrderItemDataMapper {
 
     if (budget_item_id) {
       builder.setBudgetItemId(budget_item_id);
+    }
+    if (dto?.currency_id) {
+      builder.setCurrencyId(dto.currency_id);
     }
 
     return builder.build();
