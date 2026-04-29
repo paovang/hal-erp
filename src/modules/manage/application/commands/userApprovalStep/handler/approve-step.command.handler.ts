@@ -1201,6 +1201,7 @@ export class ApproveStepCommandHandler
     manager: EntityManager,
     receipt: ReceiptOrmEntity,
   ): Promise<void> {
+    console.log('receipt', receipt);
     // Group receipt_items by budget_item_id
     const grouped: Record<string, any[]> = {};
     for (const item of receipt.receipt_items) {
