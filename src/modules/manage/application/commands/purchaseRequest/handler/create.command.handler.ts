@@ -75,6 +75,7 @@ import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.
 import { hashData } from '@src/common/utils/server/hash-data.util';
 import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
 import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-account.orm';
+import { VendorProductOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor-product.orm';
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
@@ -268,7 +269,7 @@ export class CreateCommandHandler
           },
           `department id: ${department_id}`,
         );
-        console.log('get_department_name', get_department_name);
+        // console.log('get_department_name', get_department_name);
 
         const department_name = (get_department_name as any).name;
         const department_code = (get_department_name as any).code;
@@ -512,15 +513,22 @@ export class CreateCommandHandler
         `unit id: ${item.unit_id}`,
       );
 
-      await findOneOrFail(
-        query.manager,
-        QuotaCompanyOrmEntity,
-        {
+      // await findOneOrFail(
+      //   query.manager,
+      //   QuotaCompanyOrmEntity,
+      //   {
+      //     id: item.quota_company_id,
+      //   },
+      //   `quota company id: ${item.quota_company_id}`,
+      // );
+      // File Upload (Still necessary)
+      const quota = await manager.findOneOrFail(QuotaCompanyOrmEntity, {
+        where: {
           id: item.quota_company_id,
         },
-        `quota company id: ${item.quota_company_id}`,
-      );
-      // File Upload (Still necessary)
+        relations: ['vendor_product', 'vendor_product.currency'],
+      });
+      // console.log('quota', quota.vendor_product.currency.id);
       let fileKey = null;
       if (item.file_name) {
         const mockFile = await createMockMulterFile(baseFolder, item.file_name);
@@ -541,6 +549,7 @@ export class CreateCommandHandler
         processedItemData,
         pr_id,
         sum_total,
+        quota.vendor_product.currency.id,
       );
 
       // ITEM-BY-ITEM WRITE (As requested, one database call per item)

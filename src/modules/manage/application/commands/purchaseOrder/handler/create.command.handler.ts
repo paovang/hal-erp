@@ -90,6 +90,7 @@ interface CustomPurchaseOrderItemDto {
   total: number;
   is_vat: boolean;
   vat: number;
+  currency_id: number;
 }
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
@@ -597,6 +598,7 @@ export class CreateCommandHandler
         where: {
           id: item.purchase_request_item_id,
         },
+        relations: ['currency'],
       });
 
       assertOrThrow(
@@ -628,6 +630,7 @@ export class CreateCommandHandler
         total: Number(pr_item?.quantity ?? 0) * Number(item.price ?? 0),
         is_vat: item?.is_vat ?? false,
         vat: vat_total,
+        currency_id: pr_item?.currency?.id ?? 0,
       };
       const itemEntity = this._dataItemMapper.toEntity(itemDto, po_id);
       const po_item = await this._writeItem.create(itemEntity, manager);

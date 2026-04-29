@@ -43,6 +43,7 @@ export class PurchaseOrderItemDataAccessMapper {
     mediaOrmEntity.quantity = poItemEntity.quantity;
     mediaOrmEntity.price = poItemEntity.price;
     mediaOrmEntity.total = poItemEntity.total;
+    mediaOrmEntity.currency_id = poItemEntity.currency_id;
     mediaOrmEntity.is_vat = poItemEntity.is_vat
       ? SelectStatus.TRUE
       : SelectStatus.FALSE;

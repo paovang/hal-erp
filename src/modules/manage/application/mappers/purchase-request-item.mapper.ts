@@ -22,6 +22,7 @@ export class PurchaseRequestItemDataMapper {
     dto: CreatePurchaseRequestItemDto | UpdatePurchaseRequestItemDto,
     pr_id?: number,
     sum_total: number = 0,
+    currency_id?: number,
   ): PurchaseRequestItemEntity {
     const builder = PurchaseRequestItemEntity.builder();
 
@@ -59,6 +60,10 @@ export class PurchaseRequestItemDataMapper {
 
     if (dto.remark) {
       builder.setRemark(dto.remark);
+    }
+
+    if (currency_id) {
+      builder.setCurrencyId(currency_id);
     }
 
     return builder.build();

@@ -1164,7 +1164,14 @@ export class ApproveStepCommandHandler
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(item);
     }
+    const rateOrm = await manager.getRepository(ExchangeRateOrmEntity).find({
+      where: { to_currency: { code: 'LAK' } },
+      relations: ['from_currency', 'to_currency'],
+    });
 
+    const rateMap = new Map<string, number>(
+      rateOrm.map((item) => [String(item.from_currency.id), item.rate]),
+    );
     for (const budgetItemId in grouped) {
       const items = grouped[budgetItemId];
       // Check if transaction already exists for this budget_item_id
@@ -1179,6 +1186,7 @@ export class ApproveStepCommandHandler
       // Find budget item detail
       const find_budget_item = await manager.findOne(BudgetItemOrmEntity, {
         where: { id: Number(budgetItemId) },
+        relations: ['budget_accounts'],
       });
       if (!find_budget_item) {
         throw new ManageDomainException(
@@ -1222,36 +1230,28 @@ export class ApproveStepCommandHandler
         'vendor bank account',
       );
 
-      const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
-        where: {
-          from_currency_id: vendor_bank_account?.currency_id,
-          to_currency_id: firstItem.payment_currency_id,
-          is_active: true,
-        },
-      });
-      assertOrThrow(
-        exchange_rate,
-        'errors.not_found',
-        HttpStatus.NOT_FOUND,
-        'exchange rate',
-      );
-      const currency = await this.getCurrency(
-        exchange_rate!.from_currency_id,
-        manager,
-      );
-      const payment_currency = await this.getCurrency(
-        exchange_rate!.to_currency_id,
-        manager,
-      );
+      // const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
+      //   where: {
+      //     from_currency_id: firstItem.payment_currency_id,
+      //     to_currency_id: vendor_bank_account?.currency_id,
+      //     is_active: true,
+      //   },
+      // });
+      // assertOrThrow(
+      //   exchange_rate,
+      //   'errors.not_found',
+      //   HttpStatus.NOT_FOUND,
+      //   'exchange rate',
+      // );
+      // const currency = await this.getCurrency(
+      //   exchange_rate!.from_currency_id,
+      //   manager,
+      // );
+      // const payment_currency = await this.getCurrency(
+      //   exchange_rate!.to_currency_id,
+      //   manager,
+      // );
 
-      const rateOrm = await manager.getRepository(ExchangeRateOrmEntity).find({
-        where: { to_currency: { code: 'LAK' } },
-        relations: ['from_currency', 'to_currency'],
-      });
-
-      const rateMap = new Map<string, number>(
-        rateOrm.map((item) => [String(item.from_currency.id), item.rate]),
-      );
       // Sum total for all items in this group
       let sum_total = 0;
       for (const item of items) {
@@ -1282,8 +1282,17 @@ export class ApproveStepCommandHandler
         };
         sum_total += get_total() + vat();
       }
+
+      // const sum_total = items.reduce(
+      //   (sum: number, item: any) => sum + Number(item.total || 0),
+      //   0,
+      // );
+      // const sum_total = items.reduce(
+      //   (sum: number, item: any) => sum + Number(item.total || 0),
+      //   0,
+      // );
       // const rate = Number(exchange_rate?.rate ?? 0);
-      // let payment_total = 0;
+      // const payment_total = sum_total * rate;
       // if (currency.code === 'USD' && payment_currency.code === 'LAK') {
       //   payment_total = sum_total * rate;
       // } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
@@ -1334,12 +1343,12 @@ export class ApproveStepCommandHandler
     }
   }
 
-  private async getCurrency(
-    currency: number,
-    manager: EntityManager,
-  ): Promise<CurrencyOrmEntity> {
-    return await findOneOrFail(manager, CurrencyOrmEntity, {
-      id: currency,
-    });
-  }
+  // private async getCurrency(
+  //   currency: number,
+  //   manager: EntityManager,
+  // ): Promise<CurrencyOrmEntity> {
+  //   return await findOneOrFail(manager, CurrencyOrmEntity, {
+  //     id: currency,
+  //   });
+  // }
 }
