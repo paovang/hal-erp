@@ -445,7 +445,6 @@ export class CreateCommandHandler
     );
 
     const ua_id = (user_approval as any)._id._value;
-
     const pendingDto: CustomApprovalDto = {
       user_approval_id: ua_id,
       statusId: STATUS_KEY.PENDING,
@@ -600,7 +599,6 @@ export class CreateCommandHandler
         },
         relations: ['currency'],
       });
-
       assertOrThrow(
         pr_item,
         'errors.not_found',

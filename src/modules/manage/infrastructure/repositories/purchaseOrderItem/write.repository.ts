@@ -20,11 +20,13 @@ export class WritePurchaseOrderItemRepository
     entity: PurchaseOrderItemEntity,
     manager: EntityManager,
   ): Promise<ResponseResult<PurchaseOrderItemEntity>> {
-    return this._dataAccessMapper.toEntity(
+    const result = this._dataAccessMapper.toEntity(
       await manager.save(
         this._dataAccessMapper.toOrmEntity(entity, OrmEntityMethod.CREATE),
       ),
     );
+
+    return result;
   }
 
   async update(

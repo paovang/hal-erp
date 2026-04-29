@@ -27,7 +27,6 @@ export class PurchaseOrderItemDataAccessMapper {
   ): PurchaseOrderItemOrmEntity {
     const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
     const id = poItemEntity.getId();
-
     const mediaOrmEntity = new PurchaseOrderItemOrmEntity();
     if (id) {
       mediaOrmEntity.id = id.value;
@@ -53,7 +52,6 @@ export class PurchaseOrderItemDataAccessMapper {
       mediaOrmEntity.created_at = poItemEntity.createdAt ?? new Date(now);
     }
     mediaOrmEntity.updated_at = new Date(now);
-
     return mediaOrmEntity;
   }
 

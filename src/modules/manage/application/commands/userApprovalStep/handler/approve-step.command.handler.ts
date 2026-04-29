@@ -1325,7 +1325,7 @@ export class ApproveStepCommandHandler
       //     },
       //   );
       // }
-
+      console.log('test');
       // Generate transaction number
       const transactionNumber =
         await this.generateDocumentTransactionNumber(manager);
@@ -1333,7 +1333,7 @@ export class ApproveStepCommandHandler
         document_id: receipt.document_id!,
         budget_item_detail_id: find_budget_item.id,
         transaction_number: transactionNumber,
-        amount: Number(sum_total) ?? 0,
+        amount: Number(sum_total) ?? 100,
         // amount: Number(payment_total) ?? 0,
         transaction_type: EnumDocumentTransactionType.COMMIT,
       };

@@ -41,7 +41,6 @@ export class PurchaseOrderSelectedVendorDataAccessMapper {
       mediaOrmEntity.created_at = svEntity.createdAt ?? new Date(now);
     }
     mediaOrmEntity.updated_at = new Date(now);
-
     return mediaOrmEntity;
   }
 
