@@ -60,16 +60,30 @@ export class ReceiptResponse {
   @ApiProperty()
   itemCount: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'Sum of receipt-item payment_total across all items, converted to LAK using each item payment currency exchange rate.',
+  })
   sub_total: number | 0;
 
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'Sum of receipt-item VAT across all items, converted to LAK using each item payment currency exchange rate.',
+  })
   vat: number | 0;
 
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'sub_total + vat in LAK. Always denominated in LAK regardless of payment currency on the items.',
+  })
   total: number | 0;
 
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'Per-payment-currency breakdown. id/code/name identify the original payment currency; total/vat/amount are in LAK after exchange-rate conversion.',
+    type: () => Object,
+    isArray: true,
+  })
   currency_totals: CurrencyTotal[] | null;
 
   @ApiProperty()
