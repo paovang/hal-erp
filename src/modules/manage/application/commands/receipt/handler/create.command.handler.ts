@@ -611,6 +611,12 @@ export class CreateCommandHandler
           where: {
             id: item.purchase_order_item_id,
           },
+          relations: [
+            'currency',
+            'budget_item',
+            'budget_item.budget_accounts',
+            'budget_item.budget_accounts.currency',
+          ],
         },
       );
 
@@ -654,12 +660,15 @@ export class CreateCommandHandler
 
       const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
         where: {
-          from_currency_id: vendor_bank_account?.currency_id,
-          to_currency_id: item.payment_currency_id,
+          from_currency_id: purchase_order_item?.currency_id,
+          to_currency_id:
+            purchase_order_item?.budget_item?.budget_accounts?.currency_id,
           is_active: true,
         },
       });
-
+      // currency_id: purchase_order_item?.currency_id ?? 0,
+      // payment_currency_id:
+      //   purchase_order_item?.budget_item?.budget_accounts?.currency_id ?? 0,
       assertOrThrow(
         exchange_rate,
         'errors.not_found',
@@ -692,62 +701,62 @@ export class CreateCommandHandler
       //   vat = 0;
       // }
       sum_total = get_total;
-      payment_total = sum_total;
+      payment_total = sum_total * rate;
 
-      if (currency.code === 'USD' && payment_currency.code === 'LAK') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
-        payment_total = sum_total / rate;
-      } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
-        payment_total = sum_total * rate;
-      } // CNH to THB
-      else if (currency.code === 'CNH' && payment_currency.code === 'THB') {
-        payment_total = sum_total * rate;
-      }
-      // THB to CNH
-      else if (currency.code === 'THB' && payment_currency.code === 'CNH') {
-        payment_total = sum_total / rate;
-      }
-      // CNH to LAK
-      else if (currency.code === 'CNH' && payment_currency.code === 'LAK') {
-        payment_total = sum_total / rate;
-      }
-      // LAK to CNH
-      else if (currency.code === 'LAK' && payment_currency.code === 'CNH') {
-        payment_total = sum_total * rate;
-      }
-      // CNH to USD
-      else if (currency.code === 'CNH' && payment_currency.code === 'USD') {
-        payment_total = sum_total * rate;
-      }
-      // USD to CNH
-      else if (currency.code === 'USD' && payment_currency.code === 'CNH') {
-        payment_total = sum_total / rate;
-      }
-      // CNH to CNH
-      else if (currency.code === 'CNH' && payment_currency.code === 'CNH') {
-        payment_total = sum_total * rate;
-      } else {
-        throw new ManageDomainException(
-          'errors.currency_not_supported',
-          HttpStatus.BAD_REQUEST,
-          {
-            property: `Currency ${currency.code} to ${payment_currency.code}`,
-          },
-        );
-      }
+      // if (currency.code === 'USD' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'LAK' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'USD' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total / rate;
+      // } else if (currency.code === 'USD' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // } else if (currency.code === 'THB' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total * rate;
+      // } // CNH to THB
+      // else if (currency.code === 'CNH' && payment_currency.code === 'THB') {
+      //   payment_total = sum_total * rate;
+      // }
+      // // THB to CNH
+      // else if (currency.code === 'THB' && payment_currency.code === 'CNH') {
+      //   payment_total = sum_total / rate;
+      // }
+      // // CNH to LAK
+      // else if (currency.code === 'CNH' && payment_currency.code === 'LAK') {
+      //   payment_total = sum_total / rate;
+      // }
+      // // LAK to CNH
+      // else if (currency.code === 'LAK' && payment_currency.code === 'CNH') {
+      //   payment_total = sum_total * rate;
+      // }
+      // // CNH to USD
+      // else if (currency.code === 'CNH' && payment_currency.code === 'USD') {
+      //   payment_total = sum_total * rate;
+      // }
+      // // USD to CNH
+      // else if (currency.code === 'USD' && payment_currency.code === 'CNH') {
+      //   payment_total = sum_total / rate;
+      // }
+      // // CNH to CNH
+      // else if (currency.code === 'CNH' && payment_currency.code === 'CNH') {
+      //   payment_total = sum_total * rate;
+      // } else {
+      //   throw new ManageDomainException(
+      //     'errors.currency_not_supported',
+      //     HttpStatus.BAD_REQUEST,
+      //     {
+      //       property: `Currency ${currency.code} to ${payment_currency.code}`,
+      //     },
+      //   );
+      // }
 
       const interface_item: ReceiptInterItemInterface = {
         receipt_id: receipt_id,
@@ -755,9 +764,11 @@ export class CreateCommandHandler
         quantity: quantity,
         price: price,
         total: get_total,
-        currency_id: vendor_bank_account?.currency_id ?? 0,
-        payment_currency_id: item.payment_currency_id,
-        exchange_rate: 1,
+        // currency_id: vendor_bank_account?.currency_id ?? 0,
+        currency_id: purchase_order_item?.currency_id ?? 0,
+        payment_currency_id:
+          purchase_order_item?.budget_item?.budget_accounts?.currency_id ?? 0,
+        exchange_rate: rate,
         vat: vat,
         payment_total: payment_total,
         payment_type: item.payment_type,

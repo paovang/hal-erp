@@ -58,49 +58,44 @@ export class ReceiptDataAccessMapper {
     step: number = 0,
   ): Promise<ReceiptEntity> {
     const items = ormData.receipt_items || [];
-    interface PurchaseRequestItemLike {
-      vat?: number;
-      payment_total?: number;
-      [key: string]: any;
-    }
     const rateOrm = await this.exchangeRateRepository.find({
       where: { to_currency: { code: 'LAK' } },
       relations: ['from_currency', 'to_currency'],
     });
 
     const rateMap = new Map<string, number>(
-      rateOrm.map((item) => [String(item.from_currency.id), item.rate]),
+      rateOrm.map((r) => [String(r.from_currency.id), Number(r.rate)]),
     );
 
-    const sub_total: number = items.reduce(
-      // (sum: number, item: PurchaseRequestItemLike) =>
-      //   sum + Number(item.payment_total || 0),
-      // 0,
-      (sum: number, item: PurchaseRequestItemLike) => {
-        const rate = rateMap.get(String(item.currency.id));
-        if (!rate)
-          throw new BadRequestException(
-            `Currency ${item.currency.id} to LAK is not found.`,
-          );
-        return sum + Number(item.payment_total || 0) * rate;
-      },
-      0,
-    );
+    let sub_total = 0;
+    let vat = 0;
+    const currencyTotalMap = new Map<number, CurrencyTotal>();
 
-    const vat: number = items.reduce(
-      // (sum: number, item: PurchaseRequestItemLike) =>
-      //   sum + Number(item.vat || 0),
-      // 0,
-      (sum: number, item: PurchaseRequestItemLike) => {
-        const rate = rateMap.get(String(item.currency.id));
-        if (!rate)
-          throw new BadRequestException(
-            `Currency ${item.currency.id} to LAK is not found.`,
-          );
-        return sum + Number(item.vat || 0) * rate;
-      },
-      0,
-    );
+    for (const item of items) {
+      const { paymentTotalLak, vatLak } = this.convertItemToLak(item, rateMap);
+      sub_total += paymentTotalLak;
+      vat += vatLak;
+
+      const paymentCurrency = item.payment_currency;
+      const currencyId = paymentCurrency?.id;
+      if (currencyId == null) continue;
+
+      const existing = currencyTotalMap.get(currencyId);
+      if (existing) {
+        existing.total = (existing.total ?? 0) + paymentTotalLak;
+        existing.vat = (existing.vat ?? 0) + vatLak;
+        existing.amount += paymentTotalLak + vatLak;
+      } else {
+        currencyTotalMap.set(currencyId, {
+          id: currencyId,
+          code: paymentCurrency.code || '',
+          name: paymentCurrency.name,
+          total: paymentTotalLak,
+          vat: vatLak,
+          amount: paymentTotalLak + vatLak,
+        });
+      }
+    }
 
     const count = items.length ?? 0;
 
@@ -156,54 +151,41 @@ export class ReceiptDataAccessMapper {
           this.receiptItemMapper.toEntity(item),
         ),
       );
-      // Calculate currency totals for this specific receipt
-      const currencyTotals = this.calculateCurrencyTotalsFromItems(
-        ormData.receipt_items,
-        sub_total,
-        vat,
-        total,
-      );
-      builder.setCurrencyTotals(currencyTotals);
+      builder.setCurrencyTotals(Array.from(currencyTotalMap.values()));
     }
 
     return builder.build();
   }
 
-  private calculateCurrencyTotalsFromItems(
-    receiptItems: any[],
-    sub_total: number,
-    vat: number,
-    total: number,
-  ): CurrencyTotal[] {
-    const currencyMap = new Map<number, CurrencyTotal>();
+  private convertItemToLak(
+    item: { payment_total?: number; vat?: number; payment_currency?: { id: number; code?: string } },
+    rateMap: Map<string, number>,
+  ): { paymentTotalLak: number; vatLak: number } {
+    const paymentCurrency = item.payment_currency;
+    const paymentTotal = Number(item.payment_total || 0);
+    const itemVat = Number(item.vat || 0);
 
-    receiptItems.forEach((item) => {
-      // Handle different possible data structures
-      const paymentCurrency = item.payment_currency || item.currencies;
-      const currencyId = paymentCurrency?.id;
-      const currencyCode = paymentCurrency?.code;
-      const currencyName = paymentCurrency?.name;
-      const subTotal = sub_total;
-      const vatTotal = vat;
-      const paymentTotal = total;
+    if (!paymentCurrency) {
+      throw new BadRequestException(
+        'Receipt item is missing payment_currency; cannot convert to LAK.',
+      );
+    }
 
-      if (currencyId && paymentTotal > 0) {
-        // if (currencyMap.has(currencyId)) {
-        //   const existing = currencyMap.get(currencyId)!;
-        //   existing.amount += paymentTotal;
-        // } else {
-        currencyMap.set(currencyId, {
-          id: currencyId,
-          code: currencyCode || '',
-          name: currencyName,
-          total: subTotal,
-          vat: vatTotal,
-          amount: paymentTotal,
-        });
-        // }
-      }
-    });
+    if (paymentCurrency.code === 'LAK') {
+      return { paymentTotalLak: paymentTotal, vatLak: itemVat };
+    }
 
-    return Array.from(currencyMap.values());
+    const rate = rateMap.get(String(paymentCurrency.id));
+    if (!rate) {
+      const label = paymentCurrency.code ?? `id=${paymentCurrency.id}`;
+      throw new BadRequestException(
+        `Exchange rate from ${label} to LAK is not configured.`,
+      );
+    }
+
+    return {
+      paymentTotalLak: paymentTotal * rate,
+      vatLak: itemVat * rate,
+    };
   }
 }
