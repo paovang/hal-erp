@@ -682,10 +682,12 @@ export class ApproveStepCommandHandler
                 where: { document_id: step.user_approvals.document_id },
                 relations: [
                   'receipt_items',
+                  'receipt_items.purchase_order_items',
                   'receipt_items.purchase_order_items.purchase_request_items',
+                  'receipt_items.purchase_order_items.budget_item',
                 ],
               });
-
+              console.log('receipt', receipt);
               if (!receipt) {
                 throw new ManageDomainException(
                   'errors.not_found',
@@ -898,10 +900,12 @@ export class ApproveStepCommandHandler
                 where: { document_id: step.user_approvals.document_id },
                 relations: [
                   'receipt_items',
+                  'receipt_items.purchase_order_items',
                   'receipt_items.purchase_order_items.purchase_request_items',
+                  'receipt_items.purchase_order_items.budget_item',
                 ],
               });
-
+              console.log('receipt', receipt);
               if (!receipt) {
                 throw new ManageDomainException(
                   'errors.not_found',
@@ -1201,11 +1205,13 @@ export class ApproveStepCommandHandler
     manager: EntityManager,
     receipt: ReceiptOrmEntity,
   ): Promise<void> {
-    console.log('1');
+    console.log('tes');
+    // console.log(receipt);
     // Group receipt_items by budget_item_id
     const grouped: Record<string, any[]> = {};
     for (const item of receipt.receipt_items) {
       const poItem = item.purchase_order_items;
+      console.log('poItem', poItem);
       if (!poItem || !poItem.budget_item_id) continue;
       const key = String(poItem.budget_item_id);
       if (!grouped[key]) grouped[key] = [];
@@ -1215,10 +1221,14 @@ export class ApproveStepCommandHandler
       where: { to_currency: { code: 'LAK' } },
       relations: ['from_currency', 'to_currency'],
     });
+    console.log('tes1');
 
     const rateMap = new Map<string, number>(
       rateOrm.map((item) => [String(item.from_currency.id), item.rate]),
     );
+    console.log('rateMap', rateMap);
+    console.log('grouped', grouped);
+
     for (const budgetItemId in grouped) {
       const items = grouped[budgetItemId];
       // Check if transaction already exists for this budget_item_id
@@ -1242,6 +1252,7 @@ export class ApproveStepCommandHandler
           { property: 'budget_item_detail_id' },
         );
       }
+      console.log('tes2');
 
       // Use the first item for PO/vendor/currency lookup
       const firstItem = items[0];
@@ -1276,6 +1287,7 @@ export class ApproveStepCommandHandler
         HttpStatus.NOT_FOUND,
         'vendor bank account',
       );
+      console.log('tes3');
 
       // const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
       //   where: {
@@ -1298,7 +1310,7 @@ export class ApproveStepCommandHandler
       //   exchange_rate!.to_currency_id,
       //   manager,
       // );
-      console.log('2');
+      console.log('tes4');
 
       // Sum total for all items in this group
       let sum_total = 0;
@@ -1373,7 +1385,8 @@ export class ApproveStepCommandHandler
       //     },
       //   );
       // }
-      console.log('3');
+      console.log('tes5');
+
       // Generate transaction number
       const transactionNumber =
         await this.generateDocumentTransactionNumber(manager);
