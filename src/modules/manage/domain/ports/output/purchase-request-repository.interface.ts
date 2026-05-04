@@ -1,5 +1,6 @@
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { PurchaseRequestQueryDto } from '@src/modules/manage/application/dto/query/purchase-request.dto';
+import { PurchaseRequestExportQueryDto } from '@src/modules/manage/application/dto/query/purchase-request-export.dto';
 import { EntityManager } from 'typeorm';
 import { PurchaseRequestEntity } from '../../entities/purchase-request.entity';
 import { PurchaseRequestId } from '../../value-objects/purchase-request-id.vo';
@@ -30,6 +31,14 @@ export interface IReadPurchaseRequestRepository {
     roles?: string[],
     company_id?: number,
   ): Promise<ResponseResult<PurchaseRequestEntity>>;
+  findAllForExport(
+    query: PurchaseRequestExportQueryDto,
+    manager: EntityManager,
+    departmentId?: number,
+    user_id?: number,
+    roles?: string[],
+    company_id?: number,
+  ): Promise<PurchaseRequestEntity[]>;
   findOne(
     id: PurchaseRequestId,
     manager: EntityManager,

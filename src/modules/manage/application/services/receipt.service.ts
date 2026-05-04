@@ -8,13 +8,16 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { ReceiptEntity } from '../../domain/entities/receipt.entity';
 import { CreateCommand } from '../commands/receipt/create.command';
 import { ReceiptQueryDto } from '../dto/query/receipt.dto';
+import { ReceiptExportQueryDto } from '../dto/query/receipt-export.dto';
 import { GetAllQuery } from '../queries/receipt/get-all.query';
+import { GetAllForExportQuery } from '../queries/receipt/get-all-for-export.query';
 import { GetOneQuery } from '../queries/receipt/get-one.query';
 import { UpdateReceiptDto } from '../dto/create/receipt/update.dto';
 import { UpdateCommand } from '../commands/receipt/update.command';
 import { DeleteCommand } from '../commands/receipt/delete.command';
 import { GetPrintQuery } from '../queries/receipt/get-print.query';
 import { ReceiptPrintResult } from '../../domain/ports/output/receipt-repository.interface';
+import { ReceiptListExportRow } from '@src/common/utils/excel-export.service';
 
 @Injectable()
 export class ReceiptService implements IReceiptServiceInterface {
@@ -31,6 +34,15 @@ export class ReceiptService implements IReceiptServiceInterface {
   ): Promise<ResponseResult<ReceiptEntity>> {
     return await this._queryBus.execute(
       new GetAllQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getAllForExport(
+    dto: ReceiptExportQueryDto,
+    manager?: EntityManager,
+  ): Promise<ReceiptListExportRow[]> {
+    return await this._queryBus.execute(
+      new GetAllForExportQuery(dto, manager ?? this._readEntityManager),
     );
   }
 

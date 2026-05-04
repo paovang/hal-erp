@@ -1,5 +1,6 @@
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { PurchaseOrderQueryDto } from '@src/modules/manage/application/dto/query/purchase-order.dto';
+import { PurchaseOrderExportQueryDto } from '@src/modules/manage/application/dto/query/purchase-order-export.dto';
 import { EntityManager } from 'typeorm';
 import { PurchaseOrderEntity } from '../../entities/purchase-order.entity';
 import { PurchaseOrderId } from '../../value-objects/purchase-order-id.vo';
@@ -12,6 +13,14 @@ export interface IReadPurchaseOrderRepository {
     roles?: string[],
     company_id?: number,
   ): Promise<ResponseResult<PurchaseOrderEntity>>;
+
+  findAllForExport(
+    query: PurchaseOrderExportQueryDto,
+    manager: EntityManager,
+    user_id?: number,
+    roles?: string[],
+    company_id?: number,
+  ): Promise<PurchaseOrderEntity[]>;
 
   findOne(
     id: PurchaseOrderId,

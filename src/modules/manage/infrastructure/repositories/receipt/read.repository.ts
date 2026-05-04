@@ -16,6 +16,7 @@ import { ReceiptDataAccessMapper } from '../../mappers/receipt.mapper';
 import { PurchaseOrderDataAccessMapper } from '../../mappers/purchase-order.mapper';
 import { PurchaseRequestDataAccessMapper } from '../../mappers/purchase-request.mapper';
 import { ReceiptQueryDto } from '@src/modules/manage/application/dto/query/receipt.dto';
+import { ReceiptExportQueryDto } from '@src/modules/manage/application/dto/query/receipt-export.dto';
 import { ReceiptEntity } from '@src/modules/manage/domain/entities/receipt.entity';
 import {
   EligiblePersons,
@@ -275,6 +276,46 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       data: mappedItems,
     };
   }
+  async findAllForExport(
+    query: ReceiptExportQueryDto,
+    manager: EntityManager,
+    user_id?: number,
+    roles?: string[],
+    company_id?: number,
+  ): Promise<ReceiptEntity[]> {
+    const department_id = query.department_id ? Number(query.department_id) : undefined;
+    const status_id = query.status_id ? Number(query.status_id) : undefined;
+    const payment_type = query.payment_type;
+    const companyID = query.company_id ? Number(query.company_id) : undefined;
+
+    const queryBuilder = this.createBaseQuery(
+      manager,
+      user_id,
+      roles,
+      department_id,
+      status_id,
+      undefined,
+      undefined,
+      payment_type,
+      company_id,
+      companyID,
+      query.type,
+    );
+
+    queryBuilder.andWhere(
+      'receipts.created_at BETWEEN :startDate AND :endDate',
+      { startDate: query.startDate, endDate: query.endDate },
+    );
+
+    const items = await queryBuilder
+      .orderBy('receipts.id', 'DESC')
+      .getMany();
+
+    return Promise.all(
+      items.map((item) => this._dataAccessMapper.toEntity(item, 0)),
+    );
+  }
+
   private createBaseQuery(
     manager: EntityManager,
     user_id?: number,

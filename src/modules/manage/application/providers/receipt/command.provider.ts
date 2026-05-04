@@ -1,6 +1,7 @@
 import { Provider } from '@nestjs/common';
 import { CreateCommandHandler } from '../../commands/receipt/handler/create.command.handler';
 import { GetAllQueryHandler } from '../../queries/receipt/handler/get-all.command.query';
+import { GetAllForExportQueryHandler } from '../../queries/receipt/handler/get-all-for-export.command.query';
 import { GetOneQueryHandler } from '../../queries/receipt/handler/get-one.command.query';
 import { UpdateCommandHandler } from '../../commands/receipt/handler/update.command.handler';
 import { DeleteCommandHandler } from '../../commands/receipt/handler/delete.command.handler';
@@ -9,6 +10,7 @@ import { GetPrintQueryHandler } from '../../queries/receipt/handler/get-print.co
 export const ReceiptHandlersProviders: Provider[] = [
   CreateCommandHandler,
   GetAllQueryHandler,
+  GetAllForExportQueryHandler,
   GetOneQueryHandler,
   UpdateCommandHandler,
   DeleteCommandHandler,

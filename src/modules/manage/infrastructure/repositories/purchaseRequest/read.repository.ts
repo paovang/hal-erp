@@ -11,6 +11,7 @@ import {
   PurchaseRequestQueryDto,
   PurchaseRequestType,
 } from '@src/modules/manage/application/dto/query/purchase-request.dto';
+import { PurchaseRequestExportQueryDto } from '@src/modules/manage/application/dto/query/purchase-request-export.dto';
 import { PurchaseRequestEntity } from '@src/modules/manage/domain/entities/purchase-request.entity';
 import { IReadPurchaseRequestRepository } from '@src/modules/manage/domain/ports/output/purchase-request-repository.interface';
 import { EntityManager, Repository } from 'typeorm';
@@ -251,6 +252,45 @@ export class ReadPurchaseRequestRepository
       data: mappedItems,
     };
   }
+  async findAllForExport(
+    query: PurchaseRequestExportQueryDto,
+    manager: EntityManager,
+    departmentId?: number,
+    user_id?: number,
+    roles?: string[],
+    company_id?: number,
+  ): Promise<PurchaseRequestEntity[]> {
+    const filterCompanyId = Number(query.company_id);
+
+    const queryBuilder = this.createBaseQuery(
+      manager,
+      departmentId,
+      user_id,
+      roles,
+      company_id,
+      query.type,
+    );
+
+    if (filterCompanyId) {
+      queryBuilder.andWhere('documents.company_id = :filterCompanyId', {
+        filterCompanyId,
+      });
+    }
+
+    queryBuilder.andWhere(
+      'purchase_requests.created_at BETWEEN :startDate AND :endDate',
+      { startDate: query.startDate, endDate: query.endDate },
+    );
+
+    const items = await queryBuilder
+      .orderBy('purchase_requests.id', 'DESC')
+      .getMany();
+
+    return Promise.all(
+      items.map((item) => this._dataAccessMapper.toEntity(item, 0)),
+    );
+  }
+
   /**
    * Create base query
    * @param manager

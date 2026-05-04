@@ -21,6 +21,8 @@ import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const
 import { ITransformResultService } from '@src/common/application/interfaces/transform-result-service.interface';
 import { PurchaseOrderDataMapper } from '../application/mappers/purchase-order.mapper';
 import { PurchaseOrderQueryDto } from '../application/dto/query/purchase-order.dto';
+import { PurchaseOrderExportQueryDto } from '../application/dto/query/purchase-order-export.dto';
+import { ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { PurchaseOrderResponse } from '../application/dto/response/purchase-order.response';
 import { CreatePurchaseOrderDto } from '../application/dto/create/purchaseOrder/create.dto';
@@ -125,6 +127,47 @@ export class PurchaseOrderController {
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this._purchaseOrderService.delete(id);
+  }
+
+  @Get('export-excel')
+  @ApiOperation({ summary: 'Export purchase orders within a date range to Excel' })
+  @ApiQuery({ name: 'startDate', required: true, type: String, description: 'ISO 8601 date' })
+  @ApiQuery({ name: 'endDate', required: true, type: String, description: 'ISO 8601 date' })
+  async exportListToExcel(
+    @Query() dto: PurchaseOrderExportQueryDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    if (
+      !(dto.startDate instanceof Date) ||
+      !(dto.endDate instanceof Date) ||
+      dto.endDate < dto.startDate
+    ) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'startDate and endDate are required and endDate must be >= startDate',
+      });
+      return;
+    }
+
+    const rows = await this._purchaseOrderService.getAllForExport(dto);
+
+    const excelBuffer =
+      await this._excelExportService.exportPurchaseOrderListToExcel(rows);
+    const fileName = this._excelExportService.generateListFileName(
+      'PO',
+      dto.startDate,
+      dto.endDate,
+    );
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`,
+    );
+    res.setHeader('Content-Length', excelBuffer.length);
+    res.send(excelBuffer);
   }
 
   @Get('export/:id')

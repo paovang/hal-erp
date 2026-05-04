@@ -3,11 +3,14 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { PurchaseOrderQueryDto } from '../dto/query/purchase-order.dto';
+import { PurchaseOrderExportQueryDto } from '../dto/query/purchase-order-export.dto';
 import { PurchaseOrderEntity } from '../../domain/entities/purchase-order.entity';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { IPurchaseOrderServiceInterface } from '../../domain/ports/input/purchase-order-domain-service.interface';
 import { GetAllQuery } from '../queries/purchaseOrder/get-all.query';
+import { GetAllForExportQuery } from '../queries/purchaseOrder/get-all-for-export.query';
 import { GetOneQuery } from '../queries/purchaseOrder/get-one.query';
+import { PoListExportRow } from '@src/common/utils/excel-export.service';
 import { CreatePurchaseOrderDto } from '../dto/create/purchaseOrder/create.dto';
 import { CreateCommand } from '../commands/purchaseOrder/create.command';
 import { UpdatePurchaseOrderDto } from '../dto/create/purchaseOrder/update.dto';
@@ -30,6 +33,15 @@ export class PurchaseOrderService implements IPurchaseOrderServiceInterface {
   ): Promise<ResponseResult<PurchaseOrderEntity>> {
     return await this._queryBus.execute(
       new GetAllQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getAllForExport(
+    dto: PurchaseOrderExportQueryDto,
+    manager?: EntityManager,
+  ): Promise<PoListExportRow[]> {
+    return await this._queryBus.execute(
+      new GetAllForExportQuery(dto, manager ?? this._readEntityManager),
     );
   }
 

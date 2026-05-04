@@ -8,8 +8,11 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { PurchaseRequestEntity } from '../../domain/entities/purchase-request.entity';
 import { CreateCommand } from '../commands/purchaseRequest/create.command';
 import { PurchaseRequestQueryDto } from '../dto/query/purchase-request.dto';
+import { PurchaseRequestExportQueryDto } from '../dto/query/purchase-request-export.dto';
 import { GetAllQuery } from '../queries/purchaseRequest/get-all.query';
+import { GetAllForExportQuery } from '../queries/purchaseRequest/get-all-for-export.query';
 import { GetOneQuery } from '../queries/purchaseRequest/get-one.query';
+import { PrListExportRow } from '@src/common/utils/excel-export.service';
 import { UpdatePurchaseRequestDto } from '../dto/create/purchaseRequest/update.dto';
 import { UpdateCommand } from '../commands/purchaseRequest/update.command';
 import { DeleteCommand } from '../commands/purchaseRequest/delete.command';
@@ -33,6 +36,15 @@ export class PurchaseRequestService
   ): Promise<ResponseResult<PurchaseRequestEntity>> {
     return await this._queryBus.execute(
       new GetAllQuery(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async getAllForExport(
+    dto: PurchaseRequestExportQueryDto,
+    manager?: EntityManager,
+  ): Promise<PrListExportRow[]> {
+    return await this._queryBus.execute(
+      new GetAllForExportQuery(dto, manager ?? this._readEntityManager),
     );
   }
 

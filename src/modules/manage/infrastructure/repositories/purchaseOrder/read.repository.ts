@@ -7,6 +7,7 @@ import {
   ResponseResult,
 } from '@src/common/infrastructure/pagination/pagination.interface';
 import { PurchaseOrderQueryDto } from '@src/modules/manage/application/dto/query/purchase-order.dto';
+import { PurchaseOrderExportQueryDto } from '@src/modules/manage/application/dto/query/purchase-order-export.dto';
 import { PurchaseOrderEntity } from '@src/modules/manage/domain/entities/purchase-order.entity';
 import { IReadPurchaseOrderRepository } from '@src/modules/manage/domain/ports/output/purchase-order-repository.interface';
 import { EntityManager, Repository } from 'typeorm';
@@ -358,6 +359,43 @@ export class ReadPurchaseOrderRepository
   //     data: mappedItems,
   //   };
   // }
+  async findAllForExport(
+    query: PurchaseOrderExportQueryDto,
+    manager: EntityManager,
+    user_id?: number,
+    roles?: string[],
+    company_id?: number,
+  ): Promise<PurchaseOrderEntity[]> {
+    const filterCompanyId = Number(query.company_id);
+
+    const queryBuilder = this.createBaseQuery(
+      manager,
+      roles,
+      user_id,
+      company_id,
+      query.type,
+    );
+
+    if (filterCompanyId) {
+      queryBuilder.andWhere('po_documents.company_id = :filterCompanyId', {
+        filterCompanyId,
+      });
+    }
+
+    queryBuilder.andWhere(
+      'purchase_orders.created_at BETWEEN :startDate AND :endDate',
+      { startDate: query.startDate, endDate: query.endDate },
+    );
+
+    const items = await queryBuilder
+      .orderBy('purchase_orders.id', 'DESC')
+      .getMany();
+
+    return Promise.all(
+      items.map((item) => this._dataAccessMapper.toEntity(item, 0)),
+    );
+  }
+
   private createBaseQuery(
     manager: EntityManager,
     roles?: string[],

@@ -2,6 +2,7 @@ import { EntityManager } from 'typeorm';
 import { ReceiptEntity } from '../../entities/receipt.entity';
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { ReceiptQueryDto } from '@src/modules/manage/application/dto/query/receipt.dto';
+import { ReceiptExportQueryDto } from '@src/modules/manage/application/dto/query/receipt-export.dto';
 import { ReceiptId } from '../../value-objects/receitp-id.vo';
 import { PurchaseOrderEntity } from '../../entities/purchase-order.entity';
 import { PurchaseRequestEntity } from '../../entities/purchase-request.entity';
@@ -34,6 +35,14 @@ export interface IReadReceiptRepository {
     roles?: string[],
     company_id?: number,
   ): Promise<ResponseResult<ReceiptEntity>>;
+
+  findAllForExport(
+    query: ReceiptExportQueryDto,
+    manager: EntityManager,
+    user_id?: number,
+    roles?: string[],
+    company_id?: number,
+  ): Promise<ReceiptEntity[]>;
 
   findOne(
     id: ReceiptId,
