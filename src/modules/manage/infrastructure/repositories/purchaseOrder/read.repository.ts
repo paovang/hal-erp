@@ -108,6 +108,15 @@ export class ReadPurchaseOrderRepository
         filterCompanyId,
       });
     }
+    if (query.startDate && query.endDate) {
+      queryBuilder.andWhere(
+        'purchase_orders.created_at BETWEEN :startDate AND :endDate',
+        {
+          startDate: query.startDate,
+          endDate: query.endDate,
+        },
+      );
+    }
 
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;

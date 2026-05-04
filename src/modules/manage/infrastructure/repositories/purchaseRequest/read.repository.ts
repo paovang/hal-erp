@@ -160,7 +160,6 @@ export class ReadPurchaseRequestRepository
       });
     }
     if (query.startDate && query.endDate) {
-      console.log(query.startDate, query.endDate);
       idQueryBuilder.andWhere(
         'purchase_requests.created_at BETWEEN :startDate AND :endDate',
         {
