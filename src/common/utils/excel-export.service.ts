@@ -4,6 +4,26 @@ import ExcelJS from 'exceljs';
 import fs from 'fs';
 import path from 'path';
 
+export interface PrListExportRow {
+  pr_number: string;
+  createdAt: Date | null;
+  requesterUsername: string;
+}
+
+export interface PoListExportRow {
+  po_number: string;
+  createdAt: Date | null;
+  requesterUsername: string;
+  total: number;
+}
+
+export interface ReceiptListExportRow {
+  receipt_number: string;
+  createdAt: Date | null;
+  requesterUsername: string;
+  total: number;
+}
+
 @Injectable()
 export class ExcelExportService {
   /**
@@ -2040,5 +2060,163 @@ export class ExcelExportService {
       .trim();
 
     return `${prefix}_${sanitizedPoNumber}_${date}.xlsx`;
+  }
+
+  generateListFileName(prefix: string, startDate: Date, endDate: Date): string {
+    const fmt = (d: Date) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}${m}${day}`;
+    };
+    return `${prefix}_list_${fmt(startDate)}-${fmt(endDate)}.xlsx`;
+  }
+
+  private formatTimestamp(value: Date | null | undefined): string {
+    if (!value) return '';
+    const d = value instanceof Date ? value : new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return (
+      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
+      `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+    );
+  }
+
+  private styleHeaderRow(row: ExcelJS.Row): void {
+    row.eachCell((cell) => {
+      cell.font = {
+        name: 'Phetsarath OT',
+        family: 2,
+        size: 12,
+        bold: true,
+      };
+      cell.alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true,
+      };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE6E6E6' },
+      };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+    row.height = 22;
+  }
+
+  private styleBodyCell(
+    cell: ExcelJS.Cell,
+    align: 'left' | 'center' | 'right' = 'left',
+  ): void {
+    cell.font = { name: 'Phetsarath OT', family: 2, size: 11 };
+    cell.alignment = { vertical: 'middle', horizontal: align, wrapText: true };
+    cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+  }
+
+  async exportPurchaseRequestListToExcel(
+    rows: PrListExportRow[],
+  ): Promise<Buffer> {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Purchase Requests');
+
+    worksheet.columns = [
+      { header: 'PR Number', key: 'pr_number', width: 24 },
+      { header: 'Created At', key: 'createdAt', width: 22 },
+      { header: 'Requester', key: 'requesterUsername', width: 24 },
+    ];
+
+    this.styleHeaderRow(worksheet.getRow(1));
+
+    rows.forEach((row) => {
+      const added = worksheet.addRow({
+        pr_number: row.pr_number ?? '',
+        createdAt: this.formatTimestamp(row.createdAt),
+        requesterUsername: row.requesterUsername ?? '',
+      });
+      this.styleBodyCell(added.getCell(1), 'left');
+      this.styleBodyCell(added.getCell(2), 'center');
+      this.styleBodyCell(added.getCell(3), 'left');
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer as unknown as Buffer;
+  }
+
+  async exportPurchaseOrderListToExcel(
+    rows: PoListExportRow[],
+  ): Promise<Buffer> {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Purchase Orders');
+
+    worksheet.columns = [
+      { header: 'PO Number', key: 'po_number', width: 24 },
+      { header: 'Created At', key: 'createdAt', width: 22 },
+      { header: 'Requester', key: 'requesterUsername', width: 24 },
+      { header: 'Total', key: 'total', width: 18 },
+    ];
+
+    this.styleHeaderRow(worksheet.getRow(1));
+
+    rows.forEach((row) => {
+      const added = worksheet.addRow({
+        po_number: row.po_number ?? '',
+        createdAt: this.formatTimestamp(row.createdAt),
+        requesterUsername: row.requesterUsername ?? '',
+        total: Number(row.total ?? 0),
+      });
+      this.styleBodyCell(added.getCell(1), 'left');
+      this.styleBodyCell(added.getCell(2), 'center');
+      this.styleBodyCell(added.getCell(3), 'left');
+      this.styleBodyCell(added.getCell(4), 'right');
+      added.getCell(4).numFmt = '#,##0.00';
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer as unknown as Buffer;
+  }
+
+  async exportReceiptListToExcel(
+    rows: ReceiptListExportRow[],
+  ): Promise<Buffer> {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Receipts');
+
+    worksheet.columns = [
+      { header: 'Receipt Number', key: 'receipt_number', width: 24 },
+      { header: 'Created At', key: 'createdAt', width: 22 },
+      { header: 'Requester', key: 'requesterUsername', width: 24 },
+      { header: 'Total', key: 'total', width: 18 },
+    ];
+
+    this.styleHeaderRow(worksheet.getRow(1));
+
+    rows.forEach((row) => {
+      const added = worksheet.addRow({
+        receipt_number: row.receipt_number ?? '',
+        createdAt: this.formatTimestamp(row.createdAt),
+        requesterUsername: row.requesterUsername ?? '',
+        total: Number(row.total ?? 0),
+      });
+      this.styleBodyCell(added.getCell(1), 'left');
+      this.styleBodyCell(added.getCell(2), 'center');
+      this.styleBodyCell(added.getCell(3), 'left');
+      this.styleBodyCell(added.getCell(4), 'right');
+      added.getCell(4).numFmt = '#,##0.00';
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer as unknown as Buffer;
   }
 }

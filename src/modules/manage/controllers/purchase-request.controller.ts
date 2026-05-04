@@ -20,9 +20,11 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { PurchaseRequestResponse } from '../application/dto/response/purchase-request.response';
 import { CreatePurchaseRequestDto } from '../application/dto/create/purchaseRequest/create.dto';
 import { PurchaseRequestQueryDto } from '../application/dto/query/purchase-request.dto';
+import { PurchaseRequestExportQueryDto } from '../application/dto/query/purchase-request-export.dto';
 import { UpdatePurchaseRequestDto } from '../application/dto/create/purchaseRequest/update.dto';
 import { AddStepDto } from '../application/dto/create/purchaseRequest/add-step.dto';
 import { ExcelExportService } from '@src/common/utils/excel-export.service';
+import { ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Public } from '@core-system/auth';
 import { verifyHashData } from '@src/common/utils/server/hash-data.util';
@@ -109,6 +111,60 @@ export class PurchaseRequestController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  @Get('export-excel')
+  @ApiOperation({
+    summary: 'Export purchase requests within a date range to Excel',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: true,
+    type: String,
+    description: 'ISO 8601 date',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: true,
+    type: String,
+    description: 'ISO 8601 date',
+  })
+  async exportListToExcel(
+    @Query() dto: PurchaseRequestExportQueryDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    if (
+      !(dto.startDate instanceof Date) ||
+      !(dto.endDate instanceof Date) ||
+      dto.endDate < dto.startDate
+    ) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+        message:
+          'startDate and endDate are required and endDate must be >= startDate',
+      });
+      return;
+    }
+
+    const rows = await this._purchaseRequestService.getAllForExport(dto);
+
+    const excelBuffer =
+      await this._excelExportService.exportPurchaseRequestListToExcel(rows);
+    const fileName = this._excelExportService.generateListFileName(
+      'PR',
+      dto.startDate,
+      dto.endDate,
+    );
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`,
+    );
+    res.setHeader('Content-Length', excelBuffer.length);
+    res.send(excelBuffer);
   }
 
   @Get('export/:id')

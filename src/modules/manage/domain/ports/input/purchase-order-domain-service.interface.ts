@@ -1,15 +1,22 @@
 import { ResponseResult } from '@src/common/infrastructure/pagination/pagination.interface';
 import { PurchaseOrderQueryDto } from '@src/modules/manage/application/dto/query/purchase-order.dto';
+import { PurchaseOrderExportQueryDto } from '@src/modules/manage/application/dto/query/purchase-order-export.dto';
 import { EntityManager } from 'typeorm';
 import { PurchaseOrderEntity } from '../../entities/purchase-order.entity';
 import { CreatePurchaseOrderDto } from '@src/modules/manage/application/dto/create/purchaseOrder/create.dto';
 import { UpdatePurchaseOrderDto } from '@src/modules/manage/application/dto/create/purchaseOrder/update.dto';
+import { PoListExportRow } from '@src/common/utils/excel-export.service';
 
 export interface IPurchaseOrderServiceInterface {
   getAll(
     dto: PurchaseOrderQueryDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<PurchaseOrderEntity>>;
+
+  getAllForExport(
+    dto: PurchaseOrderExportQueryDto,
+    manager?: EntityManager,
+  ): Promise<PoListExportRow[]>;
 
   getOne(
     id: number,

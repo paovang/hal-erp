@@ -3,14 +3,21 @@ import { CreateReceiptDto } from '@src/modules/manage/application/dto/create/rec
 import { EntityManager } from 'typeorm';
 import { ReceiptEntity } from '../../entities/receipt.entity';
 import { ReceiptQueryDto } from '@src/modules/manage/application/dto/query/receipt.dto';
+import { ReceiptExportQueryDto } from '@src/modules/manage/application/dto/query/receipt-export.dto';
 import { UpdateReceiptDto } from '@src/modules/manage/application/dto/create/receipt/update.dto';
 import { ReceiptPrintResult } from '../output/receipt-repository.interface';
+import { ReceiptListExportRow } from '@src/common/utils/excel-export.service';
 
 export interface IReceiptServiceInterface {
   getAll(
     dto: ReceiptQueryDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<ReceiptEntity>>;
+
+  getAllForExport(
+    dto: ReceiptExportQueryDto,
+    manager?: EntityManager,
+  ): Promise<ReceiptListExportRow[]>;
 
   getOne(
     id: number,

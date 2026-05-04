@@ -22,6 +22,8 @@ import { ResponseResult } from '@src/common/infrastructure/pagination/pagination
 import { ReceiptResponse } from '../application/dto/response/receipt.response';
 import { CreateReceiptDto } from '../application/dto/create/receipt/create.dto';
 import { ReceiptQueryDto } from '../application/dto/query/receipt.dto';
+import { ReceiptExportQueryDto } from '../application/dto/query/receipt-export.dto';
+import { ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { UpdateReceiptDto } from '../application/dto/create/receipt/update.dto';
 import { ExcelExportService } from '@src/common/utils/excel-export.service';
 import { Response } from 'express';
@@ -117,6 +119,47 @@ export class ReceiptController {
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,
     );
+  }
+
+  @Get('export-excel')
+  @ApiOperation({ summary: 'Export receipts within a date range to Excel' })
+  @ApiQuery({ name: 'startDate', required: true, type: String, description: 'ISO 8601 date' })
+  @ApiQuery({ name: 'endDate', required: true, type: String, description: 'ISO 8601 date' })
+  async exportListToExcel(
+    @Query() dto: ReceiptExportQueryDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    if (
+      !(dto.startDate instanceof Date) ||
+      !(dto.endDate instanceof Date) ||
+      dto.endDate < dto.startDate
+    ) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'startDate and endDate are required and endDate must be >= startDate',
+      });
+      return;
+    }
+
+    const rows = await this._receiptService.getAllForExport(dto);
+
+    const excelBuffer =
+      await this._excelExportService.exportReceiptListToExcel(rows);
+    const fileName = this._excelExportService.generateListFileName(
+      'Receipt',
+      dto.startDate,
+      dto.endDate,
+    );
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`,
+    );
+    res.setHeader('Content-Length', excelBuffer.length);
+    res.send(excelBuffer);
   }
 
   @Get('export/:id')
