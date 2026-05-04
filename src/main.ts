@@ -21,6 +21,9 @@ async function bootstrap() {
     new I18nValidationPipe({
       transform: true, // Automatically transform payloads to be objects typed according to their DTO classes
       whitelist: true, // Strip properties not existing in the DTO
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
   app.useGlobalFilters(new CustomI18nValidationExceptionFilter());
