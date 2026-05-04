@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationDto } from '@src/common/validations/dto/pagination.dto';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 import { PurchaseRequestType } from './purchase-request.dto';
 
 export class PurchaseOrderQueryDto extends PaginationDto {
@@ -42,4 +42,12 @@ export class PurchaseOrderQueryDto extends PaginationDto {
   @IsOptional()
   @IsEnum(PurchaseRequestType)
   type?: PurchaseRequestType;
+
+  @IsDate()
+  @IsOptional()
+  startDate?: Date;
+
+  @IsDate()
+  @IsOptional()
+  endDate?: Date;
 }
