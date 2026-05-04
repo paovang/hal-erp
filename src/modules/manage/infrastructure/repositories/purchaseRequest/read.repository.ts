@@ -159,6 +159,15 @@ export class ReadPurchaseRequestRepository
         filterCompanyId,
       });
     }
+    if (query.startDate && query.endDate) {
+      idQueryBuilder.andWhere(
+        'purchase_requests.created_at BETWEEN :startDate AND :endDate',
+        {
+          startDate: query.startDate,
+          endDate: query.endDate,
+        },
+      );
+    }
 
     this.applyDateFilter(idQueryBuilder, filterOptions.dateColumn, query.date);
 
