@@ -102,7 +102,6 @@ export class UserController {
     };
   }
 
-  // @Permissions(PermissionName.READ_USER)
   @Get('')
   async getAll(
     @Query() dto: UserQueryDto,
