@@ -62,7 +62,6 @@ import {
   selectPurchaseRequestItems,
   selectPurchaseRequests,
   selectQuotaCompany,
-  selectReceipt,
   selectReceiptBy,
   selectReceiptItems,
   selectRequestItems,
@@ -97,67 +96,6 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     @Inject(PAGINATION_SERVICE)
     private readonly _paginationService: IPaginationService,
   ) {}
-  // async findAll(
-  //   query: ReceiptQueryDto,
-  //   manager: EntityManager,
-  //   user_id?: number,
-  //   roles?: string[],
-  //   company_id?: number,
-  // ): Promise<ResponseResult<ReceiptEntity>> {
-  //   const department_id = Number(query.department_id);
-  //   const status_id = Number(query.status_id);
-  //   const start_date = query.start_date;
-  //   const end_date = query.end_date;
-  //   const payment_type = query.payment_type;
-  //   const companyID = Number(query.company_id);
-  //   const filterOptions = this.getFilterOptions();
-  //   const queryBuilder = await this.createBaseQuery(
-  //     manager,
-  //     user_id,
-  //     roles,
-  //     department_id,
-  //     status_id,
-  //     start_date,
-  //     end_date,
-  //     payment_type,
-  //     company_id,
-  //     companyID,
-  //     query.type,
-  //   );
-  //   query.sort_by = 'receipts.id';
-
-  //   // Date filtering (single date)
-  //   this.applyDateFilter(
-  //     queryBuilder,
-  //     filterOptions.dateColumn,
-  //     query.order_date,
-  //   );
-
-  //   const status = await countStatusAmounts(
-  //     manager,
-  //     EnumPrOrPo.R,
-  //     user_id,
-  //     roles,
-  //     department_id,
-  //     status_id,
-  //     start_date,
-  //     end_date,
-  //     company_id,
-  //     companyID,
-  //   );
-
-  //   const data = await this._paginationService.paginate(
-  //     queryBuilder,
-  //     query,
-  //     this._dataAccessMapper.toEntity.bind(this._dataAccessMapper),
-  //     this.getFilterOptions(),
-  //   );
-
-  //   return {
-  //     ...data,
-  //     status: status,
-  //   };
-  // }
   async findAll(
     query: ReceiptQueryDto,
     manager: EntityManager,
@@ -522,16 +460,6 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     const selectFields = [
       ...selectPurchaseOrderItems,
       ...selectPurchaseOrderSelectedVendors,
-      // ...selectPurchaseRequests,
-      // ...selectDocuments,
-      // ...selectDocumentTypes,
-      // ...selectUsers,
-      // ...selectUserSignatures,
-      // ...selectDepartments,
-      // ...selectDepartmentUsers,
-      // ...selectPositions,
-      // ...selectPurchaseRequestItems,
-      // ...selectUnits,
       ...selectRequestItems,
       // ...selectRequestItemUnits,
       ...selectSelectedVendors,
@@ -566,7 +494,6 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectVendorProduct,
       ...selectProducts,
       ...selectVendors,
-      ...selectReceipt,
     ];
 
     const query = manager
@@ -576,20 +503,6 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
         'purchase_order_items.purchase_order_selected_vendors',
         'purchase_order_selected_vendors',
       )
-      // .innerJoin('purchase_orders.purchase_requests', 'purchase_requests')
-      // .innerJoin(
-      //   'purchase_requests.purchase_request_items',
-      //   'purchase_request_items',
-      // )
-      // .innerJoin('purchase_requests.documents', 'documents')
-      // .innerJoin('documents.departments', 'departments')
-      // .innerJoin('documents.users', 'users')
-      // .innerJoin('documents.document_types', 'document_types')
-      // .leftJoin('users.user_signatures', 'user_signatures')
-      // .innerJoin('users.department_users', 'department_users')
-      // .innerJoin('department_users.positions', 'positions')
-
-      // .innerJoin('purchase_request_items.units', 'units')
 
       // purchase_order_items join with purchase request
       .innerJoin('purchase_order_items.purchase_request_items', 'request_items')
@@ -637,7 +550,12 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .leftJoin('document_approver.users', 'doc_approver_user')
       .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
       .leftJoin('doc_dept_user.departments', 'departments_approver')
-      .leftJoin('purchase_orders.receipts', 'receipts')
+      .leftJoin('purchase_order_items.currency', 'order_item_currency')
+      .addSelect([
+        'order_item_currency.id',
+        'order_item_currency.code',
+        'order_item_currency.name',
+      ])
       // add select
       .addSelect(selectFields);
 
@@ -725,7 +643,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       ...selectVendorProduct,
       ...selectProducts,
       ...selectVendors,
-      ...selectPurchaseOrders,
+      ...selectCurrency,
     ];
 
     const query = manager
@@ -766,7 +684,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .leftJoin('document_approver.users', 'doc_approver_user')
       .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
       .leftJoin('doc_dept_user.departments', 'departments_approver')
-      .leftJoin('purchase_requests.purchase_orders', 'purchase_orders')
+      .leftJoin('purchase_request_items.currency', 'currency')
       .addSelect(selectFields);
 
     if (
