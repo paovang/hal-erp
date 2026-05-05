@@ -21,7 +21,10 @@ export async function sendApprovalRequest(
   from_mail?: string,
 ) {
   let link = '';
-  const now = moment.tz(Timezone.LAOS).format(DateFormat.DATETIME_FORMAT);
+  const due_date = moment
+    .tz(Timezone.LAOS)
+    .add(1, 'day')
+    .format(DateFormat.DATETIME_FORMAT);
   let tel = user?.tel ? String(user.tel).trim() : '';
 
   if (!tel.match(/^\d+$/)) {
@@ -71,8 +74,7 @@ export async function sendApprovalRequest(
     request_type: type,
     request_amount: Number(total),
     title: String(titles) ?? 'ຂໍຈັດຊື້',
-    due_date: now,
-    // due_date: '2025-08-31 00:32:07',
+    due_date: due_date,
     callback_url: 'http://127.0.0.1:3001',
     requester: {
       id: Number(user_id),

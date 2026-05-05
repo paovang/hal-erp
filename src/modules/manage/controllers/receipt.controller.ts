@@ -123,8 +123,18 @@ export class ReceiptController {
 
   @Get('export-excel')
   @ApiOperation({ summary: 'Export receipts within a date range to Excel' })
-  @ApiQuery({ name: 'startDate', required: true, type: String, description: 'ISO 8601 date' })
-  @ApiQuery({ name: 'endDate', required: true, type: String, description: 'ISO 8601 date' })
+  @ApiQuery({
+    name: 'startDate',
+    required: true,
+    type: String,
+    description: 'ISO 8601 date',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: true,
+    type: String,
+    description: 'ISO 8601 date',
+  })
   async exportListToExcel(
     @Query() dto: ReceiptExportQueryDto,
     @Res() res: Response,
@@ -135,7 +145,8 @@ export class ReceiptController {
       dto.endDate < dto.startDate
     ) {
       res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'startDate and endDate are required and endDate must be >= startDate',
+        message:
+          'startDate and endDate are required and endDate must be >= startDate',
       });
       return;
     }

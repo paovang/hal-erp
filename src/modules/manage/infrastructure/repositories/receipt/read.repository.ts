@@ -283,7 +283,9 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     roles?: string[],
     company_id?: number,
   ): Promise<ReceiptEntity[]> {
-    const department_id = query.department_id ? Number(query.department_id) : undefined;
+    const department_id = query.department_id
+      ? Number(query.department_id)
+      : undefined;
     const status_id = query.status_id ? Number(query.status_id) : undefined;
     const payment_type = query.payment_type;
     const companyID = query.company_id ? Number(query.company_id) : undefined;
@@ -307,9 +309,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       { startDate: query.startDate, endDate: query.endDate },
     );
 
-    const items = await queryBuilder
-      .orderBy('receipts.id', 'DESC')
-      .getMany();
+    const items = await queryBuilder.orderBy('receipts.id', 'DESC').getMany();
 
     return Promise.all(
       items.map((item) => this._dataAccessMapper.toEntity(item, 0)),
@@ -510,6 +510,119 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     }
 
     return query;
+  }
+
+  private createSingleRecordQuery(manager: EntityManager) {
+    const selectFields = [
+      ...selectReceiptItems,
+      ...selectDepartments,
+      ...selectUsers,
+      ...selectDocuments,
+      ...selectDocumentTypes,
+      ...selectDepartmentUsers,
+      ...selectPositions,
+      ...selectUserApprovals,
+      ...selectDocumentStatuses,
+      ...selectUserApprovalSteps,
+      ...selectApprover,
+      ...selectApproverUserSignatures,
+      ...selectStatus,
+      ...selectReceiptBy,
+      ...selectCurrencies,
+      ...selectCurrency,
+      ...selectDocumentAttachments,
+      ...selectCreatedBy,
+      ...selectDepartmentUserApprovers,
+      ...selectPositionApprover,
+      ...selectPurchaseOrderItems,
+      ...selectPurchaseRequestItems,
+      ...selectPurchaseOrderSelectedVendors,
+      ...selectSelectedVendors,
+      ...selectVendorBankAccounts,
+      ...selectBanks,
+      ...selectBankAccountCurrencies,
+      ...selectDocumentApprover,
+      ...selectDocApproverUser,
+      ...selectDocDeptUser,
+      ...selectDepartmentsApprover,
+      ...selectBudgetItems,
+      ...selectPurchaseOrders,
+      ...selectPoDocuments,
+      ...selectPoDocumentTypes,
+      ...selectPurchaseRequests,
+      ...selectPrDocuments,
+      ...selectPrDocumentTypes,
+      ...selectBudgetAccounts,
+      ...selectUnits,
+      ...selectCompany,
+      ...selectQuotaCompany,
+      ...selectVendorProduct,
+      ...selectProducts,
+      ...selectVendors,
+    ];
+
+    return manager
+      .createQueryBuilder(ReceiptOrmEntity, 'receipts')
+      .innerJoin('receipts.purchase_orders', 'purchase_orders')
+      .innerJoin('purchase_orders.documents', 'po_documents')
+      .innerJoin('po_documents.document_types', 'po_document_types')
+      .innerJoin('purchase_orders.purchase_requests', 'purchase_requests')
+      .innerJoin('purchase_requests.documents', 'pr_documents')
+      .innerJoin('pr_documents.document_types', 'pr_document_types')
+      .innerJoin('receipts.documents', 'documents')
+      .leftJoin('documents.company', 'company')
+      .innerJoin('documents.departments', 'departments')
+      .innerJoin('documents.users', 'users')
+      .innerJoin('documents.document_types', 'document_types')
+      .leftJoin('users.department_users', 'department_users')
+      .leftJoin('department_users.positions', 'positions')
+      .innerJoin('receipts.users', 'receipt_by')
+      .innerJoin('receipts.receipt_items', 'receipt_items')
+      .leftJoin('receipt_items.currency', 'currency')
+      .leftJoin('receipt_items.payment_currency', 'currencies')
+      .innerJoin('receipt_items.purchase_order_items', 'purchase_order_items')
+      .innerJoin(
+        'purchase_order_items.purchase_request_items',
+        'purchase_request_items',
+      )
+      .leftJoin('purchase_request_items.units', 'units')
+      .leftJoin('purchase_request_items.quota_company', 'quota_company')
+      .leftJoin('quota_company.vendor_product', 'vendor_product')
+      .leftJoin('vendor_product.products', 'products')
+      .leftJoin('vendor_product.vendors', 'vendors')
+      .leftJoin('products.product_type', 'product_type')
+      .leftJoin('purchase_order_items.budget_item', 'budget_items')
+      .leftJoin('budget_items.budget_accounts', 'budget_accounts')
+      .leftJoin(
+        'purchase_order_items.purchase_order_selected_vendors',
+        'purchase_order_selected_vendors',
+      )
+      .leftJoin('purchase_order_selected_vendors.vendors', 'selected_vendors')
+      .leftJoin(
+        'purchase_order_selected_vendors.vendor_bank_account',
+        'vendor_bank_accounts',
+      )
+      .leftJoin('vendor_bank_accounts.banks', 'bank')
+      .leftJoin('vendor_bank_accounts.currencies', 'bank_account_currency')
+      .innerJoin('documents.user_approvals', 'user_approvals')
+      .leftJoin('user_approvals.document_statuses', 'document_statuses')
+      .leftJoin('user_approvals.user_approval_steps', 'user_approval_steps')
+      .leftJoin(
+        'user_approval_steps.document_approvers',
+        'document_approver',
+        'document_approver.user_approval_step_id = user_approval_steps.id',
+      )
+      .leftJoin('user_approval_steps.approver', 'approver')
+      .leftJoin('approver.department_users', 'department_user_approver')
+      .leftJoin('department_user_approver.positions', 'position_approver')
+      .leftJoin('user_approval_steps.status', 'status')
+      .leftJoin('approver.user_signatures', 'approver_user_signatures')
+      .leftJoin('documents.document_attachments', 'document_attachments')
+      .leftJoin('document_attachments.users', 'created_by')
+      .leftJoin('document_approver.users', 'doc_approver_user')
+      .leftJoin('doc_approver_user.department_users', 'doc_dept_user')
+      .leftJoin('doc_dept_user.departments', 'departments_approver')
+      .addSelect(selectFields);
   }
 
   private createBasePurchaseOrderQuery(
@@ -841,7 +954,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     id: ReceiptId,
     manager: EntityManager,
   ): Promise<ResponseResult<ReceiptEntity>> {
-    const item = await this.createBaseQuery(manager)
+    const item = await this.createSingleRecordQuery(manager)
       .where('receipts.id = :id', { id: id.value })
       .getOneOrFail();
 
@@ -869,7 +982,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     query: ReceiptQueryDto,
     manager: EntityManager,
   ): Promise<ReceiptPrintResult> {
-    const receipt = await this.createBaseQuery(manager)
+    const receipt = await this.createSingleRecordQuery(manager)
       .where('receipts.id = :id', { id: id.value })
       .getOneOrFail();
 
