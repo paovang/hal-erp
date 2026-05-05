@@ -20,7 +20,7 @@ import {
   IWriteReceiptRepository,
 } from '@src/modules/manage/domain/ports/output/receipt-repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager, In } from 'typeorm';
+import { DataSource, EntityManager, EntityNotFoundError, In } from 'typeorm';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { TRANSACTION_MANAGER_SERVICE } from '@src/common/constants/inject-key.const';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
@@ -397,7 +397,21 @@ export class CreateCommandHandler
 
         await this._writeDocumentApprover.create(d_approver_entity, manager);
 
-        return await this._readRepo.findOne(new ReceiptId(receipt_id), manager);
+        try {
+          return await this._readRepo.findOne(
+            new ReceiptId(receipt_id),
+            manager,
+          );
+        } catch (error) {
+          if (error instanceof EntityNotFoundError) {
+            throw new ManageDomainException(
+              'errors.receipt_create_read_back_failed',
+              HttpStatus.INTERNAL_SERVER_ERROR,
+              { property: `receipt id ${receipt_id}` },
+            );
+          }
+          throw error;
+        }
       },
     );
 
@@ -658,17 +672,30 @@ export class CreateCommandHandler
         'vendor bank account',
       );
 
+      const source_currency_id = purchase_order_item?.currency_id;
+      const source_payment_currency_id =
+        purchase_order_item?.budget_item?.budget_accounts?.currency_id;
+      console.log(purchase_order_item);
+      assertOrThrow(
+        source_currency_id,
+        'errors.not_found',
+        HttpStatus.BAD_REQUEST,
+        'currency',
+      );
+      assertOrThrow(
+        source_payment_currency_id,
+        'errors.not_found',
+        HttpStatus.BAD_REQUEST,
+        'payment currency',
+      );
+
       const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
         where: {
-          from_currency_id: purchase_order_item?.currency_id,
-          to_currency_id:
-            purchase_order_item?.budget_item?.budget_accounts?.currency_id,
+          from_currency_id: source_currency_id,
+          to_currency_id: source_payment_currency_id,
           is_active: true,
         },
       });
-      // currency_id: purchase_order_item?.currency_id ?? 0,
-      // payment_currency_id:
-      //   purchase_order_item?.budget_item?.budget_accounts?.currency_id ?? 0,
       assertOrThrow(
         exchange_rate,
         'errors.not_found',
@@ -764,10 +791,8 @@ export class CreateCommandHandler
         quantity: quantity,
         price: price,
         total: get_total,
-        // currency_id: vendor_bank_account?.currency_id ?? 0,
-        currency_id: purchase_order_item?.currency_id ?? 0,
-        payment_currency_id:
-          purchase_order_item?.budget_item?.budget_accounts?.currency_id ?? 0,
+        currency_id: currency.id,
+        payment_currency_id: payment_currency.id,
         exchange_rate: rate,
         vat: vat,
         payment_total: payment_total,

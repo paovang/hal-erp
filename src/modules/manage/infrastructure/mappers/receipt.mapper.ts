@@ -158,7 +158,11 @@ export class ReceiptDataAccessMapper {
   }
 
   private convertItemToLak(
-    item: { payment_total?: number; vat?: number; payment_currency?: { id: number; code?: string } },
+    item: {
+      payment_total?: number;
+      vat?: number;
+      payment_currency?: { id: number; code?: string };
+    },
     rateMap: Map<string, number>,
   ): { paymentTotalLak: number; vatLak: number } {
     const paymentCurrency = item.payment_currency;
