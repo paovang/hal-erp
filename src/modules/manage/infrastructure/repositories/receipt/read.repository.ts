@@ -283,7 +283,9 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     roles?: string[],
     company_id?: number,
   ): Promise<ReceiptEntity[]> {
-    const department_id = query.department_id ? Number(query.department_id) : undefined;
+    const department_id = query.department_id
+      ? Number(query.department_id)
+      : undefined;
     const status_id = query.status_id ? Number(query.status_id) : undefined;
     const payment_type = query.payment_type;
     const companyID = query.company_id ? Number(query.company_id) : undefined;
@@ -307,9 +309,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       { startDate: query.startDate, endDate: query.endDate },
     );
 
-    const items = await queryBuilder
-      .orderBy('receipts.id', 'DESC')
-      .getMany();
+    const items = await queryBuilder.orderBy('receipts.id', 'DESC').getMany();
 
     return Promise.all(
       items.map((item) => this._dataAccessMapper.toEntity(item, 0)),
@@ -887,7 +887,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
         .getOneOrFail(),
       this.createBasePurchaseRequestQuery(manager)
         .where('purchase_requests.id = :id', {
-          id: receipt.purchase_orders.purchase_requests.id,
+          id: receipt.purchase_orders.purchase_requests.id, // 890
         })
         .getOneOrFail(),
     ]);

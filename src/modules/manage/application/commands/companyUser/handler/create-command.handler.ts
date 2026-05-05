@@ -161,6 +161,7 @@ export class CreateCompanyUserCommandHandler
           );
           fileKey = s3ImageResponse.fileKey;
         }
+        console.log('object', fileKey);
 
         processedItems = {
           ...command.dto,
