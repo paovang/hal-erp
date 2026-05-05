@@ -22,9 +22,12 @@ export class GetAllForExportQueryHandler
     const user = this._userContextService.getAuthUser()?.user;
     const user_id = user?.id;
 
-    const departmentUser = await query.manager.findOne(DepartmentUserOrmEntity, {
-      where: { user_id },
-    });
+    const departmentUser = await query.manager.findOne(
+      DepartmentUserOrmEntity,
+      {
+        where: { user_id },
+      },
+    );
 
     const companyUser = await query.manager.findOne(CompanyUserOrmEntity, {
       where: { user_id },
