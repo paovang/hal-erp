@@ -46,10 +46,15 @@ export class GetAllForExportQueryHandler
       company_id,
     );
 
-    return entities.map((entity) => ({
-      pr_number: entity.pr_number ?? '',
-      createdAt: entity.createdAt ?? null,
-      requesterUsername: entity.document?.requester?.username ?? '',
-    }));
+    return entities.map((entity) => {
+      const requesterUsername = entity.document?.requester?.username ?? '';
+      return {
+        pr_number: entity.pr_number ?? '',
+        requesterUsername,
+        status: entity.document?.status ?? '',
+        createdBy: requesterUsername,
+        createdAt: entity.createdAt ?? null,
+      };
+    });
   }
 }
