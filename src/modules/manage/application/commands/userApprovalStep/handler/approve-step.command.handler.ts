@@ -90,7 +90,6 @@ import { ExchangeRateOrmEntity } from '@src/common/infrastructure/database/typeo
 import { VendorBankAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor_bank_account.orm';
 import { PurchaseOrderSelectedVendorOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-order-selected-vendor.orm';
 import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
-// import { DomainException } from '@src/common/domain/exceptions/domain.exception';
 import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeorm/company-user.orm';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 
@@ -441,6 +440,16 @@ export class ApproveStepCommandHandler
                 0,
               );
 
+              const currency = await manager.findOneOrFail(CurrencyOrmEntity, {
+                where: {
+                  id: purchase_request.purchase_request_items[0].currency_id,
+                },
+              });
+
+              const currency_code = currency.code;
+
+              const code = purchase_request.pr_number;
+
               const model_id = purchase_request.id;
 
               notificationData = await handleApprovalStep({
@@ -459,6 +468,8 @@ export class ApproveStepCommandHandler
                 titlesString,
                 document_type: EnumRequestApprovalType.PR,
                 from_mail: from.username,
+                code,
+                currency: currency_code,
               });
 
               // end
@@ -606,24 +617,6 @@ export class ApproveStepCommandHandler
                     'vendor bank account',
                   );
 
-                  // 5. Exchange rate
-                  // const exchange_rate = await manager.findOne(
-                  //   ExchangeRateOrmEntity,
-                  //   {
-                  //     where: {
-                  //       from_currency_id: vendor_bank_account?.currency_id,
-                  //       to_currency_id: CurrencyEnum.kIP,
-                  //       is_active: true,
-                  //     },
-                  //   },
-                  // );
-                  // assertOrThrow(
-                  //   exchange_rate,
-                  //   'errors.not_found',
-                  //   HttpStatus.NOT_FOUND,
-                  //   'exchange rate',
-                  // );
-
                   // const exchage = await this.exchange(query, manager);
 
                   if (sum_total > check_budget) {
@@ -658,6 +651,16 @@ export class ApproveStepCommandHandler
                 0,
               );
 
+              const code = po.po_number;
+
+              const currency = await manager.findOneOrFail(CurrencyOrmEntity, {
+                where: {
+                  id: po.purchase_order_items[0].currency_id,
+                },
+              });
+
+              const currency_code = currency.code;
+
               const model_id = po.id;
 
               notificationData = await handleApprovalStep({
@@ -670,12 +673,13 @@ export class ApproveStepCommandHandler
                 writeDocumentApprover: this._writeDocumentApprover,
                 userDataAccessMapper: this._userDataAccessMapper,
                 getApprover: this.getApprover.bind(this),
-                // company_id: company_id || undefined,
                 model_id,
                 department_name,
                 titlesString,
                 document_type: EnumRequestApprovalType.PO,
                 from_mail: from.username,
+                code,
+                currency: currency_code,
               });
             } else if (query.dto.type === EnumPrOrPo.R) {
               const receipt = await manager.findOne(ReceiptOrmEntity, {
@@ -687,7 +691,7 @@ export class ApproveStepCommandHandler
                   'receipt_items.purchase_order_items.budget_item',
                 ],
               });
-              console.log('receipt', receipt);
+
               if (!receipt) {
                 throw new ManageDomainException(
                   'errors.not_found',
@@ -756,6 +760,14 @@ export class ApproveStepCommandHandler
                 0,
               );
 
+              const code = receipt.receipt_number;
+
+              const currency = await manager.findOneOrFail(CurrencyOrmEntity, {
+                where: {
+                  id: receipt.receipt_items[0].currency_id,
+                },
+              });
+
               const model_id = receipt.id;
 
               notificationData = await handleApprovalStep({
@@ -773,6 +785,8 @@ export class ApproveStepCommandHandler
                 titlesString,
                 document_type: EnumRequestApprovalType.RC,
                 from_mail: from.username,
+                code,
+                currency: currency.code,
               });
             } else {
               throw new ManageDomainException(

@@ -82,6 +82,7 @@ import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeor
 import { hashData } from '@src/common/utils/server/hash-data.util';
 import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
+import { CurrencyOrmEntity } from '@src/common/infrastructure/database/typeorm/currency.orm';
 
 interface CustomPurchaseOrderItemDto {
   purchase_request_item_id: number;
@@ -354,9 +355,24 @@ export class CreateCommandHandler
 
         const po_id = (po_result as any)._id._value;
         // save po item
-        await this.savePOItem(query, manager, po_id);
+        const purchaseRequestItems = await this.savePOItem(
+          query,
+          manager,
+          po_id,
+        );
+
+        const currency_id = (purchaseRequestItems as any)[0].currency_id;
 
         const total = await this.calculateTotal(query, manager);
+
+        const currency = await findOneOrFail(
+          manager,
+          CurrencyOrmEntity,
+          {
+            id: currency_id,
+          },
+          `currency`,
+        );
 
         // save user approval (return ข้อมูลสำหรับส่ง notification หลัง commit)
         notificationData = await this.saveUserApproval(
@@ -368,6 +384,8 @@ export class CreateCommandHandler
           user,
           po_id,
           from.username,
+          code,
+          currency.code,
         );
 
         return await this._read.findOne(new PurchaseOrderId(po_id), manager);
@@ -391,6 +409,8 @@ export class CreateCommandHandler
     user: UserEntity,
     po_id: number,
     from?: string,
+    code?: string,
+    currency?: string,
   ): Promise<ApprovalNotificationData> {
     const department = await findOneOrFail(manager, DepartmentUserOrmEntity, {
       user_id: user_id,
@@ -500,6 +520,8 @@ export class CreateCommandHandler
       token,
       approval_rules,
       from_mail: from,
+      code,
+      currency,
     };
   }
 
