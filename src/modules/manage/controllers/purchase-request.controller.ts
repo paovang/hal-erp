@@ -41,78 +41,6 @@ export class PurchaseRequestController {
     private readonly _dataMapper: PurchaseRequestDataMapper,
     private readonly _excelExportService: ExcelExportService,
   ) {}
-
-  @Post('')
-  async create(
-    @Body() dto: CreatePurchaseRequestDto,
-  ): Promise<ResponseResult<PurchaseRequestResponse>> {
-    const result = await this._purchaseRequestService.create(dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Put('add-step/:id')
-  async addStep(
-    @Param('id') id: number,
-    @Body() dto: AddStepDto,
-  ): Promise<ResponseResult<PurchaseRequestResponse>> {
-    const result = await this._purchaseRequestService.addStep(id, dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Get('')
-  async getAll(
-    @Query() dto: PurchaseRequestQueryDto,
-  ): Promise<ResponseResult<PurchaseRequestResponse>> {
-    const result = await this._purchaseRequestService.getAll(dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Public()
-  @Get('by-token')
-  async getByToken(
-    @Query() dto: TokenDto,
-  ): Promise<ResponseResult<PurchaseRequestResponse>> {
-    const verify = await verifyHashData(dto.token);
-    if (!verify) {
-      throw new ManageDomainException(
-        'errors.invalid_token',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const id = verify.id;
-
-    const result = await this._purchaseRequestService.getOne(id);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Get(':id')
-  async getOne(
-    @Param('id') id: number,
-  ): Promise<ResponseResult<PurchaseRequestResponse>> {
-    const result = await this._purchaseRequestService.getOne(id);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
   @Get('export-excel')
   @ApiOperation({
     summary: 'Export purchase requests within a date range to Excel',
@@ -233,6 +161,77 @@ export class PurchaseRequestController {
         error: error.message,
       });
     }
+  }
+
+  @Post('')
+  async create(
+    @Body() dto: CreatePurchaseRequestDto,
+  ): Promise<ResponseResult<PurchaseRequestResponse>> {
+    const result = await this._purchaseRequestService.create(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Put('add-step/:id')
+  async addStep(
+    @Param('id') id: number,
+    @Body() dto: AddStepDto,
+  ): Promise<ResponseResult<PurchaseRequestResponse>> {
+    const result = await this._purchaseRequestService.addStep(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get('')
+  async getAll(
+    @Query() dto: PurchaseRequestQueryDto,
+  ): Promise<ResponseResult<PurchaseRequestResponse>> {
+    const result = await this._purchaseRequestService.getAll(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Public()
+  @Get('by-token')
+  async getByToken(
+    @Query() dto: TokenDto,
+  ): Promise<ResponseResult<PurchaseRequestResponse>> {
+    const verify = await verifyHashData(dto.token);
+    if (!verify) {
+      throw new ManageDomainException(
+        'errors.invalid_token',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const id = verify.id;
+
+    const result = await this._purchaseRequestService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get(':id')
+  async getOne(
+    @Param('id') id: number,
+  ): Promise<ResponseResult<PurchaseRequestResponse>> {
+    const result = await this._purchaseRequestService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
   }
 
   @Put(':id')

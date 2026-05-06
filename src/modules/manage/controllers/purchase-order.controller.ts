@@ -49,86 +49,6 @@ export class PurchaseOrderController {
     private readonly _dataBudgetMapper: BudgetItemDataMapper,
     private readonly _excelExportService: ExcelExportService,
   ) {}
-
-  @Get('')
-  async getAll(
-    @Query() dto: PurchaseOrderQueryDto,
-  ): Promise<ResponseResult<PurchaseOrderResponse>> {
-    const result = await this._purchaseOrderService.getAll(dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Public()
-  @Get('by-token')
-  async getByToken(
-    @Query() dto: TokenDto,
-  ): Promise<ResponseResult<PurchaseOrderResponse>> {
-    const verify = await verifyHashData(dto.token);
-    if (!verify) {
-      throw new ManageDomainException(
-        'errors.invalid_token',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const id = verify.id;
-    const result = await this._purchaseOrderService.getOne(id);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Get(':id')
-  async getOne(
-    @Param('id') id: number,
-  ): Promise<ResponseResult<PurchaseOrderResponse>> {
-    const result = await this._purchaseOrderService.getOne(id);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Post('')
-  async create(
-    @Body() dto: CreatePurchaseOrderDto,
-  ): Promise<ResponseResult<PurchaseOrderResponse>> {
-    const result = await this._purchaseOrderService.create(dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() dto: UpdatePurchaseOrderDto,
-  ): Promise<ResponseResult<PurchaseOrderResponse>> {
-    let result;
-    if (dto.type === EnumType.VENDOR) {
-      result = await this._purchaseOrderService.update(id, dto);
-    } else if (dto.type === EnumType.BUDGET_ITEM_DETAIL) {
-      result = await this._purchaseOrderService.updateBudgetItem(id, dto);
-    }
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
-    return await this._purchaseOrderService.delete(id);
-  }
-
   @Get('export-excel')
   @ApiOperation({
     summary: 'Export purchase orders within a date range to Excel',
@@ -277,5 +197,83 @@ export class PurchaseOrderController {
         error: error.message,
       });
     }
+  }
+  @Get('')
+  async getAll(
+    @Query() dto: PurchaseOrderQueryDto,
+  ): Promise<ResponseResult<PurchaseOrderResponse>> {
+    const result = await this._purchaseOrderService.getAll(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Public()
+  @Get('by-token')
+  async getByToken(
+    @Query() dto: TokenDto,
+  ): Promise<ResponseResult<PurchaseOrderResponse>> {
+    const verify = await verifyHashData(dto.token);
+    if (!verify) {
+      throw new ManageDomainException(
+        'errors.invalid_token',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const id = verify.id;
+    const result = await this._purchaseOrderService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get(':id')
+  async getOne(
+    @Param('id') id: number,
+  ): Promise<ResponseResult<PurchaseOrderResponse>> {
+    const result = await this._purchaseOrderService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Post('')
+  async create(
+    @Body() dto: CreatePurchaseOrderDto,
+  ): Promise<ResponseResult<PurchaseOrderResponse>> {
+    const result = await this._purchaseOrderService.create(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdatePurchaseOrderDto,
+  ): Promise<ResponseResult<PurchaseOrderResponse>> {
+    let result;
+    if (dto.type === EnumType.VENDOR) {
+      result = await this._purchaseOrderService.update(id, dto);
+    } else if (dto.type === EnumType.BUDGET_ITEM_DETAIL) {
+      result = await this._purchaseOrderService.updateBudgetItem(id, dto);
+    }
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number): Promise<void> {
+    return await this._purchaseOrderService.delete(id);
   }
 }

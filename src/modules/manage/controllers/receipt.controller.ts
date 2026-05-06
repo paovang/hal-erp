@@ -44,83 +44,6 @@ export class ReceiptController {
     private readonly _purchaseRequestDataMapper: PurchaseRequestDataMapper,
     private readonly _excelExportService: ExcelExportService,
   ) {}
-
-  @Post('')
-  async create(
-    @Body() dto: CreateReceiptDto,
-  ): Promise<ResponseResult<ReceiptResponse>> {
-    const result = await this._receiptService.create(dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Get('')
-  async getAll(
-    @Query() dto: ReceiptQueryDto,
-  ): Promise<ResponseResult<ReceiptResponse>> {
-    const result = await this._receiptService.getAll(dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Public()
-  @Get('by-token')
-  async getByToken(
-    @Query() dto: TokenDto,
-  ): Promise<ResponseResult<ReceiptResponse>> {
-    const verify = await verifyHashData(dto.token);
-    if (!verify) {
-      throw new ManageDomainException(
-        'errors.invalid_token',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const id = verify.id;
-    const result = await this._receiptService.getOne(id);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
-  @Get('/print/:receipt_id')
-  async printReceipt(
-    @Param('receipt_id') id: number,
-    @Query() query: ReceiptQueryDto,
-  ) {
-    const { receipt, purchase_order, purchase_request } =
-      await this._receiptService.getPrint(id, query);
-
-    return {
-      receipt: this._dataMapper.toResponse(receipt),
-      purchase_order: purchase_order
-        ? this._purchaseOrderDataMapper.toResponse(purchase_order)
-        : null,
-      purchase_request: purchase_request
-        ? this._purchaseRequestDataMapper.toResponse(purchase_request)
-        : null,
-    };
-  }
-
-  @Get(':id')
-  async getOne(
-    @Param('id') id: number,
-  ): Promise<ResponseResult<ReceiptResponse>> {
-    const result = await this._receiptService.getOne(id);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
   @Get('export-excel')
   @ApiOperation({ summary: 'Export receipts within a date range to Excel' })
   @ApiQuery({
@@ -234,6 +157,81 @@ export class ReceiptController {
         error: error.message,
       });
     }
+  }
+  @Post('')
+  async create(
+    @Body() dto: CreateReceiptDto,
+  ): Promise<ResponseResult<ReceiptResponse>> {
+    const result = await this._receiptService.create(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get('')
+  async getAll(
+    @Query() dto: ReceiptQueryDto,
+  ): Promise<ResponseResult<ReceiptResponse>> {
+    const result = await this._receiptService.getAll(dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Public()
+  @Get('by-token')
+  async getByToken(
+    @Query() dto: TokenDto,
+  ): Promise<ResponseResult<ReceiptResponse>> {
+    const verify = await verifyHashData(dto.token);
+    if (!verify) {
+      throw new ManageDomainException(
+        'errors.invalid_token',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const id = verify.id;
+    const result = await this._receiptService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Get('/print/:receipt_id')
+  async printReceipt(
+    @Param('receipt_id') id: number,
+    @Query() query: ReceiptQueryDto,
+  ) {
+    const { receipt, purchase_order, purchase_request } =
+      await this._receiptService.getPrint(id, query);
+
+    return {
+      receipt: this._dataMapper.toResponse(receipt),
+      purchase_order: purchase_order
+        ? this._purchaseOrderDataMapper.toResponse(purchase_order)
+        : null,
+      purchase_request: purchase_request
+        ? this._purchaseRequestDataMapper.toResponse(purchase_request)
+        : null,
+    };
+  }
+
+  @Get(':id')
+  async getOne(
+    @Param('id') id: number,
+  ): Promise<ResponseResult<ReceiptResponse>> {
+    const result = await this._receiptService.getOne(id);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
   }
 
   @Put(':id')
