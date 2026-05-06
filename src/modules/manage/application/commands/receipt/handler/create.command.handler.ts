@@ -319,7 +319,27 @@ export class CreateCommandHandler
 
         await this.saveItem(query, manager, receipt_id);
 
+        const receipt_item = await findOneOrFail(
+          manager,
+          ReceiptItemOrmEntity,
+          {
+            receipt_id: receipt_id,
+          },
+          `receipt id: ${receipt_id}`,
+        );
+
+        const currency = await findOneOrFail(
+          manager,
+          CurrencyOrmEntity,
+          {
+            id: receipt_item.currency_id,
+          },
+          `currency id: ${receipt_item.currency_id}`,
+        );
+
         const total = await this.getSumTotal(manager, receipt_id);
+
+        const code = receipt_number;
 
         const { a_w_s } = await this.getApprovalWorkflow(
           manager,
@@ -385,6 +405,8 @@ export class CreateCommandHandler
           token,
           approval_rules,
           from_mail: from.username,
+          code,
+          currency: currency.code,
         };
 
         const d_approver: CustomDocumentApprover = {

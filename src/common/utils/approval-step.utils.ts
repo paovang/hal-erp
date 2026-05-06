@@ -37,6 +37,8 @@ export interface ApprovalNotificationData {
   token: string;
   approval_rules: ApprovalRuleInterface[];
   from_mail?: string;
+  code?: string;
+  currency?: string;
 }
 
 interface ApprovalStepHandlerParams {
@@ -58,6 +60,8 @@ interface ApprovalStepHandlerParams {
   titlesString: string;
   document_type: EnumRequestApprovalType;
   from_mail?: string;
+  code?: string;
+  currency?: string;
 }
 
 export async function handleApprovalStep({
@@ -75,6 +79,8 @@ export async function handleApprovalStep({
   titlesString,
   document_type,
   from_mail,
+  code,
+  currency,
 }: ApprovalStepHandlerParams): Promise<ApprovalNotificationData> {
   let token = '';
   const approval_rules: ApprovalRuleInterface[] = [];
@@ -402,6 +408,8 @@ export async function handleApprovalStep({
     token,
     approval_rules,
     from_mail,
+    code,
+    currency,
   };
 }
 
@@ -423,5 +431,7 @@ export async function sendApprovalNotification(
     data.token,
     data.approval_rules,
     data.from_mail,
+    data.code,
+    data.currency,
   );
 }

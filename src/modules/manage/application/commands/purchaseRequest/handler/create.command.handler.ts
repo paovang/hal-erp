@@ -75,7 +75,6 @@ import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.
 import { hashData } from '@src/common/utils/server/hash-data.util';
 import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
 import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-account.orm';
-import { VendorProductOrmEntity } from '@src/common/infrastructure/database/typeorm/vendor-product.orm';
 interface CustomApprovalDto
   extends Omit<
     ApprovalDto,
@@ -304,6 +303,15 @@ export class CreateCommandHandler
           return total + item.quantity * item.price;
         }, 0);
 
+        const quota = await manager.findOneOrFail(QuotaCompanyOrmEntity, {
+          where: {
+            id: purchaseRequestItems[0].quota_company_id,
+          },
+          relations: ['vendor_product', 'vendor_product.currency'],
+        });
+
+        const currency = quota.vendor_product.currency.code;
+
         const merge: CustomUserApprovalDto = {
           documentId: document_id,
           status: STATUS_KEY.PENDING,
@@ -365,6 +373,8 @@ export class CreateCommandHandler
           token,
           approval_rules,
           from_mail,
+          code,
+          currency,
         };
 
         const d_approver: CustomDocumentApprover = {
@@ -515,15 +525,6 @@ export class CreateCommandHandler
         },
         `unit id: ${item.unit_id}`,
       );
-
-      // await findOneOrFail(
-      //   query.manager,
-      //   QuotaCompanyOrmEntity,
-      //   {
-      //     id: item.quota_company_id,
-      //   },
-      //   `quota company id: ${item.quota_company_id}`,
-      // );
       // File Upload (Still necessary)
       const quota = await manager.findOneOrFail(QuotaCompanyOrmEntity, {
         where: {
