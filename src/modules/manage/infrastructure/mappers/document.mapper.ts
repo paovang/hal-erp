@@ -61,6 +61,7 @@ export class DocumentDataAccessMapper {
       .setCompanyId(ormData.company_id ?? 0)
       .setRequesterId(ormData.requester_id ?? 0)
       .setDocumentTypeId(ormData.document_type_id ?? 0)
+      .setStatus(ormData.status)
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at);
 

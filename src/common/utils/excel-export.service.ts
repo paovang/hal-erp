@@ -6,21 +6,27 @@ import path from 'path';
 
 export interface PrListExportRow {
   pr_number: string;
-  createdAt: Date | null;
   requesterUsername: string;
+  status: string;
+  createdBy: string;
+  createdAt: Date | null;
 }
 
 export interface PoListExportRow {
   po_number: string;
-  createdAt: Date | null;
   requesterUsername: string;
+  status: string;
+  createdBy: string;
+  createdAt: Date | null;
   total: number;
 }
 
 export interface ReceiptListExportRow {
   receipt_number: string;
-  createdAt: Date | null;
   requesterUsername: string;
+  status: string;
+  createdBy: string;
+  createdAt: Date | null;
   total: number;
 }
 
@@ -2133,8 +2139,10 @@ export class ExcelExportService {
 
     worksheet.columns = [
       { header: 'PR Number', key: 'pr_number', width: 24 },
+      { header: 'Username', key: 'requesterUsername', width: 24 },
+      { header: 'Status', key: 'status', width: 18 },
+      { header: 'Created By', key: 'createdBy', width: 24 },
       { header: 'Created At', key: 'createdAt', width: 22 },
-      { header: 'Requester', key: 'requesterUsername', width: 24 },
     ];
 
     this.styleHeaderRow(worksheet.getRow(1));
@@ -2142,12 +2150,16 @@ export class ExcelExportService {
     rows.forEach((row) => {
       const added = worksheet.addRow({
         pr_number: row.pr_number ?? '',
-        createdAt: this.formatTimestamp(row.createdAt),
         requesterUsername: row.requesterUsername ?? '',
+        status: row.status ?? '',
+        createdBy: row.createdBy ?? '',
+        createdAt: this.formatTimestamp(row.createdAt),
       });
       this.styleBodyCell(added.getCell(1), 'left');
-      this.styleBodyCell(added.getCell(2), 'center');
+      this.styleBodyCell(added.getCell(2), 'left');
       this.styleBodyCell(added.getCell(3), 'left');
+      this.styleBodyCell(added.getCell(4), 'left');
+      this.styleBodyCell(added.getCell(5), 'center');
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
@@ -2162,8 +2174,10 @@ export class ExcelExportService {
 
     worksheet.columns = [
       { header: 'PO Number', key: 'po_number', width: 24 },
+      { header: 'Username', key: 'requesterUsername', width: 24 },
+      { header: 'Status', key: 'status', width: 18 },
+      { header: 'Created By', key: 'createdBy', width: 24 },
       { header: 'Created At', key: 'createdAt', width: 22 },
-      { header: 'Requester', key: 'requesterUsername', width: 24 },
       { header: 'Total', key: 'total', width: 18 },
     ];
 
@@ -2172,16 +2186,22 @@ export class ExcelExportService {
     rows.forEach((row) => {
       const added = worksheet.addRow({
         po_number: row.po_number ?? '',
-        createdAt: this.formatTimestamp(row.createdAt),
         requesterUsername: row.requesterUsername ?? '',
+        status: row.status ?? '',
+        createdBy: row.createdBy ?? '',
+        createdAt: this.formatTimestamp(row.createdAt),
         total: Number(row.total ?? 0),
       });
       this.styleBodyCell(added.getCell(1), 'left');
-      this.styleBodyCell(added.getCell(2), 'center');
+      this.styleBodyCell(added.getCell(2), 'left');
       this.styleBodyCell(added.getCell(3), 'left');
-      this.styleBodyCell(added.getCell(4), 'right');
-      added.getCell(4).numFmt = '#,##0.00';
+      this.styleBodyCell(added.getCell(4), 'left');
+      this.styleBodyCell(added.getCell(5), 'center');
+      this.styleBodyCell(added.getCell(6), 'right');
+      added.getCell(6).numFmt = '#,##0.00';
     });
+
+    this.appendSumTotalRow(worksheet, 'F', rows.length);
 
     const buffer = await workbook.xlsx.writeBuffer();
     return buffer as unknown as Buffer;
@@ -2195,8 +2215,10 @@ export class ExcelExportService {
 
     worksheet.columns = [
       { header: 'Receipt Number', key: 'receipt_number', width: 24 },
+      { header: 'Username', key: 'requesterUsername', width: 24 },
+      { header: 'Status', key: 'status', width: 18 },
+      { header: 'Created By', key: 'createdBy', width: 24 },
       { header: 'Created At', key: 'createdAt', width: 22 },
-      { header: 'Requester', key: 'requesterUsername', width: 24 },
       { header: 'Total', key: 'total', width: 18 },
     ];
 
@@ -2205,18 +2227,66 @@ export class ExcelExportService {
     rows.forEach((row) => {
       const added = worksheet.addRow({
         receipt_number: row.receipt_number ?? '',
-        createdAt: this.formatTimestamp(row.createdAt),
         requesterUsername: row.requesterUsername ?? '',
+        status: row.status ?? '',
+        createdBy: row.createdBy ?? '',
+        createdAt: this.formatTimestamp(row.createdAt),
         total: Number(row.total ?? 0),
       });
       this.styleBodyCell(added.getCell(1), 'left');
-      this.styleBodyCell(added.getCell(2), 'center');
+      this.styleBodyCell(added.getCell(2), 'left');
       this.styleBodyCell(added.getCell(3), 'left');
-      this.styleBodyCell(added.getCell(4), 'right');
-      added.getCell(4).numFmt = '#,##0.00';
+      this.styleBodyCell(added.getCell(4), 'left');
+      this.styleBodyCell(added.getCell(5), 'center');
+      this.styleBodyCell(added.getCell(6), 'right');
+      added.getCell(6).numFmt = '#,##0.00';
     });
+
+    this.appendSumTotalRow(worksheet, 'F', rows.length);
 
     const buffer = await workbook.xlsx.writeBuffer();
     return buffer as unknown as Buffer;
+  }
+
+  private appendSumTotalRow(
+    worksheet: ExcelJS.Worksheet,
+    totalColumnLetter: string,
+    dataRowCount: number,
+  ): void {
+    if (dataRowCount <= 0) return;
+
+    const lastDataRow = dataRowCount + 1; // +1 accounts for header row
+    const summaryRowNumber = lastDataRow + 1;
+    const summaryRow = worksheet.getRow(summaryRowNumber);
+
+    const columnCount = worksheet.columnCount;
+    for (let col = 1; col <= columnCount; col++) {
+      this.styleBodyCell(summaryRow.getCell(col), 'left');
+    }
+
+    const labelCell = summaryRow.getCell(1);
+    labelCell.value = 'Sum Total';
+    labelCell.font = {
+      name: 'Phetsarath OT',
+      family: 2,
+      size: 11,
+      bold: true,
+    };
+    labelCell.alignment = { vertical: 'middle', horizontal: 'right' };
+
+    const totalCell = summaryRow.getCell(totalColumnLetter);
+    totalCell.value = {
+      formula: `SUM(${totalColumnLetter}2:${totalColumnLetter}${lastDataRow})`,
+    };
+    totalCell.numFmt = '#,##0.00';
+    totalCell.font = {
+      name: 'Phetsarath OT',
+      family: 2,
+      size: 11,
+      bold: true,
+    };
+    totalCell.alignment = { vertical: 'middle', horizontal: 'right' };
+
+    summaryRow.commit?.();
   }
 }

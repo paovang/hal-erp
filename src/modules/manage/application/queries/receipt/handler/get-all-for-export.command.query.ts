@@ -36,11 +36,16 @@ export class GetAllForExportQueryHandler
       company_id,
     );
 
-    return entities.map((entity) => ({
-      receipt_number: entity.receipt_number ?? '',
-      createdAt: entity.createdAt ?? null,
-      requesterUsername: entity.document?.requester?.username ?? '',
-      total: Number(entity.total ?? 0),
-    }));
+    return entities.map((entity) => {
+      const requesterUsername = entity.document?.requester?.username ?? '';
+      return {
+        receipt_number: entity.receipt_number ?? '',
+        requesterUsername,
+        status: entity.document?.status ?? '',
+        createdBy: requesterUsername,
+        createdAt: entity.createdAt ?? null,
+        total: Number(entity.total ?? 0),
+      };
+    });
   }
 }

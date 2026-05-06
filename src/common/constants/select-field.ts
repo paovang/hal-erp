@@ -61,6 +61,7 @@ export const selectDocuments = [
   'documents.department_id',
   'documents.document_type_id',
   'documents.requester_id',
+  'documents.status',
   'documents.created_at',
   'documents.updated_at',
 ];
