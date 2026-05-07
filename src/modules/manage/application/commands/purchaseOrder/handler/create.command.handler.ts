@@ -604,7 +604,8 @@ export class CreateCommandHandler
     query: CreateCommand,
     manager: EntityManager,
     po_id: number,
-  ): Promise<void> {
+  ): Promise<CustomPurchaseOrderItemDto[]> {
+    const savedItems: CustomPurchaseOrderItemDto[] = [];
     for (const item of query.dto.items) {
       const pr_item = await manager.findOne(PurchaseRequestItemOrmEntity, {
         where: {
@@ -632,7 +633,6 @@ export class CreateCommandHandler
       } else {
         vat_total = 0;
       }
-
       const itemDto: CustomPurchaseOrderItemDto = {
         purchase_request_item_id: item.purchase_request_item_id,
         remark: pr_item?.remark ?? '',
@@ -653,7 +653,10 @@ export class CreateCommandHandler
         po_item_id,
         item.selected_vendor,
       );
+
+      savedItems.push(itemDto);
     }
+    return savedItems;
   }
 
   private async getApprover(

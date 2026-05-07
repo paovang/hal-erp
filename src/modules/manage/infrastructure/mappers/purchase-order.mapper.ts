@@ -51,6 +51,7 @@ export class PurchaseOrderDataAccessMapper {
       mediaOrmEntity.created_at = poEntity.createdAt ?? new Date(now);
     }
     mediaOrmEntity.updated_at = new Date(now);
+    // console.log('toOrmEntity', mediaOrmEntity);
     return mediaOrmEntity;
   }
 
