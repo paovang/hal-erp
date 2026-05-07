@@ -16,6 +16,7 @@ import { EnumPrOrPo } from '../../../constants/status-key.const';
 import { Type } from 'class-transformer';
 import { CreateDocumentAttachmentDto } from '../documentSttachment/create.dto';
 import { UpdatePurchaseOrderBudgetItemDto } from '../purchaseOrderItem/update.dto';
+// import { CreateExchangeRateType } from '../exchange-rates/create.dto';
 
 export class ApprovalDto {
   @ApiProperty()
@@ -69,4 +70,28 @@ export class ApprovalDto {
   @ValidateNested({ each: true })
   @Type(() => CreateDocumentAttachmentDto)
   readonly files?: CreateDocumentAttachmentDto[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsArray({ message: i18nValidationMessage('validation.IS_ARRAY') })
+  @ValidateNested({ each: true })
+  @Type(() => ExchangeRateType)
+  readonly rate?: ExchangeRateType[];
+}
+
+class ExchangeRateType {
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  readonly from_currency_id: number;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  readonly to_currency_id: number;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  readonly rate: number;
 }
