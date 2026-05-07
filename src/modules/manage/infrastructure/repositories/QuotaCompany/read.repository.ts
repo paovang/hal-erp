@@ -123,7 +123,8 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
       .leftJoinAndSelect('vendor_product.products', 'products')
       .leftJoinAndSelect('products.product_type', 'product_type')
       .leftJoinAndSelect('products.unit', 'unit')
-      .leftJoinAndSelect('vendor_product.vendors', 'vendors');
+      .leftJoinAndSelect('vendor_product.vendors', 'vendors')
+      .leftJoinAndSelect('vendor_product.currency', 'currency');
 
     // 🔴 จุดสำคัญ
     // .innerJoinAndSelect('company.documents', 'documents')
@@ -179,6 +180,7 @@ export class ReadQuotaCompanyRepository implements IReadQuotaCompanyRepository {
         'vendor_product.products.product_type',
         'vendor_product.products.unit',
         'vendor_product.vendors',
+        'vendor_product.currency',
       ],
     });
 
