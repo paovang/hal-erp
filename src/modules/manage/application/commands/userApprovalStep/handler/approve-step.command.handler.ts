@@ -751,7 +751,7 @@ export class ApproveStepCommandHandler
                   }
 
                   await this.registerAccount(query, manager, receipt.id);
-                  await this.insertDataInTransaction(manager, receipt);
+                  await this.insertDataInTransaction(manager, receipt, query);
                 }
               }
 
@@ -941,7 +941,7 @@ export class ApproveStepCommandHandler
                   }
 
                   await this.registerAccount(query, manager, receipt.id);
-                  await this.insertDataInTransaction(manager, receipt);
+                  await this.insertDataInTransaction(manager, receipt, query);
                 }
               }
             }
@@ -1218,14 +1218,15 @@ export class ApproveStepCommandHandler
   private async insertDataInTransaction(
     manager: EntityManager,
     receipt: ReceiptOrmEntity,
+    command: ApproveStepCommand,
   ): Promise<void> {
-    console.log('tes');
+    const { dto } = command;
+    // console.log('tes');
     // console.log(receipt);
     // Group receipt_items by budget_item_id
     const grouped: Record<string, any[]> = {};
     for (const item of receipt.receipt_items) {
       const poItem = item.purchase_order_items;
-      console.log('poItem', poItem);
       if (!poItem || !poItem.budget_item_id) continue;
       const key = String(poItem.budget_item_id);
       if (!grouped[key]) grouped[key] = [];
@@ -1235,13 +1236,26 @@ export class ApproveStepCommandHandler
       where: { to_currency: { code: 'LAK' } },
       relations: ['from_currency', 'to_currency'],
     });
-    console.log('tes1');
+    if (dto.rate?.length) {
+      for (const rateFromUser of dto.rate) {
+        const rateEntity = rateOrm.find(
+          (item) =>
+            item.from_currency.id === rateFromUser.from_currency_id &&
+            item.to_currency.id === rateFromUser.to_currency_id,
+        );
+
+        if (rateEntity) {
+          rateEntity.rate = rateFromUser.rate;
+        }
+      }
+    }
+    // console.log('tes1');
 
     const rateMap = new Map<string, number>(
       rateOrm.map((item) => [String(item.from_currency.id), item.rate]),
     );
-    console.log('rateMap', rateMap);
-    console.log('grouped', grouped);
+    // console.log('rateMap', rateMap);
+    // console.log('grouped', grouped);
 
     for (const budgetItemId in grouped) {
       const items = grouped[budgetItemId];
@@ -1266,7 +1280,7 @@ export class ApproveStepCommandHandler
           { property: 'budget_item_detail_id' },
         );
       }
-      console.log('tes2');
+      // console.log('tes2');
 
       // Use the first item for PO/vendor/currency lookup
       const firstItem = items[0];
@@ -1301,7 +1315,7 @@ export class ApproveStepCommandHandler
         HttpStatus.NOT_FOUND,
         'vendor bank account',
       );
-      console.log('tes3');
+      // console.log('tes3');
 
       // const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
       //   where: {
@@ -1324,7 +1338,6 @@ export class ApproveStepCommandHandler
       //   exchange_rate!.to_currency_id,
       //   manager,
       // );
-      console.log('tes4');
 
       // Sum total for all items in this group
       let sum_total = 0;
