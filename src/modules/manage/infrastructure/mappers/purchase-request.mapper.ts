@@ -59,6 +59,7 @@ export class PurchaseRequestDataAccessMapper {
     const items = ormData.purchase_request_items || [];
     interface PurchaseRequestItemLike {
       total_price?: number;
+      total_in_lak?: string | number;
       [key: string]: any;
     }
     // const total: number = items.reduce(
@@ -86,6 +87,12 @@ export class PurchaseRequestDataAccessMapper {
       0,
     );
 
+    const total_in_lak: number = items.reduce(
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + Number(item.total_in_lak || 0),
+      0,
+    );
+
     const totalWorkflowStep = 0;
 
     const po = ormData.purchase_orders;
@@ -104,6 +111,7 @@ export class PurchaseRequestDataAccessMapper {
       .setUpdatedAt(ormData.updated_at)
       .setDeletedAt(ormData.deleted_at)
       .setTotal(total)
+      .setTotalInLak(total_in_lak)
       .setWorkflowStepTotal(totalWorkflowStep ?? 0)
       .setStep(step);
 

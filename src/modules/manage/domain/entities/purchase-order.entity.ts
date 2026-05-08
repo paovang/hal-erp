@@ -21,6 +21,9 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
   private readonly _sub_total: number | 0;
   private readonly _vat: number | 0;
   private readonly _total: number | 0;
+  private readonly _sub_total_in_lak: number | 0;
+  private readonly _vat_total_in_lak: number | 0;
+  private readonly _total_in_lak: number | 0;
   private readonly _purchaseRequest: PurchaseRequestEntity | null;
   private readonly _orderItem: PurchaseOrderItemEntity[] | null;
   // private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
@@ -44,6 +47,9 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
     this._sub_total = builder.sub_total ?? 0;
     this._vat = builder.vat ?? 0;
     this._total = builder.total;
+    this._sub_total_in_lak = builder.sub_total_in_lak ?? 0;
+    this._vat_total_in_lak = builder.vat_total_in_lak ?? 0;
+    this._total_in_lak = builder.total_in_lak ?? 0;
     this._purchaseRequest = builder.purchaseRequest ?? null;
     this._orderItem = builder.orderItem ?? null;
     // this._selectedVendor = builder.selectedVendor ?? null;
@@ -103,6 +109,18 @@ export class PurchaseOrderEntity extends Entity<PurchaseOrderId> {
 
   get total(): number | 0 {
     return this._total;
+  }
+
+  get sub_total_in_lak(): number | 0 {
+    return this._sub_total_in_lak;
+  }
+
+  get vat_total_in_lak(): number | 0 {
+    return this._vat_total_in_lak;
+  }
+
+  get total_in_lak(): number | 0 {
+    return this._total_in_lak;
   }
 
   get step(): number | 0 {

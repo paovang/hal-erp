@@ -45,6 +45,15 @@ export class PurchaseOrderResponse {
   total: number | 0;
 
   @ApiProperty()
+  sub_total_in_lak: number | 0;
+
+  @ApiProperty()
+  vat_total_in_lak: number | 0;
+
+  @ApiProperty()
+  total_in_lak: number | 0;
+
+  @ApiProperty()
   step: boolean;
 
   @ApiProperty()

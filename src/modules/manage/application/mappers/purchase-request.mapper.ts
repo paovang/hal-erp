@@ -79,6 +79,7 @@ export class PurchaseRequestDataMapper {
       .tz(entity.updatedAt, Timezone.LAOS)
       .format(DateFormat.DATETIME_READABLE_FORMAT);
     response.total = entity.total;
+    response.total_in_lak = Number(entity.total_in_lak ?? 0);
     response.step = isStepPending;
 
     response.document = entity.document

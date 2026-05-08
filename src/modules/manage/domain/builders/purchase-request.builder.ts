@@ -17,6 +17,7 @@ export class PurchaseRequestBuilder {
   updatedAt!: Date | null;
   deletedAt!: Date | null;
   total: number | 0;
+  total_in_lak: number | 0;
   purchaseRequestItem: PurchaseRequestItemEntity[] | null;
   document: DocumentEntity | null;
   user_approval: UserApprovalEntity | null;
@@ -83,6 +84,11 @@ export class PurchaseRequestBuilder {
 
   setTotal(total: number | 0): this {
     this.total = total;
+    return this;
+  }
+
+  setTotalInLak(total_in_lak: number | 0): this {
+    this.total_in_lak = total_in_lak;
     return this;
   }
 

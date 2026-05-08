@@ -79,6 +79,9 @@ export class PurchaseOrderDataMapper {
     response.sub_total = Number(entity.sub_total);
     response.vat = Number(entity.vat);
     response.total = Number(entity.total);
+    response.sub_total_in_lak = Number(entity.sub_total_in_lak ?? 0);
+    response.vat_total_in_lak = Number(entity.vat_total_in_lak ?? 0);
+    response.total_in_lak = Number(entity.total_in_lak ?? 0);
     response.step = isStepPending;
 
     response.purchase_request = entity.purchaseRequest

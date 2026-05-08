@@ -63,6 +63,8 @@ export class PurchaseOrderDataAccessMapper {
     interface PurchaseRequestItemLike {
       vat?: number;
       total?: number;
+      total_in_lak?: string | number;
+      vat_in_lak?: string | number;
       [key: string]: any;
     }
     const rateOrm = await this.exchangeRateRepository.find({
@@ -105,6 +107,20 @@ export class PurchaseOrderDataAccessMapper {
 
     const total = sub_total + vat;
 
+    const sub_total_in_lak: number = items.reduce(
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + Number(item.total_in_lak || 0),
+      0,
+    );
+
+    const vat_total_in_lak: number = items.reduce(
+      (sum: number, item: PurchaseRequestItemLike) =>
+        sum + Number(item.vat_in_lak || 0),
+      0,
+    );
+
+    const total_in_lak = sub_total_in_lak + vat_total_in_lak;
+
     const rc = ormData.receipts;
     const isCreatedRc = rc && rc.length > 0 ? true : false;
 
@@ -121,6 +137,9 @@ export class PurchaseOrderDataAccessMapper {
       .setSubTotal(sub_total)
       .setVat(vat)
       .setTotal(total)
+      .setSubTotalInLak(sub_total_in_lak)
+      .setVatTotalInLak(vat_total_in_lak)
+      .setTotalInLak(total_in_lak)
       .setStep(step);
     if (ormData.purchase_requests) {
       builder.setPurchaseRequest(
