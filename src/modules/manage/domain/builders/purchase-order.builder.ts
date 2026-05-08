@@ -20,6 +20,9 @@ export class PurchaseOrderBuilder {
   sub_total: number | 0;
   vat: number | 0;
   total: number | 0;
+  sub_total_in_lak: number | 0;
+  vat_total_in_lak: number | 0;
+  total_in_lak: number | 0;
   purchaseRequest: PurchaseRequestEntity | null;
   orderItem: PurchaseOrderItemEntity[] | null;
   // selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
@@ -95,6 +98,21 @@ export class PurchaseOrderBuilder {
 
   setTotal(total: number | 0): this {
     this.total = total;
+    return this;
+  }
+
+  setSubTotalInLak(sub_total_in_lak: number | 0): this {
+    this.sub_total_in_lak = sub_total_in_lak;
+    return this;
+  }
+
+  setVatTotalInLak(vat_total_in_lak: number | 0): this {
+    this.vat_total_in_lak = vat_total_in_lak;
+    return this;
+  }
+
+  setTotalInLak(total_in_lak: number | 0): this {
+    this.total_in_lak = total_in_lak;
     return this;
   }
 

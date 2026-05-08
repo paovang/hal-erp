@@ -39,6 +39,9 @@ export class PurchaseRequestResponse {
   total: number | 0;
 
   @ApiProperty()
+  total_in_lak: number | 0;
+
+  @ApiProperty()
   step: boolean;
 
   @ApiProperty()
