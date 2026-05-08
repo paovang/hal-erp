@@ -79,10 +79,10 @@ export class PurchaseRequestItemOrmEntity {
   @Column({ type: 'decimal', precision: 18, scale: 2, nullable: true })
   total_price?: number;
 
-  @Column({ type: 'decimal', precision: 15, scale: 8 })
+  @Column({ type: 'decimal', precision: 15, scale: 8, default: '0.00' })
   rate: string;
 
-  @Column({ type: 'decimal', precision: 18, scale: 2 })
+  @Column({ type: 'decimal', precision: 18, scale: 2, default: '0.00' })
   total_in_lak: string;
 
   @Index()

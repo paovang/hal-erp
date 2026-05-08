@@ -93,13 +93,13 @@ export class PurchaseOrderItemOrmEntity {
   @Column({ type: 'decimal', precision: 15, scale: 8, nullable: true })
   vat?: number;
 
-  @Column({ type: 'decimal', precision: 15, scale: 8 })
+  @Column({ type: 'decimal', precision: 15, scale: 8, default: '0.00' })
   rate: string;
 
-  @Column({ type: 'decimal', precision: 18, scale: 2 })
+  @Column({ type: 'decimal', precision: 18, scale: 2, default: '0.00' })
   total_in_lak: string;
 
-  @Column({ type: 'decimal', precision: 18, scale: 2 })
+  @Column({ type: 'decimal', precision: 18, scale: 2, default: '0.00' })
   vat_in_lak: string;
 
   @CreateDateColumn({ type: 'timestamp' })
