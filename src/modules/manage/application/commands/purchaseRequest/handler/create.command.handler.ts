@@ -5,6 +5,7 @@ import { PurchaseRequestEntity } from '@src/modules/manage/domain/entities/purch
 import { Inject, HttpStatus } from '@nestjs/common';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import {
+  CURRENCY_CONVERSION_SERVICE,
   LENGTH_DOCUMENT_CODE,
   LENGTH_PURCHASE_REQUEST_CODE,
   PR_FILE_NAME_FOLDER,
@@ -16,6 +17,7 @@ import {
   WRITE_USER_APPROVAL_REPOSITORY,
   WRITE_USER_APPROVAL_STEP_REPOSITORY,
 } from '../../../constants/inject-key.const';
+import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 import {
   IReadPurchaseRequestRepository,
   IWritePurchaseRequestRepository,
@@ -135,6 +137,8 @@ export class CreateCommandHandler
     private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
+    @Inject(CURRENCY_CONVERSION_SERVICE)
+    private readonly _currencyConversion: CurrencyConversionService,
   ) {}
 
   async execute(
@@ -548,12 +552,22 @@ export class CreateCommandHandler
       const sum_total = item.quantity * item.price;
       const processedItemData = { ...item, file_name: fileKey };
 
+      const currency_id = quota.vendor_product.currency.id;
+      const { rate, totalInLak } =
+        await this._currencyConversion.resolveLakValuation(
+          currency_id,
+          sum_total,
+          manager,
+        );
+
       // Ensure the mapper creates a valid TypeORM Entity instance
       const pr_item = this._dataItemMapper.toEntity(
         processedItemData,
         pr_id,
         sum_total,
-        quota.vendor_product.currency.id,
+        currency_id,
+        rate,
+        totalInLak,
       );
 
       // ITEM-BY-ITEM WRITE (As requested, one database call per item)

@@ -44,6 +44,15 @@ export class PurchaseRequestItemDataAccessMapper {
     mediaOrmEntity.total_price = prItemEntity.total_price;
     mediaOrmEntity.remark = prItemEntity.remark;
     mediaOrmEntity.currency_id = prItemEntity.currency_id;
+    if (prItemEntity.rate !== null && prItemEntity.rate !== undefined) {
+      mediaOrmEntity.rate = prItemEntity.rate;
+    }
+    if (
+      prItemEntity.total_in_lak !== null &&
+      prItemEntity.total_in_lak !== undefined
+    ) {
+      mediaOrmEntity.total_in_lak = prItemEntity.total_in_lak;
+    }
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = prItemEntity.createdAt ?? new Date(now);
     }
@@ -64,6 +73,8 @@ export class PurchaseRequestItemDataAccessMapper {
       .setPrice(ormData.price ?? 0)
       .setTotalPrice(ormData.total_price ?? 0)
       .setRemark(ormData.remark ?? '')
+      .setRate(ormData.rate ?? null)
+      .setTotalInLak(ormData.total_in_lak ?? null)
       .setCreatedAt(ormData.created_at);
 
     if (ormData.units) {

@@ -47,6 +47,21 @@ export class PurchaseOrderItemDataAccessMapper {
       ? SelectStatus.TRUE
       : SelectStatus.FALSE;
     mediaOrmEntity.vat = poItemEntity.vat;
+    if (poItemEntity.rate !== null && poItemEntity.rate !== undefined) {
+      mediaOrmEntity.rate = poItemEntity.rate;
+    }
+    if (
+      poItemEntity.total_in_lak !== null &&
+      poItemEntity.total_in_lak !== undefined
+    ) {
+      mediaOrmEntity.total_in_lak = poItemEntity.total_in_lak;
+    }
+    if (
+      poItemEntity.vat_in_lak !== null &&
+      poItemEntity.vat_in_lak !== undefined
+    ) {
+      mediaOrmEntity.vat_in_lak = poItemEntity.vat_in_lak;
+    }
 
     if (method === OrmEntityMethod.CREATE) {
       mediaOrmEntity.created_at = poItemEntity.createdAt ?? new Date(now);
@@ -77,7 +92,10 @@ export class PurchaseOrderItemDataAccessMapper {
       .setCreatedAt(ormData.created_at)
       .setUpdatedAt(ormData.updated_at)
       .setVatTotal(vatAmount)
-      .setTotalWithVat(totalWithVat);
+      .setTotalWithVat(totalWithVat)
+      .setRate(ormData.rate ?? null)
+      .setTotalInLak(ormData.total_in_lak ?? null)
+      .setVatInLak(ormData.vat_in_lak ?? null);
 
     if (ormData.budget_item) {
       builder.setBudgetItem(this._budgetItem.toEntity(ormData.budget_item));

@@ -23,6 +23,8 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
   private readonly _quota_company: QuotaCompanyEntity | null;
   private readonly _currency_id: number;
   private readonly _currency: CurrencyEntity | null;
+  private readonly _rate: string | null;
+  private readonly _total_in_lak: string | null;
 
   private constructor(builder: PurchaseRequestItemBuilder) {
     super();
@@ -43,6 +45,8 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
     this._quota_company = builder.quota_company ?? null;
     this._currency_id = builder.currency_id;
     this._currency = builder.currency ?? null;
+    this._rate = builder.rate ?? null;
+    this._total_in_lak = builder.total_in_lak ?? null;
   }
 
   get purchase_request_id(): number {
@@ -107,6 +111,14 @@ export class PurchaseRequestItemEntity extends Entity<PurchaseRequestItemId> {
 
   get quota_company(): QuotaCompanyEntity | null {
     return this._quota_company;
+  }
+
+  get rate(): string | null {
+    return this._rate;
+  }
+
+  get total_in_lak(): string | null {
+    return this._total_in_lak;
   }
 
   public static builder(): PurchaseRequestItemBuilder {

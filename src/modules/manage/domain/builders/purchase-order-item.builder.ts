@@ -26,6 +26,9 @@ export class PurchaseOrderItemBuilder {
   purchase_request_item: PurchaseRequestItemEntity | null;
   currency_id: number;
   currency: CurrencyEntity | null;
+  rate: string | null;
+  total_in_lak: string | null;
+  vat_in_lak: string | null;
 
   setPurchaseOrderItemId(value: PurchaseOrderItemId): this {
     this.purchaseOrderItemId = value;
@@ -126,6 +129,21 @@ export class PurchaseOrderItemBuilder {
 
   setBudgetItem(budgetItem: BudgetItemEntity | null): this {
     this.budgetItem = budgetItem;
+    return this;
+  }
+
+  setRate(rate: string | null): this {
+    this.rate = rate;
+    return this;
+  }
+
+  setTotalInLak(total_in_lak: string | null): this {
+    this.total_in_lak = total_in_lak;
+    return this;
+  }
+
+  setVatInLak(vat_in_lak: string | null): this {
+    this.vat_in_lak = vat_in_lak;
     return this;
   }
 

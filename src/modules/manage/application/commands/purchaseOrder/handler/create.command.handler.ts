@@ -5,6 +5,7 @@ import { PurchaseOrderEntity } from '@src/modules/manage/domain/entities/purchas
 import { PurchaseOrderDataMapper } from '../../../mappers/purchase-order.mapper';
 import { HttpStatus, Inject } from '@nestjs/common';
 import {
+  CURRENCY_CONVERSION_SERVICE,
   LENGTH_DOCUMENT_CODE,
   LENGTH_PURCHASE_ORDER_CODE,
   PO_FILE_NAME_FOLDER,
@@ -17,6 +18,7 @@ import {
   WRITE_USER_APPROVAL_REPOSITORY,
   WRITE_USER_APPROVAL_STEP_REPOSITORY,
 } from '../../../constants/inject-key.const';
+import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
 import {
@@ -93,6 +95,9 @@ interface CustomPurchaseOrderItemDto {
   is_vat: boolean;
   vat: number;
   currency_id: number;
+  rate?: string;
+  total_in_lak?: string;
+  vat_in_lak?: string;
 }
 
 interface CustomUserApprovalDto extends CreateUserApprovalDto {
@@ -164,6 +169,8 @@ export class CreateCommandHandler
     @Inject(AMAZON_S3_SERVICE_KEY)
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
     private readonly _codeGeneratorUtil: CodeGeneratorUtil,
+    @Inject(CURRENCY_CONVERSION_SERVICE)
+    private readonly _currencyConversion: CurrencyConversionService,
   ) {}
 
   async execute(
@@ -633,15 +640,32 @@ export class CreateCommandHandler
       } else {
         vat_total = 0;
       }
+      const total = Number(pr_item?.quantity ?? 0) * Number(item.price ?? 0);
+      const currency_id = pr_item?.currency?.id ?? 0;
+
+      const totalValuation = await this._currencyConversion.resolveLakValuation(
+        currency_id,
+        total,
+        manager,
+      );
+      const vatValuation = await this._currencyConversion.resolveLakValuation(
+        currency_id,
+        vat_total,
+        manager,
+      );
+
       const itemDto: CustomPurchaseOrderItemDto = {
         purchase_request_item_id: item.purchase_request_item_id,
         remark: pr_item?.remark ?? '',
         quantity: pr_item?.quantity ?? 0,
         price: item.price ?? 0,
-        total: Number(pr_item?.quantity ?? 0) * Number(item.price ?? 0),
+        total,
         is_vat: item?.is_vat ?? false,
         vat: vat_total,
-        currency_id: pr_item?.currency?.id ?? 0,
+        currency_id,
+        rate: totalValuation.rate,
+        total_in_lak: totalValuation.totalInLak,
+        vat_in_lak: vatValuation.totalInLak,
       };
       const itemEntity = this._dataItemMapper.toEntity(itemDto, po_id);
       const po_item = await this._writeItem.create(itemEntity, manager);

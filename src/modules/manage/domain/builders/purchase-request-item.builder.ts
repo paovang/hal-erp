@@ -22,6 +22,8 @@ export class PurchaseRequestItemBuilder {
   quota_company: QuotaCompanyEntity | null;
   currency_id: number;
   currency: CurrencyEntity | null;
+  rate: string | null;
+  total_in_lak: string | null;
 
   setPurchaseRequestItemId(value: PurchaseRequestItemId): this {
     this.purchaseRequestItemId = value;
@@ -105,6 +107,16 @@ export class PurchaseRequestItemBuilder {
 
   setQuotaCompany(quota_company: QuotaCompanyEntity | null): this {
     this.quota_company = quota_company;
+    return this;
+  }
+
+  setRate(rate: string | null): this {
+    this.rate = rate;
+    return this;
+  }
+
+  setTotalInLak(total_in_lak: string | null): this {
+    this.total_in_lak = total_in_lak;
     return this;
   }
 

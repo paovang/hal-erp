@@ -15,11 +15,13 @@ import { IImageOptimizeService } from '@src/common/utils/services/images/interfa
 import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
 import { ITransactionManagerService } from '@src/common/infrastructure/transaction/transaction.interface';
 import {
+  CURRENCY_CONVERSION_SERVICE,
   PO_FILE_NAME_FOLDER,
   WRITE_PURCHASE_ORDER_ITEM_REPOSITORY,
   WRITE_PURCHASE_ORDER_REPOSITORY,
   WRITE_PURCHASE_ORDER_SELECTED_VENDOR_REPOSITORY,
 } from '../../../constants/inject-key.const';
+import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 import { IWritePurchaseOrderSelectedVendorRepository } from '@src/modules/manage/domain/ports/output/Purchase-order-selected-vendor-repository.interface';
 import { PurchaseOrderSelectedVendorDataMapper } from '../../../mappers/purchase-order-selected-vendor.mapper';
 import path from 'path';
@@ -47,6 +49,10 @@ interface CustomPurchaseOrderItemDto {
   total: number;
   is_vat: boolean;
   vat: number;
+  currency_id?: number;
+  rate?: string;
+  total_in_lak?: string;
+  vat_in_lak?: string;
 }
 
 @CommandHandler(UpdateCommand)
@@ -74,6 +80,8 @@ export class UpdateCommandHandler
     private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
+    @Inject(CURRENCY_CONVERSION_SERVICE)
+    private readonly _currencyConversion: CurrencyConversionService,
   ) {}
 
   async execute(
@@ -142,14 +150,32 @@ export class UpdateCommandHandler
         Number(item.price ?? 0) *
         Number(vat_rate / 100);
 
+      const total = Number(pr_item?.quantity ?? 0) * Number(item.price ?? 0);
+      const currency_id = pr_item.currency_id ?? 0;
+
+      const totalValuation = await this._currencyConversion.resolveLakValuation(
+        currency_id,
+        total,
+        manager,
+      );
+      const vatValuation = await this._currencyConversion.resolveLakValuation(
+        currency_id,
+        vat_total,
+        manager,
+      );
+
       const customItem: CustomPurchaseOrderItemDto = {
         purchase_request_item_id: pr_item?.purchase_request_item_id ?? 0,
         remark: pr_item.remark ?? '', // or some default value
         quantity: pr_item.quantity ?? 0, // or some default value
         price: item.price, // assuming this property exists
-        total: Number(pr_item?.quantity ?? 0) * Number(item.price ?? 0),
+        total,
         is_vat: item?.is_vat ?? false,
         vat: vat_total,
+        currency_id,
+        rate: totalValuation.rate,
+        total_in_lak: totalValuation.totalInLak,
+        vat_in_lak: vatValuation.totalInLak,
       };
       const itemEntity = this._dataItemMapper.toEntity(customItem, query.id);
 

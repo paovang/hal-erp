@@ -23,6 +23,8 @@ export class PurchaseRequestItemDataMapper {
     pr_id?: number,
     sum_total: number = 0,
     currency_id?: number,
+    rate?: string,
+    total_in_lak?: string,
   ): PurchaseRequestItemEntity {
     const builder = PurchaseRequestItemEntity.builder();
 
@@ -66,6 +68,14 @@ export class PurchaseRequestItemDataMapper {
       builder.setCurrencyId(currency_id);
     }
 
+    if (rate !== undefined) {
+      builder.setRate(rate);
+    }
+
+    if (total_in_lak !== undefined) {
+      builder.setTotalInLak(total_in_lak);
+    }
+
     return builder.build();
   }
 
@@ -86,6 +96,9 @@ export class PurchaseRequestItemDataMapper {
     response.quota_company_id = entity.quota_company_id;
     response.price = Number(entity.price);
     response.total_price = Number(entity.total_price);
+    response.rate = entity.rate !== null ? Number(entity.rate) : null;
+    response.total_in_lak =
+      entity.total_in_lak !== null ? Number(entity.total_in_lak) : null;
     response.remark = entity.remark;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)
