@@ -36,6 +36,15 @@ export class PurchaseOrderItemResponse {
   total_with_vat: number | 0;
 
   @ApiProperty()
+  rate: number | null;
+
+  @ApiProperty()
+  total_in_lak: number | null;
+
+  @ApiProperty()
+  vat_in_lak: number | null;
+
+  @ApiProperty()
   is_vat: boolean;
 
   @ApiProperty()

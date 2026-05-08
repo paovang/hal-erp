@@ -54,6 +54,8 @@ import {
 } from '@src/common/utils/approval-step.utils';
 import { UserApprovalStepId } from '@src/modules/manage/domain/value-objects/user-approval-step-id.vo';
 import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
+import { ReceiptItemOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.item.orm';
+import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request-item.orm';
 import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
 import { AMAZON_S3_SERVICE_KEY } from '@src/common/infrastructure/aws3/config/inject-key';
 import { IAmazonS3ImageService } from '@src/common/infrastructure/aws3/interface/amazon-s3-image-service.interface';
@@ -751,7 +753,7 @@ export class ApproveStepCommandHandler
                   }
 
                   await this.registerAccount(query, manager, receipt.id);
-                  await this.insertDataInTransaction(manager, receipt, query);
+                  await this.insertDataInTransaction(manager, receipt);
                 }
               }
 
@@ -941,7 +943,7 @@ export class ApproveStepCommandHandler
                   }
 
                   await this.registerAccount(query, manager, receipt.id);
-                  await this.insertDataInTransaction(manager, receipt, query);
+                  await this.insertDataInTransaction(manager, receipt);
                 }
               }
             }
@@ -1218,11 +1220,7 @@ export class ApproveStepCommandHandler
   private async insertDataInTransaction(
     manager: EntityManager,
     receipt: ReceiptOrmEntity,
-    command: ApproveStepCommand,
   ): Promise<void> {
-    const { dto } = command;
-    // console.log('tes');
-    // console.log(receipt);
     // Group receipt_items by budget_item_id
     const grouped: Record<string, any[]> = {};
     for (const item of receipt.receipt_items) {
@@ -1236,19 +1234,7 @@ export class ApproveStepCommandHandler
       where: { to_currency: { code: 'LAK' } },
       relations: ['from_currency', 'to_currency'],
     });
-    if (dto.rate?.length) {
-      for (const rateFromUser of dto.rate) {
-        const rateEntity = rateOrm.find(
-          (item) =>
-            item.from_currency.id === rateFromUser.from_currency_id &&
-            item.to_currency.id === rateFromUser.to_currency_id,
-        );
 
-        if (rateEntity) {
-          rateEntity.rate = rateFromUser.rate;
-        }
-      }
-    }
     // console.log('tes1');
 
     const rateMap = new Map<string, number>(
@@ -1339,35 +1325,72 @@ export class ApproveStepCommandHandler
       //   manager,
       // );
 
-      // Sum total for all items in this group
+      // Refresh rate + LAK fields on each linked PO/PR/receipt item using the
+      // same rateMap that drives DocumentTransaction.amount, so the invariant
+      // amount = Σ total_in_lak + Σ vat_in_lak holds by construction.
+      const round = (n: number): string =>
+        (Math.round((n + Number.EPSILON) * 100) / 100).toFixed(2);
+
       let sum_total = 0;
       for (const item of items) {
-        const purchase_order_item = await manager.findOneOrFail(
+        const po_item = await manager.findOneOrFail(
           PurchaseOrderItemOrmEntity,
           {
             where: { id: item.purchase_order_item_id },
             relations: ['currency'],
           },
         );
-        // const vat = Number(purchase_order_item?.vat ?? 0);
-        // const get_total = Number(purchase_order_item?.total ?? 0);
-        const vat = () => {
-          const rate = rateMap.get(String(purchase_order_item.currency.id));
-          if (!rate)
+
+        let rate: number;
+        if (po_item.currency?.code === 'LAK') {
+          rate = 1;
+        } else {
+          const r = rateMap.get(String(po_item.currency.id));
+          if (!r) {
             throw new BadRequestException(
-              `Currency ${item.currency.id} to LAK is not found.`,
+              `Currency ${po_item.currency.id} to LAK is not found.`,
             );
-          return Number(purchase_order_item.vat) * rate;
-        };
-        const get_total = () => {
-          const rate = rateMap.get(String(purchase_order_item.currency.id));
-          if (!rate)
-            throw new BadRequestException(
-              `Currency ${item.currency.id} to LAK is not found.`,
+          }
+          rate = Number(r);
+        }
+
+        const totalInLak = round(Number(po_item.total ?? 0) * rate);
+        const vatInLak = round(Number(po_item.vat ?? 0) * rate);
+        sum_total += Number(totalInLak) + Number(vatInLak);
+
+        const rateStr = String(rate);
+
+        // 1) PO item back-update
+        await manager.update(
+          PurchaseOrderItemOrmEntity,
+          { id: po_item.id },
+          { rate: rateStr, total_in_lak: totalInLak, vat_in_lak: vatInLak },
+        );
+
+        // 2) Linked PR item back-update (rate + total_in_lak based on PR's own total_price)
+        if (po_item.purchase_request_item_id) {
+          const pr_item = await manager.findOne(PurchaseRequestItemOrmEntity, {
+            where: { id: po_item.purchase_request_item_id },
+          });
+          if (pr_item) {
+            const prTotalInLak = round(Number(pr_item.total_price ?? 0) * rate);
+            await manager.update(
+              PurchaseRequestItemOrmEntity,
+              { id: pr_item.id },
+              { rate: rateStr, total_in_lak: prTotalInLak },
             );
-          return Number(purchase_order_item.total) * rate;
-        };
-        sum_total += get_total() + vat();
+          }
+        }
+
+        // 3) Receipt item back-update (rate + payment_total = (total + vat) * rate)
+        const paymentTotal = round(
+          (Number(po_item.total ?? 0) + Number(po_item.vat ?? 0)) * rate,
+        );
+        await manager.update(
+          ReceiptItemOrmEntity,
+          { id: item.id },
+          { rate: Number(rateStr), payment_total: Number(paymentTotal) },
+        );
       }
 
       // const sum_total = items.reduce(

@@ -1,5 +1,6 @@
 import { Provider } from '@nestjs/common';
 import {
+  CURRENCY_CONVERSION_SERVICE,
   EXCHANGE_RATE_APPLICATION_SERVICE,
   READ_EXCHANGE_RATE_REPOSITORY,
   WRITE_EXCHANGE_RATE_REPOSITORY,
@@ -13,6 +14,7 @@ import { ExchangeRateMapperProviders } from './mapper.provider';
 import { LocalizationService } from '@src/common/infrastructure/localization/localization.service';
 import { TransactionManagerService } from '@src/common/infrastructure/transaction/transaction.service';
 import { ExchangeRateService } from '../../services/exchange-rate.service';
+import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { WriteExchangeRateRepository } from '@src/modules/manage/infrastructure/repositories/exchange-rates/write.repository';
 import { ReadExchangeRateRepository } from '@src/modules/manage/infrastructure/repositories/exchange-rates/read.repository';
 
@@ -38,6 +40,10 @@ export const ExchangeRateProvider: Provider[] = [
   {
     provide: READ_EXCHANGE_RATE_REPOSITORY,
     useClass: ReadExchangeRateRepository,
+  },
+  {
+    provide: CURRENCY_CONVERSION_SERVICE,
+    useClass: CurrencyConversionService,
   },
   // {
   //   provide: TRANSFORM_RESULT_SERVICE,

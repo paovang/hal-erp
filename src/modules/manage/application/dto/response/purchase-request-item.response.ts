@@ -35,6 +35,12 @@ export class PurchaseRequestItemResponse {
   total_price: number;
 
   @ApiProperty()
+  rate: number | null;
+
+  @ApiProperty()
+  total_in_lak: number | null;
+
+  @ApiProperty()
   remark: string;
 
   @ApiProperty()

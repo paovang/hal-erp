@@ -3,10 +3,13 @@ import { PurchaseRequestEntity } from '@src/modules/manage/domain/entities/purch
 import { UpdateCommand } from '../update.command';
 import { CommandHandler, IQueryHandler } from '@nestjs/cqrs';
 import {
+  CURRENCY_CONVERSION_SERVICE,
   PR_FILE_NAME_FOLDER,
   WRITE_PURCHASE_REQUEST_ITEM_REPOSITORY,
   WRITE_PURCHASE_REQUEST_REPOSITORY,
 } from '../../../constants/inject-key.const';
+import { CurrencyConversionService } from '../../../services/currency-conversion.service';
+import { QuotaCompanyOrmEntity } from '@src/common/infrastructure/database/typeorm/quota-company.orm';
 import { HttpStatus, Inject } from '@nestjs/common';
 import { IWritePurchaseRequestRepository } from '@src/modules/manage/domain/ports/output/purchase-request-repository.interface';
 import { PurchaseRequestDataMapper } from '../../../mappers/purchase-request.mapper';
@@ -59,6 +62,8 @@ export class UpdateCommandHandler
     private readonly _optimizeService: IImageOptimizeService,
     @Inject(AMAZON_S3_SERVICE_KEY)
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
+    @Inject(CURRENCY_CONVERSION_SERVICE)
+    private readonly _currencyConversion: CurrencyConversionService,
   ) {}
 
   async execute(
@@ -171,10 +176,28 @@ export class UpdateCommandHandler
 
       sum_total = item.quantity! * item.price!;
 
+      const quota_company_id =
+        item.quota_company_id ?? (existingItem as any).quota_company_id;
+      const quota = await manager.findOneOrFail(QuotaCompanyOrmEntity, {
+        where: { id: quota_company_id },
+        relations: ['vendor_product', 'vendor_product.currency'],
+      });
+      const currency_id = quota.vendor_product.currency.id;
+
+      const { rate, totalInLak } =
+        await this._currencyConversion.resolveLakValuation(
+          currency_id,
+          sum_total,
+          manager,
+        );
+
       const itemEntity = this._dataItemMapper.toEntity(
         processedItems,
         pr_id,
         sum_total,
+        currency_id,
+        rate,
+        totalInLak,
       );
       await itemEntity.initializeUpdateSetId(
         new PurchaseRequestItemId(item.id),

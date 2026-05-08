@@ -501,3 +501,8 @@ export const WRITE_QUOTA_COMPANY_REPOSITORY = Symbol(
 export const READ_QUOTA_COMPANY_REPOSITORY = Symbol(
   'READ_QUOTA_COMPANY_REPOSITORY',
 );
+
+// currency conversion (LAK valuation)
+export const CURRENCY_CONVERSION_SERVICE = Symbol(
+  'CURRENCY_CONVERSION_SERVICE',
+);

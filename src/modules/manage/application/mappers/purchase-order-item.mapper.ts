@@ -19,6 +19,9 @@ interface CustomPurchaseOrderItemDto {
   is_vat: boolean;
   vat?: number;
   currency_id?: number;
+  rate?: string;
+  total_in_lak?: string;
+  vat_in_lak?: string;
 }
 
 @Injectable()
@@ -74,6 +77,15 @@ export class PurchaseOrderItemDataMapper {
     if (dto?.currency_id) {
       builder.setCurrencyId(dto.currency_id);
     }
+    if (dto?.rate !== undefined) {
+      builder.setRate(dto.rate);
+    }
+    if (dto?.total_in_lak !== undefined) {
+      builder.setTotalInLak(dto.total_in_lak);
+    }
+    if (dto?.vat_in_lak !== undefined) {
+      builder.setVatInLak(dto.vat_in_lak);
+    }
 
     return builder.build();
   }
@@ -103,6 +115,11 @@ export class PurchaseOrderItemDataMapper {
     response.total = Number(entity.total);
     response.vat_total = Number(entity.vat_total);
     response.total_with_vat = Number(entity.total_with_vat);
+    response.rate = entity.rate !== null ? Number(entity.rate) : null;
+    response.total_in_lak =
+      entity.total_in_lak !== null ? Number(entity.total_in_lak) : null;
+    response.vat_in_lak =
+      entity.vat_in_lak !== null ? Number(entity.vat_in_lak) : null;
     response.is_vat = entity.is_vat;
     response.created_at = moment
       .tz(entity.createdAt, Timezone.LAOS)

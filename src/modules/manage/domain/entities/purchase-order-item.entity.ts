@@ -27,6 +27,9 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
   private readonly _selectedVendor: PurchaseOrderSelectedVendorEntity[] | null;
   private readonly _currency_id: number;
   private readonly _currency: CurrencyEntity | null;
+  private readonly _rate: string | null;
+  private readonly _total_in_lak: string | null;
+  private readonly _vat_in_lak: string | null;
 
   private constructor(builder: PurchaseOrderItemBuilder) {
     super();
@@ -50,6 +53,9 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
     this._purchase_request_item = builder.purchase_request_item ?? null;
     this._currency_id = builder.currency_id;
     this._currency = builder.currency ?? null;
+    this._rate = builder.rate ?? null;
+    this._total_in_lak = builder.total_in_lak ?? null;
+    this._vat_in_lak = builder.vat_in_lak ?? null;
   }
 
   get purchase_order_id(): number {
@@ -125,6 +131,18 @@ export class PurchaseOrderItemEntity extends Entity<PurchaseOrderItemId> {
 
   get selectedVendor(): PurchaseOrderSelectedVendorEntity[] | null {
     return this._selectedVendor;
+  }
+
+  get rate(): string | null {
+    return this._rate;
+  }
+
+  get total_in_lak(): string | null {
+    return this._total_in_lak;
+  }
+
+  get vat_in_lak(): string | null {
+    return this._vat_in_lak;
   }
 
   public static builder(): PurchaseOrderItemBuilder {
