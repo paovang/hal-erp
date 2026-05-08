@@ -43,6 +43,7 @@ export class BudgetAccountDataAccessMapper {
         budgetAccountEntity.createdAt ?? new Date(now);
     }
     mediaOrmEntity.updated_at = new Date(now);
+    mediaOrmEntity.currency_id = 4;
 
     return mediaOrmEntity;
   }
