@@ -756,6 +756,7 @@ export class CreateCommandHandler
       // .getOne();
       .getRepository(PurchaseOrderOrmEntity)
       .createQueryBuilder('po')
+      .withDeleted()
       .where('po.po_number IS NOT NULL')
       .orderBy(`CAST(SPLIT_PART(po.po_number, '/', 1) AS INTEGER)`, 'DESC')
       .getOne();
