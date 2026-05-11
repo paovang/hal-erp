@@ -109,6 +109,15 @@ export class ReadPurchaseOrderRepository
         filterCompanyId,
       });
     }
+    if (query.search) {
+      queryBuilder.andWhere(
+        `(
+          purchase_orders.po_number ILIKE :search OR
+          documents.title ILIKE :search
+        )`,
+        { search: `%${query.search}%` },
+      );
+    }
     if (query.startDate && query.endDate) {
       queryBuilder.andWhere(
         'purchase_orders.created_at BETWEEN :startDate AND :endDate',
@@ -380,15 +389,6 @@ export class ReadPurchaseOrderRepository
       queryBuilder.andWhere('po_documents.company_id = :filterCompanyId', {
         filterCompanyId,
       });
-    }
-    if (query.search) {
-      queryBuilder.andWhere(
-        `(
-          purchase_orders.po_number ILIKE :search OR
-          documents.title ILIKE :search
-        )`,
-        { search: `%${query.search}%` },
-      );
     }
 
     queryBuilder.andWhere(
