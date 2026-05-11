@@ -160,6 +160,15 @@ export class ReadPurchaseRequestRepository
         filterCompanyId,
       });
     }
+    if (query.search) {
+      idQueryBuilder.andWhere(
+        `(
+        purchase_requests.pr_number ILIKE :search OR
+        documents.title ILIKE :search
+      )`,
+        { search: `%${query.search}%` },
+      );
+    }
     if (query.startDate && query.endDate) {
       idQueryBuilder.andWhere(
         'purchase_requests.created_at BETWEEN :startDate AND :endDate',

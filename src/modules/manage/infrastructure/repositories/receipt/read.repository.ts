@@ -241,7 +241,14 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       companyID,
       query.type,
     );
-
+    if (query.search) {
+      queryBuilder.andWhere(
+        `(
+        receipts.receipt_number ILIKE :search
+      )`,
+        { search: `%${query.search}%` },
+      );
+    }
     queryBuilder.andWhere(
       'receipts.created_at BETWEEN :startDate AND :endDate',
       { startDate: query.startDate, endDate: query.endDate },
