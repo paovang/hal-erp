@@ -381,6 +381,15 @@ export class ReadPurchaseOrderRepository
         filterCompanyId,
       });
     }
+    if (query.search) {
+      queryBuilder.andWhere(
+        `(
+          purchase_orders.po_number ILIKE :search OR
+          documents.title ILIKE :search
+        )`,
+        { search: `%${query.search}%` },
+      );
+    }
 
     queryBuilder.andWhere(
       'purchase_orders.created_at BETWEEN :startDate AND :endDate',
