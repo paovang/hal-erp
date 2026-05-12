@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsDecimal,
   IsNotEmpty,
@@ -38,6 +39,7 @@ export class CreatePurchaseRequestItemDto {
   @Min(1, { message: i18nValidationMessage('validation.MIN') })
   readonly unit_id: number;
 
+  @Type(() => Number)
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber(
