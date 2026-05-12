@@ -22,7 +22,7 @@ export class CreatePurchaseRequestItemDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsDecimal({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   @Min(1, { message: i18nValidationMessage('validation.MIN') })
   readonly quantity: number;
 
@@ -40,7 +40,7 @@ export class CreatePurchaseRequestItemDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  @IsDecimal({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly price: number;
 
   @ApiProperty()
