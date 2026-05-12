@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsDecimal,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -21,7 +22,7 @@ export class CreatePurchaseRequestItemDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  @IsDecimal({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   @Min(1, { message: i18nValidationMessage('validation.MIN') })
   readonly quantity: number;
 
