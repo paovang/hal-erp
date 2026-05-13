@@ -257,7 +257,7 @@ export class ReportReadPurchaseOrderRepository
         }
       }
       if (department_id) {
-        query.andWhere('purchase_orders.department_id = :department_id', {
+        query.andWhere('po_documents.department_id = :department_id', {
           department_id,
         });
       }
