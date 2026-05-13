@@ -303,9 +303,12 @@ export class CreateCommandHandler
 
         const purchaseRequestItems = query.dto.purchase_request_items;
 
-        const total = purchaseRequestItems.reduce((total, item) => {
-          return total + item.quantity * item.price;
-        }, 0);
+        const total =
+          Math.round(
+            purchaseRequestItems.reduce((sum, item) => {
+              return sum + item.quantity * item.price;
+            }, 0) * 100,
+          ) / 100;
 
         const quota = await manager.findOneOrFail(QuotaCompanyOrmEntity, {
           where: {
@@ -550,7 +553,7 @@ export class CreateCommandHandler
         fileKey = s3ImageResponse.fileKey;
       }
 
-      const sum_total = item.quantity * item.price;
+      const sum_total = Math.round(item.quantity * item.price * 100) / 100;
       const processedItemData = { ...item, file_name: fileKey };
 
       const currency_id = quota.vendor_product.currency.id;

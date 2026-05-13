@@ -174,7 +174,7 @@ export class UpdateCommandHandler
         file_name: fileKey,
       };
 
-      sum_total = item.quantity! * item.price!;
+      sum_total = Math.round(item.quantity! * item.price! * 100) / 100;
 
       const quota_company_id =
         item.quota_company_id ?? (existingItem as any).quota_company_id;
