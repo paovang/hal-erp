@@ -28,7 +28,7 @@ export async function sendOtpUtil(
   // console.log('playLoad', playLoad);
   // console.log('apiUrl', apiUrl);
   try {
-    console.log(playLoad);
+    // console.log(playLoad);
     const response = await axios.post(`${apiUrl}/send-otp`, playLoad, {
       headers: {
         'Content-Type': 'application/json',

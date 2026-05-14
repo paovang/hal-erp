@@ -695,8 +695,14 @@ export class CreateCommandHandler
       );
 
       const source_currency_id = purchase_order_item?.currency_id;
-      const source_payment_currency_id =
-        purchase_order_item?.budget_item?.budget_accounts?.currency_id;
+      // const source_payment_currency_id =
+      //   purchase_order_item?.budget_item?.budget_accounts?.currency_id;
+      const source_payment_currency_id = await manager.findOneOrFail(
+        CurrencyOrmEntity,
+        {
+          where: { code: 'LAK' },
+        },
+      );
       console.log(purchase_order_item);
       assertOrThrow(
         source_currency_id,
@@ -714,7 +720,7 @@ export class CreateCommandHandler
       const exchange_rate = await manager.findOne(ExchangeRateOrmEntity, {
         where: {
           from_currency_id: source_currency_id,
-          to_currency_id: source_payment_currency_id,
+          to_currency_id: source_payment_currency_id.id,
           is_active: true,
         },
       });
