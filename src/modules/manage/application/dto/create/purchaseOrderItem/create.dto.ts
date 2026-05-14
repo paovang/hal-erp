@@ -17,10 +17,13 @@ export class CreatePurchaseOrderItemDto {
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly purchase_request_item_id: number;
-
+  @Type(() => Number)
   @ApiProperty()
   @IsOptional()
-  @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: i18nValidationMessage('validation.IS_NUMBER') },
+  )
   readonly price: number;
 
   @ApiProperty()

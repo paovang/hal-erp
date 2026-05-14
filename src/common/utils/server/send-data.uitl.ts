@@ -71,7 +71,8 @@ export async function sendApprovalRequest(
     source_request_id: Number(user_approval_step_id),
     source_system: 'E-DOCUMENT',
     request_type: type,
-    request_amount: Number(total),
+    request_amount: Math.round(Number(total) * 100) / 100,
+
     title: String(titles) ?? 'ຂໍຈັດຊື້',
     due_date: due_date,
     callback_url: 'http://127.0.0.1:3001',

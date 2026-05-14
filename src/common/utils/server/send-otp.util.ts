@@ -28,13 +28,13 @@ export async function sendOtpUtil(
   // console.log('playLoad', playLoad);
   // console.log('apiUrl', apiUrl);
   try {
+    console.log(playLoad);
     const response = await axios.post(`${apiUrl}/send-otp`, playLoad, {
       headers: {
         'Content-Type': 'application/json',
         'x-secret-key': process.env.APPROVAL_SECRET_KEY,
       },
     });
-
     if (response.status !== 200 && response.status !== 201) {
       throw new ManageDomainException(
         'errors.send_otp',
@@ -42,9 +42,10 @@ export async function sendOtpUtil(
         { property: response.data },
       );
     }
-
+    // console.log('OTP sent successfully:', response.data);
     return response.data.data;
   } catch (error: any) {
+    console.error('Error sending OTP:', error.response?.data?.message);
     throw new ManageDomainException('errors.send_otp', HttpStatus.BAD_REQUEST, {
       property: error.response?.data?.message ?? 'Unknown error',
     });
