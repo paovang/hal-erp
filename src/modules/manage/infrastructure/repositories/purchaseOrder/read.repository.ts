@@ -127,6 +127,16 @@ export class ReadPurchaseOrderRepository
         },
       );
     }
+    if (query.status_id) {
+      queryBuilder.andWhere('document_statuses.id = :status_id', {
+        status_id: query.status_id,
+      });
+    }
+    if (query.status_user_id) {
+      queryBuilder.andWhere('status.id = :status_id', {
+        status_id: query.status_user_id,
+      });
+    }
 
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;

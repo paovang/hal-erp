@@ -136,6 +136,16 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
         { search: `%${query.search}%` },
       );
     }
+    if (query.status_id) {
+      idQueryBuilder.andWhere('document_statuses.id = :status_id', {
+        status_id: query.status_id,
+      });
+    }
+    if (query.status_user_id) {
+      idQueryBuilder.andWhere('status.id = :status_id', {
+        status_id: query.status_user_id,
+      });
+    }
     this.applyDateFilter(
       idQueryBuilder,
       filterOptions.dateColumn,

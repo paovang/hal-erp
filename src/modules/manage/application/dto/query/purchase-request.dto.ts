@@ -39,6 +39,13 @@ export class PurchaseRequestQueryDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
+    description: 'Filter by approval status id',
+  })
+  @IsOptional()
+  status_user_id?: number;
+
+  @ApiProperty({
+    required: false,
     description: 'Filter by date',
   })
   @IsOptional()

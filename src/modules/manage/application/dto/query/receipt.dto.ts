@@ -33,6 +33,12 @@ export class ReceiptQueryDto extends PaginationDto {
   @IsOptional()
   status_id?: string;
 
+  @ApiProperty({
+    required: false,
+    description: 'Filter by approval status id',
+  })
+  @IsOptional()
+  status_user_id?: number;
   @ApiProperty()
   @IsOptional()
   payment_type?: string;

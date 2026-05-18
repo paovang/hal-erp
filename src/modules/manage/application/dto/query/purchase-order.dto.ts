@@ -50,4 +50,17 @@ export class PurchaseOrderQueryDto extends PaginationDto {
   @IsDate()
   @IsOptional()
   endDate?: Date;
+  @ApiProperty({
+    required: false,
+    description: 'Filter by approval status id',
+  })
+  @IsOptional()
+  status_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by approval status id',
+  })
+  @IsOptional()
+  status_user_id?: number;
 }
