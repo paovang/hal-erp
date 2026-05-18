@@ -96,7 +96,13 @@ export class ReadUserRepository implements IReadUserRepository {
 
   private getFilterOptions(): FilterOptions {
     return {
-      searchColumns: ['users.username', 'users.email', 'users.tel'],
+      searchColumns: [
+        'users.username',
+        'users.first_name',
+        'users.last_name',
+        'users.email',
+        'users.tel',
+      ],
       dateColumn: '',
       filterByColumns: [],
     };

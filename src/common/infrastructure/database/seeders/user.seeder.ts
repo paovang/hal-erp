@@ -59,6 +59,8 @@ export class UserSeeder {
     const items: SeedItem[] = [
       {
         username: 'admin',
+        first_name: 'Admin',
+        last_name: 'HalGroup',
         email: 'adminHalGroup@gmail.com',
         password: await bcrypt.hash('admin_group@26!', 12),
         roles: [adminRole],
@@ -67,6 +69,8 @@ export class UserSeeder {
       },
       {
         username: 'super-admin',
+        first_name: 'Super',
+        last_name: 'Admin',
         email: 'super_admin@gmail.com',
         password: await bcrypt.hash('hal_group@26!', 12),
         roles: [superAdminRole],
@@ -75,6 +79,8 @@ export class UserSeeder {
       },
       {
         username: 'user-hal-group',
+        first_name: 'User',
+        last_name: 'HalGroup',
         email: 'user_group@gmail.com',
         password: await bcrypt.hash('user_group@26!', 12),
         roles: [userRole],
@@ -84,6 +90,8 @@ export class UserSeeder {
       ////////////////////////////////////
       {
         username: 'adminHalLogistic',
+        first_name: 'Admin',
+        last_name: 'HalLogistic',
         email: 'adminHalLogistic@gmail.com',
         password: await bcrypt.hash('admin_halLogistic@26!', 12),
         roles: [adminRole],
@@ -92,6 +100,8 @@ export class UserSeeder {
       },
       {
         username: 'super-adminHalLogistic',
+        first_name: 'SuperAdmin',
+        last_name: 'HalLogistic',
         email: 'super_adminHalLogistic@gmail.com',
         password: await bcrypt.hash('hal_halLogistic@26!', 12),
         roles: [superAdminRole],
@@ -100,6 +110,8 @@ export class UserSeeder {
       },
       {
         username: 'user-halLogistic',
+        first_name: 'User',
+        last_name: 'HalLogistic',
         email: 'user_halLogistic@gmail.com',
         password: await bcrypt.hash('user_halLogistic@26!', 12),
         roles: [userRole],
@@ -109,6 +121,8 @@ export class UserSeeder {
       // role group
       {
         username: 'halLogistic',
+        first_name: 'Hal',
+        last_name: 'Logistic',
         email: 'halLogistic@gmail.com',
         password: await bcrypt.hash('halLogistic@26!', 12),
         roles: [superAdminRole],

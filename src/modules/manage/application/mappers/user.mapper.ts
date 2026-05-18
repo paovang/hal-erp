@@ -29,6 +29,9 @@ export class UserDataMapper {
       builder.setUsername(dto.username);
     }
 
+    builder.setFirstName(dto.firstName);
+    builder.setLastName(dto.lastName);
+
     if (dto.email) {
       builder.setEmail(dto.email);
     }
@@ -88,6 +91,8 @@ export class UserDataMapper {
     const builder = UserEntity.builder();
 
     if (dto.username) builder.setUsername(dto.username);
+    builder.setFirstName(dto.firstName);
+    builder.setLastName(dto.lastName);
     if (dto.email) builder.setEmail(dto.email);
     if (dto.tel) builder.setTel(dto.tel);
 
@@ -127,6 +132,8 @@ export class UserDataMapper {
     const response = new UserResponse();
     response.id = entity.getId().value;
     response.username = entity.username;
+    response.first_name = entity.firstName;
+    response.last_name = entity.lastName;
     response.email = entity.email;
     response.tel = entity.tel;
     response.created_at = moment

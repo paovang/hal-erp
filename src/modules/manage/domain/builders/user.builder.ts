@@ -8,6 +8,8 @@ import { UserId } from '../value-objects/user-id.vo';
 export class UserBuilder {
   userId: UserId;
   username: string;
+  firstName: string | null = null;
+  lastName: string | null = null;
   email: string;
   password: string;
   tel: string;
@@ -28,6 +30,16 @@ export class UserBuilder {
 
   setUsername(username: string): this {
     this.username = username;
+    return this;
+  }
+
+  setFirstName(firstName: string | null): this {
+    this.firstName = firstName;
+    return this;
+  }
+
+  setLastName(lastName: string | null): this {
+    this.lastName = lastName;
     return this;
   }
 

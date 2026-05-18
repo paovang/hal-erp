@@ -12,6 +12,12 @@ export class UserResponse {
   username: string;
 
   @ApiProperty()
+  first_name: string | null;
+
+  @ApiProperty()
+  last_name: string | null;
+
+  @ApiProperty()
   email: string;
 
   @ApiProperty()

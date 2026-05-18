@@ -8,6 +8,8 @@ import { UserTypeEntity } from './user-type.entity';
 
 export class UserEntity extends Entity<UserId> {
   private readonly _username: string;
+  private readonly _firstName: string | null;
+  private readonly _lastName: string | null;
   private readonly _email: string;
   private readonly _password: string;
   private readonly _tel: string;
@@ -25,6 +27,8 @@ export class UserEntity extends Entity<UserId> {
     super();
     this.setId(builder.userId);
     this._username = builder.username;
+    this._firstName = builder.firstName ?? null;
+    this._lastName = builder.lastName ?? null;
     this._email = builder.email;
     this._password = builder.password;
     this._tel = builder.tel;
@@ -41,6 +45,14 @@ export class UserEntity extends Entity<UserId> {
 
   get username(): string {
     return this._username;
+  }
+
+  get firstName(): string | null {
+    return this._firstName;
+  }
+
+  get lastName(): string | null {
+    return this._lastName;
   }
 
   get email(): string {

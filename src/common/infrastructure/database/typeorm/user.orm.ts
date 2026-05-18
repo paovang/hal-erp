@@ -35,6 +35,12 @@ export class UserOrmEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   username?: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  first_name?: string | null;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  last_name?: string | null;
+
   @Column({ type: 'varchar', length: 255, nullable: true, unique: true })
   email?: string;
 

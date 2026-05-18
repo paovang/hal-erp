@@ -28,6 +28,8 @@ export class UserDataAccessMapper {
       mediaOrmEntity.id = id.value;
     }
     mediaOrmEntity.username = userEntity.username;
+    mediaOrmEntity.first_name = userEntity.firstName;
+    mediaOrmEntity.last_name = userEntity.lastName;
     mediaOrmEntity.email = userEntity.email;
     mediaOrmEntity.password = userEntity.password;
     mediaOrmEntity.tel = userEntity.tel;
@@ -45,6 +47,8 @@ export class UserDataAccessMapper {
     const builder = UserEntity.builder()
       .setUserId(new UserId(ormData.id))
       .setUsername(ormData.username ?? '')
+      .setFirstName(ormData.first_name ?? null)
+      .setLastName(ormData.last_name ?? null)
       .setEmail(ormData.email ?? '') // corrected
       .setTel(ormData.tel ?? '') // corrected
       .setPassword(ormData.password ?? '')

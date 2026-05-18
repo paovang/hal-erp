@@ -26,6 +26,16 @@ export class CreateDepartmentUserDto {
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  readonly firstName: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  readonly lastName: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+  @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
   @IsEmail({}, { message: i18nValidationMessage('validation.IS_EMAIL') })
   readonly email: string;
 
