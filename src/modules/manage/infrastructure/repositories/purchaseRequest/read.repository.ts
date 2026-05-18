@@ -169,6 +169,11 @@ export class ReadPurchaseRequestRepository
         { search: `%${query.search}%` },
       );
     }
+    if (query.status_id) {
+      idQueryBuilder.andWhere('document_statuses.id = :status_id', {
+        status_id: query.status_id,
+      });
+    }
     if (query.startDate && query.endDate) {
       idQueryBuilder.andWhere(
         'purchase_requests.created_at BETWEEN :startDate AND :endDate',
