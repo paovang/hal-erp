@@ -83,6 +83,8 @@ export const selectUsers = [
   'users.id',
   'users.username',
   'users.email',
+  'users.first_name',
+  'users.last_name',
   'users.tel',
   'users.created_at',
   'users.updated_at',
