@@ -74,25 +74,21 @@ export class DeleteCommandHandler
       async (manager) => {
         const user = this._userContextService.getAuthUser()?.user;
         const user_id = user.id;
-        await this.checkData(query);
 
-        /** Check Exits Document Type Id */
-        const pr = await findOneOrFail(
-          query.manager,
-          PurchaseRequestOrmEntity,
-          {
-            id: query.id,
-          },
-        );
+        const pr = await findOneOrFail(manager, PurchaseRequestOrmEntity, {
+          id: query.id,
+        });
 
         const pr_id = (pr as any).id;
         const document_id = (pr as any).document_id;
 
-        await this.deleteItem(query, pr_id);
+        await this.checkData(query, document_id, manager);
 
-        await this.deleteDocument(query, document_id, manager);
+        await this.deleteItem(pr_id, manager);
 
-        await this.deleteUserApproval(query, document_id, manager);
+        await this.deleteDocument(document_id, manager);
+
+        await this.deleteUserApproval(document_id, manager);
 
         return await this._write.delete(
           new PurchaseRequestId(query.id),
@@ -103,7 +99,11 @@ export class DeleteCommandHandler
     );
   }
 
-  private async checkData(query: DeleteCommand): Promise<void> {
+  private async checkData(
+    query: DeleteCommand,
+    document_id: number,
+    manager: DataSource['manager'],
+  ): Promise<void> {
     if (isNaN(query.id)) {
       throw new ManageDomainException(
         'errors.must_be_number',
@@ -113,32 +113,56 @@ export class DeleteCommandHandler
     }
 
     await checkRelationOrThrow(
-      query.manager,
+      manager,
       PurchaseOrderOrmEntity,
       { purchase_request_id: query.id },
       'errors.already_in_use',
       HttpStatus.BAD_REQUEST,
       'purchase order',
     );
+
+    if (document_id != null) {
+      const user_approval = await manager.findOne(UserApprovalOrmEntity, {
+        where: { document_id },
+      });
+
+      if (user_approval) {
+        const approvedStep = await manager.findOne(UserApprovalStepOrmEntity, {
+          where: {
+            user_approval_id: user_approval.id,
+            status_id: STATUS_KEY.APPROVED,
+          },
+        });
+
+        if (approvedStep) {
+          throw new ManageDomainException(
+            'errors.cannot_delete',
+            HttpStatus.FORBIDDEN,
+          );
+        }
+      }
+    }
   }
 
-  private async deleteItem(query: DeleteCommand, pr_id: number): Promise<void> {
-    const pr_item = await query.manager.find(PurchaseRequestItemOrmEntity, {
+  private async deleteItem(
+    pr_id: number,
+    manager: DataSource['manager'],
+  ): Promise<void> {
+    const pr_item = await manager.find(PurchaseRequestItemOrmEntity, {
       where: {
         purchase_request_id: pr_id,
       },
     });
 
     for (const item of pr_item) {
-      return await this._writeItem.delete(
+      await this._writeItem.delete(
         new PurchaseRequestItemId(item.id),
-        query.manager,
+        manager,
       );
     }
   }
 
   private async deleteDocument(
-    query: DeleteCommand,
     document_id: number,
     manager: DataSource['manager'],
   ): Promise<void> {
@@ -146,19 +170,15 @@ export class DeleteCommandHandler
       id: document_id,
     });
 
-    return await this._writeD.delete(
-      new DocumentId(document.id),
-      query.manager,
-    );
+    return await this._writeD.delete(new DocumentId(document.id), manager);
   }
 
   private async deleteUserApproval(
-    query: DeleteCommand,
     document_id: number,
     manager: DataSource['manager'],
   ): Promise<void> {
     const user_approval = await findOneOrFail(
-      query.manager,
+      manager,
       UserApprovalOrmEntity,
       {
         document_id: document_id,
@@ -174,15 +194,9 @@ export class DeleteCommandHandler
     });
 
     for (const step of user_approval_step) {
-      if (step.status_id === STATUS_KEY.APPROVED) {
-        throw new ManageDomainException(
-          'errors.cannot_delete',
-          HttpStatus.FORBIDDEN,
-        );
-      }
       await this._writeUserApprovalStep.delete(
         new UserApprovalStepId(step.id),
-        query.manager,
+        manager,
       );
 
       await this.deleteDocumentApprover(step.id, manager);
@@ -190,7 +204,7 @@ export class DeleteCommandHandler
 
     await this._writeUserApproval.delete(
       new UserApprovalId(user_approval_id),
-      query.manager,
+      manager,
     );
   }
 
