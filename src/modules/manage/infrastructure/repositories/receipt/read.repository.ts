@@ -137,7 +137,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       );
     }
     if (query.status_user_id) {
-      idQueryBuilder.andWhere('status.id = :status_user_id', {
+      idQueryBuilder.andWhere('document_statuses.id = :status_user_id', {
         status_user_id: query.status_user_id,
       });
     }
