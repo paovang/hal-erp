@@ -433,6 +433,8 @@ export const selectUserApprovalSteps = [
 export const selectApprover = [
   'approver.id',
   'approver.username',
+  'approver.first_name',
+  'approver.last_name',
   'approver.email',
   'approver.tel',
   'approver.created_at',
