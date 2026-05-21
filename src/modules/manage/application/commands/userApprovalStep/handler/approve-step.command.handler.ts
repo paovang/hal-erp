@@ -341,7 +341,7 @@ export class ApproveStepCommandHandler
             {
               where: {
                 document_type_id: document.document_type_id,
-                company_id: company_id !== null ? company_id : Not(IsNull()),
+                company_id: effective_company_id ?? Not(IsNull()),
               },
             },
           );
@@ -362,7 +362,7 @@ export class ApproveStepCommandHandler
               approval_workflow_id: approvalWorkflow.id,
               step_number: currentStepNumber + 1,
               approval_workflows: {
-                company_id: company_id !== null ? company_id : Not(IsNull()),
+                company_id: effective_company_id ?? Not(IsNull()),
               },
             },
           });
@@ -373,7 +373,7 @@ export class ApproveStepCommandHandler
                 approval_workflow_id: approvalWorkflow.id,
                 step_number: currentStepNumber + 2,
                 approval_workflows: {
-                  company_id: company_id !== null ? company_id : Not(IsNull()),
+                  company_id: effective_company_id ?? Not(IsNull()),
                 },
               },
             });
