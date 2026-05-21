@@ -434,6 +434,8 @@ export const selectApprover = [
   'approver.id',
   'approver.username',
   'approver.email',
+  'approver.first_name',
+  'approver.last_name',
   'approver.tel',
   'approver.created_at',
   'approver.updated_at',
