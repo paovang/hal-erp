@@ -62,6 +62,7 @@ interface ApprovalStepHandlerParams {
   from_mail?: string;
   code?: string;
   currency?: string;
+  company_id?: number;
 }
 
 export async function handleApprovalStep({
@@ -81,6 +82,7 @@ export async function handleApprovalStep({
   from_mail,
   code,
   currency,
+  company_id,
 }: ApprovalStepHandlerParams): Promise<ApprovalNotificationData> {
   let token = '';
   const approval_rules: ApprovalRuleInterface[] = [];
@@ -99,7 +101,10 @@ export async function handleApprovalStep({
       const department_approvers = await manager.find(
         DepartmentApproverOrmEntity,
         {
-          where: { department_id: a_w_s.department_id },
+          where: {
+            department_id: a_w_s.department_id,
+            ...(company_id ? { company_id } : {}),
+          },
           relations: ['users'],
         },
       );
@@ -274,7 +279,7 @@ export async function handleApprovalStep({
       break;
     }
     case EnumWorkflowStep.CONDITION: {
-      const user_can_approve = await getApprover(total, manager);
+      const user_can_approve = await getApprover(total, manager, company_id);
       for (const user_approver of user_can_approve) {
         const d_approver: CustomDocumentApprover = {
           user_approval_step_id,
