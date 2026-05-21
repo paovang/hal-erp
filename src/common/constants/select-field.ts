@@ -332,6 +332,8 @@ export const selectDocumentApprover = [
 export const selectDocApproverUser = [
   'doc_approver_user.id',
   'doc_approver_user.username',
+  'doc_approver_user.first_name',
+  'doc_approver_user.last_name',
   'doc_approver_user.email',
   'doc_approver_user.tel',
   'doc_approver_user.created_at',
@@ -607,6 +609,8 @@ export const selectReceiptItems = [
 export const selectReceiptBy = [
   'receipt_by.id',
   'receipt_by.username',
+  'receipt_by.first_name',
+  'receipt_by.last_name',
   'receipt_by.email',
   'receipt_by.tel',
   'receipt_by.created_at',
@@ -617,6 +621,8 @@ export const selectReceiptBy = [
 export const selectCreatedBy = [
   'created_by.id',
   'created_by.username',
+  'created_by.first_name',
+  'created_by.last_name',
   'created_by.email',
   'created_by.tel',
   'created_by.created_at',
