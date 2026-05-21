@@ -331,11 +331,10 @@ export class ApproveStepCommandHandler
             );
           }
 
-          // Approver (e.g., super-admin) may have no CompanyUser mapping;
-          // fall back to the document's company so department-scoped lookups
-          // (next-step approvers) stay within the document's company.
-          const effective_company_id =
-            company_id ?? document.company_id ?? undefined;
+          // Use the document's company as the source of truth — next-step
+          // approver lookups must stay within the document's company, even
+          // when the approver (e.g., super-admin) belongs elsewhere.
+          const effective_company_id = document.company_id ?? undefined;
 
           const approvalWorkflow = await manager.findOne(
             ApprovalWorkflowOrmEntity,
