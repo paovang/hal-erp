@@ -132,9 +132,13 @@ export class ReadPurchaseOrderRepository
         status_id: query.status_id,
       });
     }
-    if (query.status_user_id) {
+
+    if (query.status_user_id && user_id) {
       queryBuilder.andWhere('status.id = :status_id', {
         status_id: query.status_user_id,
+      });
+      queryBuilder.andWhere('doc_approver_user.id = :user_id', {
+        user_id,
       });
     }
 

@@ -174,9 +174,12 @@ export class ReadPurchaseRequestRepository
         status_id: query.status_id,
       });
     }
-    if (query.status_user_id) {
-      idQueryBuilder.andWhere('status.id = :status_id', {
-        status_id: query.status_user_id,
+    if (query.status_user_id && user_id) {
+      idQueryBuilder.andWhere('status.id = :status_user_id', {
+        status_user_id: query.status_user_id,
+      });
+      idQueryBuilder.andWhere('doc_approver_user.id = :user_id', {
+        user_id,
       });
     }
     if (query.startDate && query.endDate) {
