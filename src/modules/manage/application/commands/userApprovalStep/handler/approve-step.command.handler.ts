@@ -331,6 +331,12 @@ export class ApproveStepCommandHandler
             );
           }
 
+          // Approver (e.g., super-admin) may have no CompanyUser mapping;
+          // fall back to the document's company so department-scoped lookups
+          // (next-step approvers) stay within the document's company.
+          const effective_company_id =
+            company_id ?? document.company_id ?? undefined;
+
           const approvalWorkflow = await manager.findOne(
             ApprovalWorkflowOrmEntity,
             {
@@ -464,7 +470,7 @@ export class ApproveStepCommandHandler
                 writeDocumentApprover: this._writeDocumentApprover,
                 userDataAccessMapper: this._userDataAccessMapper,
                 getApprover: this.getApprover.bind(this),
-                company_id: company_id || undefined,
+                company_id: effective_company_id,
                 model_id,
                 department_name,
                 titlesString,
@@ -675,7 +681,7 @@ export class ApproveStepCommandHandler
                 writeDocumentApprover: this._writeDocumentApprover,
                 userDataAccessMapper: this._userDataAccessMapper,
                 getApprover: this.getApprover.bind(this),
-                company_id: company_id || undefined,
+                company_id: effective_company_id,
                 model_id,
                 department_name,
                 titlesString,
@@ -783,7 +789,7 @@ export class ApproveStepCommandHandler
                 writeDocumentApprover: this._writeDocumentApprover,
                 userDataAccessMapper: this._userDataAccessMapper,
                 getApprover: this.getApprover.bind(this),
-                company_id: company_id || undefined,
+                company_id: effective_company_id,
                 model_id,
                 department_name,
                 titlesString,
