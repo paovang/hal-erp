@@ -1,6 +1,6 @@
 import { DocumentApproverDataMapper } from '@src/modules/manage/application/mappers/document-approver.mapper';
 import { IWriteDocumentApproverRepository } from '@src/modules/manage/domain/ports/output/document-approver-repository.interface';
-import { EntityManager } from 'typeorm';
+import { EntityManager, IsNull } from 'typeorm';
 import { BudgetApprovalRuleOrmEntity } from '../infrastructure/database/typeorm/budget-approval-rule.orm';
 import { ManageDomainException } from '@src/modules/manage/domain/exceptions/manage-domain.exception';
 import { HttpStatus } from '@nestjs/common';
@@ -98,13 +98,17 @@ export async function handleApprovalStep({
   switch (a_w_s.type) {
     case EnumWorkflowStep.DEPARTMENT: {
       // console.log('a_w_s.department_id', a_w_s.department_id);
+      // Match approvers for this company AND legacy rows with NULL company_id
+      // (older data created before company tracking was enforced).
       const department_approvers = await manager.find(
         DepartmentApproverOrmEntity,
         {
-          where: {
-            department_id: a_w_s.department_id,
-            ...(company_id ? { company_id } : {}),
-          },
+          where: company_id
+            ? [
+                { department_id: a_w_s.department_id, company_id },
+                { department_id: a_w_s.department_id, company_id: IsNull() },
+              ]
+            : { department_id: a_w_s.department_id },
           relations: ['users'],
         },
       );
