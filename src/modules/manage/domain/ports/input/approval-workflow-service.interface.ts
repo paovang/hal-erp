@@ -5,6 +5,8 @@ import { ApprovalWorkflowQueryDto } from '@src/modules/manage/application/dto/qu
 import { CreateApprovalWorkflowDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/create.dto';
 import { UpdateApprovalWorkflowDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/update.dto';
 import { ApproveDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/approve.dto';
+import { SendApprovalMailDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/send-approval-mail.dto';
+import { ApproveByTokenDto } from '@src/modules/manage/application/dto/create/ApprovalWorkflow/approve-by-token.dto';
 
 export interface IApprovalWorkflowServiceInterface {
   getAll(
@@ -33,6 +35,17 @@ export interface IApprovalWorkflowServiceInterface {
   approve(
     id: number,
     dto: ApproveDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
+
+  sendApprovalMail(
+    id: number,
+    dto: SendApprovalMailDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
+
+  approveByToken(
+    dto: ApproveByTokenDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<ApprovalWorkflowEntity>>;
 }

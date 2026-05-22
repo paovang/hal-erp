@@ -155,10 +155,7 @@ export class DeleteCommandHandler
     });
 
     for (const item of pr_item) {
-      await this._writeItem.delete(
-        new PurchaseRequestItemId(item.id),
-        manager,
-      );
+      await this._writeItem.delete(new PurchaseRequestItemId(item.id), manager);
     }
   }
 
@@ -177,13 +174,9 @@ export class DeleteCommandHandler
     document_id: number,
     manager: DataSource['manager'],
   ): Promise<void> {
-    const user_approval = await findOneOrFail(
-      manager,
-      UserApprovalOrmEntity,
-      {
-        document_id: document_id,
-      },
-    );
+    const user_approval = await findOneOrFail(manager, UserApprovalOrmEntity, {
+      document_id: document_id,
+    });
 
     const user_approval_id = (user_approval as any).id;
 

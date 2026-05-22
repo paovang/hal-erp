@@ -55,3 +55,6 @@ export const SIGNATURE_ALLOW_MIME_TYPE = [
   'image/jpg',
   'image/jpeg',
 ];
+
+// approval workflow email approval
+export const APPROVAL_TOKEN_JWT_SERVICE = Symbol('APPROVAL_TOKEN_JWT_SERVICE');

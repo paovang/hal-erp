@@ -20,7 +20,12 @@ import { CreateApprovalWorkflowDto } from '../application/dto/create/ApprovalWor
 import { ApprovalWorkflowQueryDto } from '../application/dto/query/approval-workflow.dto';
 import { UpdateApprovalWorkflowDto } from '../application/dto/create/ApprovalWorkflow/update.dto';
 import { ApproveDto } from '../application/dto/create/ApprovalWorkflow/approve.dto';
+import { SendApprovalMailDto } from '../application/dto/create/ApprovalWorkflow/send-approval-mail.dto';
+import { ApproveByTokenDto } from '../application/dto/create/ApprovalWorkflow/approve-by-token.dto';
+import { Public } from '@core-system/auth';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('approval-workflows')
 @Controller('approval-workflows')
 export class ApprovalWorkflowController {
   constructor(
@@ -86,6 +91,41 @@ export class ApprovalWorkflowController {
     @Body() dto: ApproveDto,
   ): Promise<ResponseResult<ApprovalWorkflowResponse>> {
     const result = await this._approvalWorkflowService.approve(id, dto);
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Post(':id/send-approval-mail')
+  @ApiOperation({
+    summary: 'Send an approval-request email to the selected approver',
+  })
+  @ApiBody({ type: SendApprovalMailDto })
+  async sendApprovalMail(
+    @Param('id') id: number,
+    @Body() dto: SendApprovalMailDto,
+  ): Promise<ResponseResult<ApprovalWorkflowResponse>> {
+    const result = await this._approvalWorkflowService.sendApprovalMail(
+      id,
+      dto,
+    );
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Public()
+  @Post('approve-by-token')
+  @ApiOperation({
+    summary: 'Approve an approval workflow using an emailed token',
+  })
+  @ApiBody({ type: ApproveByTokenDto })
+  async approveByToken(
+    @Body() dto: ApproveByTokenDto,
+  ): Promise<ResponseResult<ApprovalWorkflowResponse>> {
+    const result = await this._approvalWorkflowService.approveByToken(dto);
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),
       result,

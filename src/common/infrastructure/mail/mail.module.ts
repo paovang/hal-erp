@@ -6,7 +6,10 @@ import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { SendEmailUserUseCase } from './application/sendMail-User.usecase';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { SendApprovalEmailUseCase } from './application/send-approval-email.usecase';
+import { APPROVAL_TOKEN_JWT_SERVICE } from '@src/common/constants/inject-key.const';
+
 @Module({
   imports: [
     JwtModule.registerAsync({
@@ -70,7 +73,26 @@ import { JwtModule } from '@nestjs/jwt';
     SendMailUseCase,
     { provide: 'IMailService', useClass: MailServiceImpl },
     SendEmailUserUseCase,
+    SendApprovalEmailUseCase,
+    {
+      provide: APPROVAL_TOKEN_JWT_SERVICE,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const secret = config.getOrThrow<string>('APPROVAL_MAIL_TOKEN_SECRET');
+        const expiresIn =
+          config.get<string>('APPROVAL_MAIL_TOKEN_EXPIRES_IN') ?? '24h';
+        return new JwtService({
+          secret,
+          signOptions: { expiresIn: expiresIn as unknown as number },
+        });
+      },
+    },
   ],
-  exports: [SendMailUseCase, SendEmailUserUseCase],
+  exports: [
+    SendMailUseCase,
+    SendEmailUserUseCase,
+    SendApprovalEmailUseCase,
+    APPROVAL_TOKEN_JWT_SERVICE,
+  ],
 })
 export class MailModule {}

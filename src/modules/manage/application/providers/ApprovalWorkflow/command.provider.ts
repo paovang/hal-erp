@@ -5,6 +5,8 @@ import { GetOneQueryHandler } from '../../queries/ApprovalWorkflow/handler/get-o
 import { UpdateCommandHandler } from '../../commands/ApprovalWorkflow/handler/update-command.handler';
 import { DeleteCommandHandler } from '../../commands/ApprovalWorkflow/handler/delete-command.handler';
 import { ApproveCommandHandler } from '../../commands/ApprovalWorkflow/handler/approve-command.handler';
+import { SendApprovalMailCommandHandler } from '../../commands/ApprovalWorkflow/handler/send-approval-mail-command.handler';
+import { ApproveByTokenCommandHandler } from '../../commands/ApprovalWorkflow/handler/approve-by-token-command.handler';
 
 export const ApprovalWorkflowHandlersProviders: Provider[] = [
   GetAllQueryHandler,
@@ -13,4 +15,6 @@ export const ApprovalWorkflowHandlersProviders: Provider[] = [
   UpdateCommandHandler,
   DeleteCommandHandler,
   ApproveCommandHandler,
+  SendApprovalMailCommandHandler,
+  ApproveByTokenCommandHandler,
 ];

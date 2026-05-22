@@ -15,6 +15,10 @@ import { ApprovalWorkflowQueryDto } from '../dto/query/approval-workflow.dto';
 import { UpdateApprovalWorkflowDto } from '../dto/create/ApprovalWorkflow/update.dto';
 import { ApproveDto } from '../dto/create/ApprovalWorkflow/approve.dto';
 import { ApproveCommand } from '../commands/ApprovalWorkflow/approve.command';
+import { SendApprovalMailDto } from '../dto/create/ApprovalWorkflow/send-approval-mail.dto';
+import { SendApprovalMailCommand } from '../commands/ApprovalWorkflow/send-approval-mail.command';
+import { ApproveByTokenDto } from '../dto/create/ApprovalWorkflow/approve-by-token.dto';
+import { ApproveByTokenCommand } from '../commands/ApprovalWorkflow/approve-by-token.command';
 
 @Injectable()
 export class ApprovalWorkflowService
@@ -77,6 +81,25 @@ export class ApprovalWorkflowService
   ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
     return await this._commandBus.execute(
       new ApproveCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async sendApprovalMail(
+    id: number,
+    dto: SendApprovalMailDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
+    return await this._commandBus.execute(
+      new SendApprovalMailCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async approveByToken(
+    dto: ApproveByTokenDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<ApprovalWorkflowEntity>> {
+    return await this._commandBus.execute(
+      new ApproveByTokenCommand(dto, manager ?? this._readEntityManager),
     );
   }
 }
