@@ -18,6 +18,7 @@ export interface SendApprovalEmailInput {
   token: string;
   workflowId: number;
   steps: ApprovalWorkflowStepInput[];
+  description?: string;
 }
 
 @Injectable()

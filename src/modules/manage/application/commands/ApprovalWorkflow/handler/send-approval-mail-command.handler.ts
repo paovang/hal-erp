@@ -171,6 +171,7 @@ export class SendApprovalMailCommandHandler
       token,
       workflowId: id,
       steps,
+      description: dto.description,
     });
 
     return this._dataAccessMapper.toEntity(workflow);

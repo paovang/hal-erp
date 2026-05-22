@@ -62,13 +62,15 @@ Content-Type: application/json
 
 ```json
 {
-  "approver_user_id": 9
+  "approver_user_id": 9,
+  "description": "ขออนุมัติเร่งด่วนภายในวันนี้"
 }
 ```
 
-| field              | ชนิด | required | คำอธิบาย                                                   |
-| ------------------ | ---- | -------- | ----------------------------------------------------------- |
-| `approver_user_id` | int  | yes      | id ของ user ที่จะให้อนุมัติ (เลือกได้คนเดียวต่อหนึ่ง request) |
+| field              | ชนิด   | required | คำอธิบาย                                                           |
+| ------------------ | ------ | -------- | ------------------------------------------------------------------- |
+| `approver_user_id` | int    | yes      | id ของ user ที่จะให้อนุมัติ (เลือกได้คนเดียวต่อหนึ่ง request)         |
+| `description`      | string | no       | ข้อความเพิ่มเติม (เช่น เหตุผล/ความเร่งด่วน) — แสดงเป็นกล่อง "ໝາຍເຫດຈາກຜູ້ສະເໜີ" ในอีเมล |
 
 **เงื่อนไข approver:**
 - ต้องเป็น user ที่มีอยู่จริงและมี email
@@ -118,7 +120,7 @@ Content-Type: application/json
 curl -X POST http://localhost:3000/api/approval-workflows/35/send-approval-mail \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"approver_user_id": 9}'
+  -d '{"approver_user_id": 9, "description": "ขออนุมัติเร่งด่วน"}'
 ```
 
 #### TypeScript (axios)
@@ -130,10 +132,14 @@ export async function sendApprovalMail(
   workflowId: number,
   approverUserId: number,
   jwt: string,
+  description?: string,
 ) {
   const { data } = await axios.post(
     `${API_BASE_URL}/approval-workflows/${workflowId}/send-approval-mail`,
-    { approver_user_id: approverUserId },
+    {
+      approver_user_id: approverUserId,
+      ...(description ? { description } : {}),
+    },
     { headers: { Authorization: `Bearer ${jwt}` } },
   );
   return data;
