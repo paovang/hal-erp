@@ -45,6 +45,7 @@ export class GetAllForExportQueryHandler
         createdBy: requesterUsername,
         createdAt: entity.createdAt ?? null,
         total: Number(entity.total ?? 0),
+        remark: entity.remark ?? '',
       };
     });
   }

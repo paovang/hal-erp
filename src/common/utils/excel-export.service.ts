@@ -10,6 +10,7 @@ export interface PrListExportRow {
   status: string;
   createdBy: string;
   createdAt: Date | null;
+  purposes: string;
 }
 
 export interface PoListExportRow {
@@ -19,6 +20,7 @@ export interface PoListExportRow {
   createdBy: string;
   createdAt: Date | null;
   total: number;
+  purposes: string;
 }
 
 export interface ReceiptListExportRow {
@@ -28,6 +30,7 @@ export interface ReceiptListExportRow {
   createdBy: string;
   createdAt: Date | null;
   total: number;
+  remark: string;
 }
 
 @Injectable()
@@ -2143,6 +2146,7 @@ export class ExcelExportService {
       { header: 'Status', key: 'status', width: 18 },
       { header: 'Created By', key: 'createdBy', width: 24 },
       { header: 'Created At', key: 'createdAt', width: 22 },
+      { header: 'Purposes', key: 'purposes', width: 40 },
     ];
 
     this.styleHeaderRow(worksheet.getRow(1));
@@ -2154,12 +2158,14 @@ export class ExcelExportService {
         status: row.status ?? '',
         createdBy: row.createdBy ?? '',
         createdAt: this.formatTimestamp(row.createdAt),
+        purposes: row.purposes ?? '',
       });
       this.styleBodyCell(added.getCell(1), 'left');
       this.styleBodyCell(added.getCell(2), 'left');
       this.styleBodyCell(added.getCell(3), 'left');
       this.styleBodyCell(added.getCell(4), 'left');
       this.styleBodyCell(added.getCell(5), 'center');
+      this.styleBodyCell(added.getCell(6), 'left');
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
@@ -2179,6 +2185,7 @@ export class ExcelExportService {
       { header: 'Created By', key: 'createdBy', width: 24 },
       { header: 'Created At', key: 'createdAt', width: 22 },
       { header: 'Total', key: 'total', width: 18 },
+      { header: 'Purposes', key: 'purposes', width: 40 },
     ];
 
     this.styleHeaderRow(worksheet.getRow(1));
@@ -2191,6 +2198,7 @@ export class ExcelExportService {
         createdBy: row.createdBy ?? '',
         createdAt: this.formatTimestamp(row.createdAt),
         total: Number(row.total ?? 0),
+        purposes: row.purposes ?? '',
       });
       this.styleBodyCell(added.getCell(1), 'left');
       this.styleBodyCell(added.getCell(2), 'left');
@@ -2199,6 +2207,7 @@ export class ExcelExportService {
       this.styleBodyCell(added.getCell(5), 'center');
       this.styleBodyCell(added.getCell(6), 'right');
       added.getCell(6).numFmt = '#,##0.00';
+      this.styleBodyCell(added.getCell(7), 'left');
     });
 
     this.appendSumTotalRow(worksheet, 'F', rows.length);
@@ -2220,6 +2229,7 @@ export class ExcelExportService {
       { header: 'Created By', key: 'createdBy', width: 24 },
       { header: 'Created At', key: 'createdAt', width: 22 },
       { header: 'Total', key: 'total', width: 18 },
+      { header: 'Remark', key: 'remark', width: 40 },
     ];
 
     this.styleHeaderRow(worksheet.getRow(1));
@@ -2232,6 +2242,7 @@ export class ExcelExportService {
         createdBy: row.createdBy ?? '',
         createdAt: this.formatTimestamp(row.createdAt),
         total: Number(row.total ?? 0),
+        remark: row.remark ?? '',
       });
       this.styleBodyCell(added.getCell(1), 'left');
       this.styleBodyCell(added.getCell(2), 'left');
@@ -2240,6 +2251,7 @@ export class ExcelExportService {
       this.styleBodyCell(added.getCell(5), 'center');
       this.styleBodyCell(added.getCell(6), 'right');
       added.getCell(6).numFmt = '#,##0.00';
+      this.styleBodyCell(added.getCell(7), 'left');
     });
 
     this.appendSumTotalRow(worksheet, 'F', rows.length);

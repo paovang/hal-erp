@@ -54,6 +54,7 @@ export class GetAllForExportQueryHandler
         status: entity.document?.status ?? '',
         createdBy: requesterUsername,
         createdAt: entity.createdAt ?? null,
+        purposes: entity.purposes ?? '',
       };
     });
   }
