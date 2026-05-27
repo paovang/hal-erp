@@ -15,6 +15,9 @@ import {
   SEND_RESET_PASSWORD_EMAIL_USE_CASE,
 } from '@src/common/constants/inject-key.const';
 
+const RESET_PASSWORD_TOKEN_SECRET = 'hal-erp-reset-password-secret@2025';
+const RESET_PASSWORD_TOKEN_EXPIRES_IN = '15m';
+
 @Module({
   imports: [
     JwtModule.registerAsync({
@@ -94,16 +97,13 @@ import {
     },
     {
       provide: RESET_PASSWORD_TOKEN_JWT_SERVICE,
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        const secret = config.getOrThrow<string>('RESET_PASSWORD_TOKEN_SECRET');
-        const expiresIn =
-          config.get<string>('RESET_PASSWORD_TOKEN_EXPIRES_IN') ?? '15m';
-        return new JwtService({
-          secret,
-          signOptions: { expiresIn: expiresIn as unknown as number },
-        });
-      },
+      useFactory: () =>
+        new JwtService({
+          secret: RESET_PASSWORD_TOKEN_SECRET,
+          signOptions: {
+            expiresIn: RESET_PASSWORD_TOKEN_EXPIRES_IN as unknown as number,
+          },
+        }),
     },
     {
       provide: SEND_RESET_PASSWORD_EMAIL_USE_CASE,
