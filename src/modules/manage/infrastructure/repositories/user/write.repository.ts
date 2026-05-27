@@ -169,6 +169,17 @@ export class WriteUserRepository implements IWriteUserRepository {
     }
   }
 
+  async updatePasswordAndStamp(
+    userId: number,
+    hashedPassword: string,
+    manager: EntityManager,
+  ): Promise<void> {
+    await manager.update(UserOrmEntity, userId, {
+      password: hashedPassword,
+      password_changed_at: new Date(),
+    });
+  }
+
   async updateColumns(
     entity: UserEntity,
     manager: EntityManager,

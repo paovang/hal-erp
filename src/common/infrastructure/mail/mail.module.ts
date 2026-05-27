@@ -8,7 +8,12 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { SendEmailUserUseCase } from './application/sendMail-User.usecase';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { SendApprovalEmailUseCase } from './application/send-approval-email.usecase';
-import { APPROVAL_TOKEN_JWT_SERVICE } from '@src/common/constants/inject-key.const';
+import { SendResetPasswordEmailUseCase } from './application/send-reset-password-email.usecase';
+import {
+  APPROVAL_TOKEN_JWT_SERVICE,
+  RESET_PASSWORD_TOKEN_JWT_SERVICE,
+  SEND_RESET_PASSWORD_EMAIL_USE_CASE,
+} from '@src/common/constants/inject-key.const';
 
 @Module({
   imports: [
@@ -87,12 +92,31 @@ import { APPROVAL_TOKEN_JWT_SERVICE } from '@src/common/constants/inject-key.con
         });
       },
     },
+    {
+      provide: RESET_PASSWORD_TOKEN_JWT_SERVICE,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const secret = config.getOrThrow<string>('RESET_PASSWORD_TOKEN_SECRET');
+        const expiresIn =
+          config.get<string>('RESET_PASSWORD_TOKEN_EXPIRES_IN') ?? '15m';
+        return new JwtService({
+          secret,
+          signOptions: { expiresIn: expiresIn as unknown as number },
+        });
+      },
+    },
+    {
+      provide: SEND_RESET_PASSWORD_EMAIL_USE_CASE,
+      useClass: SendResetPasswordEmailUseCase,
+    },
   ],
   exports: [
     SendMailUseCase,
     SendEmailUserUseCase,
     SendApprovalEmailUseCase,
     APPROVAL_TOKEN_JWT_SERVICE,
+    RESET_PASSWORD_TOKEN_JWT_SERVICE,
+    SEND_RESET_PASSWORD_EMAIL_USE_CASE,
   ],
 })
 export class MailModule {}

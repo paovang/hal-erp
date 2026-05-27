@@ -58,3 +58,11 @@ export const SIGNATURE_ALLOW_MIME_TYPE = [
 
 // approval workflow email approval
 export const APPROVAL_TOKEN_JWT_SERVICE = Symbol('APPROVAL_TOKEN_JWT_SERVICE');
+
+// reset password
+export const RESET_PASSWORD_TOKEN_JWT_SERVICE = Symbol(
+  'RESET_PASSWORD_TOKEN_JWT_SERVICE',
+);
+export const SEND_RESET_PASSWORD_EMAIL_USE_CASE = Symbol(
+  'SEND_RESET_PASSWORD_EMAIL_USE_CASE',
+);

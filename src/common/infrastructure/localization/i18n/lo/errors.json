@@ -78,6 +78,7 @@
   "receipt_exist": "ໃບເບີກຈ່າຍມີໃນລະບົບແລ້ວ",
   "invalid_file_type": "ປະເພດໄຟລ໌ {property} ບໍ່ຖືກຕ້ອງ",
   "invalid_token": "ບໍ່ມີ token ຫຼື token ບໍ່ຖືກຕ້ອງ",
+  "invalid_or_expired_token": "ລິ້ງບໍ່ຖືກຕ້ອງ ຫຼື ໝົດອາຍຸແລ້ວ. ກະລຸນາຮ້ອງຂໍລິ້ງໃໝ່.",
   "department_not_have_budget": "ພະແນກນີ້ບໍ່ມີງົບປະມານ",
   "invalid_tel": "ເບີໂທບໍ່ຖືກຕ້ອງ {property} ກະລຸນາກວດສອບກ່ອນ",
   "receipt_create_read_back_failed": "ໃບຮັບເງິນຖືກສ້າງແລ້ວ ແຕ່ບໍ່ສາມາດອ່ານຂໍ້ມູນຄືນໄດ້. ກະລຸນາລອງໃໝ່, ຫາກຍັງມີບັນຫາ ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບ ({property}).",

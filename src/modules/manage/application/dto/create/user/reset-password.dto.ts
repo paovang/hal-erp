@@ -3,15 +3,12 @@ import { IsDefined, IsNotEmpty, IsString, Length } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 import { Match } from '@src/common/validations/match.validator';
 
-export class ChangePasswordDto {
+export class ResetPasswordDto {
   @ApiProperty()
   @IsDefined({ message: i18nValidationMessage('validation.IS_DEFINED') })
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
-  @Length(6, 255, {
-    message: i18nValidationMessage('validation.PASSWORD_LENGTH'),
-  })
-  readonly old_password: string;
+  readonly token: string;
 
   @ApiProperty()
   @IsDefined({ message: i18nValidationMessage('validation.IS_DEFINED') })

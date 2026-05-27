@@ -31,7 +31,10 @@ import { UserQueryDto } from '../application/dto/query/user-query.dto';
 import { UpdateUserDto } from '../application/dto/create/user/update.dto';
 import { ChangePasswordDto } from '../application/dto/create/user/change-password.dto';
 import { SendMailDto } from '../application/dto/create/user/send-email.dto';
+import { ForgotPasswordDto } from '../application/dto/create/user/forgot-password.dto';
+import { ResetPasswordDto } from '../application/dto/create/user/reset-password.dto';
 import { AuthService, Public } from '@core-system/auth';
+import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileValidationInterceptor } from '@src/common/interceptors/file/file.interceptor';
 import { FileMimeTypeValidator } from '@src/common/validations/file-mime-type.validator';
@@ -61,6 +64,7 @@ export class UserController {
     private readonly _authService: AuthService,
     @InjectRepository(UserOrmEntity)
     private readonly userRepository: Repository<UserOrmEntity>,
+    private readonly _userContextService: UserContextService,
   ) {}
 
   @Public()
@@ -161,18 +165,36 @@ export class UserController {
     );
   }
 
-  @Put('/change-password/:id')
+  @Put('change-password')
   async changePassword(
-    @Param('id') id: number,
     @Body() dto: ChangePasswordDto,
-  ): Promise<ResponseResult<UserResponse>> {
-    const result = await this._userService.changePassword(id, dto);
-    // console.log('result', result);
+  ): Promise<{ message: string }> {
+    const authUser = this._userContextService.getAuthUser();
+    const userId = authUser?.user?.id;
+    if (!Number.isInteger(userId) || userId <= 0) {
+      throw new ManageDomainException(
+        'errors.unauthorized',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
 
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
+    return this._userService.changePassword(userId, dto);
+  }
+
+  @Public()
+  @Post('forgot-password')
+  async forgotPassword(
+    @Body() dto: ForgotPasswordDto,
+  ): Promise<{ message: string }> {
+    return this._userService.forgotPassword(dto);
+  }
+
+  @Public()
+  @Post('reset-password')
+  async resetPassword(
+    @Body() dto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    return this._userService.resetPassword(dto);
   }
 
   @Public()

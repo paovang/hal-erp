@@ -7,6 +7,8 @@ import { UserQueryDto } from '@src/modules/manage/application/dto/query/user-que
 import { UpdateUserDto } from '@src/modules/manage/application/dto/create/user/update.dto';
 import { ChangePasswordDto } from '@src/modules/manage/application/dto/create/user/change-password.dto';
 import { SendMailDto } from '@src/modules/manage/application/dto/create/user/send-email.dto';
+import { ForgotPasswordDto } from '@src/modules/manage/application/dto/create/user/forgot-password.dto';
+import { ResetPasswordDto } from '@src/modules/manage/application/dto/create/user/reset-password.dto';
 
 export interface IUserServiceInterface {
   login(dto: any): Promise<any>;
@@ -36,7 +38,17 @@ export interface IUserServiceInterface {
     id: number,
     dto: ChangePasswordDto,
     manager?: EntityManager,
-  ): Promise<ResponseResult<UserEntity>>;
+  ): Promise<{ message: string }>;
+
+  forgotPassword(
+    dto: ForgotPasswordDto,
+    manager?: EntityManager,
+  ): Promise<{ message: string }>;
+
+  resetPassword(
+    dto: ResetPasswordDto,
+    manager?: EntityManager,
+  ): Promise<{ message: string }>;
 
   sendMail(
     dto: SendMailDto,

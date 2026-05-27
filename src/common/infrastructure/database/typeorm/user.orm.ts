@@ -50,6 +50,9 @@ export class UserOrmEntity {
   @Column({ type: 'varchar', length: 191, nullable: true, unique: true })
   tel?: string;
 
+  @Column({ type: 'timestamp', nullable: true })
+  password_changed_at?: Date | null;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

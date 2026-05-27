@@ -18,6 +18,10 @@ import { ChangePasswordCommand } from '../commands/user/change-password.command'
 import { SendMailDto } from '../dto/create/user/send-email.dto';
 import { SendMailCommand } from '../commands/user/send-mail.command';
 import { LoginCommand } from '../commands/user/login.command';
+import { ForgotPasswordDto } from '../dto/create/user/forgot-password.dto';
+import { ForgotPasswordCommand } from '../commands/user/forgot-password.command';
+import { ResetPasswordDto } from '../dto/create/user/reset-password.dto';
+import { ResetPasswordCommand } from '../commands/user/reset-password.command';
 
 @Injectable()
 export class UserService implements IUserServiceInterface {
@@ -75,9 +79,27 @@ export class UserService implements IUserServiceInterface {
     id: number,
     dto: ChangePasswordDto,
     manager?: EntityManager,
-  ): Promise<ResponseResult<UserEntity>> {
+  ): Promise<{ message: string }> {
     return await this._commandBus.execute(
       new ChangePasswordCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async forgotPassword(
+    dto: ForgotPasswordDto,
+    manager?: EntityManager,
+  ): Promise<{ message: string }> {
+    return await this._commandBus.execute(
+      new ForgotPasswordCommand(dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async resetPassword(
+    dto: ResetPasswordDto,
+    manager?: EntityManager,
+  ): Promise<{ message: string }> {
+    return await this._commandBus.execute(
+      new ResetPasswordCommand(dto, manager ?? this._readEntityManager),
     );
   }
 

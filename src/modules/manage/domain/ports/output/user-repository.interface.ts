@@ -30,6 +30,12 @@ export interface IWriteUserRepository {
     manager: EntityManager,
   ): Promise<ResponseResult<UserEntity>>;
 
+  updatePasswordAndStamp(
+    userId: number,
+    hashedPassword: string,
+    manager: EntityManager,
+  ): Promise<void>;
+
   updateColumns(
     entity: UserEntity,
     manager: EntityManager,
