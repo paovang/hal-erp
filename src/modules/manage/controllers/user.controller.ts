@@ -33,6 +33,7 @@ import { ChangePasswordDto } from '../application/dto/create/user/change-passwor
 import { SendMailDto } from '../application/dto/create/user/send-email.dto';
 import { ForgotPasswordDto } from '../application/dto/create/user/forgot-password.dto';
 import { ResetPasswordDto } from '../application/dto/create/user/reset-password.dto';
+import { AdminChangePasswordDto } from '../application/dto/create/user/admin-change-password.dto';
 import { AuthService, Public } from '@core-system/auth';
 import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -179,6 +180,14 @@ export class UserController {
     }
 
     return this._userService.changePassword(userId, dto);
+  }
+
+  @Put('change-password/:id')
+  async adminChangePassword(
+    @Param('id') id: number,
+    @Body() dto: AdminChangePasswordDto,
+  ): Promise<{ message: string }> {
+    return this._userService.adminChangePassword(id, dto);
   }
 
   @Public()

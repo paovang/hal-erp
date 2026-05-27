@@ -9,6 +9,7 @@ import { SendMailCommandHandler } from '../../commands/user/handler/send-mail-co
 import { LoginCommandHandler } from '../../commands/user/handler/login.command.handler';
 import { ForgotPasswordCommandHandler } from '../../commands/user/handler/forgot-password-command.handler';
 import { ResetPasswordCommandHandler } from '../../commands/user/handler/reset-password-command.handler';
+import { AdminChangePasswordCommandHandler } from '../../commands/user/handler/admin-change-password-command.handler';
 
 export const UserHandlersProviders: Provider[] = [
   CreateCommandHandler,
@@ -21,4 +22,5 @@ export const UserHandlersProviders: Provider[] = [
   LoginCommandHandler,
   ForgotPasswordCommandHandler,
   ResetPasswordCommandHandler,
+  AdminChangePasswordCommandHandler,
 ];

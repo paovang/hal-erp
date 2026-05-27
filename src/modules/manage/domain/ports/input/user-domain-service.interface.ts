@@ -9,6 +9,7 @@ import { ChangePasswordDto } from '@src/modules/manage/application/dto/create/us
 import { SendMailDto } from '@src/modules/manage/application/dto/create/user/send-email.dto';
 import { ForgotPasswordDto } from '@src/modules/manage/application/dto/create/user/forgot-password.dto';
 import { ResetPasswordDto } from '@src/modules/manage/application/dto/create/user/reset-password.dto';
+import { AdminChangePasswordDto } from '@src/modules/manage/application/dto/create/user/admin-change-password.dto';
 
 export interface IUserServiceInterface {
   login(dto: any): Promise<any>;
@@ -37,6 +38,12 @@ export interface IUserServiceInterface {
   changePassword(
     id: number,
     dto: ChangePasswordDto,
+    manager?: EntityManager,
+  ): Promise<{ message: string }>;
+
+  adminChangePassword(
+    id: number,
+    dto: AdminChangePasswordDto,
     manager?: EntityManager,
   ): Promise<{ message: string }>;
 

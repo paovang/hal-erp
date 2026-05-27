@@ -22,6 +22,8 @@ import { ForgotPasswordDto } from '../dto/create/user/forgot-password.dto';
 import { ForgotPasswordCommand } from '../commands/user/forgot-password.command';
 import { ResetPasswordDto } from '../dto/create/user/reset-password.dto';
 import { ResetPasswordCommand } from '../commands/user/reset-password.command';
+import { AdminChangePasswordDto } from '../dto/create/user/admin-change-password.dto';
+import { AdminChangePasswordCommand } from '../commands/user/admin-change-password.command';
 
 @Injectable()
 export class UserService implements IUserServiceInterface {
@@ -82,6 +84,20 @@ export class UserService implements IUserServiceInterface {
   ): Promise<{ message: string }> {
     return await this._commandBus.execute(
       new ChangePasswordCommand(id, dto, manager ?? this._readEntityManager),
+    );
+  }
+
+  async adminChangePassword(
+    id: number,
+    dto: AdminChangePasswordDto,
+    manager?: EntityManager,
+  ): Promise<{ message: string }> {
+    return await this._commandBus.execute(
+      new AdminChangePasswordCommand(
+        id,
+        dto,
+        manager ?? this._readEntityManager,
+      ),
     );
   }
 
