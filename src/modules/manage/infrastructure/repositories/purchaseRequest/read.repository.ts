@@ -164,7 +164,7 @@ export class ReadPurchaseRequestRepository
       idQueryBuilder.andWhere(
         `(
         purchase_requests.pr_number ILIKE :search OR
-        documents.title ILIKE :search
+        documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search
       )`,
         { search: `%${query.search}%` },
       );
