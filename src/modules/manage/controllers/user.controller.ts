@@ -153,19 +153,8 @@ export class UserController {
     );
   }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() dto: UpdateUserDto,
-  ): Promise<ResponseResult<UserResponse>> {
-    const result = await this._userService.update(id, dto);
-
-    return this._transformResultService.execute(
-      this._dataMapper.toResponse.bind(this._dataMapper),
-      result,
-    );
-  }
-
+  // NOTE: static routes must be declared BEFORE the parameterized `:id`
+  // routes below, otherwise `PUT /change-password` is captured by `PUT /:id`.
   @Put('change-password')
   async changePassword(
     @Body() dto: ChangePasswordDto,
@@ -188,6 +177,19 @@ export class UserController {
     @Body() dto: AdminChangePasswordDto,
   ): Promise<{ message: string }> {
     return this._userService.adminChangePassword(id, dto);
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateUserDto,
+  ): Promise<ResponseResult<UserResponse>> {
+    const result = await this._userService.update(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
   }
 
   @Public()
