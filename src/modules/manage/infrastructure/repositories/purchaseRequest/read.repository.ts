@@ -307,7 +307,7 @@ export class ReadPurchaseRequestRepository
 
     queryBuilder.andWhere(
       'purchase_requests.created_at BETWEEN :startDate AND :endDate',
-      { startDate: query.startDate, endDate: `${query.endDate} 23:59:59` },
+      { startDate: query.startDate, endDate: `${new Date(query.endDate)} 23:59:59` },
     );
 
     const items = await queryBuilder

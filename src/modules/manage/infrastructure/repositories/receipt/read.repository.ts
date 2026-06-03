@@ -267,7 +267,7 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
 
     queryBuilder.andWhere(
       'receipts.created_at BETWEEN :startDate AND :endDate',
-      { startDate: query.startDate, endDate: `${query.endDate} 23:59:59` },
+      { startDate: query.startDate, endDate: `${new Date(query.endDate)} 23:59:59` },
     );
 
     const items = await queryBuilder.orderBy('receipts.id', 'DESC').getMany();
