@@ -115,7 +115,7 @@ export class ReadPurchaseOrderRepository
           purchase_orders.po_number ILIKE :search OR
           documents.title ILIKE :search OR documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search OR
           CAST((
-            SELECT SUM(poi.total_in_lak)
+            SELECT SUM(COALESCE(poi.total_in_lak, 0) + COALESCE(poi.vat_in_lak, 0))
             FROM purchase_order_items poi
             WHERE poi.purchase_order_id = purchase_orders.id
               AND poi.deleted_at IS NULL
