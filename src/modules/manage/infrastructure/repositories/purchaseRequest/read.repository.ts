@@ -164,7 +164,13 @@ export class ReadPurchaseRequestRepository
       idQueryBuilder.andWhere(
         `(
         purchase_requests.pr_number ILIKE :search OR
-        documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search
+        documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search OR
+        CAST((
+          SELECT SUM(pri.total_in_lak)
+          FROM purchase_request_items pri
+          WHERE pri.purchase_request_id = purchase_requests.id
+            AND pri.deleted_at IS NULL
+        ) AS TEXT) ILIKE :search
       )`,
         { search: `%${query.search}%` },
       );

@@ -113,7 +113,13 @@ export class ReadPurchaseOrderRepository
       queryBuilder.andWhere(
         `(
           purchase_orders.po_number ILIKE :search OR
-          documents.title ILIKE :search OR documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search
+          documents.title ILIKE :search OR documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search OR
+          CAST((
+            SELECT SUM(poi.total_in_lak)
+            FROM purchase_order_items poi
+            WHERE poi.purchase_order_id = purchase_orders.id
+              AND poi.deleted_at IS NULL
+          ) AS TEXT) ILIKE :search
         )`,
         { search: `%${query.search}%` },
       );

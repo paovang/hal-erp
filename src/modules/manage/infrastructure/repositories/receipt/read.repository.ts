@@ -131,8 +131,14 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
     if (query.search) {
       idQueryBuilder.andWhere(
         `(
-        receipts.receipt_number ILIKE :search OR 
-        documents.title ILIKE :search OR documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search
+        receipts.receipt_number ILIKE :search OR
+        documents.title ILIKE :search OR documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search OR
+        CAST((
+          SELECT SUM(poi.total_in_lak)
+          FROM purchase_order_items poi
+          WHERE poi.purchase_order_id = receipts.purchase_order_id
+            AND poi.deleted_at IS NULL
+        ) AS TEXT) ILIKE :search
       )`,
         { search: `%${query.search}%` },
       );
