@@ -110,18 +110,30 @@ export class ReadPurchaseOrderRepository
       });
     }
     if (query.search) {
+      // ดึงเฉพาะตัวเลขจากคำค้น เพื่อให้ค้นยอดเงินได้แม้ผู้ใช้พิมพ์ตัวคั่นหลักพัน เช่น "86,434,560"
+      const searchDigits = String(query.search).replace(/[^0-9]/g, '');
       queryBuilder.andWhere(
         `(
           purchase_orders.po_number ILIKE :search OR
-          documents.title ILIKE :search OR documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search OR
-         CAST((
-          SELECT SUM(poi.total_in_lak)
-          FROM purchase_order_items poi
-          WHERE poi.purchase_order_id = purchase_orders.id
-            AND poi.deleted_at IS NULL
-        ) AS TEXT) ILIKE :search
+          documents.title ILIKE :search Or products.name ILIKE :search Or vendors.name ILIKE :search OR
+          (
+            :searchDigits <> '' AND
+            REGEXP_REPLACE(
+              CAST(FLOOR((
+                SELECT SUM(poi.total_in_lak)
+                FROM purchase_order_items poi
+                WHERE poi.purchase_order_id = purchase_orders.id
+                  AND poi.deleted_at IS NULL
+              )) AS BIGINT)::TEXT,
+              '[^0-9]', '', 'g'
+            ) LIKE :searchDigitsLike
+          )
         )`,
-        { search: `%${query.search}%` },
+        {
+          search: `%${query.search}%`,
+          searchDigits,
+          searchDigitsLike: `%${searchDigits}%`,
+        },
       );
     }
     if (query.startDate && query.endDate) {
