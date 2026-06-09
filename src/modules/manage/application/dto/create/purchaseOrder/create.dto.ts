@@ -4,6 +4,8 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
@@ -16,6 +18,11 @@ export class CreatePurchaseOrderDto {
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
   @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
   readonly purchase_request_id: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
+  readonly purposes?: string;
 
   @ApiProperty()
   @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })

@@ -47,8 +47,9 @@ export class PurchaseOrderDataMapper {
       builder.setExpiredDate(pr.expired_date);
     }
 
-    if (pr?.purposes) {
-      builder.setPurposes(pr.purposes);
+    const purposes = ('purposes' in dto ? dto.purposes : undefined) ?? pr?.purposes;
+    if (purposes) {
+      builder.setPurposes(purposes);
     }
 
     return builder.build();
