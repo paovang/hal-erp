@@ -82,5 +82,6 @@
   "department_not_have_budget": "This department does not have budget",
   "invalid_tel": "Invalid tel {property}, please check again",
   "receipt_create_read_back_failed": "Receipt was created but cannot be read back. Please retry, and if the problem persists contact support ({property}).",
-  "exchange_rate_not_found": "No active exchange rate to LAK is configured for currency {property}"
+  "exchange_rate_not_found": "No active exchange rate to LAK is configured for currency {property}",
+  "invalid_mail_window": "Invalid mail send window: start time must be the same day and not after end time"
 }

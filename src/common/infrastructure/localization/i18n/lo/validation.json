@@ -23,5 +23,6 @@
   "ARRAY_MIN_SIZE": "{property} ຕ້ອງມີຢ່າງນ້ອຍ {constraint1} ລາຍການ.",
   "INVALID_USER_OBJECT": "ກະລຸນາປ້ອນຂໍ້ມູນຜູ້ໃຊ້ງານກ່ອນ",
   "PASSWORD_MISMATCH": "ລະຫັດຜ່ານບໍ່ກົງກັນ",
-  "INVALID_PHONE_FORMAT": "ຕ້ອງເປັນຮູບແບບເບີໂທລະສັບທີ່ຖືກຕ້ອງ"
+  "INVALID_PHONE_FORMAT": "ຕ້ອງເປັນຮູບແບບເບີໂທລະສັບທີ່ຖືກຕ້ອງ",
+  "INVALID_TIME_FORMAT": "ຕ້ອງເປັນເວລາທີ່ຖືກຕ້ອງໃນຮູບແບບ HH:mm"
 }

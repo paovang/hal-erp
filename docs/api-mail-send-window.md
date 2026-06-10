@@ -8,18 +8,15 @@
 - **Base URL (prod):** ตามที่ฝั่ง backend ประกาศ
 - **Timezone:** เวลาทั้งหมดตีความเป็นเวลาประเทศลาว (`Asia/Vientiane`, UTC+7)
 
-> ## ⚠️ สถานะการ implement (อ่านก่อน)
+> ## ✅ สถานะการ implement
 >
 > | ส่วน | สถานะ |
 > | ---- | ----- |
 > | เก็บค่า preference ใน DB (`user_mail_preferences`) | ✅ มีแล้ว |
 > | ตรรกะ "อยู่นอกช่วง → เลื่อนส่ง → scheduler ส่งให้ทีหลัง" | ✅ มีแล้ว |
-> | **REST API สำหรับ get/set ช่วงเวลา (หน้า Settings)** | ❌ **ยังไม่ได้ทำ** — ดูหัวข้อ [Proposed API](#proposed-api-สำหรับหน้า-settings) |
+> | **REST API สำหรับ get/set ช่วงเวลา (หน้า Settings)** | ✅ **มีแล้ว** — ดูหัวข้อ [API จัดการ mail send window](#api-จัดการ-mail-send-window) |
 >
-> ตอนนี้ค่า preference ถูกตั้งได้ทางตรง (seed / migration / DB เท่านั้น) ฝั่ง frontend
-> **ยังเรียก API เพื่อแก้ค่าไม่ได้** จนกว่าจะ implement endpoint ตามสัญญาด้านล่าง
-> หัวข้อ [Proposed API](#proposed-api-สำหรับหน้า-settings) เป็น **ข้อเสนอ contract** ไว้ให้ FE/BE
-> ตกลงกันก่อนสร้างจริง — อย่าเพิ่งนำไปต่อ production จนกว่า backend จะ confirm
+> frontend เรียก API เพื่ออ่าน/แก้ค่าได้แล้ว (auth: ตัวเอง หรือ super-admin/admin)
 
 ---
 
@@ -92,14 +89,13 @@
 
 ---
 
-## Proposed API (สำหรับหน้า Settings)
-
-> ❌ **ยังไม่ได้ implement** — เป็น contract ข้อเสนอเท่านั้น ออกแบบให้ล้อกับ pattern ของ `users` controller
-> (`GET/PUT /users/:id/...`) เพื่อให้ implement ต่อได้ง่าย หากต้องการใช้งานจริง แจ้ง backend ให้สร้าง endpoint นี้ก่อน
+## API จัดการ mail send window
 
 ทุก endpoint ต้อง login: `Authorization: Bearer <JWT>`
 
-### (ข้อเสนอ) ดึงค่าปัจจุบัน
+**สิทธิ์ (self-or-admin):** เรียกของ `:id` ได้เมื่อ `:id` เป็นตัวเอง หรือ caller มี role `super-admin`/`admin` — ไม่งั้น 403
+
+### ดึงค่าปัจจุบัน
 
 ```
 GET /api/users/:id/mail-preference
@@ -125,7 +121,7 @@ GET /api/users/:id/mail-preference
 { "statusCode": 200, "data": null }
 ```
 
-### (ข้อเสนอ) ตั้ง/แก้ค่า (upsert)
+### ตั้ง/แก้ค่า (upsert)
 
 ```
 PUT /api/users/:id/mail-preference
@@ -147,16 +143,17 @@ PUT /api/users/:id/mail-preference
 | `start_time` | string  | ถ้า enabled | `HH:mm` — จำเป็นเมื่อ `is_enabled = true`           |
 | `end_time`   | string  | ถ้า enabled | `HH:mm` — ต้อง `>= start_time`                      |
 
-**Error ที่คาดว่าจะมี (ข้อเสนอ)**
+**Error responses**
 
 | HTTP | message                          | สาเหตุ                                  |
 | ---- | -------------------------------- | --------------------------------------- |
-| 400  | `Validation failed`              | รูปแบบเวลาไม่ถูกต้อง                      |
-| 400  | `errors.invalid_mail_window`     | `start_time > end_time` (ข้ามเที่ยงคืน) |
+| 400  | `Validation failed`              | รูปแบบเวลาไม่ถูกต้อง (ไม่ตรง `HH:mm`)      |
+| 400  | `errors.invalid_mail_window`     | `is_enabled=true` แต่ไม่มี start/end หรือ `start_time > end_time` (ข้ามเที่ยงคืน) |
 | 401  | `errors.unauthorized`            | ไม่ได้ login                            |
+| 403  | `errors.unauthorized`            | ไม่ใช่เจ้าของ `:id` และไม่ใช่ admin       |
 | 404  | `errors.not_found` (`User ID: X`)| user ไม่มีอยู่จริง                      |
 
-### (ข้อเสนอ) TypeScript (axios)
+### TypeScript (axios)
 
 ```ts
 import axios from 'axios';

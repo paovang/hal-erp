@@ -49,6 +49,7 @@ import { VendorProductProvider } from './vendor-product';
 import { QuotaCompanyProvider } from './QuotaCompany';
 import { DocumentCategoryProvider } from './documentCategory';
 import { PendingApprovalNotificationProvider } from './pendingApprovalNotification';
+import { UserMailPreferenceProvider } from './userMailPreference';
 export const AllRegisterProviders: Provider[] = [
   ...DepartmentProvider,
   ...DocumentTypeProvider,
@@ -100,4 +101,5 @@ export const AllRegisterProviders: Provider[] = [
   ...QuotaCompanyProvider,
   ...DocumentCategoryProvider,
   ...PendingApprovalNotificationProvider,
+  ...UserMailPreferenceProvider,
 ];

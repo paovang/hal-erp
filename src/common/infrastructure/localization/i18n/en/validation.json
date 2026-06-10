@@ -23,5 +23,6 @@
   "ARRAY_MIN_SIZE": "{property} must contain at least {constraint1} item(s).",
   "INVALID_USER_OBJECT": "Invalid user object.",
   "PASSWORD_MISMATCH": "Password and confirm password mismatch",
-  "INVALID_PHONE_FORMAT": "must be a valid phone number format"
+  "INVALID_PHONE_FORMAT": "must be a valid phone number format",
+  "INVALID_TIME_FORMAT": "must be a valid time in HH:mm format"
 }
