@@ -153,6 +153,7 @@ export async function handleApprovalStep({
         approval_rules.push({
           email: user.email ?? '',
           token: token,
+          user_id: department_approver?.user_id ?? user.id,
         });
       }
 
@@ -235,6 +236,7 @@ export async function handleApprovalStep({
       approval_rules.push({
         email: user.email ?? '',
         token: token,
+        user_id: department?.department_head_id ?? user.id,
       });
 
       notificationUserEntity = userDataAccessMapper.toEntity(user);
@@ -275,6 +277,7 @@ export async function handleApprovalStep({
       approval_rules.push({
         email: specific_user.email ?? '',
         token: token,
+        user_id: a_w_s.user_id ?? specific_user.id,
       });
 
       notificationUserEntity = userDataAccessMapper.toEntity(specific_user);
@@ -316,6 +319,7 @@ export async function handleApprovalStep({
         approval_rules.push({
           email: user.email ?? '',
           token: token,
+          user_id: user_approver?.approver_id ?? user.id,
         });
       }
 
@@ -388,6 +392,9 @@ export async function handleApprovalStep({
       approval_rules.push({
         email: user.email ?? '',
         token: token,
+        // user whose email is emitted here (current user — pre-existing
+        // LINE_MANAGER recipient quirk left intact, just kept consistent).
+        user_id: user.id,
       });
 
       notificationUserEntity = userDataAccessMapper.toEntity(user);

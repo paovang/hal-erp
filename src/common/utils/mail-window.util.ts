@@ -124,23 +124,56 @@ export interface PendingNotificationSink {
 }
 
 /**
- * Decide whether to send a freshly-built approval notification immediately or
- * defer it. Sends now when the next approver's mail window is open (or they are
- * unrestricted); otherwise persists it as PENDING for later delivery. Returns
- * whether the notification was sent immediately.
+ * Dispatch a freshly-built approval notification per recipient. Each approver in
+ * `approval_rules` is evaluated against their OWN mail send window:
+ *  - in-window (or unrestricted) recipients are sent together in one immediate
+ *    notification carrying only their rules;
+ *  - each out-of-window recipient is persisted as its own pending record
+ *    (one rule, gated by that recipient's user_id) for later delivery.
+ *
+ * The Approval Server emails each `approval_rules[].email` individually, so
+ * filtering the array delivers exactly the intended subset.
  */
 export async function dispatchApprovalNotification(
   data: ApprovalNotificationData,
   manager: EntityManager,
   pendingSink: PendingNotificationSink,
-): Promise<{ sent: boolean }> {
-  const pref = await resolveMailWindow(manager, data.user_id);
-  if (isWithinWindow(pref)) {
-    await sendApprovalNotification(data);
-    return { sent: true };
+): Promise<{ sentCount: number; deferredCount: number }> {
+  const rules = data.approval_rules ?? [];
+  if (rules.length === 0) {
+    return { sentCount: 0, deferredCount: 0 };
   }
-  await pendingSink.createPending(toPendingPayload(data), data.user_id);
-  return { sent: false };
+
+  // Resolve each distinct recipient's window once.
+  const windowCache = new Map<number, boolean>();
+  const isOpenFor = async (userId: number): Promise<boolean> => {
+    const cached = windowCache.get(userId);
+    if (cached !== undefined) return cached;
+    const open = isWithinWindow(await resolveMailWindow(manager, userId));
+    windowCache.set(userId, open);
+    return open;
+  };
+
+  const inWindow: typeof rules = [];
+  const deferred: typeof rules = [];
+  for (const rule of rules) {
+    ((await isOpenFor(rule.user_id)) ? inWindow : deferred).push(rule);
+  }
+
+  // Send all in-window recipients in a single call.
+  if (inWindow.length > 0) {
+    await sendApprovalNotification({ ...data, approval_rules: inWindow });
+  }
+
+  // Defer each out-of-window recipient as its own pending record.
+  for (const rule of deferred) {
+    await pendingSink.createPending(
+      toPendingPayload({ ...data, approval_rules: [rule] }),
+      rule.user_id,
+    );
+  }
+
+  return { sentCount: inWindow.length, deferredCount: deferred.length };
 }
 
 /** Rebuild a sendable notification (with a real UserEntity) from storage. */

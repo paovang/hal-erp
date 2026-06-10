@@ -97,7 +97,9 @@ describe('pending payload round-trip', () => {
       type: EnumRequestApprovalType.PR,
       titlesString: 'Buy stuff',
       token: 'tok-123',
-      approval_rules: [{ email: 'approver@example.com', token: 'tok-123' }],
+      approval_rules: [
+        { email: 'approver@example.com', token: 'tok-123', user_id: 42 },
+      ],
       from_mail: 'requester@example.com',
       code: 'PR-0001',
       currency: 'LAK',

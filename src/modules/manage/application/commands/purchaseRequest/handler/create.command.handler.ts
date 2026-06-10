@@ -365,6 +365,7 @@ export class CreateCommandHandler
           {
             token: token,
             email: user.email,
+            user_id: user.id,
           },
         ];
 
