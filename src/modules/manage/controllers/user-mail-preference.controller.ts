@@ -11,7 +11,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { UserMailPreferenceOrmEntity } from '@src/common/infrastructure/database/typeorm/user-mail-preference.orm';
-import { UserContextService } from '@src/common/infrastructure/cls/cls.service';
 import { isValidWindow } from '@src/common/utils/mail-window.util';
 import { ManageDomainException } from '../domain/exceptions/manage-domain.exception';
 import { USER_MAIL_PREFERENCE_REPOSITORY } from '../application/constants/inject-key.const';
@@ -32,12 +31,10 @@ export class UserMailPreferenceController {
     private readonly _repo: IUserMailPreferenceRepository,
     @InjectRepository(UserOrmEntity)
     private readonly _userRepository: Repository<UserOrmEntity>,
-    private readonly _userContextService: UserContextService,
   ) {}
 
   @Get(':id/mail-preference')
   async get(@Param('id') id: number): Promise<MailPreferenceResponse | null> {
-    this.authorizeSelfOrAdmin(id);
     const pref = await this._repo.findByUserId(Number(id));
     return pref ? this.toResponse(pref) : null;
   }
@@ -47,8 +44,6 @@ export class UserMailPreferenceController {
     @Param('id') id: number,
     @Body() dto: UpdateMailPreferenceDto,
   ): Promise<MailPreferenceResponse> {
-    this.authorizeSelfOrAdmin(id);
-
     const user = await this._userRepository.findOne({
       where: { id: Number(id) },
     });
@@ -82,20 +77,6 @@ export class UserMailPreferenceController {
     });
 
     return this.toResponse(saved);
-  }
-
-  private authorizeSelfOrAdmin(id: number): void {
-    const auth = this._userContextService.getAuthUser();
-    const callerId = auth?.user?.id;
-    const roles: string[] = auth?.roles ?? [];
-    const isAdmin = roles.includes('super-admin') || roles.includes('admin');
-
-    if (Number(callerId) !== Number(id) && !isAdmin) {
-      throw new ManageDomainException(
-        'errors.unauthorized',
-        HttpStatus.FORBIDDEN,
-      );
-    }
   }
 
   private toResponse(

@@ -91,9 +91,7 @@
 
 ## API จัดการ mail send window
 
-ทุก endpoint ต้อง login: `Authorization: Bearer <JWT>`
-
-**สิทธิ์ (self-or-admin):** เรียกของ `:id` ได้เมื่อ `:id` เป็นตัวเอง หรือ caller มี role `super-admin`/`admin` — ไม่งั้น 403
+ทุก endpoint ต้อง login: `Authorization: Bearer <JWT>` — แค่มี JWT ที่ถูกต้องก็เรียกได้ (ยังไม่จำกัดสิทธิ์ว่าต้องเป็นเจ้าของ/admin)
 
 ### ดึงค่าปัจจุบัน
 
@@ -149,8 +147,7 @@ PUT /api/users/:id/mail-preference
 | ---- | -------------------------------- | --------------------------------------- |
 | 400  | `Validation failed`              | รูปแบบเวลาไม่ถูกต้อง (ไม่ตรง `HH:mm`)      |
 | 400  | `errors.invalid_mail_window`     | `is_enabled=true` แต่ไม่มี start/end หรือ `start_time > end_time` (ข้ามเที่ยงคืน) |
-| 401  | `errors.unauthorized`            | ไม่ได้ login                            |
-| 403  | `errors.unauthorized`            | ไม่ใช่เจ้าของ `:id` และไม่ใช่ admin       |
+| 401  | `errors.unauthorized`            | ไม่ได้ login (ไม่มี/JWT ไม่ถูกต้อง)        |
 | 404  | `errors.not_found` (`User ID: X`)| user ไม่มีอยู่จริง                      |
 
 ### TypeScript (axios)
