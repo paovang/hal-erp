@@ -506,3 +506,8 @@ export const READ_QUOTA_COMPANY_REPOSITORY = Symbol(
 export const CURRENCY_CONVERSION_SERVICE = Symbol(
   'CURRENCY_CONVERSION_SERVICE',
 );
+
+// pending approval notification (deferred mail send window)
+export const PENDING_APPROVAL_NOTIFICATION_REPOSITORY = Symbol(
+  'PENDING_APPROVAL_NOTIFICATION_REPOSITORY',
+);

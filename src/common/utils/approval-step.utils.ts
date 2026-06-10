@@ -405,12 +405,20 @@ export async function handleApprovalStep({
       );
   }
 
+  // Keep user_id consistent with the user whose contact details are carried in
+  // notificationUserEntity. That identity is what the mail send-window check and
+  // the deferred payload rely on; several branches previously left user_id as
+  // a_w_s.user_id (null/0) even though the entity referred to a real approver.
+  const resolvedUserId =
+    (notificationUserEntity?.getId?.()?.value as number | undefined) ??
+    notificationUserId;
+
   // Return ข้อมูลสำหรับส่ง notification หลัง transaction commit
   return {
     user_approval_step_id,
     total,
     userEntity: notificationUserEntity,
-    user_id: notificationUserId,
+    user_id: resolvedUserId,
     department_name,
     type: document_type,
     titlesString,

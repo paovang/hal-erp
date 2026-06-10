@@ -49,9 +49,11 @@ import { BudgetApprovalRuleOrmEntity } from '@src/common/infrastructure/database
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
 import {
   handleApprovalStep,
-  sendApprovalNotification,
   ApprovalNotificationData,
 } from '@src/common/utils/approval-step.utils';
+import { dispatchApprovalNotification } from '@src/common/utils/mail-window.util';
+import { IPendingApprovalNotificationRepository } from '@src/modules/manage/domain/ports/output/pending-approval-notification-repository.interface';
+import { PENDING_APPROVAL_NOTIFICATION_REPOSITORY } from '../../../constants/inject-key.const';
 import { UserApprovalStepId } from '@src/modules/manage/domain/value-objects/user-approval-step-id.vo';
 import { ReceiptOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.orm';
 import { ReceiptItemOrmEntity } from '@src/common/infrastructure/database/typeorm/receipt.item.orm';
@@ -159,6 +161,8 @@ export class ApproveStepCommandHandler
     @Inject(AMAZON_S3_SERVICE_KEY)
     private readonly _amazonS3ServiceKey: IAmazonS3ImageService,
     private readonly _codeGeneratorUtil: CodeGeneratorUtil,
+    @Inject(PENDING_APPROVAL_NOTIFICATION_REPOSITORY)
+    private readonly _pendingNotification: IPendingApprovalNotificationRepository,
   ) {}
 
   async execute(
@@ -996,8 +1000,14 @@ export class ApproveStepCommandHandler
     // === หลัง transaction commit สำเร็จ — เรียก external services ===
 
     // ส่ง approval notification ไป Approval Server
+    // เคารพ "ช่วงเวลาส่ง mail" ของผู้อนุมัติคนถัดไป: ถ้าอยู่ในช่วง (หรือไม่ได้ตั้งค่า)
+    // ส่งทันทีเหมือนเดิม; ถ้าอยู่นอกช่วง เก็บไว้เป็น pending แล้วให้ scheduler ส่งภายหลัง
     if (notificationData) {
-      await sendApprovalNotification(notificationData);
+      await dispatchApprovalNotification(
+        notificationData,
+        this._dataSource.manager,
+        this._pendingNotification,
+      );
     }
 
     // Verify OTP กับ Approval Server

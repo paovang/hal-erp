@@ -51,6 +51,8 @@ import { CompanyUserOrmEntity } from './typeorm/company-user.orm';
 import { VendorProductOrmEntity } from './typeorm/vendor-product.orm';
 import { QuotaCompanyOrmEntity } from './typeorm/quota-company.orm';
 import { DocumentCategoryOrmEntity } from './typeorm/document-category.orm';
+import { UserMailPreferenceOrmEntity } from './typeorm/user-mail-preference.orm';
+import { PendingApprovalNotificationOrmEntity } from './typeorm/pending-approval-notification.orm';
 
 export const models = [
   DepartmentOrmEntity,
@@ -106,4 +108,6 @@ export const models = [
   VendorProductOrmEntity,
   QuotaCompanyOrmEntity,
   DocumentCategoryOrmEntity,
+  UserMailPreferenceOrmEntity,
+  PendingApprovalNotificationOrmEntity,
 ];

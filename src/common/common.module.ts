@@ -17,6 +17,7 @@ import { AmazonS3Module } from '@common/infrastructure/aws3/config/aws3.module';
 import { ClsAuthModule } from '@common/infrastructure/cls/cls.module';
 import { PermissionGuard } from './guards/permission.guard';
 import { ExcelExportService } from './utils/excel-export.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Global()
 @Module({
@@ -25,6 +26,7 @@ import { ExcelExportService } from './utils/excel-export.service';
       envFilePath: '.env',
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     PaginationModule,
     AmazonS3Module.forRootAsync(),
     I18nModule,
