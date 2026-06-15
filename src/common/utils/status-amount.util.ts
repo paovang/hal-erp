@@ -1,7 +1,5 @@
-import {
-  EligiblePersons,
-  EnumPrOrPo,
-} from '@src/modules/manage/application/constants/status-key.const';
+import { EnumPrOrPo } from '@src/modules/manage/application/constants/status-key.const';
+import { applyDocumentCompanyScope } from './document-scope.util';
 import { EntityManager } from 'typeorm';
 import { PurchaseOrderOrmEntity } from '../infrastructure/database/typeorm/purchase-order.orm';
 import { PurchaseRequestOrmEntity } from '../infrastructure/database/typeorm/purchase-request.orm';
@@ -39,24 +37,12 @@ export async function countStatusAmounts(
       // ถ้าต้องการนับจำนวน document ให้ใช้ COUNT(DISTINCT doc.id)
       .addSelect('COUNT(DISTINCT doc.id)', 'amount');
 
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.ADMIN)
-    ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          query.andWhere('doc.company_id = :company_id', { company_id });
-        }
-      } else {
-        query.andWhere('document_approver.user_id = :user_id', {
-          user_id,
-        });
-      }
-    }
+    applyDocumentCompanyScope(query, {
+      roles,
+      companyId: company_id,
+      userId: user_id,
+      documentAlias: 'doc',
+    });
 
     console.log('object', filterCompanyId, company_id);
 
@@ -108,24 +94,12 @@ export async function countStatusAmounts(
       .addSelect('ds.name', 'status')
       .addSelect('COUNT(DISTINCT doc.id)', 'amount');
 
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.ADMIN)
-    ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          query.andWhere('doc.company_id = :company_id', { company_id });
-        }
-      } else {
-        query.andWhere('document_approver.user_id = :user_id', {
-          user_id,
-        });
-      }
-    }
+    applyDocumentCompanyScope(query, {
+      roles,
+      companyId: company_id,
+      userId: user_id,
+      documentAlias: 'doc',
+    });
 
     if (filterCompanyId) {
       query.andWhere('doc.company_id = :filterCompanyId', { filterCompanyId });
@@ -177,27 +151,12 @@ export async function countStatusAmounts(
       // ถ้าต้องการนับจำนวน document ให้ใช้ COUNT(DISTINCT doc.id)
       .addSelect('COUNT(DISTINCT doc.id)', 'amount');
 
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.ADMIN)
-    ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          query.andWhere('doc.company_id = :company_id', { company_id });
-        }
-      } else {
-        query.andWhere('document_approver.user_id = :user_id', {
-          user_id,
-        });
-      }
-      // query.andWhere('document_approver.user_id = :user_id', {
-      //   user_id,
-      // });
-    }
+    applyDocumentCompanyScope(query, {
+      roles,
+      companyId: company_id,
+      userId: user_id,
+      documentAlias: 'doc',
+    });
 
     if (filterCompanyId) {
       query.andWhere('doc.company_id = :filterCompanyId', { filterCompanyId });

@@ -49,10 +49,8 @@ import {
   // selectWorkflowStepsDepartment,
 } from '@src/common/constants/select-field';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
-import {
-  EligiblePersons,
-  EnumPrOrPo,
-} from '@src/modules/manage/application/constants/status-key.const';
+import { applyDocumentCompanyScope } from '@src/common/utils/document-scope.util';
+import { EnumPrOrPo } from '@src/modules/manage/application/constants/status-key.const';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
 
@@ -423,46 +421,13 @@ export class ReadPurchaseRequestRepository
       .leftJoin('budget_accounts.currency', 'budget_currency')
       .addSelect(selectFields);
 
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.ADMIN)
-    ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          query.where('documents.company_id = :company_id', {
-            company_id,
-          });
-        }
-      } else {
-        // if (type && (type = PurchaseRequestType.only_user)) {
-        //   query.andWhere('document_approver.user_id = :user_id', {
-        //     user_id,
-        //   });
-        // }
-        switch (type) {
-          case PurchaseRequestType.only_user:
-            query.andWhere('document_approver.user_id = :user_id', {
-              user_id,
-            });
-            break;
-
-          case PurchaseRequestType.all:
-            query.andWhere(
-              `departments_approver.id IN (
-              SELECT du.department_id
-              FROM department_users du
-              WHERE du.user_id = :user_id
-            )`,
-              { user_id },
-            );
-            break;
-        }
-      }
-    }
+    applyDocumentCompanyScope(query, {
+      roles,
+      companyId: company_id,
+      userId: user_id,
+      type,
+      documentAlias: 'documents',
+    });
 
     return query;
   }

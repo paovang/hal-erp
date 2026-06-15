@@ -18,10 +18,7 @@ import { PurchaseRequestDataAccessMapper } from '../../mappers/purchase-request.
 import { ReceiptQueryDto } from '@src/modules/manage/application/dto/query/receipt.dto';
 import { ReceiptExportQueryDto } from '@src/modules/manage/application/dto/query/receipt-export.dto';
 import { ReceiptEntity } from '@src/modules/manage/domain/entities/receipt.entity';
-import {
-  EligiblePersons,
-  EnumPrOrPo,
-} from '@src/modules/manage/application/constants/status-key.const';
+import { EnumPrOrPo } from '@src/modules/manage/application/constants/status-key.const';
 import {
   selectApprover,
   selectApproverUserSignatures,
@@ -77,6 +74,7 @@ import {
   selectVendors,
 } from '@src/common/constants/select-field';
 import countStatusAmounts from '@src/common/utils/status-amount.util';
+import { applyDocumentCompanyScope } from '@src/common/utils/document-scope.util';
 import { ReceiptId } from '@src/modules/manage/domain/value-objects/receitp-id.vo';
 import { ApprovalWorkflowStepOrmEntity } from '@src/common/infrastructure/database/typeorm/approval-workflow-step.orm';
 import { UserApprovalStepOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval-step.orm';
@@ -408,42 +406,14 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .leftJoin('doc_dept_user.departments', 'departments_approver')
       .addSelect(selectFields);
     // console.log(roles);
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.ADMIN) &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN)
-    ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          query.andWhere('documents.company_id = :company_id', { company_id });
-        }
-      } else {
-        switch (type) {
-          case PurchaseRequestType.only_user:
-            query.andWhere('document_approver.user_id = :user_id', {
-              user_id,
-            });
-            break;
-
-          case PurchaseRequestType.all:
-            query.andWhere(
-              `departments_approver.id IN (
-              SELECT du.department_id
-              FROM department_users du
-              WHERE du.user_id = :user_id
-            )`,
-              { user_id },
-            );
-            query.andWhere('document_approver.user_id = :user_id', {
-              user_id,
-            });
-            break;
-        }
-      }
-    }
+    applyDocumentCompanyScope(query, {
+      roles,
+      companyId: company_id,
+      userId: user_id,
+      type,
+      documentAlias: 'documents',
+      approverOnAll: true,
+    });
 
     if (companyID) {
       query.andWhere('documents.company_id = :companyID', { companyID });
@@ -698,43 +668,13 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       // add select
       .addSelect(selectFields);
 
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.ADMIN)
-    ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          query.andWhere('po_documents.company_id = :company_id', {
-            company_id,
-          });
-        }
-      } else {
-        // query.andWhere('document_approver.user_id = :user_id', {
-        //   user_id,
-        // });
-        switch (type) {
-          case PurchaseRequestType.only_user:
-            query.andWhere('document_approver.user_id = :user_id', {
-              user_id,
-            });
-            break;
-          case PurchaseRequestType.all:
-            query.andWhere(
-              `departments_approver.id IN (
-                SELECT du.department_id
-                FROM department_users du
-                WHERE du.user_id = :user_id
-              )`,
-              { user_id },
-            );
-            break;
-        }
-      }
-    }
+    applyDocumentCompanyScope(query, {
+      roles,
+      companyId: company_id,
+      userId: user_id,
+      type,
+      documentAlias: 'po_documents',
+    });
 
     return query;
   }
@@ -826,46 +766,13 @@ export class ReadReceiptRepository implements IReadReceiptRepository {
       .leftJoin('purchase_request_items.currency', 'currency')
       .addSelect(selectFields);
 
-    if (
-      roles &&
-      !roles.includes(EligiblePersons.SUPER_ADMIN) &&
-      !roles.includes(EligiblePersons.ADMIN)
-    ) {
-      if (
-        roles.includes(EligiblePersons.COMPANY_ADMIN) ||
-        roles.includes(EligiblePersons.COMPANY_USER)
-      ) {
-        if (company_id) {
-          query.where('documents.company_id = :company_id', {
-            company_id,
-          });
-        }
-      } else {
-        // if (type && (type = PurchaseRequestType.only_user)) {
-        //   query.andWhere('document_approver.user_id = :user_id', {
-        //     user_id,
-        //   });
-        // }
-        switch (type) {
-          case PurchaseRequestType.only_user:
-            query.andWhere('document_approver.user_id = :user_id', {
-              user_id,
-            });
-            break;
-
-          case PurchaseRequestType.all:
-            query.andWhere(
-              `departments_approver.id IN (
-                SELECT du.department_id
-                FROM department_users du
-                WHERE du.user_id = :user_id
-              )`,
-              { user_id },
-            );
-            break;
-        }
-      }
-    }
+    applyDocumentCompanyScope(query, {
+      roles,
+      companyId: company_id,
+      userId: user_id,
+      type,
+      documentAlias: 'documents',
+    });
 
     return query;
   }
