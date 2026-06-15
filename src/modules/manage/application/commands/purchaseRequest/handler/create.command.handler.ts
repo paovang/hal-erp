@@ -76,6 +76,7 @@ import { PurchaseRequestItemOrmEntity } from '@src/common/infrastructure/databas
 import { UnitOrmEntity } from '@src/common/infrastructure/database/typeorm/unit.orm';
 import { hashData } from '@src/common/utils/server/hash-data.util';
 import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
+import { approverDisplayName } from '@src/common/utils/approver-display-name.util';
 import { BudgetAccountOrmEntity } from '@src/common/infrastructure/database/typeorm/budget-account.orm';
 interface CustomApprovalDto
   extends Omit<
@@ -366,6 +367,7 @@ export class CreateCommandHandler
             token: token,
             email: user.email,
             user_id: user.id,
+            name: approverDisplayName(user),
           },
         ];
 

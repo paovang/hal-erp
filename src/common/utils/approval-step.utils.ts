@@ -17,6 +17,7 @@ import { hashData } from './server/hash-data.util';
 import { sendApprovalRequest } from './server/send-data.uitl';
 import { UserDataAccessMapper } from '@src/modules/manage/infrastructure/mappers/user.mapper';
 import { ApprovalRuleInterface } from '../application/interfaces/approval-rule.interface';
+import { approverDisplayName } from './approver-display-name.util';
 
 interface CustomDocumentApprover {
   user_approval_step_id: number;
@@ -154,6 +155,7 @@ export async function handleApprovalStep({
           email: user.email ?? '',
           token: token,
           user_id: department_approver?.user_id ?? user.id,
+          name: approverDisplayName(user),
         });
       }
 
@@ -237,6 +239,7 @@ export async function handleApprovalStep({
         email: user.email ?? '',
         token: token,
         user_id: department?.department_head_id ?? user.id,
+        name: approverDisplayName(user),
       });
 
       notificationUserEntity = userDataAccessMapper.toEntity(user);
@@ -278,6 +281,7 @@ export async function handleApprovalStep({
         email: specific_user.email ?? '',
         token: token,
         user_id: a_w_s.user_id ?? specific_user.id,
+        name: approverDisplayName(specific_user),
       });
 
       notificationUserEntity = userDataAccessMapper.toEntity(specific_user);
@@ -320,6 +324,7 @@ export async function handleApprovalStep({
           email: user.email ?? '',
           token: token,
           user_id: user_approver?.approver_id ?? user.id,
+          name: approverDisplayName(user),
         });
       }
 
@@ -395,6 +400,7 @@ export async function handleApprovalStep({
         // user whose email is emitted here (current user — pre-existing
         // LINE_MANAGER recipient quirk left intact, just kept consistent).
         user_id: user.id,
+        name: approverDisplayName(user),
       });
 
       notificationUserEntity = userDataAccessMapper.toEntity(user);

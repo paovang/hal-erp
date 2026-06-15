@@ -73,6 +73,7 @@ import { CompanyUserOrmEntity } from '@src/common/infrastructure/database/typeor
 import { UserApprovalOrmEntity } from '@src/common/infrastructure/database/typeorm/user-approval.orm';
 import { hashData } from '@src/common/utils/server/hash-data.util';
 import { ApprovalRuleInterface } from '@src/common/application/interfaces/approval-rule.interface';
+import { approverDisplayName } from '@src/common/utils/approver-display-name.util';
 import { UserOrmEntity } from '@src/common/infrastructure/database/typeorm/user.orm';
 import { PurchaseRequestOrmEntity } from '@src/common/infrastructure/database/typeorm/purchase-request.orm';
 
@@ -391,6 +392,7 @@ export class CreateCommandHandler
             token: token,
             email: user.email,
             user_id: user.id,
+            name: approverDisplayName(user),
           },
         ];
 
