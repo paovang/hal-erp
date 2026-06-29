@@ -19,6 +19,7 @@ import { BudgetApprovalRuleOrmEntity } from './budget-approval-rule.orm';
 import { DocumentOrmEntity } from './document.orm';
 import { CompanyUserOrmEntity } from './company-user.orm';
 import { QuotaCompanyOrmEntity } from './quota-company.orm';
+import { CompanyProductOrmEntity } from './company-product.orm';
 
 @Entity('companies')
 export class CompanyOrmEntity {
@@ -106,4 +107,10 @@ export class CompanyOrmEntity {
     (quota_company) => quota_company.company,
   )
   quota_company: Relation<QuotaCompanyOrmEntity[]>;
+
+  @OneToMany(
+    () => CompanyProductOrmEntity,
+    (company_products) => company_products.company,
+  )
+  company_products: Relation<CompanyProductOrmEntity[]>;
 }

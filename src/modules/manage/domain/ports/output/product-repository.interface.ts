@@ -8,6 +8,8 @@ export interface IReadProductRepository {
   findAll(
     query: ProductQueryDto,
     manager: EntityManager,
+    roles?: string[],
+    company_id?: number,
   ): Promise<ResponseResult<ProductEntity>>;
 
   findOne(

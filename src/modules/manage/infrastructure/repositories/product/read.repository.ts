@@ -14,6 +14,7 @@ import { ProductQueryDto } from '@src/modules/manage/application/dto/query/produ
 import { ProductEntity } from '@src/modules/manage/domain/entities/product.entity';
 import { ProductId } from '@src/modules/manage/domain/value-objects/product-id.vo';
 import { findOneOrFail } from '@src/common/utils/fine-one-orm.utils';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadProductRepository implements IReadProductRepository {
@@ -27,8 +28,40 @@ export class ReadProductRepository implements IReadProductRepository {
   async findAll(
     query: ProductQueryDto,
     manager: EntityManager,
+    roles?: string[],
+    company_id?: number,
   ): Promise<ResponseResult<ProductEntity>> {
     const queryBuilder = await this.createBaseQuery(manager);
+
+    // Scope the catalog to the products selected by the caller's company.
+    // - admin / super-admin: unscoped (full catalog), with an optional
+    //   ?company_id override to inspect a specific company's selection.
+    // - everyone else: forced to their own company's active selection in
+    //   company_products; no resolvable company => nothing (fail-safe).
+    const isAdmin =
+      roles?.includes(EligiblePersons.SUPER_ADMIN) ||
+      roles?.includes(EligiblePersons.ADMIN);
+
+    const restrictByCompany = (cid: number) => {
+      queryBuilder.innerJoin(
+        'products.company_products',
+        'cp',
+        'cp.company_id = :cpCompanyId AND cp.status = :cpStatus AND cp.deleted_at IS NULL',
+        { cpCompanyId: cid, cpStatus: 'active' },
+      );
+    };
+
+    if (isAdmin) {
+      if (query.company_id) {
+        restrictByCompany(query.company_id);
+      }
+    } else if (company_id) {
+      restrictByCompany(company_id);
+    } else {
+      // fail-safe: non-admin with no resolvable company sees nothing
+      queryBuilder.andWhere('1 = 0');
+    }
+
     query.sort_by = 'products.id';
 
     const data = await this._paginationService.paginate(

@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { ProductTypeOrmEntity } from './product-type.orm';
 import { VendorProductOrmEntity } from './vendor-product.orm';
+import { CompanyProductOrmEntity } from './company-product.orm';
 import { UnitOrmEntity } from './unit.orm';
 
 @Entity('products')
@@ -73,4 +74,10 @@ export class ProductOrmEntity {
     (vendor_products) => vendor_products.products,
   )
   vendor_products: Relation<VendorProductOrmEntity[]>;
+
+  @OneToMany(
+    () => CompanyProductOrmEntity,
+    (company_products) => company_products.product,
+  )
+  company_products: Relation<CompanyProductOrmEntity[]>;
 }

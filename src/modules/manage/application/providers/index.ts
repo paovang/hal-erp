@@ -46,6 +46,7 @@ import { CompanyProvider } from './company';
 import { ProductProviders } from './product';
 import { CompanyUserProvider } from './companyUser';
 import { VendorProductProvider } from './vendor-product';
+import { CompanyProductProvider } from './company-product';
 import { QuotaCompanyProvider } from './QuotaCompany';
 import { DocumentCategoryProvider } from './documentCategory';
 import { PendingApprovalNotificationProvider } from './pendingApprovalNotification';
@@ -98,6 +99,7 @@ export const AllRegisterProviders: Provider[] = [
   ...ProductProviders,
   ...CompanyUserProvider,
   ...VendorProductProvider,
+  ...CompanyProductProvider,
   ...QuotaCompanyProvider,
   ...DocumentCategoryProvider,
   ...PendingApprovalNotificationProvider,

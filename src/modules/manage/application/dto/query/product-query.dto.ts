@@ -29,4 +29,14 @@ export class ProductQueryDto extends PaginationDto {
   @IsOptional()
   @IsEnum(['active', 'inactive'])
   status?: 'active' | 'inactive';
+
+  @ApiProperty({
+    required: false,
+    description:
+      'admin/super-admin only: inspect a specific company’s active selection (company_products). Non-admins are always auto-scoped to their own company and this is ignored.',
+  })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  company_id?: number;
 }
