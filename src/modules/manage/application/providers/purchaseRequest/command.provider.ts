@@ -5,6 +5,7 @@ import { GetOneQueryHandler } from '../../queries/purchaseRequest/handler/get-on
 import { CreateCommandHandler } from '../../commands/purchaseRequest/handler/create.command.handler';
 import { UpdateCommandHandler } from '../../commands/purchaseRequest/handler/update.command.handler';
 import { DeleteCommandHandler } from '../../commands/purchaseRequest/handler/delete.command.handler';
+import { UpdateItemFileCommandHandler } from '../../commands/purchaseRequest/handler/update-item-file.command.handler';
 
 export const PurchaseRequestHandlersProviders: Provider[] = [
   GetAllQueryHandler,
@@ -13,4 +14,5 @@ export const PurchaseRequestHandlersProviders: Provider[] = [
   CreateCommandHandler,
   UpdateCommandHandler,
   DeleteCommandHandler,
+  UpdateItemFileCommandHandler,
 ];

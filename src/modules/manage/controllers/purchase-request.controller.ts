@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -23,6 +24,7 @@ import { PurchaseRequestQueryDto } from '../application/dto/query/purchase-reque
 import { PurchaseRequestExportQueryDto } from '../application/dto/query/purchase-request-export.dto';
 import { UpdatePurchaseRequestDto } from '../application/dto/create/purchaseRequest/update.dto';
 import { AddStepDto } from '../application/dto/create/purchaseRequest/add-step.dto';
+import { UpdatePurchaseRequestItemFileDto } from '../application/dto/create/purchaseRequest/update-item-file.dto';
 import { ExcelExportService } from '@src/common/utils/excel-export.service';
 import { ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -181,6 +183,22 @@ export class PurchaseRequestController {
     @Body() dto: AddStepDto,
   ): Promise<ResponseResult<PurchaseRequestResponse>> {
     const result = await this._purchaseRequestService.addStep(id, dto);
+
+    return this._transformResultService.execute(
+      this._dataMapper.toResponse.bind(this._dataMapper),
+      result,
+    );
+  }
+
+  @Patch('items/:id/file')
+  @ApiOperation({
+    summary: 'Replace the uploaded file of a purchase request item',
+  })
+  async updateItemFile(
+    @Param('id') id: number,
+    @Body() dto: UpdatePurchaseRequestItemFileDto,
+  ): Promise<ResponseResult<PurchaseRequestResponse>> {
+    const result = await this._purchaseRequestService.updateItemFile(id, dto);
 
     return this._transformResultService.execute(
       this._dataMapper.toResponse.bind(this._dataMapper),

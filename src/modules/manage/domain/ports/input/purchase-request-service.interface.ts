@@ -6,6 +6,7 @@ import { PurchaseRequestQueryDto } from '@src/modules/manage/application/dto/que
 import { PurchaseRequestExportQueryDto } from '@src/modules/manage/application/dto/query/purchase-request-export.dto';
 import { UpdatePurchaseRequestDto } from '@src/modules/manage/application/dto/create/purchaseRequest/update.dto';
 import { AddStepDto } from '@src/modules/manage/application/dto/create/purchaseRequest/add-step.dto';
+import { UpdatePurchaseRequestItemFileDto } from '@src/modules/manage/application/dto/create/purchaseRequest/update-item-file.dto';
 import { PrListExportRow } from '@src/common/utils/excel-export.service';
 
 export interface IPurchaseRequestServiceInterface {
@@ -38,6 +39,12 @@ export interface IPurchaseRequestServiceInterface {
   addStep(
     id: number,
     dto: AddStepDto,
+    manager?: EntityManager,
+  ): Promise<ResponseResult<PurchaseRequestEntity>>;
+
+  updateItemFile(
+    id: number,
+    dto: UpdatePurchaseRequestItemFileDto,
     manager?: EntityManager,
   ): Promise<ResponseResult<PurchaseRequestEntity>>;
 }
