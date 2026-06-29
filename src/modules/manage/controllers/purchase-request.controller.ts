@@ -11,7 +11,15 @@ import {
   Put,
   Query,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerStorage } from '@src/common/utils/multer.utils';
+import { FileValidationInterceptor } from '@src/common/interceptors/file/file.interceptor';
+import { FileMimeTypeValidator } from '@src/common/validations/file-mime-type.validator';
+import { FileSizeValidator } from '@src/common/validations/file-size.validator';
+import { SUPPORTED_UPLOAD_MIME_TYPES } from '@src/common/constants/inject-key.const';
 import { IPurchaseRequestServiceInterface } from '../domain/ports/input/purchase-request-service.interface';
 import { TRANSFORM_RESULT_SERVICE } from '@src/common/constants/inject-key.const';
 import { PURCHASE_REQUEST_APPLICATION_SERVICE } from '../application/constants/inject-key.const';
@@ -26,7 +34,7 @@ import { UpdatePurchaseRequestDto } from '../application/dto/create/purchaseRequ
 import { AddStepDto } from '../application/dto/create/purchaseRequest/add-step.dto';
 import { UpdatePurchaseRequestItemFileDto } from '../application/dto/create/purchaseRequest/update-item-file.dto';
 import { ExcelExportService } from '@src/common/utils/excel-export.service';
-import { ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Public } from '@core-system/auth';
 import { verifyHashData } from '@src/common/utils/server/hash-data.util';
@@ -194,10 +202,33 @@ export class PurchaseRequestController {
   @ApiOperation({
     summary: 'Replace the uploaded file of a purchase request item',
   })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  @UseInterceptors(
+    FileInterceptor('file', { storage: multerStorage }),
+    new FileValidationInterceptor(
+      new FileMimeTypeValidator([...SUPPORTED_UPLOAD_MIME_TYPES]),
+      new FileSizeValidator(10 * 1024 * 1024),
+      'file',
+    ),
+  )
   async updateItemFile(
     @Param('id') id: number,
-    @Body() dto: UpdatePurchaseRequestItemFileDto,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<ResponseResult<PurchaseRequestResponse>> {
+    if (!file) {
+      throw new ManageDomainException(
+        'errors.file_name_required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const dto: UpdatePurchaseRequestItemFileDto = { file_name: file.filename };
     const result = await this._purchaseRequestService.updateItemFile(id, dto);
 
     return this._transformResultService.execute(
