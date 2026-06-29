@@ -29,6 +29,7 @@ import { DocumentAttachmentController } from '../../controllers/document-attachm
 import { ApprovalWorkflowStepController } from '../../controllers/approval-workflow-step.controller';
 import { PurchaseRequestController } from '../../controllers/purchase-request.controller';
 import { PurchaseOrderController } from '../../controllers/purchase-order.controller';
+import { PurchaseOrderSelectedVendorController } from '../../controllers/purchase-order-selected-vendor.controller';
 import { UserApprovalController } from '../../controllers/user-approval.controller';
 import { UserApprovalStepController } from '../../controllers/user-approval-step.controller';
 import { VatController } from '../../controllers/vat.controller';
@@ -85,6 +86,7 @@ import { UserMailPreferenceController } from '../../controllers/user-mail-prefer
     ApprovalWorkflowStepController,
     PurchaseRequestController,
     PurchaseOrderController,
+    PurchaseOrderSelectedVendorController,
     UserApprovalController,
     UserApprovalStepController,
     VatController,
