@@ -16,6 +16,7 @@ import { UnitOrmEntity } from './unit.orm';
 import { PurchaseOrderItemOrmEntity } from './purchase-order-item.orm';
 import { QuotaCompanyOrmEntity } from './quota-company.orm';
 import { CurrencyOrmEntity } from './currency.orm';
+import { CategoryOrmEntity } from './category.orm';
 
 @Entity('purchase_request_items')
 export class PurchaseRequestItemOrmEntity {
@@ -112,4 +113,14 @@ export class PurchaseRequestItemOrmEntity {
 
   @Column({ nullable: true, name: 'currency_id' })
   currency_id?: number;
+
+  /** Snapshot of the resolved account category at PR-line creation */
+  @Column({ type: 'bigint', unsigned: true, nullable: true })
+  category_id?: number;
+  @ManyToOne(() => CategoryOrmEntity, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'category_id' })
+  category: Relation<CategoryOrmEntity>;
 }

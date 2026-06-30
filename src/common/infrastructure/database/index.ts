@@ -49,7 +49,11 @@ import { ProductOrmEntity } from './typeorm/product.orm';
 import { CompanyOrmEntity } from './typeorm/company.orm';
 import { CompanyUserOrmEntity } from './typeorm/company-user.orm';
 import { VendorProductOrmEntity } from './typeorm/vendor-product.orm';
+<<<<<<< HEAD
 import { CompanyProductOrmEntity } from './typeorm/company-product.orm';
+=======
+import { CompanyVendorOrmEntity } from './typeorm/company-vendor.orm';
+>>>>>>> HalLogistic
 import { QuotaCompanyOrmEntity } from './typeorm/quota-company.orm';
 import { DocumentCategoryOrmEntity } from './typeorm/document-category.orm';
 import { UserMailPreferenceOrmEntity } from './typeorm/user-mail-preference.orm';
@@ -107,7 +111,11 @@ export const models = [
   CompanyOrmEntity,
   CompanyUserOrmEntity,
   VendorProductOrmEntity,
+<<<<<<< HEAD
   CompanyProductOrmEntity,
+=======
+  CompanyVendorOrmEntity,
+>>>>>>> HalLogistic
   QuotaCompanyOrmEntity,
   DocumentCategoryOrmEntity,
   UserMailPreferenceOrmEntity,

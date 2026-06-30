@@ -25,9 +25,11 @@ import { BudgetItemController } from '../../controllers/budget-item.controller';
 import { BudgetItemDetailController } from '../../controllers/budget-item-detail.controller';
 import { ProvinceController } from '../../controllers/province.controller';
 import { DocumentController } from '../../controllers/document.controller';
+import { DocumentAttachmentController } from '../../controllers/document-attachment.controller';
 import { ApprovalWorkflowStepController } from '../../controllers/approval-workflow-step.controller';
 import { PurchaseRequestController } from '../../controllers/purchase-request.controller';
 import { PurchaseOrderController } from '../../controllers/purchase-order.controller';
+import { PurchaseOrderSelectedVendorController } from '../../controllers/purchase-order-selected-vendor.controller';
 import { UserApprovalController } from '../../controllers/user-approval.controller';
 import { UserApprovalStepController } from '../../controllers/user-approval-step.controller';
 import { VatController } from '../../controllers/vat.controller';
@@ -81,9 +83,11 @@ import { UserMailPreferenceController } from '../../controllers/user-mail-prefer
     BudgetItemDetailController,
     ProvinceController,
     DocumentController,
+    DocumentAttachmentController,
     ApprovalWorkflowStepController,
     PurchaseRequestController,
     PurchaseOrderController,
+    PurchaseOrderSelectedVendorController,
     UserApprovalController,
     UserApprovalStepController,
     VatController,
