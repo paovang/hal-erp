@@ -10,6 +10,8 @@ export class ProductEntity extends Entity<ProductId> {
   private readonly _unit?: { id: number; name: string };
   private readonly _productType?: { id: number; name: string };
   private readonly _status: 'active' | 'inactive';
+  private readonly _categoryId: number | null;
+  private readonly _category?: { id: number; name: string };
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date | null;
   private readonly _deletedAt: Date | null;
@@ -24,6 +26,8 @@ export class ProductEntity extends Entity<ProductId> {
     this._unitId = builder.unitId;
     this._unit = builder.unit;
     this._status = builder.status;
+    this._categoryId = builder.categoryId ?? null;
+    this._category = builder.category;
     this._createdAt = builder.createdAt;
     this._updatedAt = builder.updatedAt ?? null;
     this._deletedAt = builder.deletedAt ?? null;
@@ -55,6 +59,14 @@ export class ProductEntity extends Entity<ProductId> {
 
   get status(): 'active' | 'inactive' {
     return this._status;
+  }
+
+  get categoryId(): number | null {
+    return this._categoryId;
+  }
+
+  get category(): { id: number; name: string } | undefined {
+    return this._category;
   }
 
   get createdAt(): Date {

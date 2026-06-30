@@ -49,6 +49,7 @@ import { ProductOrmEntity } from './typeorm/product.orm';
 import { CompanyOrmEntity } from './typeorm/company.orm';
 import { CompanyUserOrmEntity } from './typeorm/company-user.orm';
 import { VendorProductOrmEntity } from './typeorm/vendor-product.orm';
+import { CompanyVendorOrmEntity } from './typeorm/company-vendor.orm';
 import { QuotaCompanyOrmEntity } from './typeorm/quota-company.orm';
 import { DocumentCategoryOrmEntity } from './typeorm/document-category.orm';
 import { UserMailPreferenceOrmEntity } from './typeorm/user-mail-preference.orm';
@@ -106,6 +107,7 @@ export const models = [
   CompanyOrmEntity,
   CompanyUserOrmEntity,
   VendorProductOrmEntity,
+  CompanyVendorOrmEntity,
   QuotaCompanyOrmEntity,
   DocumentCategoryOrmEntity,
   UserMailPreferenceOrmEntity,

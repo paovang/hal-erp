@@ -14,6 +14,7 @@ import {
 import { ProductTypeOrmEntity } from './product-type.orm';
 import { VendorProductOrmEntity } from './vendor-product.orm';
 import { UnitOrmEntity } from './unit.orm';
+import { CategoryOrmEntity } from './category.orm';
 
 @Entity('products')
 export class ProductOrmEntity {
@@ -55,6 +56,16 @@ export class ProductOrmEntity {
     default: 'active',
   })
   status: 'active' | 'inactive';
+
+  /** Account category mapping for accounting classification */
+  @Column({ type: 'bigint', unsigned: true, nullable: true })
+  category_id?: number;
+  @ManyToOne(() => CategoryOrmEntity, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'category_id' })
+  category: Relation<CategoryOrmEntity>;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

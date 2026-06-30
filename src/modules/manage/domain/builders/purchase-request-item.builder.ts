@@ -24,6 +24,7 @@ export class PurchaseRequestItemBuilder {
   currency: CurrencyEntity | null;
   rate: string | null;
   total_in_lak: string | null;
+  category_id: number | null;
 
   setPurchaseRequestItemId(value: PurchaseRequestItemId): this {
     this.purchaseRequestItemId = value;
@@ -117,6 +118,11 @@ export class PurchaseRequestItemBuilder {
 
   setTotalInLak(total_in_lak: string | null): this {
     this.total_in_lak = total_in_lak;
+    return this;
+  }
+
+  setCategoryId(category_id: number | null): this {
+    this.category_id = category_id;
     return this;
   }
 

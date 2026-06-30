@@ -10,6 +10,8 @@ export class ProductBuilder {
   unitId: number;
   unit?: { id: number; name: string };
   status: 'active' | 'inactive';
+  categoryId?: number | null;
+  category?: { id: number; name: string };
   createdAt!: Date;
   updatedAt!: Date | null;
   deletedAt!: Date | null;
@@ -51,6 +53,16 @@ export class ProductBuilder {
 
   setStatus(status: 'active' | 'inactive'): this {
     this.status = status;
+    return this;
+  }
+
+  setCategoryId(categoryId: number | null): this {
+    this.categoryId = categoryId;
+    return this;
+  }
+
+  setCategory(category: { id: number; name: string }): this {
+    this.category = category;
     return this;
   }
 
