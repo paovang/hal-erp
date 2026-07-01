@@ -59,13 +59,10 @@ jobs:
             pnpm add ts-node tsconfig-paths
           "
 
-      # Migration Generate
-      - name: Generate database migrations
-        run: |
-          ssh root@${{ secrets.DEPLOY_SERVER_IP }} "
-            cd /var/www/apis && 
-            (pnpm run migration:generate || true)
-          "
+      # NOTE: migrations are authored and committed by developers, NOT auto-generated
+      # on the server. Running `migration:generate` here re-created CREATE TABLE
+      # statements for tables that committed migrations already create, causing
+      # "relation already exists" (42P07) on migration:run. Only run committed migrations.
 
       # Migration Run
       - name: Run database migrations

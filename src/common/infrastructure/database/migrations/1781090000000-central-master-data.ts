@@ -4,9 +4,12 @@ export class CentralMasterData1781090000000 implements MigrationInterface {
   name = 'CentralMasterData1781090000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // NOTE: every statement is written to be idempotent (IF NOT EXISTS / drop-then-add)
+    // so the migration is safe to re-run against partially-created state.
+
     // 1.1 company_vendors: per-company onboarding of a central vendor + credit terms
     await queryRunner.query(`
-      CREATE TABLE "company_vendors" (
+      CREATE TABLE IF NOT EXISTS "company_vendors" (
         "id" BIGSERIAL NOT NULL,
         "company_id" bigint,
         "vendor_id" bigint,
@@ -21,19 +24,28 @@ export class CentralMasterData1781090000000 implements MigrationInterface {
       )
     `);
     await queryRunner.query(
+      `ALTER TABLE "company_vendors" DROP CONSTRAINT IF EXISTS "FK_company_vendors_company"`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "company_vendors" ADD CONSTRAINT "FK_company_vendors_company" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "company_vendors" DROP CONSTRAINT IF EXISTS "FK_company_vendors_vendor"`,
     );
     await queryRunner.query(
       `ALTER TABLE "company_vendors" ADD CONSTRAINT "FK_company_vendors_vendor" FOREIGN KEY ("vendor_id") REFERENCES "vendors"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
     );
     // 1.2 at most one active (non-deleted) onboarding per (company, vendor)
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "UQ_company_vendors_company_vendor_active" ON "company_vendors" ("company_id", "vendor_id") WHERE "deleted_at" IS NULL`,
+      `CREATE UNIQUE INDEX IF NOT EXISTS "UQ_company_vendors_company_vendor_active" ON "company_vendors" ("company_id", "vendor_id") WHERE "deleted_at" IS NULL`,
     );
 
     // 1.3 account category mapping on the item master
     await queryRunner.query(
-      `ALTER TABLE "products" ADD COLUMN "category_id" bigint`,
+      `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "category_id" bigint`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "products" DROP CONSTRAINT IF EXISTS "FK_products_category"`,
     );
     await queryRunner.query(
       `ALTER TABLE "products" ADD CONSTRAINT "FK_products_category" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE SET NULL ON UPDATE CASCADE`,
@@ -41,7 +53,10 @@ export class CentralMasterData1781090000000 implements MigrationInterface {
 
     // 1.4 snapshot of the resolved account category on the PR line
     await queryRunner.query(
-      `ALTER TABLE "purchase_request_items" ADD COLUMN "category_id" bigint`,
+      `ALTER TABLE "purchase_request_items" ADD COLUMN IF NOT EXISTS "category_id" bigint`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "purchase_request_items" DROP CONSTRAINT IF EXISTS "FK_purchase_request_items_category"`,
     );
     await queryRunner.query(
       `ALTER TABLE "purchase_request_items" ADD CONSTRAINT "FK_purchase_request_items_category" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE SET NULL ON UPDATE CASCADE`,
@@ -65,24 +80,20 @@ export class CentralMasterData1781090000000 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "purchase_request_items" DROP CONSTRAINT "FK_purchase_request_items_category"`,
+      `ALTER TABLE "purchase_request_items" DROP CONSTRAINT IF EXISTS "FK_purchase_request_items_category"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "purchase_request_items" DROP COLUMN "category_id"`,
+      `ALTER TABLE "purchase_request_items" DROP COLUMN IF EXISTS "category_id"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "products" DROP CONSTRAINT "FK_products_category"`,
-    );
-    await queryRunner.query(`ALTER TABLE "products" DROP COLUMN "category_id"`);
-    await queryRunner.query(
-      `DROP INDEX "UQ_company_vendors_company_vendor_active"`,
+      `ALTER TABLE "products" DROP CONSTRAINT IF EXISTS "FK_products_category"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "company_vendors" DROP CONSTRAINT "FK_company_vendors_vendor"`,
+      `ALTER TABLE "products" DROP COLUMN IF EXISTS "category_id"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "company_vendors" DROP CONSTRAINT "FK_company_vendors_company"`,
+      `DROP INDEX IF EXISTS "UQ_company_vendors_company_vendor_active"`,
     );
-    await queryRunner.query(`DROP TABLE "company_vendors"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "company_vendors"`);
   }
 }
