@@ -3,10 +3,10 @@ import { PaginationDto } from '@src/common/validations/dto/pagination.dto';
 import { IsOptional, IsString, IsNumber, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class ProductQueryDto extends PaginationDto {
+export class CompanyVendorQueryDto extends PaginationDto {
   @ApiProperty({
     required: false,
-    description: 'can be name, description',
+    description: 'can be vendor name, company name',
   })
   @IsOptional()
   @IsString()
@@ -14,12 +14,21 @@ export class ProductQueryDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
-    description: 'filter by product type id',
+    description: 'filter by company id',
   })
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  product_type_id?: number;
+  company_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'filter by vendor id',
+  })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  vendor_id?: number;
 
   @ApiProperty({
     required: false,
@@ -29,14 +38,4 @@ export class ProductQueryDto extends PaginationDto {
   @IsOptional()
   @IsEnum(['active', 'inactive'])
   status?: 'active' | 'inactive';
-
-  @ApiProperty({
-    required: false,
-    description:
-      'optional: when provided, restrict the catalog to products this company has selected (active) in company_products. Omit to get the full catalog.',
-  })
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  company_id?: number;
 }

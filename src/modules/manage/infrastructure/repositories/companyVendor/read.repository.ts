@@ -13,6 +13,7 @@ import { IReadCompanyVendorRepository } from '@src/modules/manage/domain/ports/o
 import { EntityManager, IsNull, Repository } from 'typeorm';
 import { CompanyVendorDataAccessMapper } from '../../mappers/company-vendor.mapper';
 import { CompanyVendorId } from '@src/modules/manage/domain/value-objects/company-vendor-id.vo';
+import { EligiblePersons } from '@src/modules/manage/application/constants/status-key.const';
 
 @Injectable()
 export class ReadCompanyVendorRepository
@@ -29,8 +30,26 @@ export class ReadCompanyVendorRepository
   async findAll(
     query: CompanyVendorQueryDto,
     manager: EntityManager,
+    roles?: string[],
+    company_id?: number,
   ): Promise<ResponseResult<CompanyVendorEntity>> {
     const queryBuilder = this.createBaseQuery(manager);
+
+    // Company isolation: admins/super-admins unrestricted; everyone else scoped
+    // to their own company; no resolvable company => nothing (fail-safe).
+    const isAdmin =
+      roles?.includes(EligiblePersons.SUPER_ADMIN) ||
+      roles?.includes(EligiblePersons.ADMIN);
+
+    if (!isAdmin) {
+      if (company_id) {
+        queryBuilder.andWhere('company_vendors.company_id = :scopeCompanyId', {
+          scopeCompanyId: company_id,
+        });
+      } else {
+        queryBuilder.andWhere('1 = 0');
+      }
+    }
 
     if (query.company_id) {
       queryBuilder.andWhere('company_vendors.company_id = :companyId', {

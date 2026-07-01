@@ -44,6 +44,7 @@ import { ProductController } from '../../controllers/product.controller';
 import { CompanyUserController } from '../../controllers/company-user.controller';
 import { VendorProductController } from '../../controllers/vendor-product.controller';
 import { CompanyProductController } from '../../controllers/company-product.controller';
+import { CompanyVendorController } from '../../controllers/company-vendor.controller';
 import { QuotaCompanyController } from '../../controllers/quota-company.controller';
 import { MailModule } from '@src/common/infrastructure/mail/mail.module';
 import { DocumentCategoryController } from '../../controllers/document-category.controller';
@@ -102,6 +103,7 @@ import { UserMailPreferenceController } from '../../controllers/user-mail-prefer
     CompanyUserController,
     VendorProductController,
     CompanyProductController,
+    CompanyVendorController,
     QuotaCompanyController,
     UserMailPreferenceController,
   ],
