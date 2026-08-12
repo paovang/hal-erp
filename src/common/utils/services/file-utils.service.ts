@@ -1,6 +1,7 @@
 import {
   SUPPORTED_UPLOAD_MIME_TYPES,
   SUPPORTED_IMAGE_MIME_TYPES,
+  NON_RASTER_IMAGE_MIME_TYPES,
 } from '@src/common/constants/inject-key.const';
 import * as fs from 'fs/promises';
 import * as fsSync from 'fs'; // for createReadStream
@@ -43,13 +44,14 @@ export async function createMockMulterFile(
     );
   }
 
-  let finalBuffer = buffer;
-
-  // Only process image files (optional)
-  if (SUPPORTED_IMAGE_MIME_TYPES.includes(mimeType)) {
+  // Only validate that images are readable — resizing and re-encoding belong to
+  // ImageOptimizeService, so the buffer stays untouched here (no double encode).
+  if (
+    SUPPORTED_IMAGE_MIME_TYPES.includes(mimeType) &&
+    !NON_RASTER_IMAGE_MIME_TYPES.includes(mimeType)
+  ) {
     try {
-      // finalBuffer = await sharp(buffer).resize(300).toBuffer();
-      finalBuffer = Buffer.from(await sharp(buffer).resize(300).toBuffer());
+      await sharp(buffer).metadata();
     } catch (err) {
       console.error('🛑 Sharp failed to process image:', err.message);
       throw new ManageDomainException(
@@ -64,11 +66,11 @@ export async function createMockMulterFile(
     originalname: filename,
     encoding: '7bit',
     mimetype: mimeType,
-    size: finalBuffer.length,
+    size: buffer.length,
     destination: path.dirname(fullPath),
     filename,
     path: fullPath,
-    buffer: finalBuffer,
+    buffer,
     stream: fsSync.createReadStream(fullPath),
   };
 }

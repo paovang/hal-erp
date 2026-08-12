@@ -50,6 +50,18 @@ export const SUPPORTED_UPLOAD_MIME_TYPES = [
   ...SUPPORTED_DOCUMENT_MIME_TYPES,
 ];
 
+/**
+ * Image formats sharp must not re-encode: SVG is a vector format and would be
+ * rasterised, animated GIF would lose its frames.
+ */
+export const NON_RASTER_IMAGE_MIME_TYPES = ['image/svg+xml', 'image/gif'];
+
+/**
+ * Largest width/height (in pixels) kept when optimizing an uploaded image.
+ * Images below this stay at their original size — never upscaled.
+ */
+export const MAX_IMAGE_DIMENSION = 2000;
+
 export const SIGNATURE_ALLOW_MIME_TYPE = [
   'image/png',
   'image/jpg',

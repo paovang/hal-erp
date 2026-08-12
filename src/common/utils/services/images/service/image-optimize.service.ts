@@ -4,7 +4,11 @@ import { Readable } from 'stream';
 import { IImageOptimizeService } from '@src/common/utils/services/images/interface/image-optimize-service.interface';
 import { ImageOptions } from '@src/common/utils/services/images/interface/image-option.interface';
 import { DomainException } from '@src/common/domain/exceptions/domain.exception';
-import { SUPPORTED_IMAGE_MIME_TYPES } from '@src/common/constants/inject-key.const';
+import {
+  SUPPORTED_IMAGE_MIME_TYPES,
+  NON_RASTER_IMAGE_MIME_TYPES,
+  MAX_IMAGE_DIMENSION,
+} from '@src/common/constants/inject-key.const';
 
 /**
  * ImageService class provides methods to optimize images.
@@ -23,13 +27,15 @@ export class ImageOptimizeService implements IImageOptimizeService {
     file: Express.Multer.File,
     options: ImageOptions = {},
   ): Promise<Express.Multer.File> {
-    if (!SUPPORTED_IMAGE_MIME_TYPES.includes(file.mimetype)) {
+    if (
+      !SUPPORTED_IMAGE_MIME_TYPES.includes(file.mimetype) ||
+      NON_RASTER_IMAGE_MIME_TYPES.includes(file.mimetype)
+    ) {
       // Return original file without image processing
       return file;
     }
     // Promise<Buffer>
-    const DEFAULT_SCALE = 1;
-    const DEFAULT_QUALITY = 80;
+    const DEFAULT_QUALITY = 90;
     const MAX_FILE_SIZE = 10 * 1024 * 1024;
     const buffer = Buffer.from(file.buffer);
     if (!Buffer.isBuffer(buffer)) {
@@ -43,7 +49,9 @@ export class ImageOptimizeService implements IImageOptimizeService {
       );
     }
 
-    let image = sharp(buffer);
+    // rotate() applies the EXIF orientation, otherwise photos taken on a phone
+    // come out sideways once the tag is dropped by the re-encode below.
+    let image = sharp(buffer).rotate();
 
     const metadata = await image.metadata();
     const originalFormat = metadata.format;
@@ -51,11 +59,22 @@ export class ImageOptimizeService implements IImageOptimizeService {
     const formatToUse = options.format ?? originalFormat;
 
     const { width = 0, height = 0 } = metadata;
-    const scale = options.scale ?? DEFAULT_SCALE;
-    image = image.resize(
-      options.width ?? Math.floor(width * scale),
-      options.height ?? Math.floor(height * scale),
-    );
+    const scale = options.scale;
+    if (options.width || options.height || scale) {
+      image = image.resize(
+        options.width ?? (scale ? Math.floor(width * scale) : null),
+        options.height ?? (scale ? Math.floor(height * scale) : null),
+      );
+    } else {
+      // No explicit size requested: keep the original resolution and only cap
+      // oversized images, never upscale.
+      image = image.resize({
+        width: MAX_IMAGE_DIMENSION,
+        height: MAX_IMAGE_DIMENSION,
+        fit: 'inside',
+        withoutEnlargement: true,
+      });
+    }
 
     if (formatToUse) {
       image = image.toFormat(formatToUse);
@@ -66,11 +85,14 @@ export class ImageOptimizeService implements IImageOptimizeService {
         case 'jpg':
           image = image.jpeg({
             quality,
+            chromaSubsampling: '4:4:4',
           });
           break;
         case 'png':
+          // No `quality` here: sharp reads it as "quantise to a palette", which
+          // crushes screenshots and gradients down to 256 colours.
           image = image.png({
-            quality,
+            compressionLevel: 9,
           });
           break;
         case 'webp':
