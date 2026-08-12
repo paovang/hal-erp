@@ -74,12 +74,12 @@ export class AmazonS3ImageOptimizeService {
 
     const formatToUse = options.format ?? originalFormat;
 
-    const { width = 0, height = 0 } = metadata;
+    // const { width = 0, height = 0 } = metadata;
     const scale = options.scale ?? DEFAULT_SCALE;
-    image = image.resize(
-      options.width ?? Math.floor(width * scale),
-      options.height ?? Math.floor(height * scale),
-    );
+    // image = image.resize(
+    //   options.width ?? Math.floor(width * scale),
+    //   options.height ?? Math.floor(height * scale),
+    // );
 
     if (formatToUse) {
       image = image.toFormat(formatToUse);
